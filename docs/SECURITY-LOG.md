@@ -2,6 +2,22 @@
 
 Every security patch, hardening change, CVE remediation and accepted risk, newest first.
 
+## 2026-11-17 — Phase I3 hardening: human approval for every agent change
+- **Type:** hardening
+- **CVE / CWE / advisory:** CWE-200, CWE-538, CWE-22, CWE-367, CWE-20, CWE-400, CWE-79; OWASP LLM01, LLM06 (none: new feature)
+- **Severity:** none (new feature built with these controls)
+- **Affected:** `core/src/agent.rs`, `core/src/client.rs`, `app/src-tauri/src/agent.rs`, `app/src/components/{ChatView,DiffReview}.tsx`
+- **What changed:** the model's tools only read; edits become pending changes written on the person's Accept with the
+  version check; likely secrets are hidden from every tool; strict tool arguments; step, call, size and turn budgets;
+  tool text shown as text; audit lines without paths.
+- **Why it is secure now:** least privilege and human approval for every write (NIST AC-6, OWASP LLM06), prompt
+  injection limited to proposals the person reviews (OWASP LLM01), confinement and lost-update checks reused from the
+  editor.
+- **Accepted risk:** the deny list is by name; secrets inside ordinary files can be read and sent to the chosen
+  gateway (documented in features/agent-tools.md section 6, with Tools off as the mitigation).
+- **Verification:** HistoryTest runs 2026-11-17_065236Z_core_e919fcd (48 tests), 2026-11-17_065240Z_ui-smoke_e919fcd
+  (45/45), 2026-11-17_065249Z_security-scan_e919fcd (0 vulnerabilities).
+
 ## 2026-11-17 — App icons built from the official logo
 - **Type:** hardening (supply-chain hygiene for binary assets)
 - **CVE / CWE / advisory:** none. NIST SSDF PS.3, PW.6.

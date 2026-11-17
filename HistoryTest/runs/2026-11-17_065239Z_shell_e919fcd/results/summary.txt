@@ -1,0 +1,11 @@
+id: 2026-11-17_065239Z_shell_e919fcd
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: not recorded
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: 0
+duration_s: 1.3
+commit: e919fcd
+machine: cloud

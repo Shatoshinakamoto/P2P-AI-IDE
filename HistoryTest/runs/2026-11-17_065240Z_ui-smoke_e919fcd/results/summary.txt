@@ -1,0 +1,11 @@
+id: 2026-11-17_065240Z_ui-smoke_e919fcd
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: 4
+failed: 0
+skipped: 0
+count_unit: packages
+exit_code: 0
+duration_s: 8.8
+commit: e919fcd
+machine: cloud

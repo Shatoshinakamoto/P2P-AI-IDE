@@ -3,7 +3,8 @@
  *
  * Purpose: phase I1 of docs/features/editor-shell.md (open a folder through the OS picker in Rust, browse, search,
  * edit in tabs, save) and phase I2 of docs/features/gateways-and-chat.md (Gateways view, Agent chat with history,
- * gateway chip in the status bar). Missions and Extensions are visible but arrive in later phases.
+ * gateway chip in the status bar) and phase I3 of docs/features/agent-tools.md (chat tools on the open folder and
+ * the diff review of proposed changes over the editor area). Missions and Extensions are visible but arrive in later phases.
  * Security: the webview never chooses the folder path (the Rust side shows the OS picker) and never touches files
  * itself; every call goes through ipc.ts to the checked core. All text is rendered by React or Monaco as text (CWE-79).
  */
@@ -17,7 +18,8 @@ import { Editor, type EditorHandle } from "./components/Editor.tsx";
 import { StatusBar } from "./components/StatusBar.tsx";
 import { Placeholder } from "./components/Placeholder.tsx";
 import { NetworkView } from "./components/NetworkView.tsx";
-import { ChatView } from "./components/ChatView.tsx";
+import { ChatView, type Review } from "./components/ChatView.tsx";
+import { DiffReview } from "./components/DiffReview.tsx";
 import { Tip } from "./components/Tip.tsx";
 
 type View = "explorer" | "search" | "chat" | "missions" | "network" | "extensions";
@@ -41,6 +43,10 @@ export function App() {
   const [wsGen, setWsGen] = useState(0);
   const [gateways, setGateways] = useState<GatewayList>({ gateways: [], active: null });
   const editor = useRef<EditorHandle>(null);
+  // The assistant's change being reviewed in the diff view, if any.
+  const [review, setReview] = useState<Review | null>(null);
+  const onReview = useCallback((r: Review | null) => setReview(r), []);
+  const onFileWritten = useCallback((rel: string) => editor.current?.fileWritten(rel), []);
 
   // After a webview reload the Rust side may still have a workspace open; saved gateways come from the core too.
   useEffect(() => {
@@ -58,6 +64,7 @@ export function App() {
       const info = await pickFolder();
       if (info) {
         editor.current?.reset();
+        setReview(null);
         setWs(info);
         setWsGen((g) => g + 1);
         setView("explorer");
@@ -81,7 +88,8 @@ export function App() {
       case "search":
         return ws ? <SearchView onOpenAt={(rel, line) => void editor.current?.open(rel, line)} onError={onNotice} /> : <p className="px-3 text-ide-dim">Open a folder to search it.</p>;
       case "chat":
-        return <ChatView gateway={activeGateway} workspaceKey={String(wsGen)} onNotice={onNotice} onOpenGateways={() => setView("network")} />;
+        // ChatView stays mounted below (so a chat in progress and its pending changes survive switching views).
+        return null;
       case "missions":
         return <Placeholder title="Missions" phase="phase I4">Autopilot and Auto Improve run on the gateway on a synced copy of this folder. Auto Train stays with the gateway admin.</Placeholder>;
       case "network":
@@ -124,9 +132,15 @@ export function App() {
                 <Explorer workspaceName={ws.name} activeRel={activeRel} onOpenFile={(rel) => void editor.current?.open(rel)} onError={onNotice} />
               </div>
             ) : null}
+            <div className={view === "chat" ? "flex min-h-0 flex-1 flex-col" : "hidden"}>
+              <ChatView gateway={activeGateway} workspaceKey={String(wsGen)} onNotice={onNotice} onOpenGateways={() => setView("network")} hasFolder={ws !== null} onReview={onReview} onFileWritten={onFileWritten} />
+            </div>
             {side()}
           </aside>
-          <Editor ref={editor} onActiveChange={onActive} onCursor={onCursor} onNotice={onNotice} />
+          <div className="relative flex min-h-0 min-w-0 flex-1">
+            <Editor ref={editor} onActiveChange={onActive} onCursor={onCursor} onNotice={onNotice} />
+            {review ? <DiffReview change={review.change} onAccept={review.accept} onReject={review.reject} onClose={() => setReview(null)} /> : null}
+          </div>
         </div>
         <StatusBar line={cursor.line} col={cursor.col} language={cursor.language} notice={notice} gateway={activeGateway} onGateway={() => setView("network")} />
       </div>

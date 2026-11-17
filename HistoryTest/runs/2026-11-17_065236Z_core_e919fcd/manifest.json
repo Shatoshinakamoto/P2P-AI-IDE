@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "359ce7150eddfa818639592c33de37d4b37cc082ef6e23760ba339e7e20d84d8",
+   "size": 1559
+  },
+  "command.txt": {
+   "sha256": "9e2f09528986feb8a776df515985371d750cc84350566468e622bc63fb539951",
+   "size": 169
+  },
+  "environment.md": {
+   "sha256": "6810b2d1fc731d85be01f94ac0c3ea77635f9b1c1a6976468cd98576149dc8c1",
+   "size": 193
+  },
+  "logs/output.log": {
+   "sha256": "d13d1f809037194aa281c0b1304a12c3348461213ed224bb2fb5441895bc23ea",
+   "size": 3867
+  },
+  "results/summary.txt": {
+   "sha256": "f2acf40f07f1037aee1d131ff766c0c1e20f128835474df37e59337f05b75aa2",
+   "size": 251
+  }
+ },
+ "previous": {
+  "manifest_sha256": "debe6e56063856e7401b488bf0e7dbd57be521e0dfbc2a01b7b78822ef8aa488",
+  "run_id": "2026-11-17_063832Z_security-scan_545bdf4"
+ },
+ "run": {
+  "area": "core",
+  "branch_or_pr": "branch claude/project-thread-dfop2y (I3 PR)",
+  "collected_utc": "",
+  "commit": "e919fcd",
+  "count_unit": "",
+  "date_utc": "2026-11-17T06:52:36Z",
+  "dirty": false,
+  "duration_s": 3.0,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_065236Z_core_e919fcd",
+  "kind": "unit",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "Claude",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Core: fmt, clippy, tests incl. agent tools and pending changes (phase I3)",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

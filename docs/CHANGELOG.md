@@ -2,6 +2,30 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-17 - Phase I3: chat tools and diff review
+
+Requested by Pheonix ("keep moving forward").
+
+### Added
+- Agent chat **Tools** switch (on by default with a folder open): the model can list, read and search the folder and
+  propose edits and new files through the gateway's tools API; each tool step shows in the chat.
+- **Changes to review** list and a side-by-side Monaco diff over the editor; **Accept and save** (version-checked) or
+  **Reject** per file; an open tab reloads after an accept.
+- Core module `agent` (tools, deny list for likely secrets, pending changes, turn loop with budgets); streamed
+  `tool_calls` in the client; shell commands `agent_send`, `changes_list`, `change_get`, `change_accept`,
+  `change_reject`. Core tests 41 -> 48, UI smoke 37 -> 45.
+- Docs: `features/agent-tools.md`.
+
+### Changed
+- Saved chats may hold `tool` lines (never sent to a model).
+
+### Fixed
+- Switching from Agent chat to another view and back lost the chat in progress (the next answer started a new saved
+  chat); the chat view now stays mounted.
+- Windows: `edit_file` never matched a multi-line change in a file with CRLF line endings, because models send LF.
+  The edit now adapts to the file's line endings and keeps them (found in the Windows click-through, core tests
+  48 -> 49).
+
 ## 2026-11-17 - App icons: the P2P-AI logo with the IDE badge
 
 Requested by Pheonix: one logo (the brain with network nodes) for every P2P-AI app, with something different per app.

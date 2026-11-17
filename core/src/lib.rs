@@ -7,6 +7,7 @@
 //! ([`client`]), chat history ([`chats`]) and the small-file store they share ([`store`]).
 //! Dependencies: serde, serde_json, sha2, ureq (see Cargo.toml).
 
+pub mod agent;
 pub mod chats;
 pub mod client;
 pub mod discovery;

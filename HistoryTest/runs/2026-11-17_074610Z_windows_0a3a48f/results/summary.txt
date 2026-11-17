@@ -1,0 +1,11 @@
+id: 2026-11-17_074610Z_windows_0a3a48f
+verdict: partial
+verdict_reason: Reject, Tools off and history checks were not run on Windows; the Accept click was not observed directly.
+passed: not recorded
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: not recorded
+duration_s: not recorded
+commit: 0a3a48f
+machine: pc

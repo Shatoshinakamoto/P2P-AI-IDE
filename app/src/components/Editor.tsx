@@ -25,6 +25,9 @@ export interface EditorHandle {
   open: (rel: string, line?: number) => Promise<void>;
   /** Closes every tab and drops every model (when another workspace opens). */
   reset: () => void;
+  /** Tells the editor a file was written outside it (an accepted assistant change): a clean tab reloads, a tab with
+   * unsaved edits shows the conflict bar so nothing is lost. */
+  fileWritten: (rel: string) => void;
 }
 
 interface Props {
@@ -188,7 +191,14 @@ export function Editor({ ref, onActiveChange, onCursor, onNotice }: Props) {
     onActiveChange(null);
   };
 
-  useImperativeHandle(ref, () => ({ open, reset }));
+  const fileWritten = (rel: string) => {
+    const tab = tabsRef.current.find((t) => t.rel === rel);
+    if (!tab) return;
+    if (tab.dirty) setConflict(rel);
+    else void reload(rel);
+  };
+
+  useImperativeHandle(ref, () => ({ open, reset, fileWritten }));
 
   return (
     <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-ide-bg">

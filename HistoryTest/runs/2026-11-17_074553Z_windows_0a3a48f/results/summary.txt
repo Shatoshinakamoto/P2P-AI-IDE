@@ -1,0 +1,11 @@
+id: 2026-11-17_074553Z_windows_0a3a48f
+verdict: pass
+verdict_reason: not recorded
+passed: 47
+failed: 0
+skipped: not recorded
+count_unit: not recorded
+exit_code: not recorded
+duration_s: 600.0
+commit: 0a3a48f
+machine: pc

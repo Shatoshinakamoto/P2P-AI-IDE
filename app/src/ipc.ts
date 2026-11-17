@@ -66,7 +66,7 @@ export interface GatewayList { gateways: GatewayView[]; active: string | null }
 export interface GatewayCheck { latency_ms: number; models: string[] }
 export interface Msg { role: "system" | "user" | "assistant"; content: string }
 export interface StreamEnd { finish_reason: string | null; chars: number }
-export interface ChatMessage { role: "user" | "assistant" | "error"; content: string; at: number }
+export interface ChatMessage { role: "user" | "assistant" | "error" | "tool"; content: string; at: number }
 export interface Chat { id: string; title: string; gateway: string; model: string; created: number; updated: number; messages: ChatMessage[] }
 export interface ChatSummary { id: string; title: string; updated: number; count: number }
 export interface ChatHit { id: string; title: string; preview: string }
@@ -121,6 +121,28 @@ export const gatewayAddPublic = (gatewayId: string, key: string | null) => call<
  * Sends the conversation to the active gateway. `onText` gets each piece of the answer as it streams in.
  * SECURITY: answer text is untrusted; callers render it as text only (CWE-79).
  */
+/** A step of an agent turn: answer text, or a tool that ran (name, path or query, ok). */
+export type AgentEvent = { kind: "delta"; text: string } | { kind: "tool"; name: string; target: string; ok: boolean };
+export interface TurnEnd { steps: number; tool_calls: number; pending: number; finish_reason: string | null }
+/** A file the assistant wants to change, waiting for review. */
+export interface ChangeView { rel: string; created: boolean; added: number; removed: number }
+export interface ChangeText { rel: string; before: string; after: string; created: boolean }
+
+/**
+ * Runs one agent turn with the folder tools (phase I3). Proposed edits are not written: they wait for review.
+ * SECURITY: answer text and tool targets are untrusted; callers render them as text only (CWE-79).
+ */
+export async function agentSend(model: string, messages: Msg[], onEvent: (e: AgentEvent) => void): Promise<TurnEnd> {
+  const ch = new Channel<AgentEvent>();
+  ch.onmessage = onEvent;
+  return call<TurnEnd>("agent_send", { model, messages, onEvent: ch });
+}
+export const changesList = () => call<ChangeView[]>("changes_list");
+export const changeGet = (rel: string) => call<ChangeText>("change_get", { rel });
+/** Writes one reviewed change with the version check; returns the file's new version. */
+export const changeAccept = (rel: string) => call<string>("change_accept", { rel });
+export const changeReject = (rel: string) => call<void>("change_reject", { rel });
+
 export async function chatSend(model: string, messages: Msg[], onText: (t: string) => void): Promise<StreamEnd> {
   const onEvent = new Channel<ChatEvent>();
   onEvent.onmessage = (ev) => { if (ev.kind === "delta") onText(ev.text); };
