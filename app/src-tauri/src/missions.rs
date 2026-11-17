@@ -64,7 +64,7 @@ async fn blocking<T: Send + 'static>(f: impl FnOnce() -> Result<T, String> + Sen
 }
 
 /// The active gateway's client and the linked project id for the open folder.
-fn linked(app: &AppHandle, state: &State<AppState>) -> Result<(Client, String, Workspace), String> {
+pub(crate) fn linked(app: &AppHandle, state: &State<AppState>) -> Result<(Client, String, Workspace), String> {
     let ws = workspace(state)?;
     let (client, gid, _) = active_gateway(app)?;
     let link = projects::link_for(&data_dir(app)?, &folder_key(ws.root()), &gid)

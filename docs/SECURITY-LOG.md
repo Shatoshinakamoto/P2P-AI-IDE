@@ -2,6 +2,25 @@
 
 Every security patch, hardening change, CVE remediation and accepted risk, newest first.
 
+## 2026-11-17 — Phase I5b hardening: running tests and commands, and the assistant asking to run
+- **Type:** hardening
+- **CVE / CWE / advisory:** CWE-78, CWE-88, CWE-22, CWE-200, CWE-400, CWE-79, CWE-150, CWE-639; OWASP LLM01, LLM06 (none: new feature)
+- **Severity:** none (new feature built with these controls). KEV no.
+- **Affected:** `core/src/{runner,agent,gwapi}.rs`, `app/src-tauri/src/{run,agent,missions,main}.rs`, `app/src/components/{RunView,ChatView}.tsx`
+- **What changed:** runs go to the gateway's sandbox tools only (no network, read-only, non-root, on a snapshot);
+  requests are an argument list or a framework from a fixed list, with checked folder, word count, size, control
+  characters and time limit; the chat's run tools exist only with Runs on and a linked folder, and each request
+  waits for the person's Allow on a card, answered by its own random id (Decline on Stop, close or 5 minutes);
+  output is cleaned and capped; only the gateway runner is accepted; audit words only.
+- **Why it is secure now:** a prompt-injected model cannot run anything without the person seeing the exact request
+  and allowing it (OWASP LLM06, NIST AC-3, AC-6); nothing runs through a shell (CWE-78); runs cannot reach the
+  network (NIST SC-7).
+- **Accepted risk:** the folder (minus the deny list) is sent to the linked gateway, as in phase I4; a person-started
+  run needs no second confirmation. Documented in features/run-and-test.md section 6.
+- **Verification:** HistoryTest runs 2026-11-17_125930Z_core_618354d, 2026-11-17_125934Z_ui-smoke_618354d (75/75),
+  2026-11-17_125953Z_live-gateway_618354d (13/13: no network, time limit, `.env` never stored),
+  2026-11-17_125944Z_security-scan_618354d (0 vulnerabilities).
+
 ## 2026-11-17 — Installers: licence gate and signed checksums
 - **Type:** hardening (supply chain); accepted risk
 - **CVE / CWE / advisory:** none. CWE-494, CWE-1357; NIST SI-7, SR-3, AC-6; SLSA build integrity

@@ -1,0 +1,11 @@
+id: 2026-11-17_130113Z_windows_391278c
+verdict: pass
+verdict_reason: All steps passed on Windows.
+passed: 66
+failed: 0
+skipped: not recorded
+count_unit: not recorded
+exit_code: not recorded
+duration_s: not recorded
+commit: 391278c
+machine: pc

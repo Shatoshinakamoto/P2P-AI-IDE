@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "091893a1e9a349ce00105634b0f3e34f9dd39e988b47c61969671001b037df34",
+   "size": 1672
+  },
+  "command.txt": {
+   "sha256": "555074c3ee4ce1f4fd4b6ac2b221c459e5793c87e63625ab58fbd048475bae46",
+   "size": 420
+  },
+  "environment.md": {
+   "sha256": "3e319310a589ed1ddcbaf361b74383f91bb7bb7e5aa068591b0620dc657d7bb3",
+   "size": 197
+  },
+  "logs/output.log": {
+   "sha256": "4b98f3c2d614ebec5318b5bfddfa0aac79e4832f0f988a474e1724c99af53aa0",
+   "size": 6571
+  },
+  "results/summary.txt": {
+   "sha256": "022fe287184d4641b0fa2654a37b62297194da9ec96f789f1720ace2661e3f85",
+   "size": 251
+  }
+ },
+ "previous": {
+  "manifest_sha256": "16b9329cc3ae6a8d31659e7ef7b574460497bb76ebe944a0d1fbb62661b3d3b7",
+  "run_id": "2026-11-17_125932Z_shell_618354d"
+ },
+ "run": {
+  "area": "ui-smoke",
+  "branch_or_pr": "claude/project-thread-dfop2y",
+  "collected_utc": "",
+  "commit": "618354d66538be58c2fcae53f060caf7654b5fb3",
+  "count_unit": "packages",
+  "date_utc": "2026-11-17T12:59:34Z",
+  "dirty": false,
+  "duration_s": 9.9,
+  "exit_code": 0,
+  "failed": 0,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_125934Z_ui-smoke_618354d",
+  "kind": "e2e",
+  "machine": "cloud",
+  "passed": 4,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "",
+  "shortened_logs": [],
+  "skipped": 0,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Webview unit tests, build and UI smoke 75 checks incl. Run and test and the approval card",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

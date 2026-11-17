@@ -16,6 +16,7 @@ pub mod discovery;
 pub mod gateways;
 pub mod gwapi;
 pub mod projects;
+pub mod runner;
 pub mod scm;
 pub mod store;
 pub mod workspace;

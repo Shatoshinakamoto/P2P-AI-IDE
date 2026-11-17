@@ -12,9 +12,10 @@
  */
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import * as Tooltip from "@radix-ui/react-tooltip";
-import { Blocks, Files, FolderOpen, GitBranch, MessageSquare, Network, Rocket, Search } from "lucide-react";
+import { Blocks, FlaskConical, Files, FolderOpen, GitBranch, MessageSquare, Network, Rocket, Search } from "lucide-react";
 import { gatewaysList, pickFolder, workspaceInfo, type GatewayList, type ScmDiff, type Switches, type WorkspaceInfo } from "./ipc.ts";
 import { SourceControlView } from "./components/SourceControlView.tsx";
+import { RunView } from "./components/RunView.tsx";
 import { MissionsView } from "./components/MissionsView.tsx";
 import { Explorer } from "./components/Explorer.tsx";
 import { SearchView } from "./components/SearchView.tsx";
@@ -26,12 +27,13 @@ import { ChatView, type Review } from "./components/ChatView.tsx";
 import { DiffReview } from "./components/DiffReview.tsx";
 import { Tip } from "./components/Tip.tsx";
 
-type View = "explorer" | "search" | "scm" | "chat" | "missions" | "network" | "extensions";
+type View = "explorer" | "search" | "scm" | "run" | "chat" | "missions" | "network" | "extensions";
 
 const VIEWS: { id: View; label: string; icon: ReactNode }[] = [
   { id: "explorer", label: "Explorer", icon: <Files size={22} aria-hidden /> },
   { id: "search", label: "Search", icon: <Search size={22} aria-hidden /> },
   { id: "scm", label: "Source control", icon: <GitBranch size={22} aria-hidden /> },
+  { id: "run", label: "Run and test", icon: <FlaskConical size={22} aria-hidden /> },
   { id: "chat", label: "Agent chat", icon: <MessageSquare size={22} aria-hidden /> },
   { id: "missions", label: "Missions: Autopilot and Auto Improve", icon: <Rocket size={22} aria-hidden /> },
   { id: "network", label: "Gateways", icon: <Network size={22} aria-hidden /> },
@@ -106,6 +108,9 @@ export function App() {
         return ws ? <SearchView onOpenAt={(rel, line) => void editor.current?.open(rel, line)} onError={onNotice} /> : <p className="px-3 text-ide-dim">Open a folder to search it.</p>;
       case "scm":
         return ws ? <SourceControlView refreshTick={changesTick} onNotice={onNotice} onDiff={onScmDiff} /> : <p className="px-3 text-ide-dim">Open a folder to see its source control.</p>;
+      case "run":
+        // RunView stays mounted below while a folder is open (so a run in progress and its result survive switching).
+        return ws ? null : <p className="px-3 text-ide-dim">Open a folder to run its tests.</p>;
       case "chat":
         // ChatView stays mounted below (so a chat in progress and its pending changes survive switching views).
         return null;
@@ -144,11 +149,16 @@ export function App() {
               </Tip>
             ))}
           </nav>
-          <aside aria-label="Side bar" className={`flex ${view === "chat" || view === "network" || view === "missions" ? "w-96" : "w-64"} shrink-0 flex-col border-r border-ide-line bg-ide-side`}>
+          <aside aria-label="Side bar" className={`flex ${view === "chat" || view === "network" || view === "missions" || view === "run" ? "w-96" : "w-64"} shrink-0 flex-col border-r border-ide-line bg-ide-side`}>
             <div className="px-4 py-2 text-[11px] uppercase tracking-wide text-ide-dim">{VIEWS.find((v) => v.id === view)?.label}</div>
             {ws ? (
               <div className={view === "explorer" ? "flex min-h-0 flex-1 flex-col" : "hidden"}>
                 <Explorer workspaceName={ws.name} activeRel={activeRel} onOpenFile={(rel) => void editor.current?.open(rel)} onError={onNotice} />
+              </div>
+            ) : null}
+            {ws ? (
+              <div key={`run-${wsGen}`} className={view === "run" ? "flex min-h-0 flex-1 flex-col" : "hidden"}>
+                <RunView onNotice={onNotice} onOpenMissions={() => setView("missions")} />
               </div>
             ) : null}
             <div className={view === "chat" ? "flex min-h-0 flex-1 flex-col" : "hidden"}>

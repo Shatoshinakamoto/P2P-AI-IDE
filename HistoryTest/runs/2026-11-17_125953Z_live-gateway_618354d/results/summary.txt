@@ -1,0 +1,11 @@
+id: 2026-11-17_125953Z_live-gateway_618354d
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: not recorded
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: 0
+duration_s: 16.4
+commit: 618354d66538be58c2fcae53f060caf7654b5fb3
+machine: cloud

@@ -12,10 +12,11 @@ The IDE's plan and its decisions (ADR-029) live in the P2P-AI repository: `docs/
 | [features/agent-tools.md](features/agent-tools.md) | Phase I3: chat tools on the open folder (list, read, search, propose edits) and the diff review; threat model and controls |
 | [features/missions.md](features/missions.md) | Phase I4: send the folder to a gateway project, Autopilot and Auto Improve missions, approvals, proposals, review of returned work; threat model and controls |
 | [features/source-control.md](features/source-control.md) | Phase I5a: the Source Control view (status, diff, stage, commit) through the installed git, with repository programs and hooks off; threat model and controls |
+| [features/run-and-test.md](features/run-and-test.md) | Phase I5b: the Run and test view and the chat's runs with per-run approval, on the gateway sandbox; threat model and controls |
 | [files/app-data.md](files/app-data.md) | The IDE's own data files: `gateways.json`, `directories.json`, `links.json` and chat history, every key |
 | [files/discovery-vectors.md](files/discovery-vectors.md) | The copy of the P2P-AI protocol's shared advert vectors used by the core tests, with provenance |
 | [commands/app-scripts.md](commands/app-scripts.md) | The npm scripts and cargo commands used to build and test the app |
-| [commands/live-gateway-e2e.md](commands/live-gateway-e2e.md) | The live check of missions against a real P2P-AI gateway, node and sandbox (development only) |
+| [commands/live-gateway-e2e.md](commands/live-gateway-e2e.md) | The live check of missions and runs against a real P2P-AI gateway, node and sandbox (development only) |
 | [commands/history-test.md](commands/history-test.md) | The test history recorder `scripts/history_test.py` (copied from the P2P-AI repository) |
 | [files/third-party-notices.md](files/third-party-notices.md) | `app/src-tauri/THIRD-PARTY-NOTICES.txt`: the licence texts shipped in the installers, how it is generated and checked |
 | [features/installers.md](features/installers.md) | Windows and Linux installers and signed releases, built on the PC with the P2P-AI release script |

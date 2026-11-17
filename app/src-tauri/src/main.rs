@@ -26,6 +26,7 @@
 mod agent;
 mod missions;
 mod net;
+mod run;
 mod scm;
 
 use p2p_ide_core::{FileText, Listing, SearchResult, Workspace, WsError};
@@ -35,6 +36,9 @@ use std::sync::{Arc, Mutex};
 use std::time::{SystemTime, UNIX_EPOCH};
 use tauri::State;
 use tauri_plugin_dialog::DialogExt;
+
+/// A run request waiting for the person: its random id and where the Allow (true) or Decline (false) goes.
+type WaitingRun = (String, std::sync::mpsc::Sender<bool>);
 
 /// The open workspace, if any (one per window), and the state of the chat turn that is streaming.
 struct AppState {
@@ -50,9 +54,14 @@ struct AppState {
     /// without an accept; cleared when another folder opens.
     pending: Mutex<p2p_ide_core::agent::Pending>,
     /// True while a push, collect or pull with the gateway project runs (phase I4; one at a time).
-    sync_busy: AtomicBool,
+    /// Shared with the run commands (phase I5b), which push the folder first; an Arc so a run the assistant asked
+    /// for can hold it from its worker thread.
+    sync_busy: Arc<AtomicBool>,
     /// True while a git stage, unstage or commit runs (phase I5; one at a time).
     scm_busy: AtomicBool,
+    /// The run the assistant is waiting on (phase I5b): its id and where the person's Allow or Decline goes. Only
+    /// `agent_decide` with this id answers it.
+    run_decision: Arc<Mutex<Option<WaitingRun>>>,
 }
 
 /// What the webview learns about the open workspace: its name only.
@@ -154,7 +163,8 @@ fn main() {
             chat_stop: Arc::new(AtomicBool::new(false)),
             public: Mutex::new(Vec::new()),
             pending: Mutex::new(Default::default()),
-            sync_busy: AtomicBool::new(false),
+            sync_busy: Arc::new(AtomicBool::new(false)),
+            run_decision: Arc::new(Mutex::new(None)),
             scm_busy: AtomicBool::new(false),
         })
         .invoke_handler(tauri::generate_handler![
@@ -189,6 +199,8 @@ fn main() {
             agent::change_get,
             agent::change_accept,
             agent::change_reject,
+            agent::agent_decide,
+            run::run_start,
             scm::scm_status,
             scm::scm_diff,
             scm::scm_stage,

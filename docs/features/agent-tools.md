@@ -6,6 +6,8 @@
 * **Code:** `core/src/agent.rs`, `core/src/client.rs` (`agent_step`, streamed tool calls), `app/src-tauri/src/agent.rs`,
   `app/src/components/{ChatView,DiffReview,Editor}.tsx`, `app/src/App.tsx`, `app/src/ipc.ts`.
 * **Next:** I4 missions (sync to a gateway project, Autopilot and Auto Improve), I5 sandboxed commands.
+* **Phase I5b:** with **Runs** on, the chat also offers `run_tests` and `run_command`, each behind an Allow card; see
+  [run-and-test.md](run-and-test.md).
 
 ## 1. Overview
 

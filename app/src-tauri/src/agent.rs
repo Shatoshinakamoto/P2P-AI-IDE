@@ -11,20 +11,32 @@
 //! Security controls:
 //!   * Nothing is written without `change_accept`, which the person triggers per file; it uses the same atomic,
 //!     version-checked save as the editor (CWE-367, OWASP LLM06, NIST AC-6).
+//!   * Nothing runs without the person's Allow (phase I5b): the run tools are offered only when the person turned
+//!     Runs on for the turn and the folder is linked to a gateway project; each request is checked by the core,
+//!     shown on an approval card, and waits for `agent_decide` with its own random id. Stop, a window that closes
+//!     or 5 minutes without an answer count as Decline (OWASP LLM06, NIST AC-3, AC-6).
 //!   * One turn at a time, shared with plain chat; Stop ends it between pieces of text or tool steps (CWE-400).
 //!   * The workspace is copied for the turn and the pending list is taken out and put back, so no lock is held
 //!     while the network call runs; opening another folder clears the pending list (main.rs).
 //!   * Audit lines with fixed words only, never paths, tool names or text: agent turn, change accepted, change
-//!     rejected (NIST AU-3, CWE-117, CWE-532).
+//!     rejected, run allowed, run declined (NIST AU-3, CWE-117, CWE-532).
 //!
 //! Dependencies: tauri, p2p-ide-core.
 
+use crate::missions::linked;
 use crate::net::active_client;
+use crate::run::RunBusy;
 use crate::{audit, AppState};
 use p2p_ide_core::agent::{self, AgentEvent, ChangeView, TurnEnd};
 use p2p_ide_core::client::{Msg, NetError};
+use p2p_ide_core::runner::{self, RunRequest, RunResult};
 use serde::Serialize;
 use std::sync::atomic::Ordering;
+use std::sync::mpsc::{self, RecvTimeoutError};
+use std::time::{Duration, Instant};
+
+/// How long a run request waits for the person's Allow or Decline.
+const DECIDE_WAIT: Duration = Duration::from_secs(300);
 use tauri::ipc::Channel;
 use tauri::{AppHandle, State};
 
@@ -39,16 +51,27 @@ fn workspace(state: &State<AppState>) -> Result<p2p_ide_core::workspace::Workspa
 
 /// Runs one agent turn: the conversation (user and assistant messages) with the folder tools. Text and tool steps
 /// arrive through `on_event`; proposed edits wait in the pending list.
+///
+/// * `runs` -- true offers `run_tests` and `run_command` for this turn (phase I5b). The folder must be linked to a
+///   project on the active gateway; every run waits for the person's decision (`agent_decide`).
 #[tauri::command]
 pub async fn agent_send(
     app: AppHandle,
     state: State<'_, AppState>,
     model: String,
     messages: Vec<Msg>,
+    runs: Option<bool>,
     on_event: Channel<AgentEvent>,
 ) -> Result<TurnEnd, String> {
     let ws = workspace(&state)?;
     let client = active_client(&app)?;
+    let run_target = if runs.unwrap_or(false) {
+        Some(linked(&app, &state).map_err(|e| format!("{e}, or turn Runs off"))?)
+    } else {
+        None
+    };
+    let decision = state.run_decision.clone();
+    let sync_busy = state.sync_busy.clone();
     // SECURITY: one turn at a time per window, shared with plain chat (CWE-400).
     if state.chat_busy.swap(true, Ordering::SeqCst) {
         return Err("an answer is still coming in; stop it first".into());
@@ -63,13 +86,55 @@ pub async fn agent_send(
     };
     audit("agent", "turn");
     let stop = state.chat_stop.clone();
-    let tools = agent::tool_defs();
+    let tools = agent::tool_defs_for(run_target.is_some());
     let joined = tauri::async_runtime::spawn_blocking(move || {
         let mut step =
             |m: &[serde_json::Value], on: &mut dyn FnMut(&str) -> bool| client.agent_step(&model, m, &tools, on);
-        let r = agent::run_turn(&ws, &mut pending, &messages, &mut step, &mut |e| {
-            !stop.load(Ordering::SeqCst) && on_event.send(e).is_ok()
-        });
+        let events = on_event.clone();
+        let stop_run = stop.clone();
+        // SECURITY: the approval gate. The core hands over a checked request; nothing runs until the person
+        // answers this request's id with Allow (OWASP LLM06, NIST AC-3).
+        let mut run = |req: &RunRequest| -> Result<RunResult, String> {
+            let Some((run_client, pid, run_ws)) = run_target.as_ref() else {
+                return Err("running is not available here".into());
+            };
+            let id = p2p_ide_core::store::new_id();
+            let (tx, rx) = mpsc::channel();
+            *decision.lock().map_err(|_| "internal error".to_string())? = Some((id.clone(), tx));
+            let shown =
+                events.send(AgentEvent::Approval { id: id.clone(), summary: req.summary(), runner: "gateway".into() });
+            let t = Instant::now();
+            let allowed = shown.is_ok()
+                && loop {
+                    match rx.recv_timeout(Duration::from_millis(400)) {
+                        Ok(a) => break a,
+                        Err(RecvTimeoutError::Timeout)
+                            if !stop_run.load(Ordering::SeqCst) && t.elapsed() < DECIDE_WAIT => {}
+                        Err(_) => break false,
+                    }
+                };
+            if let Ok(mut d) = decision.lock() {
+                *d = None;
+            }
+            if !allowed {
+                audit("run", "declined");
+                return Err("the user declined this run".into());
+            }
+            audit("run", "allowed");
+            let _busy = RunBusy::take(&sync_busy)?;
+            let r = runner::gateway_run(run_client, run_ws, pid, req, &mut |_| {}).map_err(|e| e.message())?;
+            let _ = events.send(AgentEvent::Run { id, result: r.clone() });
+            Ok(r)
+        };
+        let has_runner = run_target.is_some();
+        let r = agent::run_turn(
+            &ws,
+            &mut pending,
+            &messages,
+            &mut step,
+            if has_runner { Some(&mut run) } else { None },
+            &mut |e| !stop.load(Ordering::SeqCst) && on_event.send(e).is_ok(),
+        );
         (r, pending)
     })
     .await;
@@ -139,4 +204,22 @@ pub fn change_reject(state: State<AppState>, rel: String) -> Result<(), String> 
         audit("change", "rejected");
     }
     Ok(())
+}
+
+/// The person's answer to a run the assistant asked for: `allow` true runs it, false declines it.
+///
+/// Security: only the waiting request's own random id is answered; a stale or guessed id changes nothing (CWE-639).
+#[tauri::command]
+pub fn agent_decide(state: State<AppState>, id: String, allow: bool) -> Result<(), String> {
+    let mut d = state.run_decision.lock().map_err(|_| "internal error".to_string())?;
+    match d.take() {
+        Some((waiting, tx)) if waiting == id => {
+            let _ = tx.send(allow);
+            Ok(())
+        }
+        other => {
+            *d = other;
+            Err("that run request is no longer waiting".into())
+        }
+    }
 }

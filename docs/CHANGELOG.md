@@ -2,6 +2,27 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-17 - Phase I5b: Run and test on the gateway sandbox
+
+Requested by Pheonix (I5 order chosen 2026-11-17: gateway sandbox first, then a local OS sandbox ported from
+TandemForge, then Docker/Podman).
+
+### Added
+- **Run and test** view: run the project's tests (cargo, go, make, npm, pytest, unittest) or one program (argument
+  list, no shell) in the linked project's gateway sandbox; verdict, test counts, failing tests and output as text.
+  Local sandbox and container are listed as coming next.
+- Agent chat **Runs** switch (off by default): the assistant may ask for `run_tests` or `run_command`; each request
+  shows an approval card and runs only after **Allow run**.
+- Core module `runner` (`check`, `split_words`, `gateway_run`, `RunResult`); agent run tools behind a runner seam
+  (`RunFn`), `tool_defs_for`, `system_prompt`; `Client::api_slow` (long calls).
+- Shell commands `run_start` and `agent_decide`; `agent_send` takes `runs`.
+- `core/examples/live_runs.rs` and `scripts/live_gateway_e2e.py --example`.
+- Tests: core 64 -> 68 (incl. run tools through the runner only), UI smoke 64 -> 75, live gateway runs 13/13.
+- Docs: `features/run-and-test.md`; `commands/live-gateway-e2e.md` updated.
+
+### Changed
+- The shared push flag (`sync_busy`) also covers runs, so a send, pull or run happen one at a time.
+
 ## 2026-11-17 - Installers and signed releases
 
 Requested by Pheonix (thread "Ship signed installers and releases"). No Authenticode yet (Pheonix's choice); cosign-signed

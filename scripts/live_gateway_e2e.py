@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Live check of the IDE's phase I4 (missions) against a real P2P-AI gateway, node and sandbox.
+"""Live check of the IDE's phases I4 (missions) and I5b (run and test) against a real P2P-AI gateway, node and sandbox.
 
 Purpose: the core and UI tests use fakes. This script runs the real parts of a P2P-AI checkout on 127.0.0.1 and
 then the IDE core's `live_missions` example against them, the way the Missions view does:
@@ -11,9 +11,11 @@ then the IDE core's `live_missions` example against them, the way the Missions v
 
 The scripted model plans one task, then reads src/calc.py and writes the fix; the gateway's Autopilot runs the
 unittest check in the sandbox. Checks are printed by the example (see core/examples/live_missions.rs); this
-script adds one: the project's .env value is in no file the gateway stored.
+script adds one: the project's .env value is in no file the gateway stored. With `--example live_runs` (phase
+I5b) the example runs tests and commands through the gateway's sandbox tools instead (core/examples/live_runs.rs).
 
-Usage: python3 scripts/live_gateway_e2e.py --p2p-ai PATH [--bin-dir DIR] [--image NAME] [--keep]
+Usage: python3 scripts/live_gateway_e2e.py --p2p-ai PATH [--example live_missions|live_runs] [--bin-dir DIR]
+       [--image NAME] [--keep]
 Inputs: a P2P-AI checkout (its Go gateway and node, deploy/mock_ollama.py and scripts/shell_session_stack_e2e.py
 helpers); with --bin-dir, prebuilt `gateway` and `p2pnode` binaries; the sandbox image (built beforehand with
 `docker build -f deploy/Dockerfile.sandbox -t p2p-ai/sandbox:dev .` in the P2P-AI checkout).
@@ -94,6 +96,8 @@ def main() -> int:
     ap.add_argument("--p2p-ai", required=True, help="path of a P2P-AI checkout")
     ap.add_argument("--bin-dir", help="folder with prebuilt `gateway` and `p2pnode` (default: go build them)")
     ap.add_argument("--image", default="p2p-ai/sandbox:dev", help="runner image (default p2p-ai/sandbox:dev)")
+    ap.add_argument("--example", default="live_missions", choices=["live_missions", "live_runs"],
+                    help="IDE core example to run: live_missions (phase I4) or live_runs (phase I5b run and test)")
     ap.add_argument("--keep", action="store_true", help="keep the work folder, logs and the runner container")
     args = ap.parse_args()
     p2p = Path(args.p2p_ai).resolve()
@@ -109,10 +113,11 @@ def main() -> int:
         print("Node.js is required (workspace tool host)", file=sys.stderr)
         return 2
     # Build the example first, so its build time does not count against the mission.
-    r = subprocess.run(["cargo", "build", "--quiet", "--locked", "--example", "live_missions"], cwd=IDE / "core")
+    # SECURITY: the example name comes from a fixed choice list (argparse), never from free text (CWE-88).
+    r = subprocess.run(["cargo", "build", "--quiet", "--locked", "--example", args.example], cwd=IDE / "core")
     if r.returncode != 0:
         return 2
-    example = IDE / "core" / "target" / "debug" / "examples" / "live_missions"
+    example = IDE / "core" / "target" / "debug" / "examples" / args.example
 
     work = Path(tempfile.mkdtemp(prefix="ide-live-e2e-"))  # SECURITY: 0700, unique (CWE-377)
     name = f"p2p-ide-live-e2e-{os.getpid()}"

@@ -1,0 +1,62 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "e6e7d24a3698745d28f115a9f028895ec8414771c5465715bd2f57f313e24a6f",
+   "size": 1855
+  },
+  "artifacts/ide5b-build.cmd": {
+   "sha256": "9dd82b76f0b58e10d8e21fe1176df0d622ab3afe8dd165dce6b48a3448a2f0b9",
+   "size": 1668
+  },
+  "command.txt": {
+   "sha256": "e234290cf34dca95cc3d101543ff6bcf333adc848ae8b1b29f9b06c23224b387",
+   "size": 59
+  },
+  "environment.md": {
+   "sha256": "803426688c2199d10f5a7613e6970ff46b1323c1f79fb615029369d3aab88d4e",
+   "size": 128
+  },
+  "logs/ide5b.txt": {
+   "sha256": "c22c1ccb3bb7ff5e0e67e068833fb9c5b7664f98b8b10e8bfe96ac298ce31513",
+   "size": 39353
+  },
+  "results/summary.txt": {
+   "sha256": "e7ada69821d5134a6033bff331b2dd6653bf23f72d84fec916e5823f06b59fa9",
+   "size": 243
+  }
+ },
+ "previous": {
+  "manifest_sha256": "8bbd15d0b01e15ec0b519eb9b61f0d9b85d15cb8575e28cf085e5054c9e9e281",
+  "run_id": "2026-11-17_125953Z_live-gateway_618354d"
+ },
+ "run": {
+  "area": "windows",
+  "branch_or_pr": "PR #9",
+  "collected_utc": "2026-11-17T13:10:03Z",
+  "commit": "391278c",
+  "count_unit": "",
+  "date_utc": "2026-11-17T13:01:13Z",
+  "dirty": false,
+  "duration_s": null,
+  "exit_code": null,
+  "failed": 0,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_130113Z_windows_391278c",
+  "kind": "build",
+  "machine": "pc",
+  "passed": 66,
+  "record": "imported",
+  "redactions": {},
+  "requested_by": "",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Windows build and tests of phase I5b (Run and test) at 391278c",
+  "verdict": "pass",
+  "verdict_reason": "All steps passed on Windows."
+ },
+ "schema": 1
+}

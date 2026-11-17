@@ -132,19 +132,29 @@ impl Client {
     ///
     /// Security: path prefix and characters are checked so a value cannot add a host or query (CWE-918, CWE-74).
     pub fn api(&self, method: &str, path: &str, body: Option<&Value>) -> Result<Value, NetError> {
+        self.api_on(&self.short, method, path, body)
+    }
+
+    /// As [`Client::api`], with the long timeout (10 minutes) for calls that run work, such as a sandbox command
+    /// (phase I5). Same path, size and error rules.
+    pub fn api_slow(&self, method: &str, path: &str, body: Option<&Value>) -> Result<Value, NetError> {
+        self.api_on(&self.long, method, path, body)
+    }
+
+    fn api_on(&self, agent: &ureq::Agent, method: &str, path: &str, body: Option<&Value>) -> Result<Value, NetError> {
         if !path.starts_with("/v1/") || path.contains("..") || path.chars().any(|c| c.is_control() || c == '#') {
             return Err(NetError::BadRequest("internal: bad gateway path"));
         }
         let url = format!("{}{}", self.base, path);
         let resp = match (method, body) {
-            ("GET", None) => self.short.get(&url).header("Authorization", self.auth()).call(),
-            ("DELETE", None) => self.short.delete(&url).header("Authorization", self.auth()).call(),
+            ("GET", None) => agent.get(&url).header("Authorization", self.auth()).call(),
+            ("DELETE", None) => agent.delete(&url).header("Authorization", self.auth()).call(),
             ("POST" | "PUT", b) => {
                 let text = b.map(Value::to_string).unwrap_or_else(|| "{}".into());
                 if text.len() > MAX_JSON_BODY {
                     return Err(NetError::BadRequest("the request is too large"));
                 }
-                let req = if method == "POST" { self.short.post(&url) } else { self.short.put(&url) };
+                let req = if method == "POST" { agent.post(&url) } else { agent.put(&url) };
                 req.header("Authorization", self.auth())
                     .header("Content-Type", "application/json")
                     .send(text.as_bytes())
