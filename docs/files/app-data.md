@@ -58,6 +58,30 @@ Empty or missing by default: the IDE ships with no directory and fetches nothing
 Re-checked on every load; a bad entry refuses the whole file. Change it in the Gateways view. Each entry was added by
 the person; record who requested a directory and when if the list is managed for others.
 
+## links.json
+
+Which gateway project belongs to an open folder (phase I4, [features/missions.md](../features/missions.md)). Written
+when the person picks or creates a project in the Missions view; missing means no links.
+
+```json
+{
+  "links": [
+    { "folder": "9b1c0e5d2f4a6b7c8d9e0f1a2b3c4d5e", "gateway_id": "3f2a9c0d1e4b5a67",
+      "project_id": "prj_example", "project_name": "shop-api" }
+  ]
+}
+```
+
+| Key | Type | Allowed values | Security impact |
+|---|---|---|---|
+| `links[].folder` | string | 32 hex: the first half of the SHA-256 of the folder's path | the folder path itself is not stored (CWE-359) |
+| `links[].gateway_id` | string | an allow-listed id | which saved gateway the link is for |
+| `links[].project_id` | string | an allow-listed id (letters, digits, `_`, `-`) | used in `/v1/projects/{id}/...` paths; the allow-list keeps it to one path segment (CWE-20, CWE-918) |
+| `links[].project_name` | string | up to 128 chars, control characters removed | display only |
+
+Limits: 200 links (oldest dropped), file 256 KiB; unknown keys refuse the file. One folder can be linked to one
+project per gateway. Change it in the Missions view.
+
 ## chats/&lt;scope&gt;/&lt;id&gt;.json
 
 One file per chat. `scope` is the first 16 hex characters of SHA-256 of the open folder's path (so each folder has its
