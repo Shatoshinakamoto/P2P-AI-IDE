@@ -2,6 +2,23 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-17 - Workspace file access through a folder handle
+
+Part of the security to-do sweep Pheonix asked for (2026-11-17).
+
+### Security
+- Every workspace read, listing, search, byte read for project sync and save now opens through a cap-std handle on the
+  opened folder instead of checking a canonical path and then opening it. A folder swapped for a link between the two
+  can no longer redirect the IDE outside the folder. Closes the `TODO(security)` in `core/src/workspace.rs`.
+
+### Added
+- Dependency `cap-std` 4.0.3 (core).
+
+### Tests
+- Core: 66 tests (2 new: folder swapped for a link after open is refused; workspace follows its renamed folder), fmt,
+  clippy ([run](../HistoryTest/runs/2026-11-17_125223Z_core_6ebd731/RUN.md)). OSV: no advisories for the new crates ([run](../HistoryTest/runs/2026-11-17_125233Z_security-scan_6ebd731/RUN.md)).
+  The Tauri shell could not build in the cloud container (no GTK libraries; marked invalid, [run](../HistoryTest/runs/2026-11-17_125226Z_shell_6ebd731/RUN.md)); CI builds it.
+
 ## 2026-11-17 - Phase I5a: Source Control view
 
 Requested by Pheonix ("keep moving forward with the rest"; I5 order chosen 2026-11-17: gateway sandbox first, then a

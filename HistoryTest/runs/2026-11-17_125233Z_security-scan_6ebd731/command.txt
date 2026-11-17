@@ -1,0 +1,9 @@
+# run in repository folder `.`, as an argument list (no shell)
+python3 -I -c 
+import json,urllib.request
+q=open('/tmp/claude-0/osvin/osv_q.json','rb').read()
+r=json.load(urllib.request.urlopen(urllib.request.Request('https://api.osv.dev/v1/querybatch',data=q,headers={'content-type':'application/json'}),timeout=30))['results']
+n=0
+for a,b in zip(json.loads(q)['queries'],r):
+  v=[x['id'] for x in b.get('vulns',[])]; n+=len(v); print(a['package']['name'],a['version'],v or 'none')
+print('total advisories:',n); raise SystemExit(1 if n else 0)

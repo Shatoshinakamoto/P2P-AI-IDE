@@ -1,0 +1,62 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "d9f4a97eb52e68592ce114c5edb11bd98e1570dd45348ae5e1ec306eb83b325a",
+   "size": 1527
+  },
+  "command.txt": {
+   "sha256": "32cab64a74124a5f0b388b3ea1a902de7f17893774ba7f66ebef48315d1314f6",
+   "size": 544
+  },
+  "environment.md": {
+   "sha256": "86793b96487fcf5084aceb2bbbd6615a9ad235c725225ed53ad836ace5b8a32e",
+   "size": 202
+  },
+  "logs/output.log": {
+   "sha256": "3b298810d373608258142d67afef4f228d61edd59d1fe8775b4c646c64dc94f5",
+   "size": 433
+  },
+  "projects/input/osv_q.json": {
+   "sha256": "81e5cee4c7c56054f5464febb9739bc3b92018b3d872c2d19ce24083096374df",
+   "size": 1525
+  },
+  "results/summary.txt": {
+   "sha256": "4a427cae05b603fd9bc2434fae5517ff6335b8457672d27523b0032793736a93",
+   "size": 293
+  }
+ },
+ "previous": {
+  "manifest_sha256": "b9cc4a1bdbb8e3d627e2e873775ee694771e764919d2d2fc706101fb3740ef32",
+  "run_id": "2026-11-17_125226Z_shell_6ebd731"
+ },
+ "run": {
+  "area": "security-scan",
+  "branch_or_pr": "claude/project-thread-1x3ij1",
+  "collected_utc": "",
+  "commit": "6ebd731048dc7e623d68f32e86579910ca485438",
+  "count_unit": "",
+  "date_utc": "2026-11-17T12:52:33Z",
+  "dirty": false,
+  "duration_s": 0.3,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_125233Z_security-scan_6ebd731",
+  "kind": "scan",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "OSV lookup of the crates cap-std adds",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

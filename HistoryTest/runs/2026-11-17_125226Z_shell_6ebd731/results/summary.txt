@@ -1,0 +1,11 @@
+id: 2026-11-17_125226Z_shell_6ebd731
+verdict: invalid
+verdict_reason: The command ended with exit code 101.
+passed: not recorded
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: 101
+duration_s: 0.7
+commit: 6ebd731048dc7e623d68f32e86579910ca485438
+machine: cloud
