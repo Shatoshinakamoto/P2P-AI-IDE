@@ -1,5 +1,6 @@
-//! main.rs -- the P2P-AI IDE's Tauri shell (phases I1-I4, docs/features/editor-shell.md,
-//! docs/features/gateways-and-chat.md, docs/features/agent-tools.md, docs/features/missions.md).
+//! main.rs -- the P2P-AI IDE's Tauri shell (phases I1-I5, docs/features/editor-shell.md,
+//! docs/features/gateways-and-chat.md, docs/features/agent-tools.md, docs/features/missions.md,
+//! docs/features/source-control.md).
 //!
 //! Purpose: opens the window and exposes typed commands to the webview: pick a workspace folder, show its name,
 //! list a folder, read a file, save a file and search (here), plus the gateway and chat commands in `net.rs`, the
@@ -25,6 +26,7 @@
 mod agent;
 mod missions;
 mod net;
+mod scm;
 
 use p2p_ide_core::{FileText, Listing, SearchResult, Workspace, WsError};
 use serde::Serialize;
@@ -49,6 +51,8 @@ struct AppState {
     pending: Mutex<p2p_ide_core::agent::Pending>,
     /// True while a push, collect or pull with the gateway project runs (phase I4; one at a time).
     sync_busy: AtomicBool,
+    /// True while a git stage, unstage or commit runs (phase I5; one at a time).
+    scm_busy: AtomicBool,
 }
 
 /// What the webview learns about the open workspace: its name only.
@@ -151,6 +155,7 @@ fn main() {
             public: Mutex::new(Vec::new()),
             pending: Mutex::new(Default::default()),
             sync_busy: AtomicBool::new(false),
+            scm_busy: AtomicBool::new(false),
         })
         .invoke_handler(tauri::generate_handler![
             pick_folder,
@@ -184,6 +189,12 @@ fn main() {
             agent::change_get,
             agent::change_accept,
             agent::change_reject,
+            scm::scm_status,
+            scm::scm_diff,
+            scm::scm_stage,
+            scm::scm_unstage,
+            scm::scm_commit,
+            scm::scm_log,
             missions::mission_project,
             missions::projects_list,
             missions::project_create,

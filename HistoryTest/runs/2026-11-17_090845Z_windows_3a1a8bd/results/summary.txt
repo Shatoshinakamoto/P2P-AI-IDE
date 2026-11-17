@@ -1,0 +1,11 @@
+id: 2026-11-17_090845Z_windows_3a1a8bd
+verdict: fail
+verdict_reason: One core test failed on Windows (test setup); fixed and re-run separately.
+passed: 54
+failed: 1
+skipped: not recorded
+count_unit: not recorded
+exit_code: not recorded
+duration_s: not recorded
+commit: 3a1a8bd
+machine: pc

@@ -201,6 +201,17 @@ impl Workspace {
         &self.root
     }
 
+    /// Checks a relative path against the same allow-list as every file call, without touching the disk (phase I5:
+    /// paths reported by git are checked before the IDE acts on them).
+    ///
+    /// Security: see `join_checked` (CWE-22, CWE-73).
+    pub fn check_rel(&self, rel: &str) -> Result<(), WsError> {
+        if rel.is_empty() {
+            return Err(WsError::BadPath);
+        }
+        self.join_checked(rel).map(|_| ())
+    }
+
     /// Checks a relative path against the allow-list and joins it to the root. Does not touch the disk.
     ///
     /// * `rel` -- `/`-separated path relative to the root; `""` means the root itself.

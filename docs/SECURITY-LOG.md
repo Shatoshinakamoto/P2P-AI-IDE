@@ -2,6 +2,23 @@
 
 Every security patch, hardening change, CVE remediation and accepted risk, newest first.
 
+## 2026-11-17 — Phase I5a hardening: running git on repositories someone else made
+- **Type:** hardening
+- **CVE / CWE / advisory:** CWE-829, CWE-94, CWE-78, CWE-88, CWE-427, CWE-526, CWE-22, CWE-400, CWE-79, CWE-209 (none: new feature)
+- **Severity:** none (new feature built with these controls). KEV no.
+- **Affected:** `core/src/scm.rs`, `core/src/workspace.rs`, `app/src-tauri/src/{scm,main}.rs`, `app/src/components/{SourceControlView,DiffReview}.tsx`
+- **What changed:** git runs from an absolute PATH entry outside the folder, with an argument list, a cleared
+  environment, `GIT_LITERAL_PATHSPECS=1`, hooks off (`core.hooksPath` to the null device, `--no-verify`),
+  `core.fsmonitor=false`, `protocol.allow=never`; repositories whose own config sets filter programs (other than
+  git-lfs), signing, includes, `core.worktree` or worktree config are refused; paths from git pass the workspace
+  allow-list; time, output and entry caps; fixed messages.
+- **Why it is secure now:** opening or committing in an untrusted repository cannot run that repository's programs
+  (CISA Secure by Design, NIST CM-7, SI-10); no network or credentials are involved (NIST AC-6).
+- **Accepted risk:** the person's global git settings and the git installation are trusted (they are the person's
+  own); documented in features/source-control.md section 6.
+- **Verification:** HistoryTest runs 2026-11-17_090743Z_core_86e1c4f (real-git test: planted hook did not run,
+  literal `*`), 2026-11-17_090746Z_ui-smoke_86e1c4f (64/64), 2026-11-17_090757Z_security-scan_86e1c4f (0 vulnerabilities).
+
 ## 2026-11-17 — Phase I4 hardening: project sync and missions with review
 - **Type:** hardening
 - **CVE / CWE / advisory:** CWE-200, CWE-538, CWE-345, CWE-494, CWE-362, CWE-367, CWE-22, CWE-73, CWE-918, CWE-93, CWE-400, CWE-79, CWE-209, CWE-532; OWASP LLM06 (none: new feature)

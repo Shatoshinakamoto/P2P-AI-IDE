@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "4ee73119c52406d6af082ffd25fea0765a4f3dd0eded7356e0ddd36ce7332063",
+   "size": 1534
+  },
+  "command.txt": {
+   "sha256": "250d2cad7b914519be8cbecfdbac24b9a92c36f82fae74b36fcd2f3e22736c56",
+   "size": 224
+  },
+  "environment.md": {
+   "sha256": "e310f20646ec9aff1fddea3dc3b36ed5595dd9a487ada094bdd2737937a29513",
+   "size": 197
+  },
+  "logs/output.log": {
+   "sha256": "f7e6e30451b646235b1b2780a77f03e1a0bfa12e950449522cfb4e2b90b10d48",
+   "size": 5572
+  },
+  "results/summary.txt": {
+   "sha256": "e3770a6b250ed9010065d790a7ae2fadaef5e7134998ac09172255a82f1e9e82",
+   "size": 252
+  }
+ },
+ "previous": {
+  "manifest_sha256": "d57ffb774f649200fea1317f01cbada35e332f64cf79838ea20a89761f529dfc",
+  "run_id": "2026-11-17_090745Z_shell_86e1c4f"
+ },
+ "run": {
+  "area": "ui-smoke",
+  "branch_or_pr": "claude/project-thread-dfop2y",
+  "collected_utc": "",
+  "commit": "86e1c4fee534e381a9b6c24709784e9b2ea2b4b4",
+  "count_unit": "packages",
+  "date_utc": "2026-11-17T09:07:46Z",
+  "dirty": false,
+  "duration_s": 10.8,
+  "exit_code": 0,
+  "failed": 0,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_090746Z_ui-smoke_86e1c4f",
+  "kind": "e2e",
+  "machine": "cloud",
+  "passed": 4,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "IDE phase I5 thread",
+  "shortened_logs": [],
+  "skipped": 0,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Webview: UI smoke with the Source Control view",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}
