@@ -2,6 +2,11 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-17 - Picomatch ReDoS logged as an accepted risk
+
+### Security
+- GHSA-fc5q-39xc-vjpf (picomatch ReDoS, CVE-2026-112366) has no fixed release; it reaches only build tooling (`vite`, `@tailwindcss/vite`), not the installers. Logged as an accepted risk in [SECURITY-LOG.md](SECURITY-LOG.md), to revisit when picomatch ships a fix. Run: [HistoryTest/runs/2026-11-17_232934Z_security-scan_64acea3](../HistoryTest/runs/2026-11-17_232934Z_security-scan_64acea3/RUN.md).
+
 ## 2026-11-17 - Third-party notices brought up to date
 
 ### Fixed

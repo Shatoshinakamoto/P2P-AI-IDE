@@ -2,6 +2,28 @@
 
 Every security patch, hardening change, CVE remediation and accepted risk, newest first.
 
+## 2026-11-17 — picomatch ReDoS in build tooling (GHSA-fc5q-39xc-vjpf), no fixed version yet
+- **Type:** accepted risk
+- **CVE / CWE / advisory:** CVE-2026-112366, GHSA-fc5q-39xc-vjpf, CWE-1333 (inefficient regular expression)
+- **Severity:** CVSS 3.1 7.5 High (`AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H`); CVSS 4.0 `AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:N`.
+  EPSS 0.00335 (27th percentile, FIRST, 2026-11-17). CISA KEV: not listed (checked 2026-11-17).
+- **Affected:** `picomatch` up to and including 4.0.7 (every published version; 4.0.7 is the newest on npm as of
+  2026-11-17). Reached only through dev dependencies in `app/` (`vite` 6 and `@tailwindcss/vite`, through `tinyglobby` and `fdir`). `npm audit --omit=dev` reports 0 vulnerabilities,
+  so nothing shipped in the installers contains it.
+- **What changed:** nothing in the code yet. There is no patched release to move to (upstream fix proposed in
+  micromatch/picomatch PR 194, not released). npm's suggested "fix" is a vite downgrade that still pulls picomatch,
+  so it was not applied.
+- **Why the risk is accepted:** the flaw is a CPU-exhaustion (availability) issue when an attacker controls a glob
+  pattern such as `+(*)`. In this repository picomatch runs only inside build and lint tools on a developer or CI
+  machine, with glob patterns written in our own config files; no user, network peer or model output supplies a
+  pattern, and none of it runs in the shipped app (NIST RA-3, RA-5; SSDF RV.2). Worst case is a slow or hung local
+  build, which the CI timeout stops.
+- **Revisit:** when picomatch publishes a release after 4.0.7, update the lock file (`npm update picomatch` or an
+  `overrides` entry) and close this entry. Review again by 2026-12-31 at the latest.
+- **Verification:** live checks on 2026-11-17: `npm view picomatch versions` (newest 4.0.7), OSV.dev record
+  GHSA-fc5q-39xc-vjpf (`last_affected: 4.0.7`), `npm audit --audit-level=high` (fails on this advisory only) and
+  `npm audit --omit=dev --audit-level=high` (0 vulnerabilities). HistoryTest run 2026-11-17_232934Z_security-scan_64acea3.
+
 ## 2026-11-17 — Phase I5d hardening: local container runner (Docker or Podman)
 - **Type:** hardening; accepted risk
 - **CVE / CWE / advisory:** none (new feature). CWE-78, CWE-88, CWE-20, CWE-200, CWE-250, CWE-269, CWE-284, CWE-400, CWE-426, CWE-494, CWE-522, CWE-526, CWE-770; NIST AC-6, SC-7, SI-7, SR-3; CIS Docker 5.3, 5.10, 5.12, 5.25, 5.28
