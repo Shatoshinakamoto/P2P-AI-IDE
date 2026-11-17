@@ -2,7 +2,6 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
-<<<<<<< HEAD
 ## 2026-11-17 - Phase I5b: Run and test on the gateway sandbox
 
 Requested by Pheonix (I5 order chosen 2026-11-17: gateway sandbox first, then a local OS sandbox ported from
@@ -23,7 +22,7 @@ TandemForge, then Docker/Podman).
 
 ### Changed
 - The shared push flag (`sync_busy`) also covers runs, so a send, pull or run happen one at a time.
-=======
+
 ## 2026-11-17 - Installers and signed releases
 
 Requested by Pheonix (thread "Ship signed installers and releases"). No Authenticode yet (Pheonix's choice); cosign-signed
@@ -56,7 +55,6 @@ Part of the security to-do sweep Pheonix asked for (2026-11-17).
 - Core: 66 tests (2 new: folder swapped for a link after open is refused; workspace follows its renamed folder), fmt,
   clippy ([run](../HistoryTest/runs/2026-11-17_125223Z_core_6ebd731/RUN.md)). OSV: no advisories for the new crates ([run](../HistoryTest/runs/2026-11-17_125233Z_security-scan_6ebd731/RUN.md)).
   The Tauri shell could not build in the cloud container (no GTK libraries; marked invalid, [run](../HistoryTest/runs/2026-11-17_125226Z_shell_6ebd731/RUN.md)); CI builds it.
->>>>>>> origin/main
 
 ## 2026-11-17 - Phase I5a: Source Control view
 
