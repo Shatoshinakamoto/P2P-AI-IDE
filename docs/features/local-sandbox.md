@@ -91,7 +91,9 @@ sequenceDiagram
   Files folders) and what is granted to its own SID. The IDE grants **modify** on the job folder and on the folder's
   cache, and **read and execute** on the toolchain group the program comes from (`.cargo\bin` with `.rustup`,
   `.cargo\registry` and `.cargo\git`; `go\bin` with `go\pkg\mod`; `.bun\bin`; `.deno\bin`) and on the program's
-  own folder when it is not a system or toolchain folder (for example a Python installed for one user). Never the
+  own folder when it is not the Windows folder or a toolchain folder (for example a Python installed for one
+  user). A Program Files folder is readable only when its installer allowed app containers (Go's does, Node.js's
+  does not); the IDE tries the grant there and goes on without it when the person has no right to change it. Never the
   home folder itself or a drive root. Grants outside the IDE's data folder are written to `run-grants.json` before
   they are made and removed when the run ends, or at the next run after a crash.
 * **Processes.** One job object per run: kill on close, at most 1024 processes, 8 GiB for the whole job, CPU time
@@ -99,7 +101,7 @@ sequenceDiagram
   settings, exit Windows, other programs' windows). At the end, or at the time limit, the whole job is terminated.
   No window opens (a hidden console shared by the job's programs).
 * **Programs.** `.exe` files only, found on PATH by name (`.bat`, `.cmd` and scripts are refused). `npm` is started
-  as `node.exe ...\node_modules\npm\bin\npm-cli.js`; `python3` falls back to `python.exe`; the Microsoft Store's
+  as `node.exe ...\node_modules\npm\bin\npm-cli.js`; `python3` means `python.exe` first (the python.org name); the Microsoft Store's
   app aliases (`WindowsApps`) are skipped.
 * **Environment.** Built from scratch: the Windows folder variables (`SystemRoot`, `ComSpec`, `PATHEXT`, the
   Program Files folders, `ProgramData`, `LOCALAPPDATA`, which Windows requires to start an app container), `PATH`,
@@ -203,6 +205,7 @@ downloaded. `icacls.exe` from the Windows system folder (never looked up on PATH
 | "the Windows sandbox (AppContainer) could not be started here" | Windows older than 10 version 1703, or app containers are blocked by policy; use the gateway sandbox |
 | "only .exe programs can be started on Windows" | `.bat`, `.cmd` and scripts are refused; run the interpreter instead, for example `node script.js` |
 | "a folder could not be shared with the sandbox" | `icacls` could not add the grant (for example a folder on a drive without permissions, such as FAT32 or exFAT); move the toolchain or the IDE's data to an NTFS drive |
+| Windows: npm or node fails with `MODULE_NOT_FOUND` (or another program cannot read its own files) | the program lives in a Program Files folder whose installer did not allow app containers (Node.js does this), and without admin rights the IDE cannot add the grant. An administrator can allow every app container to read that folder once: `icacls "C:\Program Files\nodejs" /grant "*S-1-15-2-1:(OI)(CI)(RX)"` (S-1-15-2-1 is ALL APPLICATION PACKAGES, read and execute only); or install Node.js for one user (nvm, Volta, or the zip in a folder of your own), which the IDE can share itself |
 | "the program's folder cannot be shared with the sandbox" | the program lies directly in the home folder or a drive root; install it in its own folder |
 | "the program was not found on this computer" | install it, or put its folder on PATH (a toolchain folder or a system folder) |
 | "give the program by name ..." | type `python3`, not `/usr/bin/python3` |

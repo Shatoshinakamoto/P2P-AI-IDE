@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "e01f4d39cc2b14f6e4a4056d35b96340dc57fc97ee11deb310b6cf5af03b918f",
+   "size": 2490
+  },
+  "command.txt": {
+   "sha256": "5fc7724a26ddaeee6b612d5109ebcd8fd1389a575b1628dc5826aecc335f635d",
+   "size": 58
+  },
+  "environment.md": {
+   "sha256": "91fa7a62e6dc143e0207a36e0e8bb87db9c258892886e0b8db00fb06c74e8daa",
+   "size": 136
+  },
+  "logs/ide5w-1.txt": {
+   "sha256": "86500c0a11262443bbc0eda1fffb8a809ad4807797e8d67a8a799aee13240c76",
+   "size": 7253
+  },
+  "results/summary.txt": {
+   "sha256": "844fff0d6ecf3512c341c5213c034ebf69a963b4fb0f5a87e97ad23888ded948",
+   "size": 224
+  }
+ },
+ "previous": {
+  "manifest_sha256": "ef7f1a13e4dce96ceaa87786f0c32bd54b58033ff1fb100bb1da841e21aad240",
+  "run_id": "2026-11-17_132300Z_windows_a8b439e"
+ },
+ "run": {
+  "area": "windows-sandbox",
+  "branch_or_pr": "claude/project-thread-dfop2y",
+  "collected_utc": "2026-11-17T13:42:34Z",
+  "commit": "5b8a053",
+  "count_unit": "",
+  "date_utc": "2026-11-17T13:34:00Z",
+  "dirty": false,
+  "duration_s": null,
+  "exit_code": null,
+  "failed": 4,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_133400Z_windows-sandbox_5b8a053",
+  "kind": "integration",
+  "machine": "pc",
+  "passed": 66,
+  "record": "imported",
+  "redactions": {},
+  "requested_by": "claude",
+  "shortened_logs": [],
+  "skipped": 1,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "First real run of the Windows local sandbox (AppContainer) on the PC at 5b8a053",
+  "verdict": "fail",
+  "verdict_reason": ""
+ },
+ "schema": 1
+}
