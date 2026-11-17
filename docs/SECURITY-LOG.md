@@ -19,7 +19,11 @@ Every security patch, hardening change, CVE remediation and accepted risk, newes
 - **Accepted risk:** a container shares the host kernel; a kernel or engine escape is out of scope (rootless Podman
   recommended). The Rust image's packages are not pinned one by one (`dnf install rust-toolset`); the base is.
   Image contents are Red Hat's and were not scanned here (`trivy image <ref>` recommended).
-- **Verification:** VERIFY_PLACEHOLDER
+- **Verification:** HistoryTest runs 2026-11-17_140846Z_windows-containers_8bba2b4 (PC,
+  Docker Desktop: 12/12 real container checks incl. the Rust image build, core tests pass),
+  2026-11-17_140706Z_local-containers_104f232 (cloud Docker: 11 passed, Rust skipped for lack of network),
+  2026-11-17_140653Z_core_104f232 (unit tests incl. the forbidden-flag check), 2026-11-17_140753Z_security-scan_104f232
+  (0 vulnerabilities).
 
 ## 2026-11-17 — Phase I5c hardening: Windows local sandbox (AppContainer and job object)
 - **Type:** hardening; accepted risk

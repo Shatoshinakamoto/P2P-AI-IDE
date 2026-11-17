@@ -1,6 +1,6 @@
 # Local container runner: Docker or Podman (phase I5d)
 
-* **Status:** built 2026-11-17 after phase I5c was merged (PRs #10 and #11). Requested by Pheonix on 2026-11-17:
+* **Status:** built and tested 2026-11-17 (Linux Docker in the cloud, Windows Docker Desktop on the PC) after phase I5c was merged (PRs #10 and #11). Requested by Pheonix on 2026-11-17:
   "include support for local container like docker or podman". Images follow the recommended option on the
   2026-11-17 decision card ("Red Hat UBI per framework"); if Pheonix picks another option, only the image list in
   `core/src/container.rs` changes.
@@ -95,7 +95,7 @@ Writing code to these standards does not make the IDE "CIS-compliant"; formal co
 
 No new crates. The Docker or Podman command line, installed by the person. Images: Red Hat UBI 9 (Python 3.12,
 Node.js 22, Go toolset, UBI base for Rust), pinned by digest on 2026-11-17. cargo audit and npm audit on 2026-11-17
-(runs linked below). Image contents are Red Hat's; check them with `podman image scan`-style tools (for example
+(0 vulnerabilities, run linked in section 8). Image contents are Red Hat's; check them with an image scanner (for example
 `trivy image <ref>`) before relying on them.
 
 ## 6. Limitations and known risks
@@ -128,4 +128,12 @@ Node.js 22, Go toolset, UBI base for Rust), pinned by digest on 2026-11-17. carg
 
 ## 8. Test evidence
 
-Links are added with the runs of this change.
+| Run | Where | Result |
+|---|---|---|
+| [2026-11-17_140846Z_windows-containers_8bba2b4](../../HistoryTest/runs/2026-11-17_140846Z_windows-containers_8bba2b4/RUN.md) | PC, Docker Desktop 29.9.2 | pass: core 67 + 5 + 2; Get image for all four (Rust built); 12/12 container checks |
+| [2026-11-17_140706Z_local-containers_104f232](../../HistoryTest/runs/2026-11-17_140706Z_local-containers_104f232/RUN.md) | cloud, Docker | pass: 11 passed, Rust skipped (no network for the build here) |
+| [2026-11-17_140653Z_core_104f232](../../HistoryTest/runs/2026-11-17_140653Z_core_104f232/RUN.md) | cloud | pass: fmt, clippy, unit tests (locked-down arguments, pinned images) |
+| [2026-11-17_140741Z_windows-cross_104f232](../../HistoryTest/runs/2026-11-17_140741Z_windows-cross_104f232/RUN.md) | cloud | pass: clippy for the Windows target |
+| [2026-11-17_140739Z_shell_104f232](../../HistoryTest/runs/2026-11-17_140739Z_shell_104f232/RUN.md) | cloud | pass: Tauri shell fmt and clippy |
+| [2026-11-17_140743Z_ui-smoke_104f232](../../HistoryTest/runs/2026-11-17_140743Z_ui-smoke_104f232/RUN.md) | cloud | pass: UI smoke 81/81 (runner list, Get image, image sent with the run) |
+| [2026-11-17_140753Z_security-scan_104f232](../../HistoryTest/runs/2026-11-17_140753Z_security-scan_104f232/RUN.md) | cloud | pass: cargo audit and npm audit, 0 vulnerabilities |

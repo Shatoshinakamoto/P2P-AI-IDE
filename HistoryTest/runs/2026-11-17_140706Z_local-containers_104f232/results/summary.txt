@@ -1,0 +1,11 @@
+id: 2026-11-17_140706Z_local-containers_104f232
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: not recorded
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: 0
+duration_s: 20.9
+commit: 104f2326c1f5a31d5131c19955fc2aa2a97cbc27
+machine: cloud

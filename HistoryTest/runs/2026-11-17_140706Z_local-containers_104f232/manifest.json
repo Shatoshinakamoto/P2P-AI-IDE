@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "74aa6ee4295d481c705e98c2cc1a5cbce3494a62e670d5a17036e9b03281463c",
+   "size": 1540
+  },
+  "command.txt": {
+   "sha256": "7404f8985d6c8fdbf030e4a4231455c51189091893755a1220151fcac0378973",
+   "size": 133
+  },
+  "environment.md": {
+   "sha256": "9dba3fd2ab02f4a81af98712522c42e83855314348a7fb867898fefce81e6097",
+   "size": 205
+  },
+  "logs/output.log": {
+   "sha256": "8199c386be31c17d946ab4b49142418de7ea1dc4e8bf5911c3ae029bfbc801c0",
+   "size": 741
+  },
+  "results/summary.txt": {
+   "sha256": "ef8424f77fa6c5c6be777987381e82c80c4faa27978fd5f54fc078676faaf4f6",
+   "size": 297
+  }
+ },
+ "previous": {
+  "manifest_sha256": "ee305c64dad5e655248813e5d9a0a3087cde704626db8196465d11fc3fac837c",
+  "run_id": "2026-11-17_140653Z_core_104f232"
+ },
+ "run": {
+  "area": "local-containers",
+  "branch_or_pr": "claude/project-thread-dfop2y",
+  "collected_utc": "",
+  "commit": "104f2326c1f5a31d5131c19955fc2aa2a97cbc27",
+  "count_unit": "",
+  "date_utc": "2026-11-17T14:07:06Z",
+  "dirty": false,
+  "duration_s": 20.9,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_140706Z_local-containers_104f232",
+  "kind": "integration",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "ide-i5d",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Real Docker container runs (I5d)",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

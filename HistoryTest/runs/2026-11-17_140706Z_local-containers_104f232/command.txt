@@ -1,0 +1,2 @@
+# run in repository folder `core`, as an argument list (no shell)
+cargo run --locked --quiet --example local_containers -- --prepare

@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "6400e9c8b8719718f94e587776d42b6d6c9a4bbc36c52bc45b5d9e74615c6793",
+   "size": 1397
+  },
+  "command.txt": {
+   "sha256": "9e2f09528986feb8a776df515985371d750cc84350566468e622bc63fb539951",
+   "size": 169
+  },
+  "environment.md": {
+   "sha256": "eac131043aeb06bbe70d4f8e1667fde101e83f18e8252bf2ce2751aa1be25897",
+   "size": 193
+  },
+  "logs/output.log": {
+   "sha256": "30f01d82998592d9b6fb80091a723bca329426e9eb6efc1995868af6d0453a83",
+   "size": 5943
+  },
+  "results/summary.txt": {
+   "sha256": "ef0fadc05155ba7a96178e33cf2d757b74b0d5d73b870b3cffa3fe35d4215f58",
+   "size": 285
+  }
+ },
+ "previous": {
+  "manifest_sha256": "b21eb8c9c410d362f86330686458fbf2747ca10f7c63a0b0e9ecaea887234e90",
+  "run_id": "2026-11-17_134717Z_security-scan_dbbc5cd"
+ },
+ "run": {
+  "area": "core",
+  "branch_or_pr": "claude/project-thread-dfop2y",
+  "collected_utc": "",
+  "commit": "104f2326c1f5a31d5131c19955fc2aa2a97cbc27",
+  "count_unit": "",
+  "date_utc": "2026-11-17T14:06:53Z",
+  "dirty": false,
+  "duration_s": 12.8,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_140653Z_core_104f232",
+  "kind": "unit",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "ide-i5d",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Core fmt, clippy and tests (I5d)",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}
