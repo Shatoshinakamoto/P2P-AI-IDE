@@ -3,19 +3,23 @@
  * framework, or one program with its arguments, in a sandbox, and read the result (exit code, test counts, failing
  * tests, output).
  *
- * Phase I5b runs on the active gateway's sandbox (the folder is sent to the linked project first, as in Missions).
- * The local OS sandbox (I5c) and a Docker or Podman container (I5d) are listed but not offered until they are built.
+ * Runners: the active gateway's sandbox (I5b; the folder is sent to the linked project first, as in Missions) and
+ * the local OS sandbox on this computer (I5c; a copy of the folder, no network, Landlock and seccomp on Linux). A
+ * Docker or Podman container (I5d) is listed but not offered until it is built. The choice is shared with the chat.
  *
  * Trust boundary: everything a run prints is untrusted program output. It is rendered by React as text in <pre>
  * blocks, never as HTML or links (CWE-79). The command is split into words here and checked again in the Rust core;
  * there is no shell, so `;`, `|` or `$()` are just text for the program (CWE-78).
  * Dependencies: React, lucide-react icons.
  */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Play } from "lucide-react";
-import { FRAMEWORKS, runStart, splitWords, type RunResult } from "../ipc.ts";
+import { FRAMEWORKS, runnersList, runStart, splitWords, type RunnerView, type RunResult } from "../ipc.ts";
 
 interface Props {
+  /** The runner in use (shared with the chat's runs). */
+  runner: string;
+  onRunner: (r: string) => void;
   onNotice: (m: string) => void;
   /** Opens the Missions view, where the folder is linked to a gateway project. */
   onOpenMissions: () => void;
@@ -23,13 +27,24 @@ interface Props {
 
 /** Words for the stages a gateway run goes through. */
 const STAGES: Record<string, string> = {
+  copying_local: "Copying the folder into the sandbox…",
   sending: "Sending changed files to the project…",
   copying: "Waiting for the node's copy to be up to date…",
   running: "Running in the sandbox…",
 };
 
-export function RunView({ onNotice, onOpenMissions }: Props) {
-  const [runner, setRunner] = useState("gateway");
+/** Labels for the runners. */
+const LABELS: Record<string, string> = {
+  gateway: "Gateway sandbox (no network, changes not kept)",
+  "local-os": "Local sandbox on this computer (no network, changes not kept)",
+  container: "Local container, Docker or Podman",
+};
+
+export function RunView({ runner, onRunner: setRunner, onNotice, onOpenMissions }: Props) {
+  const [runners, setRunners] = useState<RunnerView[]>([]);
+  // Which runners work now (the gateway needs a linked folder; the local sandbox needs Landlock and namespaces).
+  const refresh = () => { runnersList().then(setRunners).catch((e) => onNotice((e as Error).message)); };
+  useEffect(refresh, [onNotice]);
   const [kind, setKind] = useState<"tests" | "command">("tests");
   const [framework, setFramework] = useState<string>("pytest");
   const [line, setLine] = useState("");
@@ -50,7 +65,7 @@ export function RunView({ onNotice, onOpenMissions }: Props) {
       const input = kind === "tests"
         ? { kind, framework, cwd, timeout_s: timeout }
         : { kind, argv, cwd, timeout_s: timeout };
-      setResult(await runStart(runner, input, setStage));
+      setResult(await runStart(runner, input, (st) => setStage(runner === "local-os" && st === "copying" ? "copying_local" : st)));
     } catch (e) {
       const m = (e as Error).message;
       setError(m);
@@ -66,15 +81,23 @@ export function RunView({ onNotice, onOpenMissions }: Props) {
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-auto px-3 pb-4">
       <label htmlFor="run-runner" className="text-xs text-ide-dim">Where to run</label>
-      <select id="run-runner" value={runner} onChange={(e) => setRunner(e.target.value)} className="rounded border border-ide-line bg-ide-bg px-1 py-1 text-ide-bright">
-        <option value="gateway">Gateway sandbox (no network, changes not kept)</option>
-        <option value="local-os" disabled>Local sandbox on this computer (coming next)</option>
-        <option value="container" disabled>Local container, Docker or Podman (coming next)</option>
+      <select id="run-runner" value={runner} onFocus={refresh} onChange={(e) => setRunner(e.target.value)} className="rounded border border-ide-line bg-ide-bg px-1 py-1 text-ide-bright">
+        {(runners.length ? runners : [{ id: "gateway", available: true, reason: "" }]).map((r) => (
+          <option key={r.id} value={r.id} disabled={!r.available && r.id !== runner}>
+            {LABELS[r.id] ?? r.id}{r.available ? "" : ` (${r.reason})`}
+          </option>
+        ))}
       </select>
-      <p className="text-xs text-ide-dim">
-        The gateway sandbox runs on a node of the linked project, on the files as they are on disk. Secrets such as .env and keys are never sent.{" "}
-        <button type="button" onClick={onOpenMissions} className="underline">Link the folder in Missions</button>
-      </p>
+      {runner === "local-os" ? (
+        <p className="text-xs text-ide-dim">
+          Runs on a copy of the folder on this computer: no network, your home folder hidden except toolchains (read only), and its changes are not kept. Secrets such as .env and keys are not copied.
+        </p>
+      ) : (
+        <p className="text-xs text-ide-dim">
+          The gateway sandbox runs on a node of the linked project, on the files as they are on disk. Secrets such as .env and keys are never sent.{" "}
+          <button type="button" onClick={onOpenMissions} className="underline">Link the folder in Missions</button>
+        </p>
+      )}
 
       <fieldset className="flex gap-3" aria-label="What to run">
         <label className="flex items-center gap-1"><input type="radio" name="run-kind" checked={kind === "tests"} onChange={() => setKind("tests")} />Tests</label>

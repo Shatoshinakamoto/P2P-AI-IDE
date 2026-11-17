@@ -15,10 +15,12 @@ pub mod client;
 pub mod discovery;
 pub mod gateways;
 pub mod gwapi;
+pub mod localbox;
 pub mod projects;
 pub mod runner;
 pub mod scm;
 pub mod store;
+pub mod testparse;
 pub mod workspace;
 
 pub use workspace::{Entry, EntryKind, FileText, Listing, Match, SearchResult, Workspace, WsError};

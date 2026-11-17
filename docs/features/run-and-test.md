@@ -22,8 +22,10 @@ and shows the result:
 * **Command:** type a program and its arguments, such as `python3 -m pytest -q`. There is no shell: words are split
   on spaces, `"quotes"` keep spaces in one word, and `;`, `|`, `$HOME` or `*` reach the program as plain text.
 * **Where to run:** the **Gateway sandbox** runs on a node of the folder's linked project (link it in Missions). It
-  has no network, its file changes are not kept, and secrets such as `.env` and keys are never sent. The local
-  sandbox and the local container are listed and marked as coming next.
+  has no network, its file changes are not kept, and secrets such as `.env` and keys are never sent. The **Local
+  sandbox on this computer** (phase I5c, Linux first, [local-sandbox.md](local-sandbox.md)) runs on a copy of the
+  folder here, with no network and the home folder hidden. The local container (I5d) is listed as coming next.
+  The list comes from `runners_list`, which says for each runner whether it can be used and, if not, why.
 
 In **Agent chat**, the **Runs** switch (off by default, next to **Tools**) lets the assistant ask to run tests or a
 command. Each request shows a yellow card with exactly what would run. Nothing runs until the person presses
@@ -115,7 +117,8 @@ React and lucide-react (already pinned). cargo audit and npm audit on 2026-11-17
 * Runs use the files on disk, not the assistant's pending changes: accept a change before asking for a run that
   should see it.
 * The gateway runs on a node of the linked project; the folder's files (minus the deny list) go to that gateway, as
-  with Missions. For runs that must stay on this computer, wait for I5c (local OS sandbox) and I5d (container).
+  with Missions. For runs that must stay on this computer, pick the local sandbox (I5c, Linux) or, later, the
+  container (I5d).
 * The sandbox image decides which tools exist (python3, node, go, cargo ...). A missing program ends with
   `start_error`.
 * A person-started run is not asked again: the click is the approval.
@@ -130,7 +133,8 @@ React and lucide-react (already pinned). cargo audit and npm audit on 2026-11-17
 | "the node's copy of the project is not ready yet; try again shortly" | no node has finished copying the project within 2 minutes; check the gateway has a node online |
 | "a send, pull or run is still going on" | wait for the other step to end |
 | "pick a test framework: ..." / "a command is a program and its arguments ..." | the request did not pass the checks |
-| "this runner is not available yet" | only the gateway sandbox exists in this version |
+| "this runner is not available yet" | the container runner (I5d) is not built yet; pick the gateway or the local sandbox |
+| Local sandbox messages | see [local-sandbox.md](local-sandbox.md) section 7 |
 | A forbidden or not-found answer from the gateway | the key needs the editor role on the project, and the gateway `GATEWAY_EXEC` |
 
 ## 8. Test evidence

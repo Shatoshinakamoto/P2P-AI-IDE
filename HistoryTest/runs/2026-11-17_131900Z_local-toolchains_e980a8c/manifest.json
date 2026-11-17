@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "f0de3f55d98118b23a3e6659722363df376540a08137c1619a1376c29cbc9853",
+   "size": 1516
+  },
+  "command.txt": {
+   "sha256": "78e277228dc5af95b2438495728e3d5631b9a5f0da89754905c5c46dc280ac11",
+   "size": 120
+  },
+  "environment.md": {
+   "sha256": "ea5ed766c65f566273d614eb2145cbff9a8f94113403135a467e00ea2e48ffad",
+   "size": 205
+  },
+  "logs/output.log": {
+   "sha256": "36e8db5ae509b34e4998d3e16dec9051976c7535fc744ec45ff764b3b604894f",
+   "size": 451
+  },
+  "results/summary.txt": {
+   "sha256": "221ff39cd5a51e04940338e0226dbbc682bfbe813c1ab5e3ffb62b0505f59ccd",
+   "size": 296
+  }
+ },
+ "previous": {
+  "manifest_sha256": "fe2382eb9aa1403a2b559661791d50e9832f4f231bc0c099237d618fbbaf5f3c",
+  "run_id": "2026-11-17_131847Z_core_e980a8c"
+ },
+ "run": {
+  "area": "local-toolchains",
+  "branch_or_pr": "claude/project-thread-dfop2y",
+  "collected_utc": "",
+  "commit": "e980a8cf5f03ba1f5b44cfb2a71ca7e88e1e3390",
+  "count_unit": "",
+  "date_utc": "2026-11-17T13:19:00Z",
+  "dirty": false,
+  "duration_s": 5.9,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_131900Z_local-toolchains_e980a8c",
+  "kind": "integration",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "claude",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Real toolchains in the local sandbox (cargo x2, go, npm, make, unittest)",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

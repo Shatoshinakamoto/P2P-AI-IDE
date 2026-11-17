@@ -201,6 +201,7 @@ fn main() {
             agent::change_reject,
             agent::agent_decide,
             run::run_start,
+            run::runners_list,
             scm::scm_status,
             scm::scm_diff,
             scm::scm_stage,

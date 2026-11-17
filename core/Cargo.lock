@@ -337,6 +337,7 @@ dependencies = [
  "cap-std",
  "ed25519-dalek",
  "getrandom",
+ "libc",
  "serde",
  "serde_json",
  "sha2",
