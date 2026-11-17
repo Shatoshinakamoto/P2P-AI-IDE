@@ -155,6 +155,7 @@ This repository started on 2026-11-17; every run since then is here.
 | 2026-11-17 06:38:23 | ui-smoke | `545bdf4` | pass | [Webview: type check, unit tests, build, UI smoke with the public gateway list](runs/2026-11-17_063823Z_ui-smoke_545bdf4/RUN.md) |
 | 2026-11-17 06:38:21 | shell | `545bdf4` | pass | [Tauri shell: fmt and clippy with the public list commands](runs/2026-11-17_063821Z_shell_545bdf4/RUN.md) |
 | 2026-11-17 06:38:19 | core | `545bdf4` | pass | [Core: fmt, clippy, tests incl. shared advert vectors (phase I2b)](runs/2026-11-17_063819Z_core_545bdf4/RUN.md) |
+| 2026-11-17 06:20:58 | branding | `ea76006` | pass | [IDE icons verified (run in the P2P-AI repository)](runs/2026-11-17_062058Z_branding_ea76006/RUN.md) |
 | 2026-11-17 06:20:16 | security-scan | `bd2763f` | pass | [cargo audit of both lockfiles after adding ureq, serde_json, keyring](runs/2026-11-17_062016Z_security-scan_bd2763f/RUN.md) |
 | 2026-11-17 06:20:08 | ui-smoke | `bd2763f` | pass | [Webview type check, unit tests, build and UI smoke (30 checks incl. gateways and chat)](runs/2026-11-17_062008Z_ui-smoke_bd2763f/RUN.md) |
 | 2026-11-17 06:20:07 | shell | `bd2763f` | pass | [Tauri shell fmt and clippy with net.rs and keyring](runs/2026-11-17_062007Z_shell_bd2763f/RUN.md) |

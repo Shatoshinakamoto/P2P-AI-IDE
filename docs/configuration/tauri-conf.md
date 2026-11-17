@@ -17,7 +17,7 @@ needs a rebuild. Schema: <https://schema.tauri.app/config/2>.
 | `app.windows[0]` | label `main`, 1400x900, min 960x600 | the label ties the window to the capability below |
 | `app.security.csp` | see below | the main XSS control (ASVS V14.4) |
 | `app.security.freezePrototype` | `false` | `true` would freeze `Object.prototype` against prototype pollution (CWE-1321), but Monaco assigns `toString` on its own objects and stops with a TypeError, leaving a blank window. Off is an accepted risk (SECURITY-LOG 2026-11-17); the UI smoke test applies the freeze whenever this is `true`, so turning it back on is tested |
-| `bundle.*` | icons, all targets | installers come later (no signing yet) |
+| `bundle.*` | icons, all targets | installers come later (no signing yet). `bundle.icon` lists `icons/32x32.png`, `128x128.png`, `128x128@2x.png`, `icon.png`, `icon.icns`, `icon.ico`: the P2P-AI logo with the purple `</>` IDE badge, built by `branding/make_icons.py --ide-root` in the P2P-AI repository (see [files/app-icons.md](../files/app-icons.md)) |
 
 CSP directives:
 

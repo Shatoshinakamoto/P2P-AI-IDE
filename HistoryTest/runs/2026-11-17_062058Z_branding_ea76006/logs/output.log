@@ -1,0 +1,31 @@
+make_icons --check: up to date
+PASS icons/32x32.png (32, 32) RGBA
+PASS 32x32.png transparent corner
+PASS icons/128x128.png (128, 128) RGBA
+PASS 128x128.png transparent corner
+PASS icons/[REDACTED:email] (256, 256) RGBA
+PASS [REDACTED:email] transparent corner
+PASS icons/icon.png (512, 512) RGBA
+PASS icon.png transparent corner
+PASS icon.ico sizes [(16, 16), (24, 24), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)]
+PASS icon.icns largest (1024, 1024)
+PASS desktop badge colour (14, 165, 233)
+PASS web icon.png 512
+PASS web apple-icon.png 180
+PASS web favicon.ico has 16x16
+PASS web badge colour
+PASS node badge colour
+PASS tray base: node badge upper-left
+PASS tray base: lower-right corner left clear for the status light
+PASS icons/32x32.png (32, 32) RGBA
+PASS 32x32.png transparent corner
+PASS icons/128x128.png (128, 128) RGBA
+PASS 128x128.png transparent corner
+PASS icons/[REDACTED:email] (256, 256) RGBA
+PASS [REDACTED:email] transparent corner
+PASS icons/icon.png (512, 512) RGBA
+PASS icon.png transparent corner
+PASS icon.ico sizes [(16, 16), (24, 24), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)]
+PASS icon.icns largest (1024, 1024)
+PASS ide badge colour (124, 58, 237)
+passed 29 failed 0

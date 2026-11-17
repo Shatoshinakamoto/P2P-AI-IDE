@@ -16,6 +16,7 @@ run_id,date_utc,area,commit,branch_or_pr,machine,verdict,passed,failed,skipped,s
 2026-11-17_062007Z_shell_bd2763f,2026-11-17T06:20:07Z,shell,bd2763f,PR#1,cloud container,pass,,,,Tauri shell fmt and clippy with net.rs and keyring
 2026-11-17_062008Z_ui-smoke_bd2763f,2026-11-17T06:20:08Z,ui-smoke,bd2763f,PR#1,cloud container,pass,4,0,0,"Webview type check, unit tests, build and UI smoke (30 checks incl. gateways and chat)"
 2026-11-17_062016Z_security-scan_bd2763f,2026-11-17T06:20:16Z,security-scan,bd2763f,PR#1,cloud container,pass,,,,"cargo audit of both lockfiles after adding ureq, serde_json, keyring"
+2026-11-17_062058Z_branding_ea76006,2026-11-17T06:20:58Z,branding,ea76006,claude/project-thread-de9owl,cloud container,pass,29,0,,IDE icons verified (run in the P2P-AI repository)
 2026-11-17_063819Z_core_545bdf4,2026-11-17T06:38:19Z,core,545bdf4,PR #1,cloud container,pass,,,,"Core: fmt, clippy, tests incl. shared advert vectors (phase I2b)"
 2026-11-17_063821Z_shell_545bdf4,2026-11-17T06:38:21Z,shell,545bdf4,PR #1,cloud container,pass,,,,Tauri shell: fmt and clippy with the public list commands
 2026-11-17_063823Z_ui-smoke_545bdf4,2026-11-17T06:38:23Z,ui-smoke,545bdf4,PR #1,cloud container,pass,4,0,0,"Webview: type check, unit tests, build, UI smoke with the public gateway list"

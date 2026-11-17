@@ -2,6 +2,14 @@
 
 Every security patch, hardening change, CVE remediation and accepted risk, newest first.
 
+## 2026-11-17 — App icons built from the official logo
+- **Type:** hardening (supply-chain hygiene for binary assets)
+- **CVE / CWE / advisory:** none. NIST SSDF PS.3, PW.6.
+- **Severity:** not scored (no vulnerability fixed). KEV no.
+- **Affected:** `app/src-tauri/icons/*`, `app/src-tauri/tauri.conf.json` (`bundle.icon`).
+- **What changed:** the icons are generated from one committed source logo by a script in the P2P-AI repository instead of placeholders; no code, CSP or capability changed.
+- **Why it is secure now:** binary assets are reproducible and reviewable (`make_icons.py --check` catches drift), and no new dependency enters this repository.
+- **Verification:** `HistoryTest/runs/2026-11-17_062058Z_branding_ea76006` (29 of 29 checks, 11 for the IDE set).
 ## 2026-11-17 — Phase I2b hardening: signed public gateway list
 - **Type:** hardening
 - **CVE / CWE / advisory:** CWE-347, CWE-345, CWE-694, CWE-918, CWE-350, CWE-601, CWE-295, CWE-294, CWE-330, CWE-79,
