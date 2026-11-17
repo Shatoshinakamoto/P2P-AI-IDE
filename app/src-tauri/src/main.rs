@@ -1,7 +1,9 @@
-//! main.rs -- the P2P-AI IDE's Tauri shell (phase I1, docs/features/editor-shell.md).
+//! main.rs -- the P2P-AI IDE's Tauri shell (phases I1-I2, docs/features/editor-shell.md,
+//! docs/features/gateways-and-chat.md).
 //!
-//! Purpose: opens the window and exposes six typed commands to the webview: pick a workspace folder, show its name,
-//! list a folder, read a file, save a file and search. All file work is done by p2p-ide-core.
+//! Purpose: opens the window and exposes typed commands to the webview: pick a workspace folder, show its name,
+//! list a folder, read a file, save a file and search (here), plus the gateway and chat commands in `net.rs`.
+//! All file and network work is done by p2p-ide-core.
 //!
 //! Trust boundaries: the webview is untrusted input to every command (it renders file contents and, later, model
 //! output). The folder itself is chosen by the person in the OS folder picker, never typed by the webview, so a
@@ -14,20 +16,28 @@
 //!     and the error kind only, never the path or file text (NIST AU-3, CWE-532, CWE-117 log injection).
 //!   * The full root path stays in Rust; the webview only learns the folder's name (CWE-200).
 //!
-//! Dependencies: tauri 2 (the app shell), tauri-plugin-dialog 2 (native folder picker), serde, p2p-ide-core.
+//! Dependencies: tauri 2 (the app shell), tauri-plugin-dialog 2 (native folder and file pickers), keyring 4 (OS
+//! keychain, net.rs), serde, p2p-ide-core.
 
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod net;
+
 use p2p_ide_core::{FileText, Listing, SearchResult, Workspace, WsError};
 use serde::Serialize;
-use std::sync::Mutex;
+use std::sync::atomic::AtomicBool;
+use std::sync::{Arc, Mutex};
 use std::time::{SystemTime, UNIX_EPOCH};
 use tauri::State;
 use tauri_plugin_dialog::DialogExt;
 
-/// The open workspace, if any. One per window in phase I1.
+/// The open workspace, if any (one per window), and the state of the chat turn that is streaming.
 struct AppState {
     workspace: Mutex<Option<Workspace>>,
+    /// True while a chat answer is coming in (one turn at a time).
+    chat_busy: AtomicBool,
+    /// Set by the Stop button; the streaming loop checks it between pieces of text.
+    chat_stop: Arc<AtomicBool>,
 }
 
 /// What the webview learns about the open workspace: its name only.
@@ -40,7 +50,7 @@ struct WorkspaceInfo {
 ///
 /// Security: `event` and `kind` are fixed strings from this file, never user input, so a line cannot be forged
 /// (CWE-117); no paths or contents are logged (CWE-532).
-fn audit(event: &'static str, kind: &'static str) {
+pub(crate) fn audit(event: &'static str, kind: &'static str) {
     let t = SystemTime::now().duration_since(UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0);
     eprintln!("{t} p2p-ide {event} {kind}");
 }
@@ -121,8 +131,35 @@ fn search(state: State<AppState>, query: String) -> Result<SearchResult, String>
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
-        .manage(AppState { workspace: Mutex::new(None) })
-        .invoke_handler(tauri::generate_handler![pick_folder, workspace_info, list_dir, read_file, write_file, search])
+        .manage(AppState {
+            workspace: Mutex::new(None),
+            chat_busy: AtomicBool::new(false),
+            chat_stop: Arc::new(AtomicBool::new(false)),
+        })
+        .invoke_handler(tauri::generate_handler![
+            pick_folder,
+            workspace_info,
+            list_dir,
+            read_file,
+            write_file,
+            search,
+            net::gateways_list,
+            net::gateway_add,
+            net::gateway_add_local,
+            net::gateway_pick_ca,
+            net::gateway_clear_ca,
+            net::gateway_set_key,
+            net::gateway_remove,
+            net::gateway_set_active,
+            net::gateway_check,
+            net::chat_send,
+            net::chat_stop,
+            net::chats_list,
+            net::chat_load,
+            net::chat_save,
+            net::chat_delete,
+            net::chats_search
+        ])
         .run(tauri::generate_context!())
         .expect("the IDE window could not start");
 }

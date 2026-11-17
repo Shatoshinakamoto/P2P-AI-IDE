@@ -8,3 +8,4 @@ app/ui-smoke.png
 .env.*
 *.pem
 *.key
+app/ui-smoke-chat.png

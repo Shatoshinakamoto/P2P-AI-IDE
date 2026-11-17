@@ -1,21 +1,23 @@
 /**
  * App.tsx -- the IDE window: title bar, activity bar, side bar, editor area and status bar (VS Code's layout).
  *
- * Purpose: phase I1 of docs/features/editor-shell.md. Opens a folder through the OS picker (in Rust), browses and
- * searches it, edits files in tabs and saves them. Chat, Missions, Gateways and Extensions are visible but arrive in
- * later phases.
+ * Purpose: phase I1 of docs/features/editor-shell.md (open a folder through the OS picker in Rust, browse, search,
+ * edit in tabs, save) and phase I2 of docs/features/gateways-and-chat.md (Gateways view, Agent chat with history,
+ * gateway chip in the status bar). Missions and Extensions are visible but arrive in later phases.
  * Security: the webview never chooses the folder path (the Rust side shows the OS picker) and never touches files
  * itself; every call goes through ipc.ts to the checked core. All text is rendered by React or Monaco as text (CWE-79).
  */
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import { Blocks, Files, FolderOpen, MessageSquare, Network, Rocket, Search } from "lucide-react";
-import { pickFolder, workspaceInfo, type WorkspaceInfo } from "./ipc.ts";
+import { gatewaysList, pickFolder, workspaceInfo, type GatewayList, type WorkspaceInfo } from "./ipc.ts";
 import { Explorer } from "./components/Explorer.tsx";
 import { SearchView } from "./components/SearchView.tsx";
 import { Editor, type EditorHandle } from "./components/Editor.tsx";
 import { StatusBar } from "./components/StatusBar.tsx";
 import { Placeholder } from "./components/Placeholder.tsx";
+import { NetworkView } from "./components/NetworkView.tsx";
+import { ChatView } from "./components/ChatView.tsx";
 import { Tip } from "./components/Tip.tsx";
 
 type View = "explorer" | "search" | "chat" | "missions" | "network" | "extensions";
@@ -35,10 +37,17 @@ export function App() {
   const [activeRel, setActiveRel] = useState<string | null>(null);
   const [cursor, setCursor] = useState({ line: 1, col: 1, language: "plaintext" });
   const [notice, setNotice] = useState("");
+  // Bumped on every folder open, so the chat starts fresh even when two folders share a name.
+  const [wsGen, setWsGen] = useState(0);
+  const [gateways, setGateways] = useState<GatewayList>({ gateways: [], active: null });
   const editor = useRef<EditorHandle>(null);
 
-  // After a webview reload the Rust side may still have a workspace open.
-  useEffect(() => { workspaceInfo().then(setWs).catch(() => undefined); }, []);
+  // After a webview reload the Rust side may still have a workspace open; saved gateways come from the core too.
+  useEffect(() => {
+    workspaceInfo().then(setWs).catch(() => undefined);
+    gatewaysList().then(setGateways).catch(() => undefined);
+  }, []);
+  const activeGateway = gateways.gateways.find((g) => g.id === gateways.active) ?? null;
 
   const onNotice = useCallback((m: string) => setNotice(m), []);
   const onCursor = useCallback((line: number, col: number, language: string) => setCursor({ line, col, language }), []);
@@ -50,6 +59,7 @@ export function App() {
       if (info) {
         editor.current?.reset();
         setWs(info);
+        setWsGen((g) => g + 1);
         setView("explorer");
         setNotice(`Opened ${info.name}`);
       }
@@ -71,11 +81,11 @@ export function App() {
       case "search":
         return ws ? <SearchView onOpenAt={(rel, line) => void editor.current?.open(rel, line)} onError={onNotice} /> : <p className="px-3 text-ide-dim">Open a folder to search it.</p>;
       case "chat":
-        return <Placeholder title="Agent chat" phase="phase I2 (chat) and I3 (tools)">Chat with a model on your gateway, with history per workspace. The agent's edits will show as diffs you accept or reject.</Placeholder>;
+        return <ChatView gateway={activeGateway} workspaceKey={String(wsGen)} onNotice={onNotice} onOpenGateways={() => setView("network")} />;
       case "missions":
         return <Placeholder title="Missions" phase="phase I4">Autopilot and Auto Improve run on the gateway on a synced copy of this folder. Auto Train stays with the gateway admin.</Placeholder>;
       case "network":
-        return <Placeholder title="Gateways" phase="phase I2">Pick a public gateway from signed directory listings, connect to a local one, or enter one by hand. Keys go in your system keychain.</Placeholder>;
+        return <NetworkView onChanged={setGateways} onNotice={onNotice} />;
       case "extensions":
         return <Placeholder title="Extensions" phase="phase I6">VS Code and VSCodium extensions from Open VSX, in folders you trust.</Placeholder>;
     }
@@ -107,7 +117,7 @@ export function App() {
               </Tip>
             ))}
           </nav>
-          <aside aria-label="Side bar" className="flex w-64 shrink-0 flex-col border-r border-ide-line bg-ide-side">
+          <aside aria-label="Side bar" className={`flex ${view === "chat" || view === "network" ? "w-96" : "w-64"} shrink-0 flex-col border-r border-ide-line bg-ide-side`}>
             <div className="px-4 py-2 text-[11px] uppercase tracking-wide text-ide-dim">{VIEWS.find((v) => v.id === view)?.label}</div>
             {ws ? (
               <div className={view === "explorer" ? "flex min-h-0 flex-1 flex-col" : "hidden"}>
@@ -118,7 +128,7 @@ export function App() {
           </aside>
           <Editor ref={editor} onActiveChange={onActive} onCursor={onCursor} onNotice={onNotice} />
         </div>
-        <StatusBar line={cursor.line} col={cursor.col} language={cursor.language} notice={notice} />
+        <StatusBar line={cursor.line} col={cursor.col} language={cursor.language} notice={notice} gateway={activeGateway} onGateway={() => setView("network")} />
       </div>
     </Tooltip.Provider>
   );

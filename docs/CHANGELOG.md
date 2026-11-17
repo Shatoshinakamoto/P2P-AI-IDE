@@ -2,6 +2,24 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-17 - Phase I2a: gateways and chat
+
+Requested by Pheonix ("keep moving forward" after phase I1).
+
+### Added
+- Gateways view: add the gateway on this computer (from its setup folder: port and CA) or one by address; key in the
+  OS keychain; active gateway; Check (latency, models); pin a CA; replace key; remove with two clicks.
+- Agent chat: model picker, streamed answers over a Tauri channel, Stop, answers shown as text with code blocks.
+- Chat history per open folder on this computer: list, reopen, search, delete with two clicks.
+- Status bar gateway chip (opens the Gateways view; INSECURE — DEV ONLY badge for a plain-http loopback gateway).
+- Core modules `gateways`, `client`, `chats`, `store`; 21 new core tests (fake gateway over loopback); UI smoke test
+  grew from 17 to 30 checks.
+- Docs: `features/gateways-and-chat.md`, `files/app-data.md`.
+
+### Security
+- New dependencies ureq 3.5.2 (rustls), serde_json, keyring 4.2.0; accepted RustSec "unmaintained" notices for
+  zbus 5's `zvariant`, `zvariant_derive`, `zbus_names` on Linux (SECURITY-LOG).
+
 ## 2026-11-17 - Phase I1: editor shell
 
 Requested by Pheonix (IDE plan, ADR-029 in the P2P-AI repository; mockup approved 2026-11-17).
