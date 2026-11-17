@@ -1,0 +1,2 @@
+# run in repository folder `app`, as an argument list (no shell)
+bash -c npm test && npm run build >/dev/null 2>&1 && SHOT=/tmp/claude-0/-home-user/66fad580-466f-5803-98e2-025a943a051b/scratchpad/ui-i3.png SHOT_CHAT=/tmp/claude-0/-home-user/66fad580-466f-5803-98e2-025a943a051b/scratchpad/ui-i3-chat.png SHOT_DIFF=/tmp/claude-0/-home-user/66fad580-466f-5803-98e2-025a943a051b/scratchpad/ui-i3-diff.png npm run ui-smoke

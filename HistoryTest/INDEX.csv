@@ -21,3 +21,7 @@ run_id,date_utc,area,commit,branch_or_pr,machine,verdict,passed,failed,skipped,s
 2026-11-17_063821Z_shell_545bdf4,2026-11-17T06:38:21Z,shell,545bdf4,PR #1,cloud container,pass,,,,Tauri shell: fmt and clippy with the public list commands
 2026-11-17_063823Z_ui-smoke_545bdf4,2026-11-17T06:38:23Z,ui-smoke,545bdf4,PR #1,cloud container,pass,4,0,0,"Webview: type check, unit tests, build, UI smoke with the public gateway list"
 2026-11-17_063832Z_security-scan_545bdf4,2026-11-17T06:38:32Z,security-scan,545bdf4,PR #1,cloud container,pass,,,,"cargo audit of both lockfiles after adding ed25519-dalek, base64, getrandom"
+2026-11-17_065236Z_core_e919fcd,2026-11-17T06:52:36Z,core,e919fcd,branch claude/project-thread-dfop2y (I3 PR),cloud container,pass,,,,"Core: fmt, clippy, tests incl. agent tools and pending changes (phase I3)"
+2026-11-17_065239Z_shell_e919fcd,2026-11-17T06:52:39Z,shell,e919fcd,branch claude/project-thread-dfop2y (I3 PR),cloud container,pass,,,,Tauri shell: fmt and clippy with the agent commands
+2026-11-17_065240Z_ui-smoke_e919fcd,2026-11-17T06:52:40Z,ui-smoke,e919fcd,branch claude/project-thread-dfop2y (I3 PR),cloud container,pass,4,0,0,"Webview: type check, unit tests, build, UI smoke with tool steps and diff review"
+2026-11-17_065249Z_security-scan_e919fcd,2026-11-17T06:52:49Z,security-scan,e919fcd,branch claude/project-thread-dfop2y (I3 PR),cloud container,pass,,,,cargo audit and npm audit after phase I3 (no new dependencies)

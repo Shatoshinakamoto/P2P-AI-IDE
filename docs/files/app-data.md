@@ -70,7 +70,7 @@ own history and the path is not in the folder name), or `none` when no folder is
 | `gateway` | string | display name of the gateway used last (not its URL or key) |
 | `model` | string | up to 200 chars |
 | `created`, `updated` | number | seconds since 1970 |
-| `messages[]` | `{role, content, at}` | role `user`, `assistant` or `error` (a local error line, never sent to a model); up to 400 messages |
+| `messages[]` | `{role, content, at}` | role `user`, `assistant`, `error` (a local error line) or `tool` (a tool step line, phase I3); `error` and `tool` lines are never sent to a model; up to 400 messages |
 
 Limits: 500 chats per folder, 4 MiB per chat. Delete chats in the History list (two clicks); deleting the folder
 removes all history.

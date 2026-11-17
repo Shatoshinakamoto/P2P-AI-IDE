@@ -1,0 +1,66 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "c9bbeb50631e594b2cbafadf8059e5e2b36a85cb78e0bad5896ec04a334c38bf",
+   "size": 1623
+  },
+  "artifacts/ui-i3-chat.png": {
+   "sha256": "60f47dfed47274d6e1c815e505b360abf16a8a17a885335f470b1ce7b29958cf",
+   "size": 61918
+  },
+  "artifacts/ui-i3-diff.png": {
+   "sha256": "a1442a6e2fabfe5bcfdc16e29c99fecfa339cf45c0b93b2e837171702fa8617d",
+   "size": 68577
+  },
+  "command.txt": {
+   "sha256": "23e74933ee3c055af6d47d95e35b30a7c70000797d0a4c9050855839402cd8c5",
+   "size": 419
+  },
+  "environment.md": {
+   "sha256": "ef649ff600e04c36811fb58a3566129a121888888d5bd67dd04f0675e2f81441",
+   "size": 197
+  },
+  "logs/output.log": {
+   "sha256": "c8ed7939791ed0f0a4516cd54b6379755d6c7e5abed37c442bddfac58ec48712",
+   "size": 4008
+  },
+  "results/summary.txt": {
+   "sha256": "545a9d0e4bcee66f54133b58468717b326ec9622757b086029e3c298c011a8ff",
+   "size": 218
+  }
+ },
+ "previous": {
+  "manifest_sha256": "91eca471267eb8633a9eb107eedc7a69e8c8bd19049b76b1462cbc64343967c5",
+  "run_id": "2026-11-17_065239Z_shell_e919fcd"
+ },
+ "run": {
+  "area": "ui-smoke",
+  "branch_or_pr": "branch claude/project-thread-dfop2y (I3 PR)",
+  "collected_utc": "",
+  "commit": "e919fcd",
+  "count_unit": "packages",
+  "date_utc": "2026-11-17T06:52:40Z",
+  "dirty": false,
+  "duration_s": 8.8,
+  "exit_code": 0,
+  "failed": 0,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_065240Z_ui-smoke_e919fcd",
+  "kind": "e2e",
+  "machine": "cloud",
+  "passed": 4,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "Claude",
+  "shortened_logs": [],
+  "skipped": 0,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Webview: type check, unit tests, build, UI smoke with tool steps and diff review",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}
