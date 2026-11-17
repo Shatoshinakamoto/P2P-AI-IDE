@@ -1,0 +1,22 @@
+run_id,date_utc,area,commit,branch_or_pr,machine,verdict,passed,failed,skipped,summary
+2026-11-17_045740Z_core_fe528ba,2026-11-17T04:57:40Z,core,fe528ba,claude/project-thread-dfop2y,cloud container,pass,,,,"Rust core: fmt, clippy and unit tests (path confinement, saves, search)"
+2026-11-17_045741Z_shell_fe528ba,2026-11-17T04:57:41Z,shell,fe528ba,claude/project-thread-dfop2y,cloud container,pass,,,,"Tauri shell: fmt, clippy and debug build on Linux (WebKitGTK 2.52)"
+2026-11-17_045746Z_webview_fe528ba,2026-11-17T04:57:46Z,webview,fe528ba,claude/project-thread-dfop2y,cloud container,pass,4,0,0,"Webview: type check, unit tests, production build, patched DOMPurify in the bundle"
+2026-11-17_045806Z_ui-smoke_fe528ba,2026-11-17T04:58:06Z,ui-smoke,fe528ba,claude/project-thread-dfop2y,cloud container,pass,,,,"UI smoke: built webview in headless Chromium with a fake workspace, under the shipped CSP"
+2026-11-17_045808Z_security-scan_fe528ba,2026-11-17T04:58:08Z,security-scan,fe528ba,claude/project-thread-dfop2y,cloud container,pass,,,,npm audit of the webview dependencies (after the DOMPurify override)
+2026-11-17_045933Z_security-scan_fe528ba,2026-11-17T04:59:33Z,security-scan,fe528ba,claude/project-thread-dfop2y,cloud container,pass,,,,cargo audit of both Rust lockfiles (RustSec)
+2026-11-17_050005Z_docs_70537dc,2026-11-17T05:00:05Z,docs,70537dc,claude/project-thread-dfop2y,cloud container,pass,,,,Link check of README and docs
+2026-11-17_051458Z_windows_ba63e5c,2026-11-17T05:14:58Z,windows,ba63e5c,PR #1,user PC (Windows),pass,13,0,1,"Windows PC build and tests of phase I1 (core, webview, shell, release exe)"
+2026-11-17_054000Z_windows_ba63e5c,2026-11-17T05:40:00Z,windows,ba63e5c,PR #1,user PC (Windows),fail,0,1,,Windows real-window check of ba63e5c: blank window (invalidates the earlier launch-only pass)
+2026-11-17_054404Z_ui-smoke_e30cb3e,2026-11-17T05:44:04Z,ui-smoke,e30cb3e,PR #1,cloud container,pass,,,,UI smoke after the blank-window fix (freezePrototype off; test now applies the freeze when configured)
+2026-11-17_054500Z_windows_e30cb3e,2026-11-17T05:45:00Z,windows,e30cb3e,PR #1,user PC (Windows),pass,9,0,,Windows rebuild of the fix (e30cb3e) and manual click-through: 9/9
+2026-11-17_055129Z_ui-smoke_e428736,2026-11-17T05:51:29Z,ui-smoke,e428736,PR #1,cloud container,pass,4,0,0,"Type check, unit tests, build and UI smoke with the tab-language check"
+2026-11-17_061800Z_windows_71a1e22,2026-11-17T06:18:00Z,windows,71a1e22,PR #1,user PC (Windows),pass,29,0,,"Windows build and tests of phase I2a (core 29 tests, webview, shell, release exe)"
+2026-11-17_062006Z_core_bd2763f,2026-11-17T06:20:06Z,core,bd2763f,PR#1,cloud container,pass,,,,"Core fmt, clippy, tests with gateways/client/chats (31 tests)"
+2026-11-17_062007Z_shell_bd2763f,2026-11-17T06:20:07Z,shell,bd2763f,PR#1,cloud container,pass,,,,Tauri shell fmt and clippy with net.rs and keyring
+2026-11-17_062008Z_ui-smoke_bd2763f,2026-11-17T06:20:08Z,ui-smoke,bd2763f,PR#1,cloud container,pass,4,0,0,"Webview type check, unit tests, build and UI smoke (30 checks incl. gateways and chat)"
+2026-11-17_062016Z_security-scan_bd2763f,2026-11-17T06:20:16Z,security-scan,bd2763f,PR#1,cloud container,pass,,,,"cargo audit of both lockfiles after adding ureq, serde_json, keyring"
+2026-11-17_063819Z_core_545bdf4,2026-11-17T06:38:19Z,core,545bdf4,PR #1,cloud container,pass,,,,"Core: fmt, clippy, tests incl. shared advert vectors (phase I2b)"
+2026-11-17_063821Z_shell_545bdf4,2026-11-17T06:38:21Z,shell,545bdf4,PR #1,cloud container,pass,,,,Tauri shell: fmt and clippy with the public list commands
+2026-11-17_063823Z_ui-smoke_545bdf4,2026-11-17T06:38:23Z,ui-smoke,545bdf4,PR #1,cloud container,pass,4,0,0,"Webview: type check, unit tests, build, UI smoke with the public gateway list"
+2026-11-17_063832Z_security-scan_545bdf4,2026-11-17T06:38:32Z,security-scan,545bdf4,PR #1,cloud container,pass,,,,"cargo audit of both lockfiles after adding ed25519-dalek, base64, getrandom"

@@ -1,0 +1,6 @@
+    Checking p2p-ide-core v0.1.0 (/home/user/p2p-ai-ide/core)
+    Checking p2p-ide v0.1.0 (/home/user/p2p-ai-ide/app/src-tauri)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.17s
+   Compiling p2p-ide-core v0.1.0 (/home/user/p2p-ai-ide/core)
+   Compiling p2p-ide v0.1.0 (/home/user/p2p-ai-ide/app/src-tauri)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 3.58s

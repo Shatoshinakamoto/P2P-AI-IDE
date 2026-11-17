@@ -1,0 +1,14 @@
+Manual click-through of the fixed release exe (e30cb3e) on the Windows 11 PC, 2026-11-17 00:47-00:50 local
+(05:47-05:50 UTC), by screen control while the owner was away. Test folder D:\p2p-ai-ci\ide1-ws (3 small files).
+1. Window renders the full layout (activity bar, explorer, editor area, status bar)            PASS
+2. Open folder -> Windows folder picker -> ide1-ws; explorer lists src/, config.json, README.md  PASS
+3. Expand src/ and open main.rs in a tab                                                        PASS
+4. Multi-cursor: Ctrl+Home, Ctrl+Alt+Down x2, type "// " -> all 3 lines commented; dirty dot    PASS
+5. Ctrl+S -> "Saved main.rs", dot cleared; file on disk shows the 3 commented lines              PASS
+6. Outside change (cmd echo appended a line), then edit + Ctrl+S -> save refused, banner shown  PASS (shot 02)
+7. "Reload from disk" -> editor shows the outside line, status "Reloaded main.rs from disk"     PASS
+8. Search "hello" -> "1 result in 1 file", src/main.rs:2; clicking it opens the file            PASS
+9. Second tab: config.json opens with JSON colouring                                            PASS (shot 03)
+Found: the status bar language stays "rust" after switching to config.json until the cursor moves
+(stale language on tab switch). Cosmetic; fixed in the next commit.
+Screenshots are of the IDE window rectangle only (ide1-shot.py), cropped of desktop edges.

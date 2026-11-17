@@ -1,0 +1,6 @@
+Real-window launch check on the Windows PC, 2026-11-17 (PC local time about 00:20).
+Launched: explorer.exe D:\p2p-ai-ci\ide1\target\release\p2p-ide.exe
+tasklist /v: p2p-ide.exe running in the console session, status Running, window title "P2P-AI IDE".
+Closed afterwards with taskkill /pid (graceful).
+Not done: screenshot and clicking through the UI. The owner was playing a game at the time, and taking
+screen control would have hidden the game window, so the interactive check is left for when they are away.

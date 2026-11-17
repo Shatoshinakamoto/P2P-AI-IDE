@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "bdbbdcc16ca0e3c53407822e9e2fb0b747ba4cfce8a8063f1e6e79fe67a4eafc",
+   "size": 1571
+  },
+  "command.txt": {
+   "sha256": "1097451f630716a18ada1aa6b369bc2d787af64a7655042ff611f7ddd2738e33",
+   "size": 135
+  },
+  "environment.md": {
+   "sha256": "f4831c720a3ac76a0b789466b19bbb0364a04e864ed577dff06d8e9ea46df410",
+   "size": 197
+  },
+  "logs/output.log": {
+   "sha256": "5f8996c810d7009252d94f31df38dda9a8882a6592494c1c9a388ac4d850a420",
+   "size": 1608
+  },
+  "results/summary.txt": {
+   "sha256": "c08b7290749b0d516da926f4d0f79cb2ee22f46a4ec709ab9ae5294b5b51cfba",
+   "size": 251
+  }
+ },
+ "previous": {
+  "manifest_sha256": "470be1009eef63ec126ea796ef74345056741ee330dc79f035a3447e0998e0a1",
+  "run_id": "2026-11-17_054500Z_windows_e30cb3e"
+ },
+ "run": {
+  "area": "ui-smoke",
+  "branch_or_pr": "PR #1",
+  "collected_utc": "",
+  "commit": "e428736b8b64b6d0fee024225244eb2a34ec3108",
+  "count_unit": "packages",
+  "date_utc": "2026-11-17T05:51:29Z",
+  "dirty": false,
+  "duration_s": 6.6,
+  "exit_code": 0,
+  "failed": 0,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_055129Z_ui-smoke_e428736",
+  "kind": "e2e",
+  "machine": "cloud",
+  "passed": 4,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "agentic IDE thread: Windows PC check",
+  "shortened_logs": [],
+  "skipped": 0,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Type check, unit tests, build and UI smoke with the tab-language check",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

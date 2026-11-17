@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "84cd2d82d6a7db206d9ba03f8a93a290e1d7509f0d6cf2b8f3d037a39ebaeca7",
+   "size": 1649
+  },
+  "command.txt": {
+   "sha256": "4774a4e8877749531d0b0cc7a9c54080ca7b93e1d40e0e0b9119f5cbdaa330ac",
+   "size": 178
+  },
+  "environment.md": {
+   "sha256": "fb3386d48a7df5849244db13f6df99c630149617bcb0db38ce0510b819b87457",
+   "size": 202
+  },
+  "logs/output.log": {
+   "sha256": "41f4a0220fa985be7f7bd892462b366d9fa167ffc9ad63299dae94056a858492",
+   "size": 5766
+  },
+  "results/summary.txt": {
+   "sha256": "6c9cca01b0f6068b4287051c3f5d149bf1f86de22ca296dd7eadbc725eea027b",
+   "size": 293
+  }
+ },
+ "previous": {
+  "manifest_sha256": "3dfca5e1603470c79ef2c55c34756654c8683505f2e596a6b6f692a80d5dd26f",
+  "run_id": "2026-11-17_045808Z_security-scan_fe528ba"
+ },
+ "run": {
+  "area": "security-scan",
+  "branch_or_pr": "claude/project-thread-dfop2y",
+  "collected_utc": "",
+  "commit": "fe528ba89de319c40dfac36d7f8d56cfcc984b36",
+  "count_unit": "",
+  "date_utc": "2026-11-17T04:59:33Z",
+  "dirty": false,
+  "duration_s": 3.8,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_045933Z_security-scan_fe528ba",
+  "kind": "scan",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "Build the P2P-AI IDE app shell (phase I1)",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "cargo audit of both Rust lockfiles (RustSec)",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

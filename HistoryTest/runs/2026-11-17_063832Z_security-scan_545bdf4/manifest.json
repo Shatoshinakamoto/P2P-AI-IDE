@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "c58d1e4bd3cea4e721756159aaf2cc8a034d0f8d9416134563544ee72bd20d36",
+   "size": 1421
+  },
+  "command.txt": {
+   "sha256": "9431ca07ebd058edc07ff28bc1b6cc445841c65804cc61d46223f879207e695b",
+   "size": 153
+  },
+  "environment.md": {
+   "sha256": "f2e215a8c7c120a60c4a534f170dd9f297b3f1589469a0ca58d9a5960395554f",
+   "size": 202
+  },
+  "logs/output.log": {
+   "sha256": "cd15db8484b3e3fcc0b3175cbf274106c629a5fa3b88048b575a78f021cc38b2",
+   "size": 7832
+  },
+  "results/summary.txt": {
+   "sha256": "f605291272e37fedaf2241206227369ca9dced9a6c39b294fd001647959e64d9",
+   "size": 260
+  }
+ },
+ "previous": {
+  "manifest_sha256": "d58db7c9a325123ab556565819ede978ad7997bd0033c1a9285f388e985bc281",
+  "run_id": "2026-11-17_063823Z_ui-smoke_545bdf4"
+ },
+ "run": {
+  "area": "security-scan",
+  "branch_or_pr": "PR #1",
+  "collected_utc": "",
+  "commit": "545bdf4",
+  "count_unit": "",
+  "date_utc": "2026-11-17T06:38:32Z",
+  "dirty": false,
+  "duration_s": 1.8,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_063832Z_security-scan_545bdf4",
+  "kind": "scan",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "Claude",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "cargo audit of both lockfiles after adding ed25519-dalek, base64, getrandom",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

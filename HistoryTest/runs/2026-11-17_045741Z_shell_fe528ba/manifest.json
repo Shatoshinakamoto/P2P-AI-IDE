@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "d4632a0f16e6c8989bf94f143592ec4653871462dfad0a27515a832ba28648af",
+   "size": 1592
+  },
+  "command.txt": {
+   "sha256": "974eb41b3a1821a6bac097639d9862d844024b85e9fe39cdfc7eaf3b99692781",
+   "size": 187
+  },
+  "environment.md": {
+   "sha256": "2162f8ec0a4f100300027bcee200a9c270bfd7d5681c4b94df9dab01703d435c",
+   "size": 194
+  },
+  "logs/output.log": {
+   "sha256": "6f245bad5f29ac0528ba189f84f22f5e04f2824a581467a94b9f9ecd386897b6",
+   "size": 400
+  },
+  "results/summary.txt": {
+   "sha256": "be00f0afe7b4022838e2fcda9651fd8134a2ae9e0827377151c831ddedf16fbf",
+   "size": 285
+  }
+ },
+ "previous": {
+  "manifest_sha256": "7d5e94c506792eb6034dab2ff9ce552f2748579cc0a67c34745d68e9742f656d",
+  "run_id": "2026-11-17_045740Z_core_fe528ba"
+ },
+ "run": {
+  "area": "shell",
+  "branch_or_pr": "claude/project-thread-dfop2y",
+  "collected_utc": "",
+  "commit": "fe528ba89de319c40dfac36d7f8d56cfcc984b36",
+  "count_unit": "",
+  "date_utc": "2026-11-17T04:57:41Z",
+  "dirty": false,
+  "duration_s": 5.1,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_045741Z_shell_fe528ba",
+  "kind": "build",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "Build the P2P-AI IDE app shell (phase I1)",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Tauri shell: fmt, clippy and debug build on Linux (WebKitGTK 2.52)",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

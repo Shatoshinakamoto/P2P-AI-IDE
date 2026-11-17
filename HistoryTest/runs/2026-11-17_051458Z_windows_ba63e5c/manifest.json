@@ -1,0 +1,66 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "c889fd809c0b7e86e369e67ecc970d207ec0cefd560afbd99e6c090362e5b5b6",
+   "size": 2641
+  },
+  "artifacts/ide1-build.cmd": {
+   "sha256": "da088943be5c57672672bc67b67bc13d014ba5ea2a35b3975f910ac1b507f22a",
+   "size": 1643
+  },
+  "artifacts/window-check.txt": {
+   "sha256": "cca9c2f1986c631be8348c2b538719acb565b71e37a3698e07dae1a5a8a80a76",
+   "size": 511
+  },
+  "command.txt": {
+   "sha256": "1badc5085d381f421fa2d19e453fb89fac7909799bce8288e71a9607c3d3fa3b",
+   "size": 49
+  },
+  "environment.md": {
+   "sha256": "630d6b76ac16940001454a17440bdce20a8cff08d0ca379e0586ffa62c09d9d9",
+   "size": 128
+  },
+  "logs/ide1-windows.log": {
+   "sha256": "6336a0854a5ea51314ff80c46777ef87399a49c8c44fd6168aa57508140bb17f",
+   "size": 46778
+  },
+  "results/summary.txt": {
+   "sha256": "18b2cd22f69e0744398b29f2e38ce121c0ce4505b970892280edfde5fadfce6b",
+   "size": 217
+  }
+ },
+ "previous": {
+  "manifest_sha256": "56e0b74c670fdbd52d44701a1fc7b8035be1e064bcd0a68f83fb5f9d1fc6d3e3",
+  "run_id": "2026-11-17_050005Z_docs_70537dc"
+ },
+ "run": {
+  "area": "windows",
+  "branch_or_pr": "PR #1",
+  "collected_utc": "2026-11-17T05:22:28Z",
+  "commit": "ba63e5ca",
+  "count_unit": "",
+  "date_utc": "2026-11-17T05:14:58Z",
+  "dirty": false,
+  "duration_s": null,
+  "exit_code": null,
+  "failed": 0,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_051458Z_windows_ba63e5c",
+  "kind": "build",
+  "machine": "pc",
+  "passed": 13,
+  "record": "imported",
+  "redactions": {},
+  "requested_by": "agentic IDE thread: Windows PC check",
+  "shortened_logs": [],
+  "skipped": 1,
+  "skipped_files": [],
+  "source_path": "D:\\p2p-ai-ci\\logs\\ide1.txt",
+  "title": "Windows PC build and tests of phase I1 (core, webview, shell, release exe)",
+  "verdict": "pass",
+  "verdict_reason": ""
+ },
+ "schema": 1
+}

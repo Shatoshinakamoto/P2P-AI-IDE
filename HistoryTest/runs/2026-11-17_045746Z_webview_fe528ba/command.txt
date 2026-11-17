@@ -1,0 +1,2 @@
+# run in repository folder `.`, as an argument list (no shell)
+bash -c cd app && npm test && npm run build >/dev/null && echo build-ok && grep -o "t.version=\`3\.4\.[0-9]*\`" -r dist/assets | sort -u && ! grep -rq "3\.4\.15" dist/assets && echo no-3.4.15

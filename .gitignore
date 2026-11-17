@@ -1,0 +1,11 @@
+# Never commit dependencies, build output or local secrets (CLAUDE.md sections 3 and 9).
+node_modules/
+target/
+app/dist/
+app/src-tauri/gen/
+app/ui-smoke.png
+.env
+.env.*
+*.pem
+*.key
+app/ui-smoke-chat.png

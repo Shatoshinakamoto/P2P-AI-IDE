@@ -1,0 +1,2 @@
+# run in repository folder `.`, as an argument list (no shell)
+bash -c cd app/src-tauri && cargo fmt --check && cargo clippy --all-targets --locked -- -D warnings && cargo build --locked

@@ -1,0 +1,70 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "ba7e61af745fa2174d8209d85714278cf4d29d7e9a34255d493710caa5fe62c8",
+   "size": 1972
+  },
+  "artifacts/ide1-cdp.mjs": {
+   "sha256": "b20aa32b452534bf9d600d2ee084f3dffb24ca6603b0666cf2692ba668972c36",
+   "size": 2150
+  },
+  "artifacts/ide1-shot-01-blank.png": {
+   "sha256": "2952ac2721bfce2375acb4d802c761cc1be19f1f99e30340bac1ea5e45cdf911",
+   "size": 7818
+  },
+  "artifacts/ide1-shot.py": {
+   "sha256": "1c5164a8513b14c7bf040c928ffa74be5e033e9fca90fcccbffada93eb1a85b7",
+   "size": 1622
+  },
+  "command.txt": {
+   "sha256": "1badc5085d381f421fa2d19e453fb89fac7909799bce8288e71a9607c3d3fa3b",
+   "size": 49
+  },
+  "environment.md": {
+   "sha256": "3824ea627901ba20060bb6be54c69e00d9608b3499bf4f623836586e2ae83202",
+   "size": 128
+  },
+  "logs/cdp-console.txt": {
+   "sha256": "9454b7ce6254b396e3a0566fdbce53a4b9f23e1092a4f7399240c408b513f8ef",
+   "size": 928
+  },
+  "results/summary.txt": {
+   "sha256": "c65c3a39b1c4a0c9fb08f3243ed8a0f35dc9dcec052f7640a902cd9709cd0e2b",
+   "size": 227
+  }
+ },
+ "previous": {
+  "manifest_sha256": "459e431890cbcbe4df0b8c98a14b0f49b8cbb146768c23e8bac6d69bc4b76c70",
+  "run_id": "2026-11-17_054404Z_ui-smoke_e30cb3e"
+ },
+ "run": {
+  "area": "windows",
+  "branch_or_pr": "PR #1",
+  "collected_utc": "2026-11-17T05:50:56Z",
+  "commit": "ba63e5ca",
+  "count_unit": "",
+  "date_utc": "2026-11-17T05:40:00Z",
+  "dirty": false,
+  "duration_s": null,
+  "exit_code": null,
+  "failed": 1,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_054000Z_windows_ba63e5c",
+  "kind": "e2e",
+  "machine": "pc",
+  "passed": 0,
+  "record": "imported",
+  "redactions": {},
+  "requested_by": "agentic IDE thread: Windows PC check",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "D:\\p2p-ai-ci\\logs",
+  "title": "Windows real-window check of ba63e5c: blank window (invalidates the earlier launch-only pass)",
+  "verdict": "fail",
+  "verdict_reason": ""
+ },
+ "schema": 1
+}

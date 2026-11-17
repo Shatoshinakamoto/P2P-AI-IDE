@@ -1,0 +1,22 @@
+
+> p2p-ai-ide@0.1.0 ui-smoke
+> node tests/ui-smoke.mjs
+
+PASS welcome state shows Open folder
+PASS status bar shows disabled gateway and mission switches
+PASS explorer lists folders first -- src, README.md
+PASS Monaco opens the file with its text
+PASS typing marks the tab unsaved
+PASS Ctrl+S saves the edited text
+PASS save sends the loaded version (lost-update guard)
+PASS multi-cursor edits two lines at once -- "X# edited\nXimport os\n\n"
+PASS conflicting save is refused and explained
+PASS reload replaces the editor copy with the disk version
+PASS two files open in two tabs -- server.py, README.md
+PASS search finds matches -- 1 result in 1 file
+PASS later-phase views say when they arrive
+PASS explorer keeps expanded folders across views
+PASS no CSP violations under the shipped CSP
+PASS no page errors
+
+16 passed, 0 failed

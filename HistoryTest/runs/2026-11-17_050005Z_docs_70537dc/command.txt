@@ -1,0 +1,2 @@
+# run in repository folder `.`, as an argument list (no shell)
+bash -c python3 /tmp/claude-0/-home-user/66fad580-466f-5803-98e2-025a943a051b/scratchpad/linkcheck.py README.md docs/*.md docs/*/*.md

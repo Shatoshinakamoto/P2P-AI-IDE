@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "e4065b0e924f7e99fc91d28ba4cff9cbdfa34b2dbebafc32bbfa37b04c63a576",
+   "size": 1706
+  },
+  "command.txt": {
+   "sha256": "a8dcf1b908f823d231e12c69b48bc99a796163230b1010c887ee51b0e00f7a57",
+   "size": 123
+  },
+  "environment.md": {
+   "sha256": "163d5e1fe577e2dd0efab8e3f3ed4c941c20c0d2c79bbec63fd91df2635e91b6",
+   "size": 197
+  },
+  "logs/output.log": {
+   "sha256": "ea61608c40c11963bf5f6e6aa7f477ab8215a1f75db6203e2876e9f4adf7faeb",
+   "size": 832
+  },
+  "results/summary.txt": {
+   "sha256": "c1c1d78f836441a12b90907db5ab0f77a8d25a4c60b5da99a842aaf380748048",
+   "size": 289
+  }
+ },
+ "previous": {
+  "manifest_sha256": "66e075f30812172b47a3402ed1fe2e4d3365e16dad55e1336421843e7fb1ad12",
+  "run_id": "2026-11-17_051458Z_windows_ba63e5c"
+ },
+ "run": {
+  "area": "ui-smoke",
+  "branch_or_pr": "PR #1",
+  "collected_utc": "",
+  "commit": "e30cb3ee136651105e1ebba3a65de3a3e6615892",
+  "count_unit": "",
+  "date_utc": "2026-11-17T05:44:04Z",
+  "dirty": false,
+  "duration_s": 14.3,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_054404Z_ui-smoke_e30cb3e",
+  "kind": "e2e",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "agentic IDE thread: Windows PC check",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "UI smoke after the blank-window fix (freezePrototype off; test now applies the freeze when configured)",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

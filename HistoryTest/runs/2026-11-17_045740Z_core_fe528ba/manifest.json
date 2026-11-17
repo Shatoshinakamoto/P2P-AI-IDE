@@ -1,0 +1,55 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "a9b363aa02bf57c7e45b1aad3cce48d111d16d02c06d39e6ce2f487b10c7e513",
+   "size": 1565
+  },
+  "command.txt": {
+   "sha256": "f21fe3177967c368e2a02a82827b50d73af6e01d2a44c4e98bcf664d4831f8b2",
+   "size": 177
+  },
+  "environment.md": {
+   "sha256": "54d79e9b1c4cc18ae75410fea6b5f5c9fbca6f6a1e0c55fb2de611dcbb2efc1a",
+   "size": 193
+  },
+  "logs/output.log": {
+   "sha256": "e95182525f0d1825b519daae92e27298012ea041f6b05b49dc00ef48e1523031",
+   "size": 1195
+  },
+  "results/summary.txt": {
+   "sha256": "f0e2fe356bb21376fd96290850fd28c30bdf749c6534b01efe4ad5b0c4d504b6",
+   "size": 284
+  }
+ },
+ "previous": null,
+ "run": {
+  "area": "core",
+  "branch_or_pr": "claude/project-thread-dfop2y",
+  "collected_utc": "",
+  "commit": "fe528ba89de319c40dfac36d7f8d56cfcc984b36",
+  "count_unit": "",
+  "date_utc": "2026-11-17T04:57:40Z",
+  "dirty": false,
+  "duration_s": 0.8,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_045740Z_core_fe528ba",
+  "kind": "unit",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "Build the P2P-AI IDE app shell (phase I1)",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Rust core: fmt, clippy and unit tests (path confinement, saves, search)",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

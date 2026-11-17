@@ -1,0 +1,9 @@
+Page errors of the blank window (release exe at ba63e5c), read through the WebView2 debug port
+(WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS=--remote-debugging-port=9229, loopback only, this one launch) with ide1-cdp.mjs:
+{"resp":200,"url":"http://tauri.localhost/","mime":"text/html"}
+{"exception":"TypeError: Cannot assign to read only property 'toString' of object '#<Object>' at http://tauri.localhost/assets/index-RkbN6UNl.js:14:16266"}
+{"resp":200,"url":"http://tauri.localhost/assets/index-V_ejQL90.css","mime":"text/css"}
+{"resp":200,"url":"http://tauri.localhost/assets/index-RkbN6UNl.js","mime":"text/javascript"}
+{"state":"{\"ready\":\"complete\",\"root\":0,\"body\":\"<div id=\\\"root\\\"></div>\",\"tauri\":\"object\"}"}
+The code at that position is Monaco's KeyCodeUtils namespace (`e.toString = t`), which cannot assign
+toString on a plain object once Object.prototype is frozen (tauri.conf.json freezePrototype: true).
