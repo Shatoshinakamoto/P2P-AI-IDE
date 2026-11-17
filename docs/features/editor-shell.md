@@ -107,7 +107,8 @@ The same versions as the P2P-AI desktop app were chosen where both use a package
 * No network, chat, gateways, missions or extensions yet (phases I2 to I6).
 * Files over 5 MiB and non-UTF-8 files are not opened.
 * No file create, rename or delete from the explorer yet; no file watcher (use the refresh button).
-* Not yet checked in a real window on Windows or macOS (built and tested on Linux only).
+* Windows: built, tested and launched on a Windows 11 PC (window opens); the click-through UI check there and
+  any check on macOS are still to do.
 
 ## 7. Troubleshooting
 
@@ -127,3 +128,4 @@ The same versions as the P2P-AI desktop app were chosen where both use a package
 * [UI smoke in headless Chromium under the shipped CSP: 16/16](../../HistoryTest/runs/2026-11-17_045806Z_ui-smoke_fe528ba/RUN.md)
 * [npm audit: 0 vulnerabilities](../../HistoryTest/runs/2026-11-17_045808Z_security-scan_fe528ba/RUN.md)
 * [cargo audit of both lockfiles: 0 vulnerabilities, 2 warnings in Tauri's Linux GTK stack](../../HistoryTest/runs/2026-11-17_045933Z_security-scan_fe528ba/RUN.md)
+* [Windows PC: core 9 tests, webview 4 tests, build, npm audit, shell clippy, release exe, window opens](../../HistoryTest/runs/2026-11-17_051458Z_windows_ba63e5c/RUN.md)

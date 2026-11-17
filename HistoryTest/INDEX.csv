@@ -6,3 +6,4 @@ run_id,date_utc,area,commit,branch_or_pr,machine,verdict,passed,failed,skipped,s
 2026-11-17_045808Z_security-scan_fe528ba,2026-11-17T04:58:08Z,security-scan,fe528ba,claude/project-thread-dfop2y,cloud container,pass,,,,npm audit of the webview dependencies (after the DOMPurify override)
 2026-11-17_045933Z_security-scan_fe528ba,2026-11-17T04:59:33Z,security-scan,fe528ba,claude/project-thread-dfop2y,cloud container,pass,,,,cargo audit of both Rust lockfiles (RustSec)
 2026-11-17_050005Z_docs_70537dc,2026-11-17T05:00:05Z,docs,70537dc,claude/project-thread-dfop2y,cloud container,pass,,,,Link check of README and docs
+2026-11-17_051458Z_windows_ba63e5c,2026-11-17T05:14:58Z,windows,ba63e5c,PR #1,user PC (Windows),pass,13,0,1,"Windows PC build and tests of phase I1 (core, webview, shell, release exe)"
