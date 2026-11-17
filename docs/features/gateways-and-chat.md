@@ -5,8 +5,8 @@
   moving forward", 2026-11-17).
 * **Code:** `core/src/{gateways,client,chats,store}.rs`, `app/src-tauri/src/net.rs`,
   `app/src/components/{NetworkView,ChatView}.tsx`, `app/src/ipc.ts`.
-* **Next:** I2b adds the public gateway list from signed directory adverts. I3 gives the chat its tools (read,
-  search, patch) with diff review.
+* **Next:** I2b, the public gateway list from signed directory adverts, is done: [public-gateways.md](public-gateways.md).
+  I3 gives the chat its tools (read, search, patch) with diff review.
 
 ## 1. Overview
 
@@ -102,7 +102,7 @@ real keys.
 
 ## 6. Limitations and known risks
 
-* No public gateway list yet (I2b). No email sign-in (D4 later option).
+* No email sign-in (D4 later option). The public gateway list is in [public-gateways.md](public-gateways.md).
 * No proxy support: the IDE connects directly. People behind a company proxy cannot reach outside gateways yet.
 * On Linux the keychain needs a running Secret Service (GNOME Keyring or KWallet). Without it, adding a key fails
   with "the system keychain could not store or read the key".

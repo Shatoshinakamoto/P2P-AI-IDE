@@ -34,11 +34,29 @@ entry is refused as a whole ("a saved file is damaged or too large").
 | `gateways[].id` | string | 16 lowercase hex | names the keychain entry; allow-listed (CWE-20) |
 | `gateways[].name` | string | 1-64 chars, one line | display only |
 | `gateways[].url` | string | `https://host[:port]`, or `http://127.0.0.1|localhost|[::1]:port` (dev) | where the key is sent; no path, user info, query (CWE-918, NIST SC-8) |
-| `gateways[].kind` | string | `local`, `manual` | display only |
+| `gateways[].kind` | string | `local`, `manual`, `public` | `public` (picked from the public list, phase I2b): every connection to it goes only to public addresses (CWE-918); otherwise display only |
 | `gateways[].ca_pem` | string, optional | PEM certificates only, max 64 KiB, no private key | when present, the only trusted root for that gateway (CWE-295) |
 | `active` | string, optional | an id in the list | which gateway chat uses |
 
 Limits: 32 gateways, file 4 MiB. Change it through the Gateways view, not by hand.
+
+## directories.json
+
+The directories the public gateway list is fetched from (phase I2b, [features/public-gateways.md](../features/public-gateways.md)).
+Empty or missing by default: the IDE ships with no directory and fetches nothing until the person adds one.
+
+```json
+{
+  "directories": ["https://directory.example.org", "https://dir2.example.org:8443"]
+}
+```
+
+| Key | Type | Default | Allowed values | Security impact |
+|---|---|---|---|---|
+| `directories` | array of strings | `[]` | 0-8 entries; each `https://` to a public host (no localhost, private/link-local IPv4, IPv6 literal, user info, query or fragment), stored without a trailing slash, no duplicates | where adverts are fetched from; a private target would be SSRF (CWE-918). A directory can hide gateways but cannot forge one (adverts are signed) |
+
+Re-checked on every load; a bad entry refuses the whole file. Change it in the Gateways view. Each entry was added by
+the person; record who requested a directory and when if the list is managed for others.
 
 ## chats/&lt;scope&gt;/&lt;id&gt;.json
 

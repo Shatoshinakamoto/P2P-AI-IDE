@@ -2,6 +2,29 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-17 - Phase I2b: public gateway list
+
+Requested by Pheonix ("keep moving forward").
+
+### Added
+- Gateways view, **Public gateways**: a directory list (none by default), **Refresh list**, entries with region,
+  latency, models, access mode and the prompt-logging statement, **Add** (saved as kind `public`).
+- Core module `discovery`: the P2P-AI node's advert verifier ported (strict and canonical JSON, ed25519, id bound to
+  key, endpoint and `client_access` rules), signed latency probe, `directories.json`, a public-only resolver.
+- Shell commands `directories_list`, `directories_set`, `public_list`, `gateway_add_public`.
+- Tests: the shared protocol vectors (copied to `core/tests/vectors/`) and a fake directory; core tests 31 -> 41, UI
+  smoke test 30 -> 37 checks.
+- Docs: `features/public-gateways.md`, `files/discovery-vectors.md`; `files/app-data.md` gains `directories.json`
+  and kind `public`.
+
+### Changed
+- Gateways of kind `public` are only ever reached at public addresses (also for chat and Check).
+- **Unpin** is offered for any pinned gateway that is not the local one.
+
+### Security
+- New dependencies ed25519-dalek 2.2.0, base64 0.22.1, getrandom 0.2.17 (already in the tree); cargo audit: no
+  advisories for them.
+
 ## 2026-11-17 - Phase I2a: gateways and chat
 
 Requested by Pheonix ("keep moving forward" after phase I1).

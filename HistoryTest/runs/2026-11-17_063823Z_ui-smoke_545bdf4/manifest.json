@@ -1,0 +1,62 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "af6bc42a6d65912713a9e6cdb6abe3297e102a664c4eb11b276d1fb76df766f6",
+   "size": 1543
+  },
+  "artifacts/ui-i2b-chat.png": {
+   "sha256": "7483dafbb79360c5836f38749f11bbaac71d947769f24879cda3772de7d11bdb",
+   "size": 48914
+  },
+  "command.txt": {
+   "sha256": "87bc44f1750d931b6cc617abb5132fa64b2cd8ea72cd557dadb15091e30cb645",
+   "size": 323
+  },
+  "environment.md": {
+   "sha256": "bd9a4f9f2518529fe435d81f051df4d3831812034a4d51c8da05ee8c1fdb913a",
+   "size": 197
+  },
+  "logs/output.log": {
+   "sha256": "aea085b2e1a224a15e03d8294f2685b94e66f25de2d89a65c2d573a41c051e10",
+   "size": 3255
+  },
+  "results/summary.txt": {
+   "sha256": "7df5ec247ca85c4b59a34413488dace6e9bdb28608a9afda06e1a8cf71a2838c",
+   "size": 218
+  }
+ },
+ "previous": {
+  "manifest_sha256": "3a78682234ff221ab847bfb1c8ec16ca6de20dfa29a9f8e934e339bf61eb824f",
+  "run_id": "2026-11-17_063821Z_shell_545bdf4"
+ },
+ "run": {
+  "area": "ui-smoke",
+  "branch_or_pr": "PR #1",
+  "collected_utc": "",
+  "commit": "545bdf4",
+  "count_unit": "packages",
+  "date_utc": "2026-11-17T06:38:23Z",
+  "dirty": false,
+  "duration_s": 9.2,
+  "exit_code": 0,
+  "failed": 0,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_063823Z_ui-smoke_545bdf4",
+  "kind": "e2e",
+  "machine": "cloud",
+  "passed": 4,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "Claude",
+  "shortened_logs": [],
+  "skipped": 0,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Webview: type check, unit tests, build, UI smoke with the public gateway list",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}
