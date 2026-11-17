@@ -272,6 +272,23 @@ fn current_text(ws: &Workspace, pending: &Pending, rel: &str) -> Result<(String,
     Ok((f.text, Some(f.version)))
 }
 
+/// Adapts `old_text`/`new_text` to a file that uses Windows line endings (CRLF).
+///
+/// Models see and write `\n` line endings (read_file with a line range drops `\r`, and models rarely copy `\r`
+/// back), so a multi-line `old_text` never matched a CRLF file on Windows. When the file has CRLF and the model's
+/// `old_text` has bare `\n` and does not match as is, both texts are converted to CRLF, so the edit matches and the
+/// file keeps its own line endings. Found in the Windows click-through of phase I3 (2026-11-17).
+///
+/// Security: only changes line endings of model text that is still matched exactly once against the file and
+/// still goes through the person's diff review before anything is written (OWASP LLM06).
+fn match_line_endings(text: &str, old: String, new: String) -> (String, String) {
+    if text.contains(old.as_str()) || old.contains('\r') || !text.contains("\r\n") {
+        return (old, new);
+    }
+    let crlf = |s: &str| s.replace("\r\n", "\n").replace('\n', "\r\n");
+    (crlf(&old), crlf(&new))
+}
+
 /// Runs one tool call. Returns (target for the chat line, result text for the model, ok).
 pub fn run_tool(ws: &Workspace, pending: &mut Pending, call: &ToolCall) -> (String, String, bool) {
     let r: Result<(String, String), (String, String)> = (|| match call.name.as_str() {
@@ -337,6 +354,7 @@ pub fn run_tool(ws: &Workspace, pending: &mut Pending, call: &ToolCall) -> (Stri
                 return Err((p, "old_text must not be empty; use create_file for a new file".into()));
             }
             let (text, base) = current_text(ws, pending, &p).map_err(|e| (p.clone(), e.message().to_string()))?;
+            let (old, new) = match_line_endings(&text, old, new);
             match text.matches(old.as_str()).count() {
                 0 => return Err((p, "old_text was not found; read the file again and copy the text exactly".into())),
                 1 => {}
@@ -581,6 +599,30 @@ mod tests {
         assert!(p.reject("README.md"));
         p.accept(&w, "src/new.py").unwrap();
         assert_eq!(fs::read_to_string(d.join("src/new.py")).unwrap(), "x = 1\n");
+        let _ = fs::remove_dir_all(d);
+    }
+
+    #[test]
+    fn multi_line_edits_match_windows_line_endings() {
+        // Regression from the Windows click-through: the model sends \n, the file has \r\n.
+        let (w, d) = ws();
+        fs::write(d.join("src/crlf.py"), "def add(a, b):\r\n    return a - b\r\n").unwrap();
+        let mut p = Pending::default();
+        let (_, out, ok) = run_tool(
+            &w,
+            &mut p,
+            &call(
+                "edit_file",
+                json!({"path": "src/crlf.py", "old_text": "def add(a, b):\n    return a - b", "new_text": "def add(a, b):\n    return a + b"}),
+            ),
+        );
+        assert!(ok, "{out}");
+        let v = p.views();
+        assert_eq!(v.len(), 1);
+        let after = &p.files.get("src/crlf.py").unwrap().after;
+        assert_eq!(after, "def add(a, b):\r\n    return a + b\r\n", "keeps the file's CRLF endings");
+        // An LF file is matched as is.
+        assert_eq!(match_line_endings("a\nb", "a\nb".into(), "c".into()), ("a\nb".into(), "c".into()));
         let _ = fs::remove_dir_all(d);
     }
 
