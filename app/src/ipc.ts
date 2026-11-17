@@ -56,7 +56,7 @@ export interface GatewayView {
   id: string;
   name: string;
   url: string;
-  kind: "local" | "manual";
+  kind: "local" | "manual" | "public";
   /** Plain http on loopback: shown as INSECURE - DEV ONLY. */
   dev: boolean;
   pinned: boolean;
@@ -71,6 +71,26 @@ export interface Chat { id: string; title: string; gateway: string; model: strin
 export interface ChatSummary { id: string; title: string; updated: number; count: number }
 export interface ChatHit { id: string; title: string; preview: string }
 type ChatEvent = { kind: "delta"; text: string };
+/** How people get access to a public gateway (from its signed advert, ADR-028 client_access). */
+export interface ClientAccess {
+  mode: "key" | "signup";
+  api_url: string;
+  signup_url: string;
+  features: string[];
+  terms_url: string;
+  logs_prompts: boolean;
+  retention_days: number;
+}
+/** One verified public gateway. Every string came from a signed advert: render it as text only (CWE-79). */
+export interface PublicGateway {
+  gateway_id: string;
+  region: string;
+  models: string[];
+  access: ClientAccess;
+  latency_ms: number | null;
+  directories: number;
+}
+export interface PublicList { gateways: PublicGateway[]; rejected: Record<string, number> }
 
 /** Calls a command and turns a rejection into an Error with the core's fixed message. */
 async function call<T>(cmd: string, args?: Record<string, unknown>): Promise<T> {
@@ -88,6 +108,14 @@ export const gatewaySetKey = (id: string, key: string) => call<void>("gateway_se
 export const gatewayRemove = (id: string) => call<void>("gateway_remove", { id });
 export const gatewaySetActive = (id: string) => call<void>("gateway_set_active", { id });
 export const gatewayCheck = (id: string) => call<GatewayCheck>("gateway_check", { id });
+
+/** The directories the public list is fetched from (phase I2b). */
+export const directoriesList = () => call<string[]>("directories_list");
+export const directoriesSet = (directories: string[]) => call<string[]>("directories_set", { directories });
+/** Fetches, verifies (in Rust) and probes the public list. Sends no key. */
+export const publicList = () => call<PublicList>("public_list");
+/** Saves a gateway from the last list by its advert id; the core takes the address from the verified advert. */
+export const gatewayAddPublic = (gatewayId: string, key: string | null) => call<string>("gateway_add_public", { gatewayId, key });
 
 /**
  * Sends the conversation to the active gateway. `onText` gets each piece of the answer as it streams in.

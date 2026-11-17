@@ -2,7 +2,8 @@
  * NetworkView.tsx -- the Gateways side bar (phase I2, docs/features/gateways-and-chat.md).
  *
  * Purpose: lists saved gateways, picks the active one, checks it (latency and model count), adds a gateway by URL
- * or the one set up on this computer, pins a CA file, sets or replaces a key, and removes a gateway.
+ * or the one set up on this computer, pins a CA file, sets or replaces a key, and removes a gateway. Below it, the
+ * public gateway list (phase I2b, PublicGateways.tsx).
  * Trust boundary: everything goes through ipc.ts to the Rust core, which checks it. The key field is a password
  * input; its value is sent once to the core (which writes it to the OS keychain) and then cleared from the form.
  * Keys never come back to the webview (only `has_key`). Names and URLs are rendered as React text (CWE-79).
@@ -13,6 +14,7 @@ import {
   gatewayAdd, gatewayAddLocal, gatewayCheck, gatewayClearCa, gatewayPickCa, gatewayRemove, gatewaySetActive,
   gatewaySetKey, gatewaysList, type GatewayCheck, type GatewayList,
 } from "../ipc.ts";
+import { PublicGateways } from "./PublicGateways.tsx";
 import { Tip } from "./Tip.tsx";
 
 interface Props {
@@ -89,7 +91,7 @@ export function NetworkView({ onChanged, onNotice }: Props) {
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto px-3 pb-3">
       {list.gateways.length === 0 && !adding ? (
-        <p className="text-ide-dim">No gateway yet. Add the gateway on this computer or one by its address. Public gateway lists come next.</p>
+        <p className="text-ide-dim">No gateway yet. Add the gateway on this computer, one by its address, or one from a public list below.</p>
       ) : null}
       <ul aria-label="Saved gateways" className="flex flex-col gap-2">
         {list.gateways.map((g) => {
@@ -99,7 +101,7 @@ export function NetworkView({ onChanged, onNotice }: Props) {
               <label className="flex items-center gap-2">
                 <input type="radio" name="active-gateway" checked={list.active === g.id} onChange={() => void act(() => gatewaySetActive(g.id), `Using ${g.name}`)} />
                 <span className="truncate font-semibold text-ide-bright">{g.name}</span>
-                <span className="ml-auto text-[11px] text-ide-dim">{g.kind === "local" ? "this computer" : "manual"}</span>
+                <span className="ml-auto text-[11px] text-ide-dim">{g.kind === "local" ? "this computer" : g.kind === "public" ? "public list" : "manual"}</span>
               </label>
               <div className="truncate pl-5 text-xs text-ide-dim" title={g.url}>{g.url}</div>
               <div className="flex flex-wrap items-center gap-1 pl-5 pt-1 text-xs">
@@ -120,7 +122,7 @@ export function NetworkView({ onChanged, onNotice }: Props) {
                 <Tip text="Trust only this CA for this gateway (for a private or self-signed gateway).">
                   <button type="button" className={btn} onClick={() => void act(() => gatewayPickCa(g.id))}>{g.pinned ? "Change CA" : "Pin CA"}</button>
                 </Tip>
-                {g.pinned && g.kind === "manual" ? <button type="button" className={btn} onClick={() => void act(() => gatewayClearCa(g.id), "CA removed")}>Unpin</button> : null}
+                {g.pinned && g.kind !== "local" ? <button type="button" className={btn} onClick={() => void act(() => gatewayClearCa(g.id), "CA removed")}>Unpin</button> : null}
                 <button
                   type="button"
                   className={`${btn} ${removeArmed === g.id ? "text-[#f48771]" : ""}`}
@@ -168,6 +170,7 @@ export function NetworkView({ onChanged, onNotice }: Props) {
       ) : (
         <button type="button" onClick={() => setAdding(true)} className="flex items-center gap-1 self-start rounded bg-ide-accent px-3 py-1 text-white"><Plus size={14} aria-hidden />Add gateway</button>
       )}
+      <PublicGateways savedUrls={list.gateways.map((g) => g.url)} onAdded={() => void refresh()} onNotice={onNotice} />
     </div>
   );
 }

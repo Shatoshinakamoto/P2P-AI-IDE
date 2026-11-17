@@ -9,6 +9,7 @@
 
 pub mod chats;
 pub mod client;
+pub mod discovery;
 pub mod gateways;
 pub mod store;
 pub mod workspace;

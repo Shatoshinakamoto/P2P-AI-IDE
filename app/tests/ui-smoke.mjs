@@ -71,7 +71,7 @@ const fake = () => {
     return { entries, truncated: false };
   };
   // Gateways and chats of the fake core. Keys are kept apart, as the OS keychain would, and never returned.
-  const gws = []; let active = null; const keys = new Map(); const chats = new Map(); let nextId = 1;
+  const gws = []; let active = null; let dirs = []; const keys = new Map(); const chats = new Map(); let nextId = 1;
   const hex = () => (nextId++).toString(16).padStart(16, "0");
   const view = (g) => ({ id: g.id, name: g.name, url: g.url, kind: g.kind, dev: g.url.startsWith("http://"), pinned: false, has_key: keys.has(g.id) });
   const callbacks = new Map(); let cbId = 1;
@@ -86,6 +86,22 @@ const fake = () => {
           if (!/^https:\/\/[a-z0-9.-]+(:\d+)?$|^http:\/\/127\.0\.0\.1:\d+$/.test(args.url)) throw "use https://host[:port] (or http://127.0.0.1:port for a dev gateway), with no path";
           const g = { id: hex(), name: args.name || "gateway", url: args.url, kind: "manual" };
           gws.push(g); if (args.key) keys.set(g.id, args.key); if (!active) active = g.id; return g.id;
+        }
+        case "directories_list": return dirs;
+        case "directories_set": {
+          if (args.directories.some((d) => !/^https:\/\/[a-z0-9.-]+\.[a-z]+\/?$/.test(d.trim()))) throw "a directory must be a public https://host[:port] address with no user name";
+          dirs = [...new Set(args.directories.map((d) => d.trim().replace(/\/$/, "")))]; return dirs;
+        }
+        case "public_list": return {
+          gateways: [{ gateway_id: "fe812c12f3ab4ce6ac5db69ac352f906cb1b11ef", region: "eu", models: ["llama3.2:1b", "<img src=x onerror=\"window.__xss2=1\">"],
+            access: { mode: "signup", api_url: "https://pub.example.org/", signup_url: "https://pub.example.org/signup", features: ["chat", "openai_api"], terms_url: "", logs_prompts: true, retention_days: 30 },
+            latency_ms: 41, directories: 1 }],
+          rejected: { bad_signature: 1 },
+        };
+        case "gateway_add_public": {
+          if (args.gatewayId !== "fe812c12f3ab4ce6ac5db69ac352f906cb1b11ef") throw "that gateway is not in the last list; refresh it";
+          const g = { id: hex(), name: "Public fe812c12 (eu)", url: "https://pub.example.org", kind: "public" };
+          gws.push(g); return g.id;
         }
         case "gateway_set_active": active = args.id; return null;
         case "gateway_set_key": keys.set(args.id, args.key); return null;
@@ -250,6 +266,32 @@ try {
   await page.getByRole("button", { name: "Click again to remove Dev" }).click();
   await page.getByRole("list", { name: "Saved gateways" }).getByText("Dev").waitFor({ state: "detached" });
   check("removing a gateway takes two clicks", true);
+
+  // ---- Phase I2b: public gateway list.
+  await page.getByText(/fetches nothing until you add one/).waitFor();
+  check("public list fetches nothing until a directory is added", !window_calls(await page.evaluate(() => window.__calls), "public_list"));
+  await page.getByLabel("Directory address").fill("https://192.168.1.5");
+  await page.getByRole("button", { name: "Add directory" }).click();
+  await page.getByText(/must be a public https/).first().waitFor();
+  check("a private directory address is refused with the core's message", true);
+  await page.getByLabel("Directory address").fill("https://dir.example.org/");
+  await page.getByRole("button", { name: "Add directory" }).click();
+  await page.getByRole("list", { name: "Directories" }).getByText("https://dir.example.org").waitFor();
+  await page.getByRole("button", { name: "Refresh list" }).click();
+  const pub = page.getByRole("list", { name: "Public gateway list" });
+  await pub.getByText("41 ms").waitFor();
+  const pubText = await pub.innerText();
+  const pubImgs = await pub.locator("img").count();
+  check("public list shows latency, access mode and the prompt-logging notice", /Sign-up gives a key/.test(pubText) && /Logs prompts, kept 30 days/.test(pubText), pubText.replace(/\s+/g, " ").slice(0, 160));
+  check("advert text is shown as text (no element, no script, links not clickable)", pubImgs === 0 && (await pub.locator("a").count()) === 0 && (await page.evaluate(() => window.__xss2)) === undefined);
+  await page.getByText(/1 entry skipped/).waitFor();
+  check("skipped adverts are counted by reason", true);
+  await page.getByRole("button", { name: "Add public gateway fe812c12" }).click();
+  await page.getByRole("list", { name: "Saved gateways" }).getByText("Public fe812c12 (eu)").waitFor();
+  const addCall = window_calls(await page.evaluate(() => window.__calls), "gateway_add_public");
+  check("adding a public gateway sends only its advert id (the core takes the address)", addCall && Object.keys(addCall).sort().join(",") === "gatewayId,key" && addCall.key === null, JSON.stringify(addCall));
+  await pub.getByText("Added").waitFor();
+  check("an added public gateway is marked Added in the list", true);
 
   // ---- Phase I2: chat.
   await page.getByRole("button", { name: "Agent chat", exact: true }).click();

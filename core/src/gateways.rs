@@ -45,6 +45,9 @@ pub enum Kind {
     Local,
     /// Typed in by the person.
     Manual,
+    /// Picked from the public list (phase I2b): its address came from a signed advert. Connections to it go only
+    /// to public addresses (discovery::PublicOnly, CWE-918).
+    Public,
 }
 
 /// One saved gateway. `ca_pem` is the pinned trust root when present.
