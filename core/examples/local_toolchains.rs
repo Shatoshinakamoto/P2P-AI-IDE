@@ -134,6 +134,7 @@ fn main() {
             runs.push(localbox::run(&ws, &req, &data, &mut |_| {}));
         }
         let r = runs.pop().unwrap();
+        let first_ms = runs.first().and_then(|f| f.as_ref().ok()).map(|f| f.duration_ms);
         let ok = match (&r, fw) {
             (Ok(r), "make") => r.exit_code.is_some_and(|c| c != 0) && r.stdout.contains("make-ran-in-sandbox"),
             (Ok(r), "go") => {
@@ -144,12 +145,13 @@ fn main() {
         };
         let detail = match &r {
             Ok(r) => format!(
-                "exit={:?} error={:?} tests={:?} out={:?} err={:?}",
+                "exit={:?} error={:?} tests={:?} out={:?} err={:?} err_start={:?}",
                 r.exit_code,
                 r.error,
                 r.tests,
                 r.stdout.chars().rev().take(300).collect::<String>().chars().rev().collect::<String>(),
-                r.stderr.chars().rev().take(600).collect::<String>().chars().rev().collect::<String>()
+                r.stderr.chars().rev().take(600).collect::<String>().chars().rev().collect::<String>(),
+                r.stderr.chars().take(400).collect::<String>()
             ),
             Err(e) => e.clone(),
         };
@@ -161,7 +163,16 @@ fn main() {
             println!("FAIL {fw}: {detail}");
         }
         if fw == "cargo" {
-            let fast = r.as_ref().is_ok_and(|r| r.duration_ms < 15_000 && !r.stderr.contains("Compiling calc"));
+            // Reused when the second run is clearly quicker than the first (or quick outright) and did not compile.
+            let fast = r.as_ref().is_ok_and(|r| {
+                (r.duration_ms < 15_000 || first_ms.is_some_and(|f| r.duration_ms * 2 < f))
+                    && !r.stderr.contains("Compiling calc")
+            });
+            println!(
+                "INFO cargo run times: first {} ms, second {} ms",
+                first_ms.unwrap_or(-1),
+                r.as_ref().map(|r| r.duration_ms).unwrap_or(-1)
+            );
             if fast {
                 passed += 1;
                 println!("PASS a second cargo run reuses the per-folder build cache");

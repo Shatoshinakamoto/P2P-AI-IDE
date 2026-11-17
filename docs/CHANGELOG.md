@@ -2,6 +2,25 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-17 - Phase I5c: Local sandbox on Windows (AppContainer)
+
+Requested by Pheonix on 2026-11-17 ("include local os sandbox ported from tandemforge"). A Rust port of
+TandemForge's `hostrun/winsandbox.py`, in toolchain mode.
+
+### Added
+- **Local sandbox on this computer** on Windows 10 (1703+) and 11: each run in an AppContainer with no capabilities
+  (no network, loopback included) and a job object (kill on close, process, memory, CPU and UI limits); folders
+  shared with the sandbox's own SID only for the run (recorded in `run-grants.json`, removed afterwards); `.exe`
+  programs only, `npm` through `node.exe`; the container's own folder emptied after each run
+  ([features/local-sandbox.md](features/local-sandbox.md)).
+- Core module `localbox_win` (profile, grants, job object, process start, command-line quoting, environment block).
+- Tests: `local_runs_are_confined_on_windows` (real Windows), quoting and environment-block tests; the
+  `local_toolchains` example finds Windows programs as the sandbox does.
+
+### Changed
+- `windows-sys` 0.61.2 is a direct dependency of the core on Windows (already in the lockfiles).
+- On Windows the snapshot copies `node_modules` and `.venv` instead of linking them.
+
 ## 2026-11-17 - Phase I5c: Local sandbox on this computer (Linux)
 
 Requested by Pheonix on 2026-11-17: "include local os sandbox ported from tandemforge". A Rust port of TandemForge's

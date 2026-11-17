@@ -1062,7 +1062,7 @@ const WIN_TOOLCHAINS: [&[&str]; 4] = [
 
 #[cfg(windows)]
 /// Finds `name` (an `.exe`, the extension optional) in `dirs`. `npm` and `npx` become `node.exe <cli.js>`, since
-/// their `.cmd` launchers are refused; `python3` falls back to `python`.
+/// their `.cmd` launchers are refused; `python3` means `python.exe` first, then `python3.exe`.
 ///
 /// Returns the program and the arguments to put before the request's own.
 fn win_program(name: &str, dirs: &[PathBuf]) -> Result<(PathBuf, Vec<String>), String> {
@@ -1087,13 +1087,15 @@ fn win_program(name: &str, dirs: &[PathBuf]) -> Result<(PathBuf, Vec<String>), S
         }
         return Ok((node, vec![cli.to_string_lossy().to_string()]));
     }
-    if let Some(p) = find(&format!("{stem}.exe")) {
-        return Ok((p, vec![]));
-    }
+    // `python3`: the python.org installer names its program python.exe (python3.exe is usually a Store alias or
+    // an MSYS2 build), so python.exe is tried first.
     if stem == "python3" {
         if let Some(p) = find("python.exe") {
             return Ok((p, vec![]));
         }
+    }
+    if let Some(p) = find(&format!("{stem}.exe")) {
+        return Ok((p, vec![]));
     }
     Err("the program was not found on this computer".into())
 }
@@ -1148,7 +1150,7 @@ pub fn run(
         (req.argv.clone(), vec![])
     };
     let user_home = std::env::var_os("USERPROFILE").map(PathBuf::from).filter(|h| h.is_absolute());
-    let system_roots: Vec<PathBuf> = ["SystemRoot", "ProgramFiles", "ProgramFiles(x86)", "ProgramW6432"]
+    let program_files: Vec<PathBuf> = ["ProgramFiles", "ProgramFiles(x86)", "ProgramW6432"]
         .iter()
         .filter_map(|k| std::env::var_os(k).map(PathBuf::from))
         .filter(|p| p.is_absolute())
@@ -1181,9 +1183,13 @@ pub fn run(
     args.extend(argv[1..].iter().cloned());
 
     // What the job may reach besides its folders: the toolchain group the program is in, and the program's own
-    // folder when it is not a system or toolchain folder. Never the home folder itself or a drive root.
-    let prog_dir =
-        program.parent().map(|d| plain(d.to_path_buf())).ok_or("the program was not found on this computer")?;
+    // folder when it is not the Windows folder or a toolchain folder. Never the home folder itself or a drive root.
+    // The real folder (through links such as an nvm or scoop "current" link) is used, since Windows checks that.
+    let prog_dir = program
+        .canonicalize()
+        .ok()
+        .and_then(|p| p.parent().map(|d| plain(d.to_path_buf())))
+        .ok_or("the program was not found on this computer")?;
     let mut share: Vec<PathBuf> = vec![];
     for g in &groups {
         if g.first().is_some_and(|first| under(&prog_dir, first)) {
@@ -1195,17 +1201,27 @@ pub fn run(
             share.push(m.clone());
         }
     }
-    let in_system = system_roots.iter().any(|r| under(&prog_dir, r));
+    for s in &share {
+        grants.add(s, &sid, win::RIGHTS_EXEC)?;
+    }
+    // Every app container may read the Windows folder. Program Files folders are readable only when their
+    // installer allowed app containers (Go does; Node.js does not): the grant is tried, and when the person may
+    // not change that folder's permissions (no admin rights) the run goes on and may fail to read it (see
+    // Troubleshooting).
+    let windows_dir = std::env::var_os("SystemRoot").map(PathBuf::from).filter(|p| p.is_absolute());
+    let in_windows = windows_dir.is_some_and(|w| under(&prog_dir, &w));
+    let in_program_files = program_files.iter().any(|r| under(&prog_dir, r));
     let in_shared = share.iter().any(|s| under(&prog_dir, s)) || under(&prog_dir, &job.path);
-    if !in_system && !in_shared {
+    if !in_windows && !in_shared {
         let is_home = user_home.as_ref().is_some_and(|h| under(h, &prog_dir));
         if is_home || prog_dir.components().count() < 3 {
             return Err("the program's folder cannot be shared with the sandbox".into());
         }
-        share.push(prog_dir.clone());
-    }
-    for s in &share {
-        grants.add(s, &sid, win::RIGHTS_EXEC)?;
+        if in_program_files {
+            let _ = grants.add(&prog_dir, &sid, win::RIGHTS_EXEC);
+        } else {
+            grants.add(&prog_dir, &sid, win::RIGHTS_EXEC)?;
+        }
     }
 
     let cwd = if req.cwd.is_empty() { job.path.clone() } else { job.path.join(&req.cwd) };
@@ -1430,7 +1446,7 @@ mod win_tests {
     }
 
     /// The Windows sandbox end to end on the real system: AppContainer, job object and folder grants. Uses only
-    /// programs from the Windows folder (cmd.exe, curl.exe, ping.exe), which every app container may run.
+    /// programs from the Windows folder (cmd.exe, curl.exe), which every app container may run.
     #[test]
     fn local_runs_are_confined_on_windows() {
         let a = available();
@@ -1444,6 +1460,8 @@ mod win_tests {
             std::fs::create_dir_all(d).unwrap();
         }
         std::fs::write(proj.join("hello.txt"), "hello from the copy\n").unwrap();
+        // A busy loop that never ends by itself (ping cannot be used to wait: the sandbox has no loopback).
+        std::fs::write(proj.join("loop.cmd"), "@for /l %%i in (1,0,2) do @rem\r\n").unwrap();
         std::fs::write(proj.join(".env"), "API_KEY=local-do-not-copy\n").unwrap();
         let secret = outside.join("secret.txt");
         std::fs::write(&secret, "outside-secret\n").unwrap();
@@ -1491,12 +1509,12 @@ mod win_tests {
 
         // A background program does not outlive the run, and the run does not wait for it.
         let t = std::time::Instant::now();
-        let r = go(cmd("start /b ping -n 40 127.0.0.1 >nul & echo started", None));
+        let r = go(cmd("start /b cmd /d /c loop.cmd & echo started", None));
         assert!(r.stdout.contains("started"), "{r:?}");
         assert!(t.elapsed().as_secs() < 30, "the run waited for the background program");
 
         // The time limit ends the run.
-        let r = go(cmd("ping -n 60 127.0.0.1 >nul", Some(10)));
+        let r = go(cmd("loop.cmd", Some(10)));
         assert!(r.timed_out, "{r:?}");
 
         // .bat and .cmd programs are refused; a path is refused.
