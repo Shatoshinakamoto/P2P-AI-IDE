@@ -1,0 +1,61 @@
+
+> p2p-ai-ide@0.1.0 test
+> node --test tests/*.test.ts
+
+TAP version 13
+# Subtest: baseName and dirName split on /
+ok 1 - baseName and dirName split on /
+  ---
+  duration_ms: 0.780948
+  type: 'test'
+  ...
+# Subtest: crumbs
+ok 2 - crumbs
+  ---
+  duration_ms: 0.581958
+  type: 'test'
+  ...
+# Subtest: languageFor maps extensions and names
+ok 3 - languageFor maps extensions and names
+  ---
+  duration_ms: 0.13968
+  type: 'test'
+  ...
+# Subtest: sizeLabel
+ok 4 - sizeLabel
+  ---
+  duration_ms: 0.161431
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 92.692867
+
+> p2p-ai-ide@0.1.0 ui-smoke
+> node tests/ui-smoke.mjs
+
+PASS welcome state shows Open folder
+PASS status bar shows disabled gateway and mission switches
+PASS explorer lists folders first -- src, README.md
+PASS Monaco opens the file with its text
+PASS typing marks the tab unsaved
+PASS Ctrl+S saves the edited text
+PASS save sends the loaded version (lost-update guard)
+PASS multi-cursor edits two lines at once -- "X# edited\nXimport os\n\n"
+PASS conflicting save is refused and explained
+PASS reload replaces the editor copy with the disk version
+PASS two files open in two tabs -- server.py, README.md
+PASS status bar shows the new tab's language -- No gateway Tools: Local Reloaded server.py from disk Autopilot off Auto Improve off Ln 1, Col 1 markdown
+PASS search finds matches -- 1 result in 1 file
+PASS later-phase views say when they arrive
+PASS explorer keeps expanded folders across views
+PASS no CSP violations under the shipped CSP
+PASS no page errors
+
+17 passed, 0 failed

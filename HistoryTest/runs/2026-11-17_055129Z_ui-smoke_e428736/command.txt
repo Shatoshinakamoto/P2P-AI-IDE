@@ -1,0 +1,2 @@
+# run in repository folder `app`, as an argument list (no shell)
+bash -c npm test && npm run build >/dev/null 2>&1 && npm run ui-smoke
