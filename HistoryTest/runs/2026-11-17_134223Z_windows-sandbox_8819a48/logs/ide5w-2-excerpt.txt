@@ -1,0 +1,20 @@
+Excerpt of D:\p2p-ai-ci\logs\ide5w.txt for the 8819a48 run, copied from the lines read during the session; the
+full log was overwritten by the next run (same file name) before it was archived.
+
+core-fmt-exit 0
+core-clippy-exit 0
+test result: ok. 65 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 10.98s
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+core-test-exit 0
+== toolchains  8:42:23.99
+PASS cargo tests run in the local sandbox and the failing test is found
+INFO cargo run times: first 31561 ms, second 27127 ms
+FAIL the second cargo run rebuilt: exit=Some(101) ... err_start="error: test failed, to rerun pass `--lib`\n"
+PASS go tests run in the local sandbox and the failing test is found
+FAIL npm: ... Error: Cannot find module 'C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js' ... code: 'MODULE_NOT_FOUND'
+SKIP make: make is not installed
+PASS unittest tests run in the local sandbox and the failing test is found
+{"failed":2,"passed":3,"skipped":1}
+toolchains-exit 1
+ide5w-done

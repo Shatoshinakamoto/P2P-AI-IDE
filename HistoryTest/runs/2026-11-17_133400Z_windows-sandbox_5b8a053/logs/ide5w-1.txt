@@ -1,0 +1,110 @@
+== date Tue 11/17/2026  8:36:39.78
+SHA256 hash of ide5w-src-5b8a053.tar.gz:
+bdb6f40591b3cbaa98a6ee351f75eb79cc7aac3fe474b4da81d8f8ddd05b91b1
+CertUtil: -hashfile command completed successfully.
+extracted
+core-fmt-exit 0
+    Checking windows-sys v0.61.2
+    Checking cap-primitives v4.0.3
+    Checking cap-std v4.0.3
+    Checking p2p-ide-core v0.1.0 (D:\p2p-ai-ci\ide5w\core)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 3.93s
+core-clippy-exit 0
+   Compiling windows-sys v0.61.2
+   Compiling cap-primitives v4.0.3
+   Compiling cap-std v4.0.3
+   Compiling p2p-ide-core v0.1.0 (D:\p2p-ai-ci\ide5w\core)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 8.21s
+     Running unittests src\lib.rs (D:\p2p-ai-ci\ide1\target\debug\deps\p2p_ide_core-2593271ba5ab806c.exe)
+
+running 65 tests
+test client::tests::a_pinned_ca_without_a_certificate_is_refused ... ok
+test agent::tests::secrets_are_denied ... ok
+test client::tests::requests_are_checked_before_sending ... ok
+test client::tests::model_lists_are_cleaned ... ok
+test discovery::tests::api_origin_only_takes_an_origin ... ok
+test chats::tests::titles_and_previews_are_one_line_and_bounded ... ok
+test client::tests::sse_lines_parse_to_fixed_items ... ok
+test client::tests::streamed_tool_calls_are_assembled_by_index ... ok
+test discovery::tests::urls_refuse_private_and_tricky_hosts ... ok
+test discovery::tests::strict_json_refuses_duplicates_and_floats ... ok
+test gateways::tests::error_messages_carry_no_input ... ok
+test gwapi::tests::errors_use_fixed_messages_only ... ok
+test client::tests::stream_reader_collects_stops_and_caps ... ok
+test gateways::tests::names_keys_and_cas_are_checked ... ok
+test gwapi::tests::paths_are_encoded_and_names_checked ... ok
+test gateways::tests::urls_are_allow_listed ... ok
+test localbox::win::tests::arguments_are_quoted_as_the_c_runtime_splits_them ... ok
+test localbox::win::tests::the_environment_block_is_sorted_and_checked ... ok
+test projects::tests::acceptance_checks_are_strict ... ok
+test projects::tests::downloads_must_match_their_digest_and_be_text ... ok
+test projects::tests::gateway_paths_follow_the_grammar ... ok
+test projects::tests::gateway_views_are_cleaned_and_capped ... ok
+test projects::tests::push_keeps_secrets_and_odd_names_home ... ok
+test projects::tests::push_and_pull_plans_compare_digests ... ok
+test runner::tests::gateway_answers_are_cleaned_and_capped ... ok
+test runner::tests::words_split_like_the_missions_view ... ok
+test client::tests::streams_a_chat_from_a_fake_gateway_with_the_key_in_the_header ... ok
+test scm::tests::log_is_parsed_and_cleaned ... ok
+test client::tests::agent_step_sends_tools_and_returns_calls ... ok
+test scm::tests::repository_settings_that_run_programs_are_refused ... ok
+test scm::tests::status_is_parsed_and_odd_paths_get_no_actions ... ok
+test store::tests::ids_are_unique_and_checked ... ok
+test testparse::tests::frameworks_match_the_gateway ... ok
+test testparse::tests::summaries_are_read ... ok
+test workspace::tests::error_messages_never_contain_paths ... ok
+test discovery::tests::public_only_never_connects_to_loopback ... ok
+test testparse::tests::hostile_output_is_bounded ... ok
+test client::tests::status_codes_map_to_fixed_errors_and_redirects_are_not_followed ... ok
+test gateways::tests::an_edited_file_with_a_bad_url_is_refused ... ok
+test runner::tests::requests_are_checked ... ok
+test agent::tests::run_tools_go_through_the_runner_only ... ok
+test agent::tests::a_turn_stops_at_the_step_budget_and_on_stop ... ok
+test workspace::tests::name_is_folder_name_only ... ok
+test workspace::tests::open_refuses_relative_missing_file_and_root ... ok
+test workspace::tests::traversal_and_odd_paths_are_refused ... ok
+test workspace::tests::listing_is_sorted_folders_first ... ok
+test agent::tests::read_tools_work_and_hide_secrets ... ok
+test agent::tests::multi_line_edits_match_windows_line_endings ... ok
+test gateways::tests::setup_folder_gives_port_and_ca_but_never_secrets ... ok
+test workspace::tests::size_and_text_limits ... ok
+test agent::tests::a_turn_runs_tools_and_ends_with_text ... ok
+test workspace::tests::search_finds_plain_text_and_skips_build_folders ... ok
+test projects::tests::links_are_saved_per_folder_and_gateway ... ok
+test chats::tests::scopes_keep_workspaces_apart_and_hide_the_path ... ok
+test workspace::tests::read_and_save_with_version_check ... ok
+test agent::tests::edits_stay_pending_until_accepted ... ok
+test store::tests::write_read_replace_and_caps ... ok
+test discovery::tests::directories_are_checked_and_saved ... ok
+test workspace::tests::create_new_file_only_in_existing_folder ... ok
+test gateways::tests::add_list_activate_remove_keeps_keys_out_of_the_file ... ok
+test chats::tests::bad_chats_and_ids_are_refused ... ok
+
+thread 'localbox::win_tests::local_runs_are_confined_on_windows' (33472) panicked at src\localbox.rs:1500:9:
+RunResult { runner: "local-os", place: "this computer", summary: "run_command cmd /d /c ping -n 60 127.0.0.1 >nul", exit_code: Some(1), timed_out: false, duration_ms: 55, stdout: "", stderr: "", truncated: false, tests: None, error: "" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test localbox::win_tests::local_runs_are_confined_on_windows ... FAILED
+test scm::tests::real_git_round_trip_without_hooks ... ok
+test chats::tests::save_list_load_search_delete ... ok
+test client::tests::no_key_and_unreachable_gateways_fail_cleanly ... ok
+
+failures:
+
+failures:
+    localbox::win_tests::local_runs_are_confined_on_windows
+
+test result: FAILED. 64 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.05s
+
+error: test failed, to rerun pass `--lib`
+core-test-exit 101
+== toolchains  8:36:39.78
+PASS cargo tests run in the local sandbox and the failing test is found
+FAIL the second cargo run rebuilt: exit=Some(101) error="" tests=Some(TestSummary { passed: 1, failed: 1, skipped: 0, total: 2, failures: [] }) out="t::add' (35324) panicked at src\\lib.rs:4:24:\nassertion `left == right` failed\n  left: -1\n right: 5\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\nfailures:\n    t::add\n\ntest result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n" err="error: test failed, to rerun pass `--lib`\n"
+PASS go tests run in the local sandbox and the failing test is found
+FAIL npm: exit=Some(1) error="" tests=None out="" err=" (node:internal/modules/cjs/loader:1564:15)\n    at wrapResolveFilename (node:internal/modules/cjs/loader:1118:27)\n    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1142:10)\n    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1169:12)\n    at Module._load (node:internal/modules/cjs/loader:1341:5)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47 {\n  code: 'MODULE_NOT_FOUND',\n  requireStack: []\n}\n\nNode.js v24.21.0\n"
+SKIP make: make is not installed
+FAIL unittest: exit=Some(-1073741515) error="" tests=None out="" err=""
+{"failed":3,"passed":2,"skipped":1}
+toolchains-exit 1
+== end  8:36:39.78
+ide5w-done

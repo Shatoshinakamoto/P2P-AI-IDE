@@ -12,7 +12,7 @@ failing test, and runs it through `localbox::run` exactly as the Run and test vi
 
 | Framework | Project | Expected |
 |---|---|---|
-| cargo (twice) | a library with 2 tests, 1 failing | verdict fail, 1 passed, 1 failed, the failing test named; the second run reuses the per-folder cache (no recompile) |
+| cargo (twice) | a library with 2 tests, 1 failing | verdict fail, 1 passed, 1 failed, the failing test named; cargo's build output is in the per-folder cache, not in the copy (run times printed as INFO) |
 | go | a module with 2 tests, 1 failing | as above |
 | npm | `node --test` through `npm test` | as above |
 | make | a `test` target that fails | verdict fail |

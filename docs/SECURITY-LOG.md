@@ -2,6 +2,28 @@
 
 Every security patch, hardening change, CVE remediation and accepted risk, newest first.
 
+## 2026-11-17 — Phase I5c hardening: Windows local sandbox (AppContainer and job object)
+- **Type:** hardening; accepted risk
+- **CVE / CWE / advisory:** none (new feature). CWE-78, CWE-88, CWE-158, CWE-200, CWE-403, CWE-404, CWE-426, CWE-459, CWE-526, CWE-732, CWE-400; NIST AC-6, SC-7, SC-4, SI-6
+- **Severity:** none (new feature built with these controls). KEV no.
+- **Affected:** `core/src/localbox.rs`, `core/src/localbox_win.rs`, `core/Cargo.toml`
+- **What changed:** Windows runs start suspended in an AppContainer with no capabilities and are resumed only inside
+  a job object (kill on close, 1024 processes, 8 GiB, CPU = 8 x time limit, all UI restrictions); only the three
+  pipe handles are inherited; the environment is built from scratch; only `.exe` programs found by name on PATH
+  (no `.bat`/`.cmd`, no Store aliases); command lines quoted by the C runtime rules, NUL refused; folder grants only
+  to the sandbox's own `S-1-15-2-` SID through `icacls` (argument list), recorded before they are made and removed
+  after the run or at the next run after a crash; the container's folder emptied after each run; the runner is
+  offered only when a confined test start works.
+- **Why it is secure now:** project code on Windows cannot reach the network, the person's other files, other
+  programs' windows or clipboard, or outlive its run (NIST AC-6, SC-7, SC-4; fail closed per SI-6).
+- **Accepted risk (toolchain mode, pending Pheonix's choice):** the job may start other programs (including
+  `cmd.exe`) and run files it builds in its job folder and cache; during a run the toolchain folders it uses carry
+  a read-and-execute entry for the sandbox SID; the Windows and Program Files folders are readable by any app
+  container. Documented in features/local-sandbox.md section 6.
+- **Verification:** HistoryTest runs 2026-11-17_134640Z_windows-sandbox_dbbc5cd (real Windows confinement test
+  passed; cargo, go, unittest inside the sandbox; npm blocked by the Node.js folder's permissions),
+  2026-11-17_133400Z and 134223Z (earlier failing runs), 2026-11-17_134717Z_security-scan_dbbc5cd (0 vulnerabilities).
+
 ## 2026-11-17 — Phase I5c hardening: local OS sandbox for runs on this computer
 - **Type:** hardening; accepted risk
 - **CVE / CWE / advisory:** none (new feature). CWE-200, CWE-522, CWE-22, CWE-59, CWE-269, CWE-250, CWE-693, CWE-400, CWE-404, CWE-426, CWE-526, CWE-668, CWE-78; NIST AC-3, AC-6, SC-4, SC-7, SI-6

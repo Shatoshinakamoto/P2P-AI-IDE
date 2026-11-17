@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "06f2299443577255e5050e4b14ab9b19447341867a5006df389a7e725838fbd7",
+   "size": 1538
+  },
+  "command.txt": {
+   "sha256": "78e277228dc5af95b2438495728e3d5631b9a5f0da89754905c5c46dc280ac11",
+   "size": 120
+  },
+  "environment.md": {
+   "sha256": "4496e7b2e0d1656cc419522da6b03d532a098d5bc146ca28abe3058abe2ffbb0",
+   "size": 205
+  },
+  "logs/output.log": {
+   "sha256": "a9e1c55e1677951946207816d91834f483c904c6e954b4ea5e39224f4aa082b2",
+   "size": 519
+  },
+  "results/summary.txt": {
+   "sha256": "ceaa789967f8ca3bfd536968933cc393f985ff9944f65e5fd4d3207fca3acdf9",
+   "size": 296
+  }
+ },
+ "previous": {
+  "manifest_sha256": "f0c7ed41768bccacb73e821c3c16f3150c2b0e143014b67c2093ee6ac3998491",
+  "run_id": "2026-11-17_134651Z_core_dbbc5cd"
+ },
+ "run": {
+  "area": "local-toolchains",
+  "branch_or_pr": "claude/project-thread-dfop2y",
+  "collected_utc": "",
+  "commit": "dbbc5cd9eb2675eb40df1e3ce5f8cabea51967a1",
+  "count_unit": "",
+  "date_utc": "2026-11-17T13:47:06Z",
+  "dirty": false,
+  "duration_s": 6.2,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_134706Z_local-toolchains_dbbc5cd",
+  "kind": "integration",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "claude",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Real toolchains in the Linux sandbox with the corrected cache check",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

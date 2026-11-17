@@ -112,5 +112,13 @@ upload them anywhere except the messages you send to the gateway you chose.
   links to `~/.cargo`, which the sandbox can only read). The name is the start of the folder key (SHA-256 of the folder's path, as in `links.json`), so the path
   itself is not in the name (CWE-359). Delete the whole folder to free space; the next run rebuilds.
 
+* `run-grants.json` (Windows only): the folders outside the data folder that the running job's sandbox SID was given
+  read-and-execute on, as `[{"path": ..., "sid": "S-1-15-2-..."}]`. Written before each grant and deleted when the
+  run ends; if the IDE crashed mid-run, the next local run removes the listed grants first. Only `S-1-15-2-` SIDs
+  are ever removed, so an edited file cannot strip the person's own access. Safe to leave alone.
+
+On Windows the job folder and the cache are also shared with the folder's sandbox SID (modify), so the AppContainer
+can use them; nothing else in the data folder is.
+
 **Security:** both folders are writable by sandboxed runs, which run untrusted project code. Nothing in them is
 trusted by the IDE; it never runs or loads files from them. See [features/local-sandbox.md](../features/local-sandbox.md).

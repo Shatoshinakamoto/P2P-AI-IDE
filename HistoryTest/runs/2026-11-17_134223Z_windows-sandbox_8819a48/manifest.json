@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "cb59f648c03514345a069e4d6c8d701e9f72206e4f32f0b49b1a256982a8b6e8",
+   "size": 2077
+  },
+  "command.txt": {
+   "sha256": "5fc7724a26ddaeee6b612d5109ebcd8fd1389a575b1628dc5826aecc335f635d",
+   "size": 58
+  },
+  "environment.md": {
+   "sha256": "ddbd00d686775c85c03d5c5f41d165ced1146e07649c14d06718d97ebb072aad",
+   "size": 136
+  },
+  "logs/ide5w-2-excerpt.txt": {
+   "sha256": "ce308dfb38012c9426bd457d6351ea75e05d5545f085a95e76376c61f4fc7dd0",
+   "size": 1167
+  },
+  "results/summary.txt": {
+   "sha256": "7b633087d126ca8e25fbbaa3b13036df9cb3df3f13accf1c7b3fc575f2bae003",
+   "size": 224
+  }
+ },
+ "previous": {
+  "manifest_sha256": "b21eb8c9c410d362f86330686458fbf2747ca10f7c63a0b0e9ecaea887234e90",
+  "run_id": "2026-11-17_134717Z_security-scan_dbbc5cd"
+ },
+ "run": {
+  "area": "windows-sandbox",
+  "branch_or_pr": "claude/project-thread-dfop2y",
+  "collected_utc": "2026-11-17T13:52:31Z",
+  "commit": "8819a48",
+  "count_unit": "",
+  "date_utc": "2026-11-17T13:42:23Z",
+  "dirty": false,
+  "duration_s": null,
+  "exit_code": null,
+  "failed": 2,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_134223Z_windows-sandbox_8819a48",
+  "kind": "integration",
+  "machine": "pc",
+  "passed": 76,
+  "record": "imported",
+  "redactions": {},
+  "requested_by": "claude",
+  "shortened_logs": [],
+  "skipped": 1,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Second Windows sandbox run on the PC at 8819a48 (excerpt only)",
+  "verdict": "fail",
+  "verdict_reason": ""
+ },
+ "schema": 1
+}

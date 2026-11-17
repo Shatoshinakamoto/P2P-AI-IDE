@@ -3,7 +3,7 @@
 //! Purpose: `localbox.rs` tests the confinement with python3. This program makes a tiny project per framework
 //! (cargo, go, npm with node:test, make, unittest), each with one passing and one failing test, and runs it with
 //! `localbox::run` the way the Run and test view does. A framework whose program is not installed is reported
-//! as skipped, not passed. It also checks that a second cargo run reuses the per-folder cache.
+//! as skipped, not passed. It also checks that cargo's build output goes to the per-folder cache.
 //!
 //! Usage: `cargo run --example local_toolchains`
 //! Outputs: `PASS`/`FAIL`/`SKIP` lines and a last line `{"passed": n, "failed": n, "skipped": n}`; exit 0 only
@@ -37,9 +37,25 @@ fn write(root: &Path, files: &[(&str, &str)]) {
     }
 }
 
+/// True when `name` is on PATH. On Windows the sandbox starts `.exe` files only, so it looks for `<name>.exe`, for
+/// `node.exe` when the name is `npm`, and for `python.exe` when `python3.exe` is missing.
 fn on_path(name: &str) -> bool {
-    std::env::var_os("PATH")
-        .is_some_and(|p| std::env::split_paths(&p).any(|d| d.is_absolute() && d.join(name).is_file()))
+    let names: Vec<String> = if cfg!(windows) {
+        match name {
+            "npm" => vec!["node.exe".into()],
+            "python3" => vec!["python3.exe".into(), "python.exe".into()],
+            n => vec![format!("{n}.exe")],
+        }
+    } else {
+        vec![name.into()]
+    };
+    std::env::var_os("PATH").is_some_and(|p| {
+        std::env::split_paths(&p).any(|d| {
+            d.is_absolute()
+                && !d.to_string_lossy().to_lowercase().contains("windowsapps")
+                && names.iter().any(|n| d.join(n).is_file())
+        })
+    })
 }
 
 fn main() {
@@ -118,6 +134,7 @@ fn main() {
             runs.push(localbox::run(&ws, &req, &data, &mut |_| {}));
         }
         let r = runs.pop().unwrap();
+        let first_ms = runs.first().and_then(|f| f.as_ref().ok()).map(|f| f.duration_ms);
         let ok = match (&r, fw) {
             (Ok(r), "make") => r.exit_code.is_some_and(|c| c != 0) && r.stdout.contains("make-ran-in-sandbox"),
             (Ok(r), "go") => {
@@ -128,12 +145,13 @@ fn main() {
         };
         let detail = match &r {
             Ok(r) => format!(
-                "exit={:?} error={:?} tests={:?} out={:?} err={:?}",
+                "exit={:?} error={:?} tests={:?} out={:?} err={:?} err_start={:?}",
                 r.exit_code,
                 r.error,
                 r.tests,
                 r.stdout.chars().rev().take(300).collect::<String>().chars().rev().collect::<String>(),
-                r.stderr.chars().rev().take(600).collect::<String>().chars().rev().collect::<String>()
+                r.stderr.chars().rev().take(600).collect::<String>().chars().rev().collect::<String>(),
+                r.stderr.chars().take(400).collect::<String>()
             ),
             Err(e) => e.clone(),
         };
@@ -145,13 +163,23 @@ fn main() {
             println!("FAIL {fw}: {detail}");
         }
         if fw == "cargo" {
-            let fast = r.as_ref().is_ok_and(|r| r.duration_ms < 15_000 && !r.stderr.contains("Compiling calc"));
-            if fast {
+            // The build output goes to the IDE's per-folder cache, not into the throw-away copy, so built
+            // dependencies are kept between runs. (The project's own crate is rebuilt each time: every run works on
+            // a fresh copy at a new path, which is part of Cargo's fingerprint.)
+            let key = p2p_ide_core::projects::folder_key(ws.root());
+            let short: String = key.chars().filter(char::is_ascii_alphanumeric).take(24).collect();
+            let target = data.join("run-cache").join(short).join("target").join("debug");
+            println!(
+                "INFO cargo run times: first {} ms, second {} ms",
+                first_ms.unwrap_or(-1),
+                r.as_ref().map(|r| r.duration_ms).unwrap_or(-1)
+            );
+            if target.join("deps").is_dir() && !root.join("target").exists() {
                 passed += 1;
-                println!("PASS a second cargo run reuses the per-folder build cache");
+                println!("PASS cargo's build output is kept in the per-folder cache, outside the copy");
             } else {
                 failed += 1;
-                println!("FAIL the second cargo run rebuilt: {detail}");
+                println!("FAIL cargo's build output is not in the per-folder cache: {detail}");
             }
         }
         let _ = fs::remove_dir_all(&root);

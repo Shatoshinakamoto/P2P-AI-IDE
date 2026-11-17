@@ -1,0 +1,2 @@
+# run in repository folder `core`, as an argument list (no shell)
+bash -c CC_x86_64_pc_windows_msvc=clang-cl-18 AR_x86_64_pc_windows_msvc=llvm-lib CFLAGS_x86_64_pc_windows_msvc='--target=x86_64-pc-windows-msvc /imsvc /tmp/claude-0/-home-user/66fad580-466f-5803-98e2-025a943a051b/scratchpad/winstub -w' cargo clippy --locked --target x86_64-pc-windows-msvc --all-targets -- -D warnings
