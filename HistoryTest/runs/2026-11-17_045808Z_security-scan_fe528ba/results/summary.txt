@@ -1,0 +1,11 @@
+id: 2026-11-17_045808Z_security-scan_fe528ba
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: not recorded
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: 0
+duration_s: 0.8
+commit: fe528ba89de319c40dfac36d7f8d56cfcc984b36
+machine: cloud

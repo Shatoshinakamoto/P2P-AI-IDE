@@ -1,0 +1,62 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "40a83bbb30d961ba1306e10d5d27e7916c6ca386726061bba0a73a616a74487a",
+   "size": 1777
+  },
+  "artifacts/ui-smoke.png": {
+   "sha256": "0f62fc883232e8953823671f72e4bba9c7125f6232cfd5bbc193b4ebd6b9d3bf",
+   "size": 35880
+  },
+  "command.txt": {
+   "sha256": "5dbfcd30cb9a27c2418e254a9e0c723f1850179ad6700a8127f81dc4d814829b",
+   "size": 105
+  },
+  "environment.md": {
+   "sha256": "9aa0bbe9287c68d9c477c50da9612e4dee1301edb0ddca0b55ce2b67f6ed3b91",
+   "size": 197
+  },
+  "logs/output.log": {
+   "sha256": "c840f81581ba235ae900aeed6f7ba7032da5b4e5b86ca17e80bc732f7751277b",
+   "size": 776
+  },
+  "results/summary.txt": {
+   "sha256": "35c33dd11bd53b6ceee76a9df2001e1467b475844082d67ce1b46660fa56902c",
+   "size": 288
+  }
+ },
+ "previous": {
+  "manifest_sha256": "84cbbd5597b69e84b56396d2b25fcee3df34dec7c1da32b8d5d90267f46cf762",
+  "run_id": "2026-11-17_045746Z_webview_fe528ba"
+ },
+ "run": {
+  "area": "ui-smoke",
+  "branch_or_pr": "claude/project-thread-dfop2y",
+  "collected_utc": "",
+  "commit": "fe528ba89de319c40dfac36d7f8d56cfcc984b36",
+  "count_unit": "",
+  "date_utc": "2026-11-17T04:58:06Z",
+  "dirty": false,
+  "duration_s": 2.4,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_045806Z_ui-smoke_fe528ba",
+  "kind": "e2e",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "Build the P2P-AI IDE app shell (phase I1)",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "UI smoke: built webview in headless Chromium with a fake workspace, under the shipped CSP",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

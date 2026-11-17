@@ -1,1 +1,7 @@
 run_id,date_utc,area,commit,branch_or_pr,machine,verdict,passed,failed,skipped,summary
+2026-11-17_045740Z_core_fe528ba,2026-11-17T04:57:40Z,core,fe528ba,claude/project-thread-dfop2y,cloud container,pass,,,,"Rust core: fmt, clippy and unit tests (path confinement, saves, search)"
+2026-11-17_045741Z_shell_fe528ba,2026-11-17T04:57:41Z,shell,fe528ba,claude/project-thread-dfop2y,cloud container,pass,,,,"Tauri shell: fmt, clippy and debug build on Linux (WebKitGTK 2.52)"
+2026-11-17_045746Z_webview_fe528ba,2026-11-17T04:57:46Z,webview,fe528ba,claude/project-thread-dfop2y,cloud container,pass,4,0,0,"Webview: type check, unit tests, production build, patched DOMPurify in the bundle"
+2026-11-17_045806Z_ui-smoke_fe528ba,2026-11-17T04:58:06Z,ui-smoke,fe528ba,claude/project-thread-dfop2y,cloud container,pass,,,,"UI smoke: built webview in headless Chromium with a fake workspace, under the shipped CSP"
+2026-11-17_045808Z_security-scan_fe528ba,2026-11-17T04:58:08Z,security-scan,fe528ba,claude/project-thread-dfop2y,cloud container,pass,,,,npm audit of the webview dependencies (after the DOMPurify override)
+2026-11-17_045933Z_security-scan_fe528ba,2026-11-17T04:59:33Z,security-scan,fe528ba,claude/project-thread-dfop2y,cloud container,pass,,,,cargo audit of both Rust lockfiles (RustSec)

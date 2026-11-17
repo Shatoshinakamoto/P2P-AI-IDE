@@ -1,0 +1,11 @@
+id: 2026-11-17_045746Z_webview_fe528ba
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: 4
+failed: 0
+skipped: 0
+count_unit: packages
+exit_code: 0
+duration_s: 6.3
+commit: fe528ba89de319c40dfac36d7f8d56cfcc984b36
+machine: cloud

@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "c91075c9f54a0c16e27b6c5f7bf86c801f5b360e48529f470a4c2ddf155a84d4",
+   "size": 1444
+  },
+  "command.txt": {
+   "sha256": "c5d5abaa2ca0a3aaa3323608d8fed47ad5a04b9d7f193f02d6313fd32b345303",
+   "size": 111
+  },
+  "environment.md": {
+   "sha256": "7ff67612299a758d40adebcb9b3e1aafcc6df99ce3fbb6ad419c5fe4e4db51d7",
+   "size": 202
+  },
+  "logs/output.log": {
+   "sha256": "a574943217ebcf13e24a4b76ac94f0d6394205cc4d3ad8b2cbcfdc1e1e114eb1",
+   "size": 174
+  },
+  "results/summary.txt": {
+   "sha256": "14e7b24f9f9b9336eb2b2d8047ac38fc2624279bdba623621cfe0b447473e4dc",
+   "size": 293
+  }
+ },
+ "previous": {
+  "manifest_sha256": "4c085e359e0996dc541585632eb40f080ebac04aa83e6e50be9b1bc13fd00f9e",
+  "run_id": "2026-11-17_045806Z_ui-smoke_fe528ba"
+ },
+ "run": {
+  "area": "security-scan",
+  "branch_or_pr": "claude/project-thread-dfop2y",
+  "collected_utc": "",
+  "commit": "fe528ba89de319c40dfac36d7f8d56cfcc984b36",
+  "count_unit": "",
+  "date_utc": "2026-11-17T04:58:08Z",
+  "dirty": false,
+  "duration_s": 0.8,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_045808Z_security-scan_fe528ba",
+  "kind": "scan",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "Build the P2P-AI IDE app shell (phase I1)",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "npm audit of the webview dependencies (after the DOMPurify override)",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}
