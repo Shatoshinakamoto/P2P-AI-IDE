@@ -120,3 +120,6 @@ lucide-react (already pinned). cargo audit and npm audit on 2026-11-17 (run link
 * [Tauri shell: fmt and clippy with the 6 source control commands](../../HistoryTest/runs/2026-11-17_090745Z_shell_86e1c4f/RUN.md)
 * [Webview: UI smoke 64/64 with the Source Control flow (refused repository, stage, view-only diff, commit, names as text)](../../HistoryTest/runs/2026-11-17_090746Z_ui-smoke_86e1c4f/RUN.md)
 * [cargo audit and npm audit: 0 vulnerabilities](../../HistoryTest/runs/2026-11-17_090757Z_security-scan_86e1c4f/RUN.md)
+* [Windows PC build at 3a1a8bd: all steps passed except one core test (fail), because the real-git test created a file named `*`, which Windows refuses](../../HistoryTest/runs/2026-11-17_090845Z_windows_3a1a8bd/RUN.md)
+* [Core on Linux after the fix (the test now uses `[a].txt`): pass](../../HistoryTest/runs/2026-11-17_091314Z_core_71c6f12/RUN.md)
+* [Core on the Windows PC after the fix, Git for Windows 2.56: 55 + 5 + 2 passed, hook not run](../../HistoryTest/runs/2026-11-17_091518Z_windows_71c6f12/RUN.md)

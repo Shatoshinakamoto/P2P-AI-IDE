@@ -1,0 +1,11 @@
+id: 2026-11-17_091314Z_core_71c6f12
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: not recorded
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: 0
+duration_s: 5.7
+commit: 71c6f12078855af0355583200ff29e30452ee570
+machine: cloud

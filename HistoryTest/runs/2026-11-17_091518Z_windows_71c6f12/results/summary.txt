@@ -1,0 +1,11 @@
+id: 2026-11-17_091518Z_windows_71c6f12
+verdict: pass
+verdict_reason: All core checks pass on Windows, including the real-git round trip.
+passed: 62
+failed: 0
+skipped: not recorded
+count_unit: not recorded
+exit_code: not recorded
+duration_s: not recorded
+commit: 71c6f12
+machine: pc

@@ -1,0 +1,62 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "35c77f912f737d75a7674d03b50a22696f42872bc3b8ae6272631a18bb572f36",
+   "size": 1773
+  },
+  "artifacts/ide5a2-core.cmd": {
+   "sha256": "a72c5a00db7ec5db116b2d1c53dbb1892f2c4207be1a980d902d985bfbc0d822",
+   "size": 944
+  },
+  "command.txt": {
+   "sha256": "733ba2a59e80237a341d39281057de012b623c90f5a2529b820fd2c3018994ac",
+   "size": 59
+  },
+  "environment.md": {
+   "sha256": "781e47c829f89be90140127328615c4448aa329f013dca982088efc9e9110b7e",
+   "size": 128
+  },
+  "logs/ide5a2.txt": {
+   "sha256": "cdde1c0c7e1b7655276b1730ce562b55db180840c81601bf080cc95025a28927",
+   "size": 8059
+  },
+  "results/summary.txt": {
+   "sha256": "8f1023041b0749a052c2487a1e5184a0c6df77c112e220eefb87927bf3f49f65",
+   "size": 282
+  }
+ },
+ "previous": {
+  "manifest_sha256": "325a001505bf3e72c719494657f76604d5349a3c9f1f77ba4da944d42dc44582",
+  "run_id": "2026-11-17_091314Z_core_71c6f12"
+ },
+ "run": {
+  "area": "windows",
+  "branch_or_pr": "PR #7",
+  "collected_utc": "2026-11-17T09:15:18Z",
+  "commit": "71c6f12",
+  "count_unit": "",
+  "date_utc": "2026-11-17T09:15:18Z",
+  "dirty": false,
+  "duration_s": null,
+  "exit_code": null,
+  "failed": 0,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_091518Z_windows_71c6f12",
+  "kind": "unit",
+  "machine": "pc",
+  "passed": 62,
+  "record": "imported",
+  "redactions": {},
+  "requested_by": "",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Windows core re-run after the real-git test fix (71c6f12)",
+  "verdict": "pass",
+  "verdict_reason": "All core checks pass on Windows, including the real-git round trip."
+ },
+ "schema": 1
+}

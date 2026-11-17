@@ -1,0 +1,62 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "9e3c8b32aed63d7adba4951d073a714f827e07fab90c4620bf0b4dc04b9d6795",
+   "size": 2037
+  },
+  "artifacts/ide5a-build.cmd": {
+   "sha256": "6d6e1c2b27610380a5452027bc234c2a22165b9beece2742db64a8b615d80a47",
+   "size": 1630
+  },
+  "command.txt": {
+   "sha256": "3f05fb0715a016e1340b5064f3f136ea24406c9867a618974c451ce2e493a90a",
+   "size": 59
+  },
+  "environment.md": {
+   "sha256": "051732555b31ba306b8237b7dc5dfaaa5b1df8fcb134947040f1a26676d74af1",
+   "size": 128
+  },
+  "logs/ide5a.txt": {
+   "sha256": "5075f728150ad7e796eb30651a9e317d82d394efb2b8ec4d490b1d8c0fae15f8",
+   "size": 38651
+  },
+  "results/summary.txt": {
+   "sha256": "e36c65c656dd11e4ddbe155c9a572bc5c6a3a43e5348982ec4e7b3d0507530e8",
+   "size": 289
+  }
+ },
+ "previous": {
+  "manifest_sha256": "325a001505bf3e72c719494657f76604d5349a3c9f1f77ba4da944d42dc44582",
+  "run_id": "2026-11-17_091314Z_core_71c6f12"
+ },
+ "run": {
+  "area": "windows",
+  "branch_or_pr": "PR #7",
+  "collected_utc": "2026-11-17T09:15:18Z",
+  "commit": "3a1a8bd",
+  "count_unit": "",
+  "date_utc": "2026-11-17T09:08:45Z",
+  "dirty": false,
+  "duration_s": null,
+  "exit_code": null,
+  "failed": 1,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_090845Z_windows_3a1a8bd",
+  "kind": "build",
+  "machine": "pc",
+  "passed": 54,
+  "record": "imported",
+  "redactions": {},
+  "requested_by": "",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Windows build and tests of phase I5a (Source Control) at 3a1a8bd",
+  "verdict": "fail",
+  "verdict_reason": "One core test failed on Windows (test setup); fixed and re-run separately."
+ },
+ "schema": 1
+}
