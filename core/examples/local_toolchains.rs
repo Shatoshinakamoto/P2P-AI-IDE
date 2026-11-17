@@ -37,9 +37,25 @@ fn write(root: &Path, files: &[(&str, &str)]) {
     }
 }
 
+/// True when `name` is on PATH. On Windows the sandbox starts `.exe` files only, so it looks for `<name>.exe`, for
+/// `node.exe` when the name is `npm`, and for `python.exe` when `python3.exe` is missing.
 fn on_path(name: &str) -> bool {
-    std::env::var_os("PATH")
-        .is_some_and(|p| std::env::split_paths(&p).any(|d| d.is_absolute() && d.join(name).is_file()))
+    let names: Vec<String> = if cfg!(windows) {
+        match name {
+            "npm" => vec!["node.exe".into()],
+            "python3" => vec!["python3.exe".into(), "python.exe".into()],
+            n => vec![format!("{n}.exe")],
+        }
+    } else {
+        vec![name.into()]
+    };
+    std::env::var_os("PATH").is_some_and(|p| {
+        std::env::split_paths(&p).any(|d| {
+            d.is_absolute()
+                && !d.to_string_lossy().to_lowercase().contains("windowsapps")
+                && names.iter().any(|n| d.join(n).is_file())
+        })
+    })
 }
 
 fn main() {
