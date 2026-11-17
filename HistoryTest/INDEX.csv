@@ -33,3 +33,4 @@ run_id,date_utc,area,commit,branch_or_pr,machine,verdict,passed,failed,skipped,s
 2026-11-17_082340Z_ui-smoke_7e32c2d,2026-11-17T08:23:40Z,ui-smoke,7e32c2d,claude/project-thread-dfop2y,cloud container,pass,4,0,0,Webview: UI smoke with the Missions view
 2026-11-17_082359Z_security-scan_7e32c2d,2026-11-17T08:23:59Z,security-scan,7e32c2d,claude/project-thread-dfop2y,cloud container,pass,,,,cargo audit and npm audit for I4
 2026-11-17_085225Z_live-gateway_bfae51f,2026-11-17T08:52:25Z,live-gateway,bfae51f,PR #4,cloud container,pass,,,,"Live: IDE core against a real Go gateway, node and sandbox (Autopilot mission)"
+2026-11-17_085943Z_windows_bfae51f,2026-11-17T08:59:43Z,windows,bfae51f,PR #4,user PC (Windows),pass,58,0,,Windows build and tests of phase I4 (bfae51f)
