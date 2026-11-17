@@ -392,6 +392,37 @@ pub fn run_tool(ws: &Workspace, pending: &mut Pending, call: &ToolCall) -> (Stri
 }
 
 /// Records a proposed text for a file (keeping the first `before` and base version).
+/// Adds a file brought back from a gateway project (phase I4 pull) as a pending change, reviewed like the
+/// assistant's edits.
+///
+/// * `local_version` -- the local file's SHA-256 when the pull was planned, or `None` for a new file.
+///
+/// Security: nothing is written; the person accepts per file in the diff review, and the accept checks the version
+/// again (OWASP LLM06, CWE-367). A local file that changed since the plan, or is not text, is refused here.
+pub fn propose_external(
+    ws: &Workspace,
+    pending: &mut Pending,
+    rel: &str,
+    local_version: Option<String>,
+    text: String,
+) -> Result<(), String> {
+    if denied(rel) {
+        return Err("that name is kept private".into());
+    }
+    if let Some(v) = &local_version {
+        let now = ws.read_text(rel).map_err(|e| e.message().to_string())?;
+        if &now.version != v {
+            return Err("the local file changed meanwhile; pull again".into());
+        }
+    }
+    if let Some(f) = pending.files.get(rel) {
+        if f.base_version != local_version {
+            return Err("this file already waits for review with another base; review it first".into());
+        }
+    }
+    propose(ws, pending, rel, local_version, text)
+}
+
 fn propose(
     ws: &Workspace,
     pending: &mut Pending,

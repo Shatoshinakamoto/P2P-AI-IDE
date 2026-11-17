@@ -63,6 +63,8 @@ pub enum NetError {
     BadAnswer,
     TooLarge,
     Stopped,
+    /// A known gateway refusal (phase I4), with a fixed message chosen from the gateway's error code.
+    Gateway(&'static str),
 }
 
 impl NetError {
@@ -81,6 +83,7 @@ impl NetError {
             NetError::BadAnswer => "the gateway's answer could not be read".into(),
             NetError::TooLarge => "the gateway's answer was too large".into(),
             NetError::Stopped => "stopped".into(),
+            NetError::Gateway(m) => (*m).into(),
         }
     }
 }
@@ -225,10 +228,10 @@ pub fn parse_sse_line(line: &str) -> Result<SseItem, NetError> {
 
 /// A client bound to one gateway and its key.
 pub struct Client {
-    base: String,
+    pub(crate) base: String,
     key: String,
-    short: ureq::Agent,
-    long: ureq::Agent,
+    pub(crate) short: ureq::Agent,
+    pub(crate) long: ureq::Agent,
 }
 
 impl std::fmt::Debug for Client {
@@ -288,7 +291,7 @@ impl Client {
         })
     }
 
-    fn auth(&self) -> String {
+    pub(crate) fn auth(&self) -> String {
         format!("Bearer {}", self.key)
     }
 
@@ -463,7 +466,7 @@ pub fn parse_models(body: &[u8]) -> Result<Vec<String>, NetError> {
     Ok(ids)
 }
 
-fn check_status(s: u16) -> Result<(), NetError> {
+pub(crate) fn check_status(s: u16) -> Result<(), NetError> {
     match s {
         200..=299 => Ok(()),
         401 | 403 => Err(NetError::Auth),
@@ -473,7 +476,7 @@ fn check_status(s: u16) -> Result<(), NetError> {
     }
 }
 
-fn map_io(e: std::io::Error) -> NetError {
+pub(crate) fn map_io(e: std::io::Error) -> NetError {
     if e.kind() == std::io::ErrorKind::TimedOut {
         NetError::Timeout
     } else {
@@ -481,7 +484,7 @@ fn map_io(e: std::io::Error) -> NetError {
     }
 }
 
-fn map_ureq(e: ureq::Error) -> NetError {
+pub(crate) fn map_ureq(e: ureq::Error) -> NetError {
     match e {
         ureq::Error::Timeout(_) => NetError::Timeout,
         ureq::Error::Tls(_) | ureq::Error::Rustls(_) => NetError::Tls,

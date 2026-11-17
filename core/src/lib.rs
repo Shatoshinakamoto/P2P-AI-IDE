@@ -4,7 +4,8 @@
 //! typed commands and the same checks later bind the local agent tools (phase I3).
 //! Trust boundary: callers pass webview input straight in; the crate checks it (see workspace.rs for the controls).
 //! Phase I2 adds the network side: saved gateways ([`gateways`]), the HTTPS client for models and streamed chat
-//! ([`client`]), chat history ([`chats`]) and the small-file store they share ([`store`]).
+//! ([`client`]), chat history ([`chats`]) and the small-file store they share ([`store`]). Phase I3 adds the chat
+//! tools ([`agent`]); phase I4 the gateway project API ([`gwapi`]) and missions support ([`projects`]).
 //! Dependencies: serde, serde_json, sha2, ureq (see Cargo.toml).
 
 pub mod agent;
@@ -12,6 +13,8 @@ pub mod chats;
 pub mod client;
 pub mod discovery;
 pub mod gateways;
+pub mod gwapi;
+pub mod projects;
 pub mod store;
 pub mod workspace;
 
