@@ -1,0 +1,14 @@
+    Finished `release` profile [optimized] target(s) in 1m 48s
+    Bundling P2P-AI IDE_0.1.0_amd64.deb (/home/user/P2P-AI-IDE/app/src-tauri/target/release/bundle/deb/P2P-AI IDE_0.1.0_amd64.deb)
+    Bundling P2P-AI IDE-0.1.0-1.x86_64.rpm (/home/user/P2P-AI-IDE/app/src-tauri/target/release/bundle/rpm/P2P-AI IDE-0.1.0-1.x86_64.rpm)
+    Finished 2 bundles at:
+ Package: p2p-ai-ide
+ Version: 0.1.0
+ Depends: libwebkit2gtk-4.1-0, libgtk-3-0
+469 usr/lib/P2P-AI
+11574 usr/lib/P2P-AI
+767443 usr/lib/P2P-AI
+0 usr/bin
+12497000 usr/bin/p2p-ide
+e8bdfcbf32fea42f5e99bd7f11bb05a0e92501c78b14763cdd11aab1b258aeec  src-tauri/target/release/bundle/deb/P2P-AI IDE_0.1.0_amd64.deb
+b0f79adfef9331cc284966057731881e3597c5dd4c06f01fd287cfdd40d2a1c0  src-tauri/target/release/bundle/rpm/P2P-AI IDE-0.1.0-1.x86_64.rpm

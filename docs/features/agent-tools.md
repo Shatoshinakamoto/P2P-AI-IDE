@@ -104,8 +104,8 @@ cargo audit and npm audit 2026-11-17: 0 vulnerabilities (run linked below).
 * What the model reads goes to the gateway you chose, like anything you paste.
 * Pending changes are kept in memory only: closing the app drops them.
 * No delete, rename or command tools yet (I5 adds sandboxed commands).
-* The `TODO(security)` in `workspace.rs` (openat-style handles against a folder swapped for a symlink mid-operation)
-  is still open; it needs another local program racing the IDE, and every agent write still waits for an Accept.
+* Closed 2026-11-17: tool reads and writes go through a handle on the folder (cap-std), so a folder swapped for a
+  link mid-operation cannot redirect them outside it ([run](../../HistoryTest/runs/2026-11-17_125223Z_core_6ebd731/RUN.md)).
 
 ## 7. Troubleshooting
 

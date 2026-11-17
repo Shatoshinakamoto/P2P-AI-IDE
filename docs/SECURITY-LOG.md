@@ -21,6 +21,31 @@ Every security patch, hardening change, CVE remediation and accepted risk, newes
   2026-11-17_125953Z_live-gateway_618354d (13/13: no network, time limit, `.env` never stored),
   2026-11-17_125944Z_security-scan_618354d (0 vulnerabilities).
 
+## 2026-11-17 — Installers: licence gate and signed checksums
+- **Type:** hardening (supply chain); accepted risk
+- **CVE / CWE / advisory:** none. CWE-494, CWE-1357; NIST SI-7, SR-3, AC-6; SLSA build integrity
+- **Severity:** none (new release path)
+- **Affected:** `app/src-tauri/tauri.conf.json`, `app/src-tauri/THIRD-PARTY-NOTICES.txt`
+- **What changed:** installers are built by P2P-AI's `release_app.py` from a clean tagged tree, after a deny-by-default
+  licence gate; `SHA256SUMS` is cosign-signed; uploads are drafts. Per-user NSIS install (no admin).
+- **Accepted risk (Pheonix, 2026-11-17):** no Authenticode signature yet; Windows shows a SmartScreen warning and users
+  check `SHA256SUMS` with the project key.
+- **Why it is secure now:** downloads can be verified with the project key (NIST SI-7); licences are gated (SR-3).
+- **Verification:** [licence gate](../HistoryTest/runs/2026-11-17_085507Z_installers_1b95d91/RUN.md), [Linux bundle](../HistoryTest/runs/2026-11-17_085509Z_installers_1b95d91/RUN.md).
+
+## 2026-11-17 — Workspace file access through a folder handle (TOCTOU)
+- **Type:** hardening
+- **CVE / CWE / advisory:** CWE-367, CWE-59, CWE-22 (none: no reported vulnerability)
+- **Severity:** none scored; it needed another local program racing the IDE. KEV no.
+- **Affected:** `core/src/workspace.rs`, `core/Cargo.toml`, `core/Cargo.lock`, `app/src-tauri/Cargo.lock`
+- **What changed:** the workspace keeps a cap-std `Dir` handle on the opened folder. Paths still pass the allow-list,
+  then are opened beneath that handle, which refuses any path (including through links) that leaves the folder; type
+  and size come from the open file. Saves open the parent folder once and write the temp file and rename inside it.
+- **Why it is secure now:** no check-then-use on path names remains (CWE-367); confinement is enforced by the open
+  itself (NIST AC-3, AC-6). cap-std is a Bytecode Alliance crate used by Wasmtime (NIST SP 800-161: maintained, widely used).
+- **Verification:** HistoryTest runs 2026-11-17_125223Z_core_6ebd731 (66 tests incl. the link-swap test), 2026-11-17_125233Z_security-scan_6ebd731 (OSV: 0 advisories), 2026-11-17_125226Z_shell_6ebd731 (shell build
+  not possible in the container, marked invalid).
+
 ## 2026-11-17 — Phase I5a hardening: running git on repositories someone else made
 - **Type:** hardening
 - **CVE / CWE / advisory:** CWE-829, CWE-94, CWE-78, CWE-88, CWE-427, CWE-526, CWE-22, CWE-400, CWE-79, CWE-209 (none: new feature)

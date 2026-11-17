@@ -53,8 +53,9 @@ untrusted input to every command. Assets: the user's files and, later, gateway k
 
 | Threat | Control | Reference |
 |---|---|---|
-| Path traversal out of the folder | relative paths are an allow-list of plain components: no absolute paths, `..`, `.`, empty parts, backslashes, `:`, NUL or control characters, max 1024 bytes; the result is canonicalised and must stay under the canonical root | CWE-22, CWE-73, ASVS V12.3.1 |
-| Symlink or junction escape | reads and listings canonicalise and check the root; listings never follow links; saves refuse to write through a link | CWE-59 |
+| Path traversal out of the folder | relative paths are an allow-list of plain components: no absolute paths, `..`, `.`, empty parts, backslashes, `:`, NUL or control characters, max 1024 bytes; every open goes through a handle on the opened folder (cap-std `Dir`), which refuses any path that would leave it | CWE-22, CWE-73, ASVS V12.3.1 |
+| Symlink or junction escape | files are opened beneath the folder handle, so a link that points outside is refused; listings never follow links; saves refuse to write through a link | CWE-59 |
+| Folder swapped for a link mid-operation (TOCTOU) | no check-then-open on paths: the open itself is confined by the handle, and type and size come from the open file; a save writes and renames inside one parent-folder handle | CWE-367, CWE-59 |
 | A page script picks another folder | the folder comes from the OS picker in Rust, never from the webview | NIST AC-6, CWE-73 |
 | Too-broad scope | a drive or filesystem root cannot be opened as a workspace | NIST AC-6 |
 | Lost update or half-written file | saves carry the loaded SHA-256 version and are refused on mismatch; writes go to a `create_new` temp file in the same folder, are flushed, then renamed | CWE-367, CWE-362 |
@@ -66,9 +67,9 @@ untrusted input to every command. Assets: the user's files and, later, gateway k
 | Error details leaking | fixed short messages, no paths or OS text | CWE-209 |
 | Log forging or leaking | refusals logged to stderr with a timestamp and a fixed kind, never the path | NIST AU-3, CWE-117, CWE-532 |
 
-Known gaps: a small TOCTOU window between the canonical check and the open if another local program swaps a folder
-for a link (`TODO(security)` in `workspace.rs`, planned: handle-based access with cap-std before the agent tools in
-phase I3). Monaco needs `style-src 'unsafe-inline'` (accepted risk, `docs/SECURITY-LOG.md`).
+Closed 2026-11-17: the TOCTOU window between a path check and the open (another local program swapping a folder
+for a link) is gone, because every file call opens through the folder handle. If the opened folder itself is renamed,
+the IDE keeps working on it under its new name. Monaco needs `style-src 'unsafe-inline'` (accepted risk, `docs/SECURITY-LOG.md`).
 
 ## 4. How to use it
 
@@ -100,6 +101,7 @@ for search.
 | tauri | 2.12.5 | app shell | cargo audit 2026-11-17: no vulnerabilities; 2 warnings in its Linux GTK libraries (SECURITY-LOG) |
 | tauri-plugin-dialog | 2.8.4 | folder picker | cargo audit 2026-11-17 |
 | serde 1.0.228+, sha2 0.10.9 | | records, versions | cargo audit 2026-11-17 |
+| cap-std | 4.0.3 | handle-based file access inside the open folder | OSV 2026-11-17: no advisories for it or the 17 crates it adds ([run](../../HistoryTest/runs/2026-11-17_125233Z_security-scan_6ebd731/RUN.md)) |
 
 The same versions as the P2P-AI desktop app were chosen where both use a package.
 
@@ -123,6 +125,7 @@ The same versions as the P2P-AI desktop app were chosen where both use a package
 ## 8. Test evidence
 
 * [Rust core: 10 tests, fmt, clippy](../../HistoryTest/runs/2026-11-17_045740Z_core_fe528ba/RUN.md)
+* [Rust core after the cap-std move: 66 tests incl. folder swapped for a link, fmt, clippy](../../HistoryTest/runs/2026-11-17_125223Z_core_6ebd731/RUN.md)
 * [Tauri shell: fmt, clippy, build on Linux](../../HistoryTest/runs/2026-11-17_045741Z_shell_fe528ba/RUN.md)
 * [Webview: type check, 4 unit tests, build, patched DOMPurify in the bundle](../../HistoryTest/runs/2026-11-17_045746Z_webview_fe528ba/RUN.md)
 * [UI smoke in headless Chromium under the shipped CSP: 16/16 (now 17 checks, see below)](../../HistoryTest/runs/2026-11-17_045806Z_ui-smoke_fe528ba/RUN.md)

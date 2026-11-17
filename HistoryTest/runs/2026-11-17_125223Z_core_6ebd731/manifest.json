@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "4b70c1d27992a859c52d1ec0b42d1b73aa33dc0ab943dc697cc797c3e74411b2",
+   "size": 1514
+  },
+  "command.txt": {
+   "sha256": "061367c72d40acbf2f5ba4c0f5d9939dc0bb8388c22d20e3b5613f74065f1402",
+   "size": 219
+  },
+  "environment.md": {
+   "sha256": "d4ccd2a81c07ba1e24302e6895217c0ba9c30610ca14866f907a1e73434f009b",
+   "size": 193
+  },
+  "logs/output.log": {
+   "sha256": "c532bea46b7f8a018b13ac09c1ddd3525c7148469d5e5b36cf6e14960668846f",
+   "size": 4735
+  },
+  "results/summary.txt": {
+   "sha256": "b1869d9cdf0a073247b229f7b425c9c8e82b8c69b9e094ba86b11a5e9352b14f",
+   "size": 284
+  }
+ },
+ "previous": {
+  "manifest_sha256": "80517d03f31a1a4e6fae612086d20b737aff065be45ce300577d2ee60b0aa24c",
+  "run_id": "2026-11-17_091518Z_windows_71c6f12"
+ },
+ "run": {
+  "area": "core",
+  "branch_or_pr": "claude/project-thread-1x3ij1",
+  "collected_utc": "",
+  "commit": "6ebd731048dc7e623d68f32e86579910ca485438",
+  "count_unit": "",
+  "date_utc": "2026-11-17T12:52:23Z",
+  "dirty": false,
+  "duration_s": 2.9,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_125223Z_core_6ebd731",
+  "kind": "unit",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Core tests, fmt and clippy after moving workspace file access to cap-std handles",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

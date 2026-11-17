@@ -30,6 +30,38 @@
   "bundle": {
     "active": true,
     "targets": "all",
-    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.png", "icons/icon.icns", "icons/icon.ico"]
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "publisher": "P2P-AI",
+    "copyright": "Copyright 2026 Johnathan Edward Brown. Licensed under the Apache License 2.0.",
+    "category": "DeveloperTool",
+    "shortDescription": "An agentic code editor for the P2P-AI network",
+    "longDescription": "The P2P-AI IDE is a Monaco-based editor whose chat and tools run on P2P-AI gateways.",
+    "homepage": "https://github.com/Shatoshinakamoto/P2P-AI-IDE",
+    "license": "Apache-2.0",
+    "licenseFile": "../../LICENSE",
+    "resources": {
+      "THIRD-PARTY-NOTICES.txt": "THIRD-PARTY-NOTICES.txt",
+      "../../LICENSE": "LICENSE",
+      "../../NOTICE": "NOTICE"
+    },
+    "windows": {
+      "digestAlgorithm": "sha256",
+      "certificateThumbprint": null,
+      "timestampUrl": null,
+      "webviewInstallMode": {
+        "type": "downloadBootstrapper",
+        "silent": true
+      },
+      "nsis": {
+        "installMode": "currentUser"
+      }
+    }
   }
 }

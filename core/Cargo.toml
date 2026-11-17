@@ -9,6 +9,8 @@
 #   * ed25519-dalek 2 + base64 0.22 -- verify signed gateway advertisements for the public gateway list (phase
 #     I2b); the same crates and versions the P2P-AI node uses for the same check;
 #   * getrandom 0.2 -- OS CSPRNG for probe nonces (already in the tree through ring, so no new code).
+#   * cap-std 4 (Bytecode Alliance) -- handle-based file access: every workspace path is opened relative to an open
+#     handle on the folder and can never leave it, even if a folder is swapped for a link meanwhile (CWE-59, CWE-367).
 # Versions are locked in Cargo.lock and checked with cargo audit in CI.
 [package]
 name = "p2p-ide-core"
@@ -30,3 +32,4 @@ ureq = { version = "3.5.2", default-features = false, features = ["rustls"] }
 ed25519-dalek = "2.2.0"
 base64 = "0.22.1"
 getrandom = "0.2.17"
+cap-std = "4.0.3"

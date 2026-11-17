@@ -1,0 +1,62 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "6a7b992d499844b5770e236d0a0b8cab9e0a09a8c31312f218e777a99c05317b",
+   "size": 1766
+  },
+  "command.txt": {
+   "sha256": "efc7709a40788b37955695fc01a755394c470e3d3e32f9020cebacb285b28b3e",
+   "size": 165
+  },
+  "environment.md": {
+   "sha256": "0b5d25b6cb8ed40824f01a62bf4d3579af513451124a069766e60a053fce3a9f",
+   "size": 199
+  },
+  "logs/output.log": {
+   "sha256": "c34cabc1a54778b9a61f98682a532efc4e012494fd6e382c567602b2ab39f11a",
+   "size": 795
+  },
+  "projects/input/bundle-linux.sh": {
+   "sha256": "413e5c606fbace217f434cda53f253834b682476516f5c157f3845aa29727666",
+   "size": 615
+  },
+  "results/summary.txt": {
+   "sha256": "c2ca8837ee376697f2b465689ccd037c0ae756b1cab2e10ec22b6d470b4965e2",
+   "size": 281
+  }
+ },
+ "previous": {
+  "manifest_sha256": "c78c341a1c18ad0ba631ba53a54705bf6886d040fc8def942e050559942280de",
+  "run_id": "2026-11-17_085507Z_installers_1b95d91"
+ },
+ "run": {
+  "area": "installers",
+  "branch_or_pr": "claude/project-thread-mf0qoc",
+  "collected_utc": "",
+  "commit": "1b95d91ae3d957fa080b9ecdc3542ea923d49fa7",
+  "count_unit": "",
+  "date_utc": "2026-11-17T08:55:09Z",
+  "dirty": false,
+  "duration_s": 115.2,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_085509Z_installers_1b95d91",
+  "kind": "build",
+  "machine": "cloud",
+  "passed": 1,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "ship-signed-installers",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Linux .deb/.rpm bundle of the IDE with the new bundle settings",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}
