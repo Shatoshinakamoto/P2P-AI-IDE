@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "ab2bccaa83f9b4502d6bdea3e2c8a9a4ea8fe1a7e88477ba164c14a63c607efa",
+   "size": 1549
+  },
+  "command.txt": {
+   "sha256": "00b0e60044fca1d48e8a67a84721dcd9237da43a123c1f6ab4365035a21608e4",
+   "size": 211
+  },
+  "environment.md": {
+   "sha256": "b4860dd0a34c122de994c7a17c538497c8f6b010fd5dc414db9aaa975a70f30c",
+   "size": 191
+  },
+  "logs/output.log": {
+   "sha256": "26c9a630f0770b429ccbc9ae9c91edd8a0e6e6f76ffbe106973a309a1dcc4ff2",
+   "size": 6558
+  },
+  "results/summary.txt": {
+   "sha256": "e22b1a4af184fecc87b6c02f1dd4bb289bc26dd223eb436ce9a1aed0aa9fa5ad",
+   "size": 282
+  }
+ },
+ "previous": {
+  "manifest_sha256": "ac38565dca5214ed4ea3daf0e53389852f96c8af20d463b9f78d571f3de56fcc",
+  "run_id": "2026-11-17_225231Z_docs-shots_64acea3"
+ },
+ "run": {
+  "area": "ui",
+  "branch_or_pr": "claude/project-thread-fudnju",
+  "collected_utc": "",
+  "commit": "64acea317b35bcaac6645d1675eafa3b1c276a0a",
+  "count_unit": "",
+  "date_utc": "2026-11-17T22:52:40Z",
+  "dirty": true,
+  "duration_s": 5.8,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_225240Z_ui_64acea3",
+  "kind": "e2e",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "Write docs and README with screenshots",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "UI smoke test after adding the docs screenshot script",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

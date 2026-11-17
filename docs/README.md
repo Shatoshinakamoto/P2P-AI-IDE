@@ -4,6 +4,8 @@ The IDE's plan and its decisions (ADR-029) live in the P2P-AI repository: `docs/
 
 | Document | Description |
 |---|---|
+| [user-guide.md](user-guide.md) | **The user guide, a screenshot tour**: every view of the IDE, what it does and how to use it |
+| [commands/docs-screenshots.md](commands/docs-screenshots.md) | `app/tests/docs-shots.mjs`: retakes the screenshots in `docs/images/` |
 | [CHANGELOG.md](CHANGELOG.md) | Every addition, change, fix and removal, newest first |
 | [SECURITY-LOG.md](SECURITY-LOG.md) | Security fixes, hardening and accepted risks |
 | [features/editor-shell.md](features/editor-shell.md) | Phase I1: open a folder, explorer, Monaco tabs, save with conflict check, search; threat model and controls |
