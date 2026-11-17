@@ -1,0 +1,11 @@
+id: 2026-11-17_062006Z_core_bd2763f
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: not recorded
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: 0
+duration_s: 1.6
+commit: bd2763f3950da51a3d069e709e8d9645877f833f
+machine: cloud

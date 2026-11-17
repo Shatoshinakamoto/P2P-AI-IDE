@@ -125,4 +125,7 @@ real keys.
 
 ## 8. Test evidence
 
-Linked from the run folders in `HistoryTest/runs/` once recorded (see the CHANGELOG entry for phase I2a).
+* [Core: fmt, clippy, 31 tests incl. a loopback fake gateway](../../HistoryTest/runs/2026-11-17_062006Z_core_bd2763f/RUN.md)
+* [Tauri shell: fmt and clippy with net.rs and keyring](../../HistoryTest/runs/2026-11-17_062007Z_shell_bd2763f/RUN.md)
+* [Webview: type check, 4 unit tests, build, UI smoke 30/30 with gateways and chat](../../HistoryTest/runs/2026-11-17_062008Z_ui-smoke_bd2763f/RUN.md)
+* [cargo audit of both lockfiles: 0 vulnerabilities, 5 unmaintained warnings (accepted)](../../HistoryTest/runs/2026-11-17_062016Z_security-scan_bd2763f/RUN.md)

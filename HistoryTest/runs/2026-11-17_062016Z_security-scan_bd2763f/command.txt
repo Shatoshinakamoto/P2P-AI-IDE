@@ -1,0 +1,2 @@
+# run in repository folder `.`, as an argument list (no shell)
+bash -c cargo audit --file core/Cargo.lock && cargo audit --file app/src-tauri/Cargo.lock

@@ -1,0 +1,74 @@
+
+> p2p-ai-ide@0.1.0 test
+> node --test tests/*.test.ts
+
+TAP version 13
+# Subtest: baseName and dirName split on /
+ok 1 - baseName and dirName split on /
+  ---
+  duration_ms: 0.818848
+  type: 'test'
+  ...
+# Subtest: crumbs
+ok 2 - crumbs
+  ---
+  duration_ms: 0.646264
+  type: 'test'
+  ...
+# Subtest: languageFor maps extensions and names
+ok 3 - languageFor maps extensions and names
+  ---
+  duration_ms: 0.152398
+  type: 'test'
+  ...
+# Subtest: sizeLabel
+ok 4 - sizeLabel
+  ---
+  duration_ms: 0.180753
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 146.809585
+
+> p2p-ai-ide@0.1.0 ui-smoke
+> node tests/ui-smoke.mjs
+
+PASS welcome state shows Open folder
+PASS status bar shows the gateway chip and disabled mission switches
+PASS explorer lists folders first -- src, README.md
+PASS Monaco opens the file with its text
+PASS typing marks the tab unsaved
+PASS Ctrl+S saves the edited text
+PASS save sends the loaded version (lost-update guard)
+PASS multi-cursor edits two lines at once -- "X# edited\nXimport os\n\n"
+PASS conflicting save is refused and explained
+PASS reload replaces the editor copy with the disk version
+PASS two files open in two tabs -- server.py, README.md
+PASS status bar shows the new tab's language -- No gateway Tools: Local Reloaded server.py from disk Autopilot off Auto Improve off Ln 1, Col 1 markdown
+PASS search finds matches -- 1 result in 1 file
+PASS later-phase views say when they arrive
+PASS chat without a gateway points to the Gateways view
+PASS a bad gateway address is refused with the core's message
+PASS added gateway is listed with its key in the keychain, key never shown -- Home manual https://gw.example.org key in keychain Check Replace key Pin CA Remove
+PASS status bar chip names the active gateway
+PASS Check shows latency and model count
+PASS a plain-http loopback gateway is marked INSECURE — DEV ONLY
+PASS removing a gateway takes two clicks
+PASS streamed answer is shown as text (no element from the answer, no script ran) -- imgs=0
+PASS code fences in an answer render as a code block
+PASS the request carries the chosen model and the user's message -- {"model":"tiny-model","messages":[{"role":"user","content":"Explain the timeout\nplease"}]}
+PASS the chat is saved in history with a title from the first message
+PASS history search finds the chat by answer text
+PASS deleting a chat takes two clicks
+PASS explorer keeps expanded folders across views
+PASS no CSP violations under the shipped CSP
+PASS no page errors
+
+30 passed, 0 failed

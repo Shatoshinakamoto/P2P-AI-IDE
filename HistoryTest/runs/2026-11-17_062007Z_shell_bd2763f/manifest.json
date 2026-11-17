@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "0ab5e1a8582e4438c872e616d6086993bbe082c2beab08fd4923fdc0b1ae6ba3",
+   "size": 1465
+  },
+  "command.txt": {
+   "sha256": "970f93dce3174dae267a2612c7c17ddcf9cb61f1fd3a82b216ad56d60adca9fa",
+   "size": 155
+  },
+  "environment.md": {
+   "sha256": "51dd56650ec2845c8d6aa76ade086f516c092f1df44e1630dc5fdcad60233f33",
+   "size": 194
+  },
+  "logs/output.log": {
+   "sha256": "8a2933ae25e59188be988ea6218274cb341f13d8bc4b533f57b12ececd4be8b3",
+   "size": 72
+  },
+  "results/summary.txt": {
+   "sha256": "12d2f13f7b5cb5d335002aec41631523d2ab283da99a03339ece15632f1d61b1",
+   "size": 285
+  }
+ },
+ "previous": {
+  "manifest_sha256": "f9d85ac5024fc9d3eebf112e09715dfb965b54b8ea8d8408747d2db7fab8380e",
+  "run_id": "2026-11-17_062006Z_core_bd2763f"
+ },
+ "run": {
+  "area": "shell",
+  "branch_or_pr": "PR#1",
+  "collected_utc": "",
+  "commit": "bd2763f3950da51a3d069e709e8d9645877f833f",
+  "count_unit": "",
+  "date_utc": "2026-11-17T06:20:07Z",
+  "dirty": false,
+  "duration_s": 0.6,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_062007Z_shell_bd2763f",
+  "kind": "build",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "agentic-IDE-thread:phase-I2a",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Tauri shell fmt and clippy with net.rs and keyring",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

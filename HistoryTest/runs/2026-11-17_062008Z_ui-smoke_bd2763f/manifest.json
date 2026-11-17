@@ -1,0 +1,62 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "d5f0d167782586f1c4d2ca034284aa0381422d7c76b37575755286ce0dcd960e",
+   "size": 1665
+  },
+  "artifacts/ui-i2-chat.png": {
+   "sha256": "2c3015312da9afead467e4563c55f1172847fd8366314316a200a938f66c48cd",
+   "size": 45986
+  },
+  "command.txt": {
+   "sha256": "4281cb5ea6c5ea3a61d32878b1add06d71464036172210606822b122732371e0",
+   "size": 239
+  },
+  "environment.md": {
+   "sha256": "0168e71a632a5f6268210b935dcf9e4182b563ad69e82b3410474320253d19bc",
+   "size": 197
+  },
+  "logs/output.log": {
+   "sha256": "677352e8dd0b1c13a414acedd4e3873719589b078232a29e82a6db55bb0433a8",
+   "size": 2556
+  },
+  "results/summary.txt": {
+   "sha256": "2ccf41192883d07e2a124125eda71a9f243f65f4f91315ff4dbc41f1247c7545",
+   "size": 251
+  }
+ },
+ "previous": {
+  "manifest_sha256": "aa5ac7dd0622a46e771fb0828ac7fc776949a17fc8f93f8aedb7295b66e7144b",
+  "run_id": "2026-11-17_062007Z_shell_bd2763f"
+ },
+ "run": {
+  "area": "ui-smoke",
+  "branch_or_pr": "PR#1",
+  "collected_utc": "",
+  "commit": "bd2763f3950da51a3d069e709e8d9645877f833f",
+  "count_unit": "packages",
+  "date_utc": "2026-11-17T06:20:08Z",
+  "dirty": false,
+  "duration_s": 8.2,
+  "exit_code": 0,
+  "failed": 0,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_062008Z_ui-smoke_bd2763f",
+  "kind": "e2e",
+  "machine": "cloud",
+  "passed": 4,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "agentic-IDE-thread:phase-I2a",
+  "shortened_logs": [],
+  "skipped": 0,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Webview type check, unit tests, build and UI smoke (30 checks incl. gateways and chat)",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}
