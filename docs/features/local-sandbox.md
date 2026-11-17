@@ -112,7 +112,7 @@ Writing code to these standards does not make the IDE "STIG-compliant"; formal c
 ## 5. Dependencies
 
 `libc` 0.2.191 (system calls), now a direct dependency of the core on Unix. It was already in both lockfiles
-through other crates, so no new code is downloaded. Checked with cargo audit on 2026-11-17 (run linked below).
+through other crates, so no new code is downloaded. Checked with cargo audit on 2026-11-17: 0 vulnerabilities (run linked in section 8).
 The kernel needs Landlock (ABI 1+; ABI 4+ for the TCP rule, 6+ for the scopes) and user namespaces.
 
 ## 6. Limitations and known risks
@@ -148,4 +148,9 @@ The kernel needs Landlock (ABI 1+; ABI 4+ for the TCP rule, 6+ for the scopes) a
 
 ## 8. Test evidence
 
-Links are added with the runs of this change.
+* [Core: fmt, clippy, 68 unit + 5 + 2 tests incl. `local_runs_are_confined` on the real kernel (no network, home hidden, real folder untouched, background process gone)](../../HistoryTest/runs/2026-11-17_131847Z_core_e980a8c/RUN.md)
+* [Real toolchains inside the sandbox: cargo twice (cache reused), go, npm, make, unittest: 6 passed, 0 failed, 0 skipped](../../HistoryTest/runs/2026-11-17_131900Z_local-toolchains_e980a8c/RUN.md)
+* [Tauri shell: fmt and clippy with `runners_list` and `run_on`](../../HistoryTest/runs/2026-11-17_131926Z_shell_e980a8c/RUN.md)
+* [Webview: UI smoke 77/77 with the runner picker and the local sandbox card text](../../HistoryTest/runs/2026-11-17_131928Z_ui-smoke_e980a8c/RUN.md)
+* [Dependency audit: cargo audit (core 88, shell 539 crates) and npm audit, 0 vulnerabilities](../../HistoryTest/runs/2026-11-17_131937Z_security-scan_e980a8c/RUN.md)
+* Windows build (the Linux code is left out there): added with the PC run.

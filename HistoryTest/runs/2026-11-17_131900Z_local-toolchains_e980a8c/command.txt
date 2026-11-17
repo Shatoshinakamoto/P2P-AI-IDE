@@ -1,0 +1,2 @@
+# run in repository folder `core`, as an argument list (no shell)
+cargo run --quiet --locked --example local_toolchains

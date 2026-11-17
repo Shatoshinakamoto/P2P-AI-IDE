@@ -54,3 +54,8 @@ run_id,date_utc,area,commit,branch_or_pr,machine,verdict,passed,failed,skipped,s
 2026-11-17_130113Z_windows_391278c,2026-11-17T13:01:13Z,windows,391278c,PR #9,user PC (Windows),pass,66,0,,Windows build and tests of phase I5b (Run and test) at 391278c
 2026-11-17_130306Z_release_a687f4e,2026-11-17T13:03:06Z,release,a687f4e,6,cloud container,pass,,,,"IDE PR 6 (installers) with main merged: config parses, merge has no conflict markers"
 2026-11-17_131135Z_live-gateway_a6170be,2026-11-17T13:11:35Z,live-gateway,a6170be,PR #9,cloud container,pass,,,,Live run and test after merging main (cap-std workspace) into PR #9
+2026-11-17_131847Z_core_e980a8c,2026-11-17T13:18:47Z,core,e980a8c,claude/project-thread-dfop2y,cloud container,pass,,,,"Core: fmt, clippy, tests incl. real-kernel local sandbox confinement"
+2026-11-17_131900Z_local-toolchains_e980a8c,2026-11-17T13:19:00Z,local-toolchains,e980a8c,claude/project-thread-dfop2y,cloud container,pass,,,,"Real toolchains in the local sandbox (cargo x2, go, npm, make, unittest)"
+2026-11-17_131926Z_shell_e980a8c,2026-11-17T13:19:26Z,shell,e980a8c,claude/project-thread-dfop2y,cloud container,pass,,,,Tauri shell: fmt and clippy with runners_list and run_on
+2026-11-17_131928Z_ui-smoke_e980a8c,2026-11-17T13:19:28Z,ui-smoke,e980a8c,claude/project-thread-dfop2y,cloud container,pass,4,0,0,Webview UI smoke with the runner picker and local sandbox card text
+2026-11-17_131937Z_security-scan_e980a8c,2026-11-17T13:19:37Z,security-scan,e980a8c,claude/project-thread-dfop2y,cloud container,pass,,,,"cargo audit (core, shell) and npm audit"

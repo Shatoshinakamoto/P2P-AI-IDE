@@ -19,8 +19,9 @@ Every security patch, hardening change, CVE remediation and accepted risk, newes
 - **Accepted risk (pending Pheonix's choice):** toolchain mode lets the job execute any program in system and
   toolchain folders, including shells; `/etc` is readable; a kernel bug in namespaces, Landlock or seccomp is out of
   scope. Documented in features/local-sandbox.md section 6.
-- **Verification:** HistoryTest runs listed in features/local-sandbox.md section 8 (core with the real-kernel
-  confinement test, real toolchains 6/6, UI smoke 77/77, dependency audit).
+- **Verification:** HistoryTest runs 2026-11-17_131847Z_core_e980a8c (real-kernel confinement test),
+  2026-11-17_131900Z_local-toolchains_e980a8c (6/6), 2026-11-17_131928Z_ui-smoke_e980a8c (77/77),
+  2026-11-17_131937Z_security-scan_e980a8c (0 vulnerabilities).
 
 ## 2026-11-17 — Phase I5b hardening: running tests and commands, and the assistant asking to run
 - **Type:** hardening

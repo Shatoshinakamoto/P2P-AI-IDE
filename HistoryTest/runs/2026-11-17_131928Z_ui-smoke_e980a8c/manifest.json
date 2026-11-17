@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "f6580e5f7e0231a2f8f904fdd737ce2489c7e21e4edef91fd10005bc7fffe534",
+   "size": 1394
+  },
+  "command.txt": {
+   "sha256": "175709503cc2518896a57a0dc3428f178271221b1ec9f9bb85fcc02df1d2ed5b",
+   "size": 224
+  },
+  "environment.md": {
+   "sha256": "494ac5022847dcf67bbfece50e38af0addc1ad8623ad966bdd1dca9e9c252fe1",
+   "size": 197
+  },
+  "logs/output.log": {
+   "sha256": "0d13d1a2ea2af128a3033c6f15c97e172ef676f33ab3aeeba99cf23b71c27c81",
+   "size": 6795
+  },
+  "results/summary.txt": {
+   "sha256": "fc4a9c64277372b347774d93fcbab391ff6b06808cb1379db1b7225e5ed8e719",
+   "size": 251
+  }
+ },
+ "previous": {
+  "manifest_sha256": "8484f8baa1583a54c4d8c1564660fd50b53ee70fd74c3a9d0097fc749656a4a4",
+  "run_id": "2026-11-17_131926Z_shell_e980a8c"
+ },
+ "run": {
+  "area": "ui-smoke",
+  "branch_or_pr": "claude/project-thread-dfop2y",
+  "collected_utc": "",
+  "commit": "e980a8cf5f03ba1f5b44cfb2a71ca7e88e1e3390",
+  "count_unit": "packages",
+  "date_utc": "2026-11-17T13:19:28Z",
+  "dirty": true,
+  "duration_s": 8.9,
+  "exit_code": 0,
+  "failed": 0,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_131928Z_ui-smoke_e980a8c",
+  "kind": "e2e",
+  "machine": "cloud",
+  "passed": 4,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "claude",
+  "shortened_logs": [],
+  "skipped": 0,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Webview UI smoke with the runner picker and local sandbox card text",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

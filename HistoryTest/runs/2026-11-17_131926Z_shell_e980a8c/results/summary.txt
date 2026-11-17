@@ -1,0 +1,11 @@
+id: 2026-11-17_131926Z_shell_e980a8c
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: not recorded
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: 0
+duration_s: 1.6
+commit: e980a8cf5f03ba1f5b44cfb2a71ca7e88e1e3390
+machine: cloud

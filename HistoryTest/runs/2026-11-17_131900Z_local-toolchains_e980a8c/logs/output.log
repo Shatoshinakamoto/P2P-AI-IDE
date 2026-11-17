@@ -1,0 +1,7 @@
+PASS cargo tests run in the local sandbox and the failing test is found
+PASS a second cargo run reuses the per-folder build cache
+PASS go tests run in the local sandbox and the failing test is found
+PASS npm tests run in the local sandbox and the failing test is found
+PASS make tests run in the local sandbox and the failing test is found
+PASS unittest tests run in the local sandbox and the failing test is found
+{"failed":0,"passed":6,"skipped":0}

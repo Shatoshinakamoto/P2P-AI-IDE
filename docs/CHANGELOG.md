@@ -18,7 +18,7 @@ host runner (`hostrun/confine.py`) in toolchain mode (the recommended option; de
   card says where the run happens.
 - Per-folder build cache under `run-cache/` ([files/app-data.md](files/app-data.md)).
 - `core/examples/local_toolchains.rs` ([commands/local-toolchains.md](commands/local-toolchains.md)).
-- Tests: core 68 -> 70 (incl. the real-kernel `local_runs_are_confined`), UI smoke 75 -> 77, real toolchains 6/6.
+- Tests: core unit tests 61 -> 68 (incl. the real-kernel `local_runs_are_confined`), UI smoke 75 -> 77, real toolchains 6/6.
 
 ### Changed
 - `libc` 0.2.191 is a direct dependency of the core on Unix (already in the lockfiles).
