@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "16ca3413d4b966de7479460660800e6ecbad6bf0f0067af7c7c8f41b1db1067d",
+   "size": 1875
+  },
+  "command.txt": {
+   "sha256": "84aa44a596838dcaa6b0e1460441ca9e1b7c1320e740ddcd32c5648510b582ab",
+   "size": 59
+  },
+  "environment.md": {
+   "sha256": "fe740c3872758ead63ff96e98c354da161d01f3c2bd25fe25c42a7b0219c6451",
+   "size": 128
+  },
+  "logs/ide5c.txt": {
+   "sha256": "a7edf6cf64cedc74fb6be9a163732498b22ecd17ae318db68a095f879bfe8950",
+   "size": 42049
+  },
+  "results/summary.txt": {
+   "sha256": "2afc9d3fb4cef4c608433c510a2d58b22a15e5bcbae44ffa5b9a8617e46c7fde",
+   "size": 227
+  }
+ },
+ "previous": {
+  "manifest_sha256": "f55f57e3ec688227523370d9f6ce3875ddb096ae3177f873ddec4f5ce7210068",
+  "run_id": "2026-11-17_131937Z_security-scan_e980a8c"
+ },
+ "run": {
+  "area": "windows",
+  "branch_or_pr": "PR #10",
+  "collected_utc": "2026-11-17T13:27:27Z",
+  "commit": "a8b439e",
+  "count_unit": "",
+  "date_utc": "2026-11-17T13:23:00Z",
+  "dirty": false,
+  "duration_s": null,
+  "exit_code": null,
+  "failed": 0,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_132300Z_windows_a8b439e",
+  "kind": "build",
+  "machine": "pc",
+  "passed": 69,
+  "record": "imported",
+  "redactions": {},
+  "requested_by": "claude",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Windows build and tests of phase I5c (local sandbox, Linux code left out) at a8b439e",
+  "verdict": "pass",
+  "verdict_reason": ""
+ },
+ "schema": 1
+}

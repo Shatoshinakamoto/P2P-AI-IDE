@@ -59,3 +59,4 @@ run_id,date_utc,area,commit,branch_or_pr,machine,verdict,passed,failed,skipped,s
 2026-11-17_131926Z_shell_e980a8c,2026-11-17T13:19:26Z,shell,e980a8c,claude/project-thread-dfop2y,cloud container,pass,,,,Tauri shell: fmt and clippy with runners_list and run_on
 2026-11-17_131928Z_ui-smoke_e980a8c,2026-11-17T13:19:28Z,ui-smoke,e980a8c,claude/project-thread-dfop2y,cloud container,pass,4,0,0,Webview UI smoke with the runner picker and local sandbox card text
 2026-11-17_131937Z_security-scan_e980a8c,2026-11-17T13:19:37Z,security-scan,e980a8c,claude/project-thread-dfop2y,cloud container,pass,,,,"cargo audit (core, shell) and npm audit"
+2026-11-17_132300Z_windows_a8b439e,2026-11-17T13:23:00Z,windows,a8b439e,PR #10,user PC (Windows),pass,69,0,,"Windows build and tests of phase I5c (local sandbox, Linux code left out) at a8b439e"

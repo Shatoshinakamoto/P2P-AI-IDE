@@ -153,4 +153,4 @@ The kernel needs Landlock (ABI 1+; ABI 4+ for the TCP rule, 6+ for the scopes) a
 * [Tauri shell: fmt and clippy with `runners_list` and `run_on`](../../HistoryTest/runs/2026-11-17_131926Z_shell_e980a8c/RUN.md)
 * [Webview: UI smoke 77/77 with the runner picker and the local sandbox card text](../../HistoryTest/runs/2026-11-17_131928Z_ui-smoke_e980a8c/RUN.md)
 * [Dependency audit: cargo audit (core 88, shell 539 crates) and npm audit, 0 vulnerabilities](../../HistoryTest/runs/2026-11-17_131937Z_security-scan_e980a8c/RUN.md)
-* Windows build (the Linux code is left out there): added with the PC run.
+* [Windows PC: the Linux code is left out and everything else builds; core 62 + 5 + 2 tests, webview, audit, shell clippy, release binary](../../HistoryTest/runs/2026-11-17_132300Z_windows_a8b439e/RUN.md)

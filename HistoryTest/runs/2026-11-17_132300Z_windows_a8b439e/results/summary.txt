@@ -1,0 +1,11 @@
+id: 2026-11-17_132300Z_windows_a8b439e
+verdict: pass
+verdict_reason: not recorded
+passed: 69
+failed: 0
+skipped: not recorded
+count_unit: not recorded
+exit_code: not recorded
+duration_s: not recorded
+commit: a8b439e
+machine: pc

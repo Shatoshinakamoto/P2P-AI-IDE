@@ -1,0 +1,689 @@
+== date Tue 11/17/2026  8:22:32.00
+SHA256 hash of ide5c-src-a8b439e.tar.gz:
+c8fe9ca9cc4f16b94b2f20ec2835af66630eb9c806bf2ad9a17568ae14155104
+CertUtil: -hashfile command completed successfully.
+extracted
+core-fmt-exit 0
+    Updating crates.io index
+ Downloading crates ...
+  Downloaded io-lifetimes v2.0.4
+  Downloaded fs-set-times v0.20.3
+  Downloaded io-extras v0.19.0
+  Downloaded maybe-owned v0.3.4
+  Downloaded winx v0.36.4
+  Downloaded ambient-authority v0.0.2
+  Downloaded io-lifetimes v3.0.1
+  Downloaded cap-std v4.0.3
+  Downloaded cap-primitives v4.0.3
+   Compiling windows_x86_64_msvc v0.52.6
+   Compiling io-lifetimes v3.0.1
+   Compiling io-lifetimes v2.0.4
+   Compiling io-extras v0.19.0
+    Checking bitflags v2.13.2
+   Compiling cap-primitives v4.0.3
+    Checking windows-sys v0.61.2
+    Checking ambient-authority v0.0.2
+    Checking ipnet v2.12.2
+    Checking maybe-owned v0.3.4
+   Compiling cap-std v4.0.3
+    Checking windows-targets v0.52.6
+    Checking windows-sys v0.52.0
+    Checking fs-set-times v0.20.3
+    Checking winx v0.36.4
+    Checking p2p-ide-core v0.1.0 (D:\p2p-ai-ci\ide5c\core)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 6.58s
+core-clippy-exit 0
+   Compiling bitflags v2.13.2
+   Compiling windows-link v0.2.1
+   Compiling ipnet v2.12.2
+   Compiling windows_x86_64_msvc v0.52.6
+   Compiling io-lifetimes v2.0.4
+   Compiling io-lifetimes v3.0.1
+   Compiling maybe-owned v0.3.4
+   Compiling ambient-authority v0.0.2
+   Compiling windows-sys v0.61.2
+   Compiling windows-targets v0.52.6
+   Compiling windows-sys v0.52.0
+   Compiling winx v0.36.4
+   Compiling fs-set-times v0.20.3
+   Compiling io-extras v0.19.0
+   Compiling cap-primitives v4.0.3
+   Compiling cap-std v4.0.3
+   Compiling p2p-ide-core v0.1.0 (D:\p2p-ai-ci\ide5c\core)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 9.51s
+     Running unittests src\lib.rs (D:\p2p-ai-ci\ide1\target\debug\deps\p2p_ide_core-3f97c82ab377abe9.exe)
+
+running 62 tests
+test client::tests::a_pinned_ca_without_a_certificate_is_refused ... ok
+test agent::tests::secrets_are_denied ... ok
+test client::tests::requests_are_checked_before_sending ... ok
+test client::tests::model_lists_are_cleaned ... ok
+test chats::tests::titles_and_previews_are_one_line_and_bounded ... ok
+test client::tests::sse_lines_parse_to_fixed_items ... ok
+test discovery::tests::api_origin_only_takes_an_origin ... ok
+test client::tests::streamed_tool_calls_are_assembled_by_index ... ok
+test discovery::tests::urls_refuse_private_and_tricky_hosts ... ok
+test discovery::tests::strict_json_refuses_duplicates_and_floats ... ok
+test gateways::tests::error_messages_carry_no_input ... ok
+test gateways::tests::names_keys_and_cas_are_checked ... ok
+test gateways::tests::urls_are_allow_listed ... ok
+test gwapi::tests::errors_use_fixed_messages_only ... ok
+test gwapi::tests::paths_are_encoded_and_names_checked ... ok
+test client::tests::stream_reader_collects_stops_and_caps ... ok
+test projects::tests::acceptance_checks_are_strict ... ok
+test projects::tests::downloads_must_match_their_digest_and_be_text ... ok
+test projects::tests::gateway_paths_follow_the_grammar ... ok
+test projects::tests::gateway_views_are_cleaned_and_capped ... ok
+test projects::tests::push_and_pull_plans_compare_digests ... ok
+test projects::tests::push_keeps_secrets_and_odd_names_home ... ok
+test runner::tests::words_split_like_the_missions_view ... ok
+test scm::tests::log_is_parsed_and_cleaned ... ok
+test scm::tests::status_is_parsed_and_odd_paths_get_no_actions ... ok
+test scm::tests::repository_settings_that_run_programs_are_refused ... ok
+test client::tests::agent_step_sends_tools_and_returns_calls ... ok
+test client::tests::streams_a_chat_from_a_fake_gateway_with_the_key_in_the_header ... ok
+test store::tests::ids_are_unique_and_checked ... ok
+test runner::tests::gateway_answers_are_cleaned_and_capped ... ok
+test testparse::tests::frameworks_match_the_gateway ... ok
+test testparse::tests::summaries_are_read ... ok
+test workspace::tests::error_messages_never_contain_paths ... ok
+test testparse::tests::hostile_output_is_bounded ... ok
+test discovery::tests::public_only_never_connects_to_loopback ... ok
+test client::tests::status_codes_map_to_fixed_errors_and_redirects_are_not_followed ... ok
+test gateways::tests::an_edited_file_with_a_bad_url_is_refused ... ok
+test runner::tests::requests_are_checked ... ok
+test agent::tests::run_tools_go_through_the_runner_only ... ok
+test agent::tests::a_turn_runs_tools_and_ends_with_text ... ok
+test agent::tests::a_turn_stops_at_the_step_budget_and_on_stop ... ok
+test agent::tests::read_tools_work_and_hide_secrets ... ok
+test workspace::tests::name_is_folder_name_only ... ok
+test workspace::tests::open_refuses_relative_missing_file_and_root ... ok
+test agent::tests::multi_line_edits_match_windows_line_endings ... ok
+test workspace::tests::traversal_and_odd_paths_are_refused ... ok
+test workspace::tests::listing_is_sorted_folders_first ... ok
+test workspace::tests::create_new_file_only_in_existing_folder ... ok
+test workspace::tests::size_and_text_limits ... ok
+test workspace::tests::read_and_save_with_version_check ... ok
+test discovery::tests::directories_are_checked_and_saved ... ok
+test store::tests::write_read_replace_and_caps ... ok
+test workspace::tests::search_finds_plain_text_and_skips_build_folders ... ok
+test gateways::tests::setup_folder_gives_port_and_ca_but_never_secrets ... ok
+test projects::tests::links_are_saved_per_folder_and_gateway ... ok
+test chats::tests::scopes_keep_workspaces_apart_and_hide_the_path ... ok
+test chats::tests::bad_chats_and_ids_are_refused ... ok
+test agent::tests::edits_stay_pending_until_accepted ... ok
+test gateways::tests::add_list_activate_remove_keeps_keys_out_of_the_file ... ok
+test chats::tests::save_list_load_search_delete ... ok
+test scm::tests::real_git_round_trip_without_hooks ... ok
+test client::tests::no_key_and_unreachable_gateways_fail_cleanly ... ok
+
+test result: ok. 62 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.06s
+
+     Running tests\discovery.rs (D:\p2p-ai-ci\ide1\target\debug\deps\discovery-610d092ddc5bbd9c.exe)
+
+running 5 tests
+test bad_directories_are_skipped_without_fetching ... ok
+test forged_probe_gives_no_latency ... ok
+test tampering_and_bad_fields_are_refused ... ok
+test shared_vectors_verify_like_the_node ... ok
+test listing_verifies_dedupes_probes_and_counts_rejections ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running tests\projects.rs (D:\p2p-ai-ci\ide1\target\debug\deps\projects-697c6d8bbd2897c8.exe)
+
+running 2 tests
+test a_commit_on_a_changed_project_is_refused_not_overwritten ... ok
+test push_sends_the_folder_without_secrets_and_pull_brings_changes_for_review ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+   Doc-tests p2p_ide_core
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+core-test-exit 0
+
+added 74 packages in 26s
+npm-ci-exit 0
+
+> p2p-ai-ide@0.1.0 test
+> node --test tests/*.test.ts
+
+✔ baseName and dirName split on / (0.7065ms)
+✔ crumbs (0.6071ms)
+✔ languageFor maps extensions and names (0.1581ms)
+✔ sizeLabel (0.1283ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 111.3618
+npm-test-exit 0
+
+> p2p-ai-ide@0.1.0 build
+> tsc --noEmit && vite build
+
+[36mvite v8.3.8 [32mbuilding client environment for production...[36m[39m
+transforming...
+✓ 3336 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                  0.63 kB │ gzip:     0.41 kB
+dist/assets/codicon-DF1abBS2.ttf               153.22 kB
+dist/assets/editor.worker-CX7Cj20z.js          303.84 kB
+dist/assets/json.worker-BfeARH1Q.js            433.20 kB
+dist/assets/html.worker-DNu74flJ.js            743.44 kB
+dist/assets/css.worker-DA-Gmr7e.js           1,078.35 kB
+dist/assets/ts.worker-CVbFdYz4.js            6,927.85 kB
+dist/assets/index-BqfI2xQF.css                 202.30 kB │ gzip:    31.17 kB
+dist/assets/javascript-F1qdg2HZ.js               0.68 kB │ gzip:     0.41 kB
+dist/assets/azcli-Bc_sGQ0U.js                    0.70 kB │ gzip:     0.28 kB
+dist/assets/ini-sBoK_t0W.js                      0.96 kB │ gzip:     0.49 kB
+dist/assets/workers-DO0rKu5w.js                  1.21 kB │ gzip:     0.56 kB
+dist/assets/csp-bTuwJoIa.js                      1.27 kB │ gzip:     0.48 kB
+dist/assets/pla-CopQ2nXW.js                      1.54 kB │ gzip:     0.60 kB
+dist/assets/scheme-BeGwcela.js                   1.62 kB │ gzip:     0.77 kB
+dist/assets/flow9-C5_-GSwl.js                    1.66 kB │ gzip:     0.80 kB
+dist/assets/sb-CcwsVR0C.js                       1.68 kB │ gzip:     0.78 kB
+dist/assets/bat-i0X4ZdIN.js                      1.69 kB │ gzip:     0.82 kB
+dist/assets/dockerfile-DZFCIeNp.js               1.72 kB │ gzip:     0.63 kB
+dist/assets/pascaligo-D-ptJ9y-.js                1.85 kB │ gzip:     0.86 kB
+dist/assets/xml-D-H25Br9.js                      1.91 kB │ gzip:     0.72 kB
+dist/assets/cameligo-DMUM7wLl.js                 1.97 kB │ gzip:     0.91 kB
+dist/assets/lua-CsQS60Ue.js                      1.98 kB │ gzip:     0.88 kB
+dist/assets/objective-c-FvmIjYaQ.js              2.10 kB │ gzip:     1.01 kB
+dist/assets/graphql-fmXr3nnJ.js                  2.11 kB │ gzip:     0.99 kB
+dist/assets/sparql-D_Lu-MrJ.js                   2.21 kB │ gzip:     1.10 kB
+dist/assets/lexon-CfSJPG6W.js                    2.28 kB │ gzip:     0.88 kB
+dist/assets/mips-CIPQ_RoX.js                     2.32 kB │ gzip:     1.02 kB
+dist/assets/go-C-y9NEjX.js                       2.35 kB │ gzip:     1.11 kB
+dist/assets/bicep-B5-_aFwp.js                    2.36 kB │ gzip:     0.91 kB
+dist/assets/sophia-CRfGWb83.js                   2.48 kB │ gzip:     1.15 kB
+dist/assets/m3-D-oSqn_W.js                       2.52 kB │ gzip:     1.29 kB
+dist/assets/typespec-B8J7ngcE.js                 2.62 kB │ gzip:     1.01 kB
+dist/assets/pascal-DrH0SRf2.js                   2.63 kB │ gzip:     1.35 kB
+dist/assets/fsharp-C8Ef5oNN.js                   2.65 kB │ gzip:     1.27 kB
+dist/assets/qsharp-DkqhCAOL.js                   2.72 kB │ gzip:     1.37 kB
+dist/assets/shell-CC2rA5mh.js                    2.81 kB │ gzip:     1.16 kB
+dist/assets/r-BwWrilGY.js                        2.83 kB │ gzip:     1.25 kB
+dist/assets/java-BEtHBSE6.js                     2.90 kB │ gzip:     1.34 kB
+dist/assets/cssMode-BN1DW1yf.js                  2.93 kB │ gzip:     1.12 kB
+dist/assets/redis-ClamHrr6.js                    3.03 kB │ gzip:     1.41 kB
+dist/assets/kotlin-BOotOW0E.js                   3.04 kB │ gzip:     1.41 kB
+dist/assets/cypher-CVaqCwHa.js                   3.04 kB │ gzip:     1.40 kB
+dist/assets/powershell-DmHpPYUd.js               3.05 kB │ gzip:     1.33 kB
+dist/assets/tcl-DISqw1ZD.js                      3.27 kB │ gzip:     1.32 kB
+dist/assets/liquid-8HSbZRtO.js                   3.33 kB │ gzip:     1.41 kB
+dist/assets/coffee-Ba7i2nA0.js                   3.36 kB │ gzip:     1.24 kB
+dist/assets/htmlMode-COes9_Uu.js                 3.39 kB │ gzip:     1.23 kB
+dist/assets/hcl-CpzslTdj.js                      3.44 kB │ gzip:     1.45 kB
+dist/assets/python-DqxjgnDT.js                   3.45 kB │ gzip:     1.42 kB
+dist/assets/apex-BWPQTe0t.js                     3.46 kB │ gzip:     1.70 kB
+dist/assets/yaml-CrrugUmt.js                     3.53 kB │ gzip:     1.28 kB
+dist/assets/markdown-Cimd5fb3.js                 3.63 kB │ gzip:     1.34 kB
+dist/assets/rust-DdL9SqIa.js                     3.66 kB │ gzip:     1.80 kB
+dist/assets/restructuredtext-BYgofb2h.js         3.74 kB │ gzip:     1.32 kB
+dist/assets/less-B9JPFI3C.js                     3.74 kB │ gzip:     1.36 kB
+dist/assets/dart-onAF5SnQ.js                     3.93 kB │ gzip:     1.60 kB
+dist/assets/csharp-BKxtCVv1.js                   4.11 kB │ gzip:     1.66 kB
+dist/assets/msdax-DauUninz.js                    4.27 kB │ gzip:     1.87 kB
+dist/assets/mdx-DdZzwybj.js                      4.31 kB │ gzip:     1.21 kB
+dist/assets/css-DIMkf-bt.js                      4.36 kB │ gzip:     1.33 kB
+dist/assets/pug-Z5eAx3Zn.js                      4.46 kB │ gzip:     1.60 kB
+dist/assets/swift-Bxkupp3x.js                    4.48 kB │ gzip:     1.99 kB
+dist/assets/ecl-94qehhXe.js                      4.50 kB │ gzip:     2.17 kB
+dist/assets/html-Cdg8bRaS.js                     4.51 kB │ gzip:     1.15 kB
+dist/assets/typescript-D7WxZr0d.js               4.67 kB │ gzip:     1.93 kB
+dist/assets/cpp-C7h46wYY.js                      4.74 kB │ gzip:     2.02 kB
+dist/assets/vb-DV3o63ZY.js                       5.30 kB │ gzip:     2.01 kB
+dist/assets/twig-De2hgUGE.js                     5.78 kB │ gzip:     1.48 kB
+dist/assets/scss-gp-XZpBa.js                     6.26 kB │ gzip:     1.70 kB
+dist/assets/handlebars-D_kXaYnO.js               6.27 kB │ gzip:     1.37 kB
+dist/assets/julia-Bri6UV-V.js                    6.50 kB │ gzip:     2.64 kB
+dist/assets/systemverilog-Bz4Y3fRF.js            6.85 kB │ gzip:     2.72 kB
+dist/assets/st-DbInun42.js                       6.94 kB │ gzip:     2.24 kB
+dist/assets/scala-DHpiXF5c.js                    7.11 kB │ gzip:     2.07 kB
+dist/assets/wgsl-DpFanUEy.js                     7.18 kB │ gzip:     2.73 kB
+dist/assets/perl-oz_6vUea.js                     7.35 kB │ gzip:     3.10 kB
+dist/assets/postiats-43DmfD33.js                 7.36 kB │ gzip:     2.39 kB
+dist/assets/php-nr791fC2.js                      7.74 kB │ gzip:     2.03 kB
+dist/assets/razor-CqcAC0Qn.js                    8.10 kB │ gzip:     2.04 kB
+dist/assets/clojure-Cm7r79vr.js                  8.21 kB │ gzip:     3.49 kB
+dist/assets/ruby-DezsRK8O.js                     8.21 kB │ gzip:     2.55 kB
+dist/assets/sql-NEE52Syq.js                      8.84 kB │ gzip:     3.73 kB
+dist/assets/protobuf-C531GsRP.js                 8.89 kB │ gzip:     2.04 kB
+dist/assets/mysql-SOo6toE5.js                    9.65 kB │ gzip:     3.98 kB
+dist/assets/elixir-6RTg0lbw.js                  10.11 kB │ gzip:     2.50 kB
+dist/assets/redshift-DT7zqm-g.js                10.33 kB │ gzip:     4.24 kB
+dist/assets/abap-08VXUWAP.js                    11.69 kB │ gzip:     5.15 kB
+dist/assets/pgsql-DTj74zXo.js                   11.91 kB │ gzip:     4.42 kB
+dist/assets/jsonMode-DJZdNiKv.js                12.15 kB │ gzip:     4.43 kB
+dist/assets/powerquery-D3hlyOfw.js              15.34 kB │ gzip:     4.73 kB
+dist/assets/freemarker2--gBlb36U.js             15.54 kB │ gzip:     3.97 kB
+dist/assets/solidity-BEEn4gHE.js                15.99 kB │ gzip:     4.39 kB
+dist/assets/tsMode-CsB7DZ5h.js                  21.80 kB │ gzip:     6.14 kB
+dist/assets/lspLanguageFeatures-DWJ183h6.js     28.21 kB │ gzip:     7.17 kB
+dist/assets/index-Dn5iqQSX.js                4,345.68 kB │ gzip: 1,130.42 kB
+
+[33m[33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "node_modules/@radix-ui/react-tooltip/dist/index.mjs" may not be preserved when bundling.
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/@radix-ui/react-tooltip/dist/index.mjs:1:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m1 │[0m "use client";
+ [38;5;240m  │[0m ──────┬──────  
+ [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+[38;5;246m───╯[0m
+[39m
+[33m[33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "node_modules/@radix-ui/react-primitive/dist/index.mjs" may not be preserved when bundling.
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/@radix-ui/react-primitive/dist/index.mjs:1:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m1 │[0m "use client";
+ [38;5;240m  │[0m ──────┬──────  
+ [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+[38;5;246m───╯[0m
+[39m
+[33m[33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "node_modules/@radix-ui/react-portal/dist/index.mjs" may not be preserved when bundling.
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/@radix-ui/react-portal/dist/index.mjs:1:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m1 │[0m "use client";
+ [38;5;240m  │[0m ──────┬──────  
+ [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+[38;5;246m───╯[0m
+[39m
+[33m[33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "node_modules/@radix-ui/react-visually-hidden/dist/index.mjs" may not be preserved when bundling.
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/@radix-ui/react-visually-hidden/dist/index.mjs:1:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m1 │[0m "use client";
+ [38;5;240m  │[0m ──────┬──────  
+ [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+[38;5;246m───╯[0m
+[39m
+[33m[33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "node_modules/@radix-ui/react-presence/dist/index.mjs" may not be preserved when bundling.
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/@radix-ui/react-presence/dist/index.mjs:1:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m1 │[0m "use client";
+ [38;5;240m  │[0m ──────┬──────  
+ [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+[38;5;246m───╯[0m
+[39m
+[33m[33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "node_modules/@radix-ui/react-focus-scope/dist/index.mjs" may not be preserved when bundling.
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/@radix-ui/react-focus-scope/dist/index.mjs:1:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m1 │[0m "use client";
+ [38;5;240m  │[0m ──────┬──────  
+ [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+[38;5;246m───╯[0m
+[39m
+[33m[33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "node_modules/@radix-ui/react-dismissable-layer/dist/index.mjs" may not be preserved when bundling.
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/@radix-ui/react-dismissable-layer/dist/index.mjs:1:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m1 │[0m "use client";
+ [38;5;240m  │[0m ──────┬──────  
+ [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+[38;5;246m───╯[0m
+[39m
+[33m[33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "node_modules/@radix-ui/react-popper/dist/index.mjs" may not be preserved when bundling.
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/@radix-ui/react-popper/dist/index.mjs:1:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m1 │[0m "use client";
+ [38;5;240m  │[0m ──────┬──────  
+ [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+[38;5;246m───╯[0m
+[39m
+[33m[33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "node_modules/@radix-ui/react-arrow/dist/index.mjs" may not be preserved when bundling.
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/@radix-ui/react-arrow/dist/index.mjs:1:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m1 │[0m "use client";
+ [38;5;240m  │[0m ──────┬──────  
+ [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+[38;5;246m───╯[0m
+[39m
+[33m[33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "node_modules/lucide-react/dist/esm/context.mjs" may not be preserved when bundling.
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/lucide-react/dist/esm/context.mjs:2:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m2 │[0m "use client";
+ [38;5;240m  │[0m ──────┬──────  
+ [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+[38;5;246m───╯[0m
+[39m
+[33m[33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "node_modules/lucide-react/dist/esm/Icon.mjs" may not be preserved when bundling.
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/lucide-react/dist/esm/Icon.mjs:2:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m2 │[0m "use client";
+ [38;5;240m  │[0m ──────┬──────  
+ [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+[38;5;246m───╯[0m
+[39m
+[32m✓ built in 3.02s[39m
+build-exit 0
+found 0 vulnerabilities
+npm-audit-exit 0
+shell-fmt-exit 0
+    Checking windows-sys v0.61.2
+    Checking winx v0.36.4
+   Compiling p2p-ide v0.1.0 (D:\p2p-ai-ci\ide5c\app\src-tauri)
+    Checking winapi-util v0.1.11
+    Checking softbuffer v0.4.8
+    Checking dirs-sys v0.5.0
+    Checking muda v0.20.0
+    Checking window-vibrancy v0.8.1
+    Checking cap-primitives v4.0.3
+    Checking rfd v0.17.2
+    Checking windows-native-keyring-store v1.1.0
+    Checking dirs v7.0.0
+    Checking same-file v1.0.6
+    Checking walkdir v2.5.0
+    Checking tauri-utils v2.10.3
+    Checking cap-std v4.0.3
+    Checking p2p-ide-core v0.1.0 (D:\p2p-ai-ci\ide5c\core)
+    Checking keyring v4.2.0
+    Checking tauri-runtime v2.12.3
+    Checking tauri-runtime-wry v2.12.4
+    Checking tauri v2.12.6
+    Checking tauri-plugin-fs v2.7.1
+    Checking tauri-plugin-dialog v2.8.4
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 18.64s
+shell-clippy-exit 0
+
+> p2p-ai-ide@0.1.0 release
+> tauri build --no-bundle
+
+        Info Looking up installed tauri packages to check mismatched versions...
+     Running beforeBuildCommand `npm run build`
+
+> p2p-ai-ide@0.1.0 build
+> tsc --noEmit && vite build
+
+[36mvite v8.3.8 [32mbuilding client environment for production...[36m[39m
+transforming...
+✓ 3336 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                  0.63 kB │ gzip:     0.41 kB
+dist/assets/codicon-DF1abBS2.ttf               153.22 kB
+dist/assets/editor.worker-CX7Cj20z.js          303.84 kB
+dist/assets/json.worker-BfeARH1Q.js            433.20 kB
+dist/assets/html.worker-DNu74flJ.js            743.44 kB
+dist/assets/css.worker-DA-Gmr7e.js           1,078.35 kB
+dist/assets/ts.worker-CVbFdYz4.js            6,927.85 kB
+dist/assets/index-BqfI2xQF.css                 202.30 kB │ gzip:    31.17 kB
+dist/assets/javascript-F1qdg2HZ.js               0.68 kB │ gzip:     0.41 kB
+dist/assets/azcli-Bc_sGQ0U.js                    0.70 kB │ gzip:     0.28 kB
+dist/assets/ini-sBoK_t0W.js                      0.96 kB │ gzip:     0.49 kB
+dist/assets/workers-DO0rKu5w.js                  1.21 kB │ gzip:     0.56 kB
+dist/assets/csp-bTuwJoIa.js                      1.27 kB │ gzip:     0.48 kB
+dist/assets/pla-CopQ2nXW.js                      1.54 kB │ gzip:     0.60 kB
+dist/assets/scheme-BeGwcela.js                   1.62 kB │ gzip:     0.77 kB
+dist/assets/flow9-C5_-GSwl.js                    1.66 kB │ gzip:     0.80 kB
+dist/assets/sb-CcwsVR0C.js                       1.68 kB │ gzip:     0.78 kB
+dist/assets/bat-i0X4ZdIN.js                      1.69 kB │ gzip:     0.82 kB
+dist/assets/dockerfile-DZFCIeNp.js               1.72 kB │ gzip:     0.63 kB
+dist/assets/pascaligo-D-ptJ9y-.js                1.85 kB │ gzip:     0.86 kB
+dist/assets/xml-D-H25Br9.js                      1.91 kB │ gzip:     0.72 kB
+dist/assets/cameligo-DMUM7wLl.js                 1.97 kB │ gzip:     0.91 kB
+dist/assets/lua-CsQS60Ue.js                      1.98 kB │ gzip:     0.88 kB
+dist/assets/objective-c-FvmIjYaQ.js              2.10 kB │ gzip:     1.01 kB
+dist/assets/graphql-fmXr3nnJ.js                  2.11 kB │ gzip:     0.99 kB
+dist/assets/sparql-D_Lu-MrJ.js                   2.21 kB │ gzip:     1.10 kB
+dist/assets/lexon-CfSJPG6W.js                    2.28 kB │ gzip:     0.88 kB
+dist/assets/mips-CIPQ_RoX.js                     2.32 kB │ gzip:     1.02 kB
+dist/assets/go-C-y9NEjX.js                       2.35 kB │ gzip:     1.11 kB
+dist/assets/bicep-B5-_aFwp.js                    2.36 kB │ gzip:     0.91 kB
+dist/assets/sophia-CRfGWb83.js                   2.48 kB │ gzip:     1.15 kB
+dist/assets/m3-D-oSqn_W.js                       2.52 kB │ gzip:     1.29 kB
+dist/assets/typespec-B8J7ngcE.js                 2.62 kB │ gzip:     1.01 kB
+dist/assets/pascal-DrH0SRf2.js                   2.63 kB │ gzip:     1.35 kB
+dist/assets/fsharp-C8Ef5oNN.js                   2.65 kB │ gzip:     1.27 kB
+dist/assets/qsharp-DkqhCAOL.js                   2.72 kB │ gzip:     1.37 kB
+dist/assets/shell-CC2rA5mh.js                    2.81 kB │ gzip:     1.16 kB
+dist/assets/r-BwWrilGY.js                        2.83 kB │ gzip:     1.25 kB
+dist/assets/java-BEtHBSE6.js                     2.90 kB │ gzip:     1.34 kB
+dist/assets/cssMode-BN1DW1yf.js                  2.93 kB │ gzip:     1.12 kB
+dist/assets/redis-ClamHrr6.js                    3.03 kB │ gzip:     1.41 kB
+dist/assets/kotlin-BOotOW0E.js                   3.04 kB │ gzip:     1.41 kB
+dist/assets/cypher-CVaqCwHa.js                   3.04 kB │ gzip:     1.40 kB
+dist/assets/powershell-DmHpPYUd.js               3.05 kB │ gzip:     1.33 kB
+dist/assets/tcl-DISqw1ZD.js                      3.27 kB │ gzip:     1.32 kB
+dist/assets/liquid-8HSbZRtO.js                   3.33 kB │ gzip:     1.41 kB
+dist/assets/coffee-Ba7i2nA0.js                   3.36 kB │ gzip:     1.24 kB
+dist/assets/htmlMode-COes9_Uu.js                 3.39 kB │ gzip:     1.23 kB
+dist/assets/hcl-CpzslTdj.js                      3.44 kB │ gzip:     1.45 kB
+dist/assets/python-DqxjgnDT.js                   3.45 kB │ gzip:     1.42 kB
+dist/assets/apex-BWPQTe0t.js                     3.46 kB │ gzip:     1.70 kB
+dist/assets/yaml-CrrugUmt.js                     3.53 kB │ gzip:     1.28 kB
+dist/assets/markdown-Cimd5fb3.js                 3.63 kB │ gzip:     1.34 kB
+dist/assets/rust-DdL9SqIa.js                     3.66 kB │ gzip:     1.80 kB
+dist/assets/restructuredtext-BYgofb2h.js         3.74 kB │ gzip:     1.32 kB
+dist/assets/less-B9JPFI3C.js                     3.74 kB │ gzip:     1.36 kB
+dist/assets/dart-onAF5SnQ.js                     3.93 kB │ gzip:     1.60 kB
+dist/assets/csharp-BKxtCVv1.js                   4.11 kB │ gzip:     1.66 kB
+dist/assets/msdax-DauUninz.js                    4.27 kB │ gzip:     1.87 kB
+dist/assets/mdx-DdZzwybj.js                      4.31 kB │ gzip:     1.21 kB
+dist/assets/css-DIMkf-bt.js                      4.36 kB │ gzip:     1.33 kB
+dist/assets/pug-Z5eAx3Zn.js                      4.46 kB │ gzip:     1.60 kB
+dist/assets/swift-Bxkupp3x.js                    4.48 kB │ gzip:     1.99 kB
+dist/assets/ecl-94qehhXe.js                      4.50 kB │ gzip:     2.17 kB
+dist/assets/html-Cdg8bRaS.js                     4.51 kB │ gzip:     1.15 kB
+dist/assets/typescript-D7WxZr0d.js               4.67 kB │ gzip:     1.93 kB
+dist/assets/cpp-C7h46wYY.js                      4.74 kB │ gzip:     2.02 kB
+dist/assets/vb-DV3o63ZY.js                       5.30 kB │ gzip:     2.01 kB
+dist/assets/twig-De2hgUGE.js                     5.78 kB │ gzip:     1.48 kB
+dist/assets/scss-gp-XZpBa.js                     6.26 kB │ gzip:     1.70 kB
+dist/assets/handlebars-D_kXaYnO.js               6.27 kB │ gzip:     1.37 kB
+dist/assets/julia-Bri6UV-V.js                    6.50 kB │ gzip:     2.64 kB
+dist/assets/systemverilog-Bz4Y3fRF.js            6.85 kB │ gzip:     2.72 kB
+dist/assets/st-DbInun42.js                       6.94 kB │ gzip:     2.24 kB
+dist/assets/scala-DHpiXF5c.js                    7.11 kB │ gzip:     2.07 kB
+dist/assets/wgsl-DpFanUEy.js                     7.18 kB │ gzip:     2.73 kB
+dist/assets/perl-oz_6vUea.js                     7.35 kB │ gzip:     3.10 kB
+dist/assets/postiats-43DmfD33.js                 7.36 kB │ gzip:     2.39 kB
+dist/assets/php-nr791fC2.js                      7.74 kB │ gzip:     2.03 kB
+dist/assets/razor-CqcAC0Qn.js                    8.10 kB │ gzip:     2.04 kB
+dist/assets/clojure-Cm7r79vr.js                  8.21 kB │ gzip:     3.49 kB
+dist/assets/ruby-DezsRK8O.js                     8.21 kB │ gzip:     2.55 kB
+dist/assets/sql-NEE52Syq.js                      8.84 kB │ gzip:     3.73 kB
+dist/assets/protobuf-C531GsRP.js                 8.89 kB │ gzip:     2.04 kB
+dist/assets/mysql-SOo6toE5.js                    9.65 kB │ gzip:     3.98 kB
+dist/assets/elixir-6RTg0lbw.js                  10.11 kB │ gzip:     2.50 kB
+dist/assets/redshift-DT7zqm-g.js                10.33 kB │ gzip:     4.24 kB
+dist/assets/abap-08VXUWAP.js                    11.69 kB │ gzip:     5.15 kB
+dist/assets/pgsql-DTj74zXo.js                   11.91 kB │ gzip:     4.42 kB
+dist/assets/jsonMode-DJZdNiKv.js                12.15 kB │ gzip:     4.43 kB
+dist/assets/powerquery-D3hlyOfw.js              15.34 kB │ gzip:     4.73 kB
+dist/assets/freemarker2--gBlb36U.js             15.54 kB │ gzip:     3.97 kB
+dist/assets/solidity-BEEn4gHE.js                15.99 kB │ gzip:     4.39 kB
+dist/assets/tsMode-CsB7DZ5h.js                  21.80 kB │ gzip:     6.14 kB
+dist/assets/lspLanguageFeatures-DWJ183h6.js     28.21 kB │ gzip:     7.17 kB
+dist/assets/index-Dn5iqQSX.js                4,345.68 kB │ gzip: 1,130.42 kB
+
+[33m[33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "node_modules/@radix-ui/react-tooltip/dist/index.mjs" may not be preserved when bundling.
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/@radix-ui/react-tooltip/dist/index.mjs:1:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m1 │[0m "use client";
+ [38;5;240m  │[0m ──────┬──────  
+ [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+[38;5;246m───╯[0m
+[39m
+[33m[33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "node_modules/@radix-ui/react-presence/dist/index.mjs" may not be preserved when bundling.
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/@radix-ui/react-presence/dist/index.mjs:1:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m1 │[0m "use client";
+ [38;5;240m  │[0m ──────┬──────  
+ [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+[38;5;246m───╯[0m
+[39m
+[33m[33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "node_modules/@radix-ui/react-visually-hidden/dist/index.mjs" may not be preserved when bundling.
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/@radix-ui/react-visually-hidden/dist/index.mjs:1:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m1 │[0m "use client";
+ [38;5;240m  │[0m ──────┬──────  
+ [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+[38;5;246m───╯[0m
+[39m
+[33m[33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "node_modules/@radix-ui/react-portal/dist/index.mjs" may not be preserved when bundling.
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/@radix-ui/react-portal/dist/index.mjs:1:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m1 │[0m "use client";
+ [38;5;240m  │[0m ──────┬──────  
+ [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+[38;5;246m───╯[0m
+[39m
+[33m[33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "node_modules/@radix-ui/react-primitive/dist/index.mjs" may not be preserved when bundling.
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/@radix-ui/react-primitive/dist/index.mjs:1:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m1 │[0m "use client";
+ [38;5;240m  │[0m ──────┬──────  
+ [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+[38;5;246m───╯[0m
+[39m
+[33m[33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "node_modules/@radix-ui/react-focus-scope/dist/index.mjs" may not be preserved when bundling.
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/@radix-ui/react-focus-scope/dist/index.mjs:1:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m1 │[0m "use client";
+ [38;5;240m  │[0m ──────┬──────  
+ [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+[38;5;246m───╯[0m
+[39m
+[33m[33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "node_modules/@radix-ui/react-dismissable-layer/dist/index.mjs" may not be preserved when bundling.
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/@radix-ui/react-dismissable-layer/dist/index.mjs:1:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m1 │[0m "use client";
+ [38;5;240m  │[0m ──────┬──────  
+ [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+[38;5;246m───╯[0m
+[39m
+[33m[33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "node_modules/@radix-ui/react-popper/dist/index.mjs" may not be preserved when bundling.
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/@radix-ui/react-popper/dist/index.mjs:1:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m1 │[0m "use client";
+ [38;5;240m  │[0m ──────┬──────  
+ [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+[38;5;246m───╯[0m
+[39m
+[33m[33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "node_modules/@radix-ui/react-arrow/dist/index.mjs" may not be preserved when bundling.
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/@radix-ui/react-arrow/dist/index.mjs:1:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m1 │[0m "use client";
+ [38;5;240m  │[0m ──────┬──────  
+ [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+[38;5;246m───╯[0m
+[39m
+[33m[33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "node_modules/lucide-react/dist/esm/context.mjs" may not be preserved when bundling.
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/lucide-react/dist/esm/context.mjs:2:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m2 │[0m "use client";
+ [38;5;240m  │[0m ──────┬──────  
+ [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+[38;5;246m───╯[0m
+[39m
+[33m[33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "node_modules/lucide-react/dist/esm/Icon.mjs" may not be preserved when bundling.
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/lucide-react/dist/esm/Icon.mjs:2:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m2 │[0m "use client";
+ [38;5;240m  │[0m ──────┬──────  
+ [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+[38;5;246m───╯[0m
+[39m
+[32m✓ built in 3.03s[39m
+[33m[33m[PLUGIN_TIMINGS] [0mJavaScript callbacks ran for 2.3s of this 3.0s build (77%).
+4 callbacks are listed without a time. Their calls overlapped, so the time inside one call includes work from other calls. To find their cost, profile the build with `node --cpu-prof`:
+  - plugin vite:worker load (5 calls)
+  - plugin vite:worker-import-meta-url transform (4 calls)
+  - plugin p2p-ide-patched-dompurify resolveId (13784 calls)
+  … and 1 more
+See https://rolldown.rs/reference/InputOptions.checks#bundlertimings for more details.
+[39m
+   Compiling windows-sys v0.61.2
+   Compiling windows_x86_64_msvc v0.52.6
+   Compiling io-lifetimes v3.0.1
+   Compiling io-lifetimes v2.0.4
+   Compiling io-extras v0.19.0
+   Compiling cap-primitives v4.0.3
+   Compiling ipnet v2.12.2
+   Compiling maybe-owned v0.3.4
+   Compiling cap-std v4.0.3
+   Compiling ambient-authority v0.0.2
+   Compiling p2p-ide v0.1.0 (D:\p2p-ai-ci\ide5c\app\src-tauri)
+   Compiling windows-targets v0.52.6
+   Compiling windows-sys v0.52.0
+   Compiling fs-set-times v0.20.3
+   Compiling winx v0.36.4
+   Compiling winapi-util v0.1.11
+   Compiling dirs-sys v0.5.0
+   Compiling softbuffer v0.4.8
+   Compiling muda v0.20.0
+   Compiling window-vibrancy v0.8.1
+   Compiling windows-native-keyring-store v1.1.0
+   Compiling rfd v0.17.2
+   Compiling dirs v7.0.0
+   Compiling same-file v1.0.6
+   Compiling walkdir v2.5.0
+   Compiling tauri-utils v2.10.3
+   Compiling p2p-ide-core v0.1.0 (D:\p2p-ai-ci\ide5c\core)
+   Compiling keyring v4.2.0
+   Compiling tauri-runtime v2.12.3
+   Compiling tauri-runtime-wry v2.12.4
+   Compiling tauri v2.12.6
+   Compiling tauri-plugin-fs v2.7.1
+   Compiling tauri-plugin-dialog v2.8.4
+    Finished `release` profile [optimized] target(s) in 2m 38s
+       Built application at: D:\p2p-ai-ci\ide1\target\release\p2p-ide.exe
+release-exit 0
+ Volume in drive D is [redacted]
+ Volume Serial Number is [redacted]
+
+ Directory of D:\p2p-ai-ci\ide1\target\release
+
+11/17/2026  08:26 AM        11,821,568 p2p-ide.exe
+               1 File(s)     11,821,568 bytes
+               0 Dir(s)  979,591,385,088 bytes free
+ide5c-done
