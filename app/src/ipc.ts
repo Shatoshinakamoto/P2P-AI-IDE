@@ -121,8 +121,15 @@ export const gatewayAddPublic = (gatewayId: string, key: string | null) => call<
  * Sends the conversation to the active gateway. `onText` gets each piece of the answer as it streams in.
  * SECURITY: answer text is untrusted; callers render it as text only (CWE-79).
  */
-/** A step of an agent turn: answer text, or a tool that ran (name, path or query, ok). */
-export type AgentEvent = { kind: "delta"; text: string } | { kind: "tool"; name: string; target: string; ok: boolean };
+/**
+ * A step of an agent turn: answer text, a tool that ran (name, path or query, ok), a run the assistant asks the person
+ * to allow (phase I5b), or the full result of a run the person allowed.
+ */
+export type AgentEvent =
+  | { kind: "delta"; text: string }
+  | { kind: "tool"; name: string; target: string; ok: boolean }
+  | { kind: "approval"; id: string; summary: string; runner: string }
+  | { kind: "run"; id: string; result: RunResult };
 export interface TurnEnd { steps: number; tool_calls: number; pending: number; finish_reason: string | null }
 /** A file the assistant wants to change, waiting for review. */
 export interface ChangeView { rel: string; created: boolean; added: number; removed: number }
@@ -132,10 +139,49 @@ export interface ChangeText { rel: string; before: string; after: string; create
  * Runs one agent turn with the folder tools (phase I3). Proposed edits are not written: they wait for review.
  * SECURITY: answer text and tool targets are untrusted; callers render them as text only (CWE-79).
  */
-export async function agentSend(model: string, messages: Msg[], onEvent: (e: AgentEvent) => void): Promise<TurnEnd> {
+export async function agentSend(model: string, messages: Msg[], onEvent: (e: AgentEvent) => void, runs = false): Promise<TurnEnd> {
   const ch = new Channel<AgentEvent>();
   ch.onmessage = onEvent;
-  return call<TurnEnd>("agent_send", { model, messages, onEvent: ch });
+  return call<TurnEnd>("agent_send", { model, messages, runs, onEvent: ch });
+}
+/** The person's answer to a run request on the approval card (phase I5b). Only the waiting request's id counts. */
+export const agentDecide = (id: string, allow: boolean) => call<void>("agent_decide", { id, allow });
+
+/** What to run (phase I5b, docs/features/run-and-test.md): tests with a framework, or one program as words. */
+export interface RunInput { kind: "tests" | "command"; framework?: string; argv?: string[]; cwd?: string; timeout_s?: number }
+export interface TestSummary { passed: number; failed: number; skipped: number; total: number; failures: string[] }
+/** A run's result. SECURITY: all text is program output (untrusted); render as text only (CWE-79). */
+export interface RunResult {
+  runner: string; place: string; summary: string; exit_code: number | null; timed_out: boolean; duration_ms: number;
+  stdout: string; stderr: string; truncated: boolean; tests: TestSummary | null; error: string;
+}
+/** The test frameworks the sandbox knows (the same list as the gateway's run_tests). */
+export const FRAMEWORKS = ["cargo", "go", "make", "npm", "pytest", "unittest"] as const;
+/**
+ * Runs tests or a command for the person on `runner` (`gateway` in phase I5b). `onStage` gets `sending`, `copying`
+ * and `running` as each stage starts.
+ */
+export async function runStart(runner: string, input: RunInput, onStage: (s: string) => void): Promise<RunResult> {
+  const ch = new Channel<string>();
+  ch.onmessage = onStage;
+  return call<RunResult>("run_start", { runner, input, onStage: ch });
+}
+/**
+ * Splits a typed command line into words like the core's `runner::split_words`: spaces separate words and "..." keeps
+ * spaces inside one. No other shell rules: `;`, `|`, `$` and `*` are plain text for the program.
+ */
+export function splitWords(line: string): string[] {
+  const out: string[] = [];
+  let cur = "";
+  let quoted = false;
+  let any = false;
+  for (const c of line) {
+    if (c === '"') { quoted = !quoted; any = true; }
+    else if (/\s/.test(c) && !quoted) { if (any) { out.push(cur); cur = ""; any = false; } }
+    else { cur += c; any = true; }
+  }
+  if (any) out.push(cur);
+  return out;
 }
 export const changesList = () => call<ChangeView[]>("changes_list");
 export const changeGet = (rel: string) => call<ChangeText>("change_get", { rel });

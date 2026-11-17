@@ -1,7 +1,8 @@
-# `scripts/live_gateway_e2e.py`: live check of missions against a real gateway
+# `scripts/live_gateway_e2e.py`: live check of missions and runs against a real gateway
 
 Development test only; not part of the app. Added 2026-11-17 for phase I4 ([features/missions.md](../features/missions.md)),
-when Pheonix asked for a real-gateway test before merging PR #4.
+when Pheonix asked for a real-gateway test before merging PR #4. `--example live_runs` added 2026-11-17 for phase
+I5b ([features/run-and-test.md](../features/run-and-test.md)).
 
 ## Purpose
 
@@ -12,7 +13,7 @@ against them. The example uses the same core functions and request shapes as the
 ## Synopsis
 
 ```
-python3 scripts/live_gateway_e2e.py --p2p-ai PATH [--bin-dir DIR] [--image NAME] [--keep]
+python3 scripts/live_gateway_e2e.py --p2p-ai PATH [--example live_missions|live_runs] [--bin-dir DIR] [--image NAME] [--keep]
 ```
 
 No root needed except what Docker needs on the machine. Linux only.
@@ -20,6 +21,7 @@ No root needed except what Docker needs on the machine. Linux only.
 | Option | Argument | Default | What it does |
 |---|---|---|---|
 | `--p2p-ai` | path (required) | none | a P2P-AI checkout: its Go gateway and node sources, `deploy/mock_ollama.py`, `scripts/shell_session_stack_e2e.py` helpers |
+| `--example` | `live_missions` or `live_runs` | `live_missions` | which core example runs against the stack (fixed list): missions (I4) or run and test through the sandbox tools (I5b) |
 | `--bin-dir` | folder | build with `go build` | use prebuilt `gateway` and `p2pnode` binaries from this folder |
 | `--image` | image name | `p2p-ai/sandbox:dev` | the sandbox runner image; build it first in the P2P-AI checkout: `docker build -f deploy/Dockerfile.sandbox -t p2p-ai/sandbox:dev .` |
 | `--keep` | none | off | keep the work folder (logs, gateway and node files) and the runner container for debugging |
@@ -34,6 +36,11 @@ gets the fixed message; approving with another digest is refused; the write call
 digest; the mission finishes with its check passing in the sandbox; collect the node's changes; the fix waits in
 Changes to review; nothing written before Accept; `.env` untouched; Accept writes the fix; the `.env` value is in no
 file the gateway or node stored.
+
+With `--example live_runs`: create a project; run unittest in the sandbox (stages reported; one of two tests fails
+and is named; the node is named); fix the file locally and run again (the change reaches the node copy, both pass);
+a command as an argument list (`;` and `$HOME` reach the program as text); no network inside the sandbox; a run past
+its 10 s limit is stopped; a folder outside the root is refused before sending; the `.env` value is in no stored file.
 
 Output: `PASS`/`FAIL` lines and `SUMMARY: n passed, n failed`. Exit codes: 0 all passed, 1 a check failed, 2 setup
 error.
@@ -55,6 +62,8 @@ error.
 python3 scripts/live_gateway_e2e.py --p2p-ai ../P2P-AI
 # Faster reruns with prebuilt binaries
 python3 scripts/live_gateway_e2e.py --p2p-ai ../P2P-AI --bin-dir /tmp/bins
+# Phase I5b: run and test through the gateway sandbox
+python3 scripts/live_gateway_e2e.py --p2p-ai ../P2P-AI --example live_runs
 # Keep the logs after a failure
 python3 scripts/live_gateway_e2e.py --p2p-ai ../P2P-AI --bin-dir /tmp/bins --keep
 ```

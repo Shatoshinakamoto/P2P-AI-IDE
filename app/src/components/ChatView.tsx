@@ -6,14 +6,17 @@
  * review arrived in phase I3 (docs/features/agent-tools.md): with **Tools** on and a folder open, the model can list,
  * read and search the folder and propose edits; proposed edits wait in **Changes** until the person reviews the diff
  * and accepts or rejects each file. Every tool step is shown in the chat.
+ * Phase I5b (docs/features/run-and-test.md): with **Runs** on (off by default) the assistant may also ask to run the
+ * project's tests or one program in the gateway sandbox. Each request shows an approval card with exactly what would
+ * run; nothing runs until the person presses Allow, and Decline, Stop or no answer means it does not run.
  * Trust boundary: model answers are untrusted text. They are rendered with React text nodes only (code fences in a
  * <pre>), never as HTML or Markdown-to-HTML, so an answer cannot inject markup or script (CWE-79). Links in answers
  * are not clickable. Nothing an answer says is run. Tool lines show only the tool name and its target as text.
  */
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Check, Eye, FileDiff, History, Plus, Search, Send, Square, Trash2, Wrench, X } from "lucide-react";
+import { Check, Eye, FileDiff, FlaskConical, History, Plus, Search, Send, Square, Trash2, Wrench, X } from "lucide-react";
 import {
-  agentSend, changeAccept, changeGet, changeReject, changesList, chatDelete, chatLoad, chatSave, chatSend, chatsList,
+  agentDecide, agentSend, changeAccept, changeGet, changeReject, changesList, chatDelete, chatLoad, chatSave, chatSend, chatsList,
   chatsSearch, chatStop, gatewayCheck,
   type ChangeText, type ChangeView, type Chat, type ChatHit, type ChatMessage, type ChatSummary, type GatewayView, type Msg,
 } from "../ipc.ts";
@@ -59,6 +62,9 @@ function Text({ text }: { text: string }) {
 
 export function ChatView({ gateway, workspaceKey, onNotice, onOpenGateways, hasFolder, onReview, onFileWritten, changesTick = 0 }: Props) {
   const [tools, setTools] = useState(true);
+  // SECURITY: runs are off until the person turns them on; even then each run needs its own Allow (OWASP LLM06).
+  const [runs, setRuns] = useState(false);
+  const [ask, setAsk] = useState<{ id: string; summary: string } | null>(null);
   const [changes, setChanges] = useState<ChangeView[]>([]);
   const [models, setModels] = useState<string[]>([]);
   const [model, setModel] = useState("");
@@ -128,6 +134,14 @@ export function ChatView({ gateway, workspaceKey, onNotice, onOpenGateways, hasF
 
   useEffect(() => { end.current?.scrollIntoView({ block: "end" }); }, [chat.messages]);
 
+  /** The person's answer on the approval card. */
+  const decide = async (allow: boolean) => {
+    if (!ask) return;
+    const id = ask.id;
+    setAsk(null);
+    try { await agentDecide(id, allow); } catch (e) { onNotice((e as Error).message); }
+  };
+
   const loadHistory = async () => {
     try { setHistory(await chatsList()); } catch (e) { onNotice((e as Error).message); }
   };
@@ -137,6 +151,7 @@ export function ChatView({ gateway, workspaceKey, onNotice, onOpenGateways, hasF
     if (!text || busy || !gateway || !model) return;
     setDraft("");
     const useTools = tools && hasFolder;
+    const useRuns = useTools && runs;
     const userMsg: ChatMessage = { role: "user", content: text, at: now() };
     const base: Chat = { ...chat, gateway: gateway.name, model, messages: [...chat.messages, userMsg] };
     // Only user and assistant text goes to the model; error and tool lines stay local.
@@ -156,12 +171,22 @@ export function ChatView({ gateway, workspaceKey, onNotice, onOpenGateways, hasF
             const last = turn[turn.length - 1];
             if (last.role === "assistant") turn[turn.length - 1] = { ...last, content: last.content + e.text, at: now() };
             else turn.push({ role: "assistant", content: e.text, at: now() });
+          } else if (e.kind === "approval") {
+            setAsk({ id: e.id, summary: e.summary });
+            turn.push({ role: "tool", content: `asks to run: ${e.summary}`, at: now() });
+          } else if (e.kind === "run") {
+            setAsk(null);
+            const r = e.result;
+            const t = r.tests ? `, tests ${r.tests.passed} passed, ${r.tests.failed} failed` : "";
+            turn.push({ role: "tool", content: `ran ${r.summary}: ${r.error ? r.error : r.timed_out ? "time limit reached" : `exit code ${r.exit_code ?? "none"}`}${t}`, at: now() });
           } else {
-            // SECURITY: only the tool name and target are shown, as text.
-            turn.push({ role: "tool", content: `${e.ok ? "" : "failed: "}${e.name} ${e.target}`.trim(), at: now() });
+            // SECURITY: only the tool name and target are shown, as text. A run's target already names its tool.
+            const isRun = e.name === "run_tests" || e.name === "run_command";
+            const line = isRun ? `${e.ok ? "" : "not run or failed: "}${e.target || e.name}` : `${e.ok ? "" : "failed: "}${e.name} ${e.target}`;
+            turn.push({ role: "tool", content: line.trim(), at: now() });
           }
           show();
-        });
+        }, useRuns);
       } else {
         await chatSend(model, wire, (t) => {
           turn[0] = { ...turn[0], content: turn[0].content + t, at: now() };
@@ -172,6 +197,7 @@ export function ChatView({ gateway, workspaceKey, onNotice, onOpenGateways, hasF
       failed = (e as Error).message;
     } finally {
       setBusy(false);
+      setAsk(null);
     }
     const kept = turn.filter((m) => !(m.role === "assistant" && m.content === ""));
     if (failed) kept.push({ role: "error", content: failed === "stopped" ? "Stopped." : failed, at: now() });
@@ -239,6 +265,15 @@ export function ChatView({ gateway, workspaceKey, onNotice, onOpenGateways, hasF
           onClick={() => setTools(!tools)}
           className={`flex items-center gap-1 rounded px-1.5 py-1 text-xs disabled:opacity-40 ${tools && hasFolder ? "bg-[#264f78] text-white" : "hover:bg-ide-hover"}`}
         ><Wrench size={13} aria-hidden />Tools</button>
+        <button
+          type="button"
+          aria-label="Runs"
+          aria-pressed={runs && tools && hasFolder}
+          disabled={!hasFolder || !tools}
+          title={runs ? "Runs on: the assistant may ask to run tests or a program in the gateway sandbox; you allow or decline each one" : "Runs off: the assistant cannot ask to run anything"}
+          onClick={() => setRuns(!runs)}
+          className={`flex items-center gap-1 rounded px-1.5 py-1 text-xs disabled:opacity-40 ${runs && tools && hasFolder ? "bg-[#264f78] text-white" : "hover:bg-ide-hover"}`}
+        ><FlaskConical size={13} aria-hidden />Runs</button>
         <button type="button" aria-label="New chat" title="New chat" onClick={() => setChat(empty("", ""))} className="rounded p-1 hover:bg-ide-hover"><Plus size={16} aria-hidden /></button>
         <button type="button" aria-label="Chat history" aria-pressed={showHistory} title="History" onClick={() => { setShowHistory(!showHistory); void loadHistory(); }} className="rounded p-1 hover:bg-ide-hover"><History size={16} aria-hidden /></button>
       </div>
@@ -279,6 +314,18 @@ export function ChatView({ gateway, workspaceKey, onNotice, onOpenGateways, hasF
           <div ref={end} />
         </div>
       )}
+      {ask ? (
+        <section role="alertdialog" aria-label="Run request" className="flex shrink-0 flex-col gap-1 border-t border-[#cca700] bg-[#3a3000] px-3 py-2">
+          <div className="text-xs font-semibold text-ide-bright">The assistant asks to run this in the gateway sandbox:</div>
+          {/* SECURITY: the request is model output; shown as text, exactly as it would run. */}
+          <pre className="whitespace-pre-wrap break-all rounded bg-ide-bg p-1 font-mono text-xs text-ide-bright">{ask.summary}</pre>
+          <div className="text-xs text-ide-dim">It runs on the files on disk (not the pending changes), with no network; its changes are not kept.</div>
+          <div className="flex gap-2">
+            <button type="button" onClick={() => void decide(true)} className="rounded bg-ide-accent px-2 py-1 text-xs text-white">Allow run</button>
+            <button type="button" onClick={() => void decide(false)} className="rounded border border-ide-line px-2 py-1 text-xs text-ide-bright">Decline</button>
+          </div>
+        </section>
+      ) : null}
       {changes.length > 0 ? (
         <section aria-label="Changes" className="flex max-h-48 shrink-0 flex-col gap-1 overflow-y-auto border-t border-ide-line px-3 py-2">
           <h3 className="flex items-center gap-1 text-xs font-semibold uppercase text-ide-dim"><FileDiff size={12} aria-hidden />Changes to review ({changes.length})</h3>

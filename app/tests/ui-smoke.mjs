@@ -84,11 +84,16 @@ const fake = () => {
     files: [{ rel: "src/orders.py", index: ".", work: "M", conflict: false, untracked: false, actionable: true },
       { rel: "<img src=x onerror=window.__xss5=1>.md", index: ".", work: "?", conflict: false, untracked: true, actionable: true }] };
   const scmView = () => scm.files.map((f) => (scm.staged.has(f.rel) ? { ...f, index: f.untracked ? "A" : f.work, work: ".", untracked: false } : f));
+  const runResult = {
+    runner: "gateway", place: "node-1", summary: "", exit_code: 1, timed_out: false, duration_ms: 2300,
+    stdout: "collected 4 items\n<b>bold</b><script>window.__xss5=1</script>\n3 passed, 1 failed", stderr: "E assert 1 == 2",
+    truncated: false, tests: { passed: 3, failed: 1, skipped: 0, total: 4, failures: ["tests/test_orders.py::test_<b>total</b>"] }, error: "",
+  };
   window.__TAURI_INTERNALS__ = {
     transformCallback: (cb) => { const id = cbId++; callbacks.set(id, cb); return id; },
     unregisterCallback: (id) => callbacks.delete(id),
     invoke: async (cmd, args) => {
-      window.__calls.push({ cmd, args: cmd === "chat_send" || cmd === "agent_send" ? { model: args.model, messages: args.messages } : args });
+      window.__calls.push({ cmd, args: cmd === "chat_send" || cmd === "agent_send" ? { model: args.model, messages: args.messages, runs: args.runs } : args });
       switch (cmd) {
         case "gateways_list": return { gateways: gws.map(view), active };
         case "gateway_add": {
@@ -124,8 +129,24 @@ const fake = () => {
           return { finish_reason: "stop", chars: pieces.join("").length };
         }
         case "agent_send": {
-          // Phase I3: text, a tool step, hostile text, and two proposed changes that are NOT written.
           const cb = callbacks.get(args.onEvent.id);
+          if (args.runs) {
+            // Phase I5b: the assistant asks to run; nothing runs until agent_decide answers this id.
+            const id = hex();
+            cb({ index: 0, message: { kind: "approval", id, summary: "run_tests pytest <i>now</i>", runner: "gateway" } });
+            const allow = await new Promise((res) => { window.__decide = { id, res }; });
+            if (allow) {
+              cb({ index: 1, message: { kind: "run", id, result: { ...runResult, summary: "run_tests pytest", exit_code: 0, tests: { passed: 4, failed: 0, skipped: 0, total: 4, failures: [] } } } });
+              cb({ index: 2, message: { kind: "tool", name: "run_tests", target: "run_tests pytest", ok: true } });
+            } else {
+              cb({ index: 1, message: { kind: "tool", name: "run_tests", target: "run_tests pytest", ok: false } });
+              cb({ index: 2, message: { kind: "delta", text: "" } });
+            }
+            cb({ index: 3, message: { kind: "delta", text: allow ? "All 4 tests pass." : "OK, not running it." } });
+            cb({ index: 4, end: true });
+            return { steps: 2, tool_calls: 1, pending: pending.size, finish_reason: "stop" };
+          }
+          // Phase I3: text, a tool step, hostile text, and two proposed changes that are NOT written.
           const evs = [
             { kind: "delta", text: "Hello " },
             { kind: "tool", name: "read_file", target: "src/orders.py", ok: true },
@@ -178,6 +199,18 @@ const fake = () => {
           if (scm.staged.size === 0) throw "stage at least one change before committing";
           scm.log.unshift({ id: "abc1234", subject: args.message, author: "Dev", time: 1 });
           scm.files = scm.files.filter((f) => !scm.staged.has(f.rel)); scm.staged.clear(); return "abc1234";
+        }
+        case "agent_decide": {
+          if (!window.__decide || window.__decide.id !== args.id) throw "that run request is no longer waiting";
+          const d = window.__decide; window.__decide = null; d.res(args.allow); return null;
+        }
+        case "run_start": {
+          // Phase I5b: stages arrive on the channel; the result carries hostile output to check it is text.
+          if (args.runner !== "gateway") throw "this runner is not available yet; use the gateway sandbox";
+          const cb = callbacks.get(args.onStage.id);
+          ["sending", "copying", "running"].forEach((message, index) => cb({ index, message }));
+          cb({ index: 3, end: true });
+          return { ...runResult, summary: args.input.kind === "tests" ? `run_tests ${args.input.framework}` : `run_command ${args.input.argv.join(" ")}` };
         }
         case "chat_stop": return null;
         case "chat_save": { const c = { ...args.chat, id: args.chat.id || hex() }; if (!c.title) c.title = c.messages.find((m) => m.role === "user")?.content.split("\n")[0] ?? "New chat"; chats.set(c.id, c); return c; }
@@ -489,6 +522,55 @@ try {
   check("explorer keeps expanded folders across views", true);
   const saves = (await page.evaluate(() => window.__calls)).filter((c) => c.cmd === "chat_save").map((c) => c.args.chat.id);
   check("switching views keeps the chat in progress (one chat, saved twice)", saves.length === 2 && saves[0] === "" && saves[1] !== "", JSON.stringify(saves));
+
+  // ---- Phase I5b: Run and test view, and runs the assistant asks for.
+  await page.getByRole("button", { name: "Run and test", exact: true }).click();
+  const runnerSel = page.getByLabel("Where to run");
+  const disabledRunners = await runnerSel.locator("option[disabled]").count();
+  check("only the gateway runner is offered until the local runners are built", disabledRunners === 2 && (await runnerSel.inputValue()) === "gateway");
+  await page.getByRole("button", { name: "Run pytest tests" }).click();
+  const res = page.getByRole("region", { name: "Run result" });
+  await res.waitFor();
+  const resText = await res.innerText();
+  check("a test run shows the verdict, counts and failing tests", /Failed \(exit code 1\)/.test(resText) && /3 passed, 1 failed/.test(resText) && resText.includes("test_<b>total</b>"), resText.replace(/\s+/g, " ").slice(0, 160));
+  check("run output is shown as text (no element, no script)", (await res.locator("b, script").count()) === 0 && resText.includes("<script>") && (await page.evaluate(() => window.__xss5)) === undefined);
+  const rs1 = window_calls(await page.evaluate(() => window.__calls), "run_start");
+  check("a test run sends the runner, framework and time limit", rs1?.runner === "gateway" && rs1.input.kind === "tests" && rs1.input.framework === "pytest" && rs1.input.timeout_s === 120, JSON.stringify(rs1));
+  await page.getByRole("radio", { name: "Command" }).check();
+  await page.getByLabel(/Program and arguments/).fill('echo "a b" ; ls $HOME');
+  await page.getByRole("button", { name: "Run command" }).click();
+  await res.getByText(/run_command echo a b/).waitFor();
+  const rs2 = window_calls(await page.evaluate(() => window.__calls), "run_start");
+  check("a command is sent as words; shell signs are plain words", JSON.stringify(rs2?.input.argv) === JSON.stringify(["echo", "a b", ";", "ls", "$HOME"]), JSON.stringify(rs2?.input));
+
+  await page.getByRole("button", { name: "Agent chat", exact: true }).click();
+  await page.getByRole("button", { name: "New chat" }).click();
+  const histBtn = page.getByRole("button", { name: "Chat history" });
+  if ((await histBtn.getAttribute("aria-pressed")) === "true") await histBtn.click();
+  const toolsBtn = page.getByRole("button", { name: "Tools", exact: true });
+  if ((await toolsBtn.getAttribute("aria-pressed")) !== "true") await toolsBtn.click();
+  const runsBtn = page.getByRole("button", { name: "Runs", exact: true });
+  check("Runs is off until the person turns it on", (await runsBtn.getAttribute("aria-pressed")) === "false");
+  await runsBtn.click();
+  await page.getByLabel("Message", { exact: true }).fill("run the tests");
+  await page.keyboard.press("Control+Enter");
+  const card = page.getByRole("alertdialog", { name: "Run request" });
+  await card.waitFor();
+  check("a run request shows exactly what would run, as text", (await card.locator("pre").innerText()) === "run_tests pytest <i>now</i>" && (await card.locator("i").count()) === 0);
+  check("nothing runs before Allow", window_calls(await page.evaluate(() => window.__calls), "agent_send")?.runs === true && !(await page.evaluate(() => window.__calls)).some((c) => c.cmd === "agent_decide"));
+  await card.getByRole("button", { name: "Allow run" }).click();
+  await page.getByRole("log", { name: "Messages" }).getByText("All 4 tests pass.").waitFor();
+  const dec1 = window_calls(await page.evaluate(() => window.__calls), "agent_decide");
+  check("Allow answers the request's own id", dec1?.allow === true && typeof dec1.id === "string" && dec1.id.length > 8, JSON.stringify(dec1));
+  check("the chat shows the run and its result", /ran run_tests pytest: exit code 0, tests 4 passed, 0 failed/.test(await page.getByRole("log", { name: "Messages" }).innerText()));
+  await page.getByLabel("Message", { exact: true }).fill("again");
+  await page.keyboard.press("Control+Enter");
+  await card.waitFor();
+  await card.getByRole("button", { name: "Decline" }).click();
+  await page.getByRole("log", { name: "Messages" }).getByText("OK, not running it.").waitFor();
+  check("Decline answers no and the card goes away", window_calls(await page.evaluate(() => window.__calls), "agent_decide")?.allow === false && (await card.count()) === 0);
+  await page.screenshot({ path: process.env.SHOT_RUN ?? join(here, "..", "ui-smoke-run.png") });
+
   await page.screenshot({ path: process.env.SHOT ?? join(here, "..", "ui-smoke.png") });
 } catch (e) {
   check("flow completed", false, String(e).split("\n").slice(0, 6).join(" | "));
