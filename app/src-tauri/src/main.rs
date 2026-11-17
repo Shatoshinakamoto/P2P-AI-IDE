@@ -202,6 +202,8 @@ fn main() {
             agent::agent_decide,
             run::run_start,
             run::runners_list,
+            run::container_images,
+            run::container_prepare,
             scm::scm_status,
             scm::scm_diff,
             scm::scm_stage,

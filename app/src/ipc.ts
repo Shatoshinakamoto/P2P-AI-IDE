@@ -139,10 +139,10 @@ export interface ChangeText { rel: string; before: string; after: string; create
  * Runs one agent turn with the folder tools (phase I3). Proposed edits are not written: they wait for review.
  * SECURITY: answer text and tool targets are untrusted; callers render them as text only (CWE-79).
  */
-export async function agentSend(model: string, messages: Msg[], onEvent: (e: AgentEvent) => void, runs = false, runner = "gateway"): Promise<TurnEnd> {
+export async function agentSend(model: string, messages: Msg[], onEvent: (e: AgentEvent) => void, runs = false, runner = "gateway", image = "python"): Promise<TurnEnd> {
   const ch = new Channel<AgentEvent>();
   ch.onmessage = onEvent;
-  return call<TurnEnd>("agent_send", { model, messages, runs, runner, onEvent: ch });
+  return call<TurnEnd>("agent_send", { model, messages, runs, runner, image, onEvent: ch });
 }
 /** A runner the Run and test view can offer (phase I5c): `gateway`, `local-os` or `container`. */
 export interface RunnerView { id: string; available: boolean; reason: string }
@@ -164,10 +164,24 @@ export const FRAMEWORKS = ["cargo", "go", "make", "npm", "pytest", "unittest"] a
  * Runs tests or a command for the person on `runner` (`gateway` in phase I5b). `onStage` gets `sending`, `copying`
  * and `running` as each stage starts.
  */
-export async function runStart(runner: string, input: RunInput, onStage: (s: string) => void): Promise<RunResult> {
+export async function runStart(runner: string, input: RunInput, onStage: (s: string) => void, image = "python"): Promise<RunResult> {
   const ch = new Channel<string>();
   ch.onmessage = onStage;
-  return call<RunResult>("run_start", { runner, input, onStage: ch });
+  return call<RunResult>("run_start", { runner, input, image, onStage: ch });
+}
+/** A container image from the core's fixed, digest-pinned list (phase I5d); `get` says what Get image does. */
+export interface ImageView { id: string; label: string; present: boolean; get: "pull" | "build" }
+export const containerImages = () => call<ImageView[]>("container_images");
+/** Downloads (pull) or builds one image when the person presses Get image; `onStage` gets `pulling` or `building`. */
+export async function containerPrepare(id: string, onStage: (s: string) => void): Promise<void> {
+  const ch = new Channel<string>();
+  ch.onmessage = onStage;
+  return call<void>("container_prepare", { id, onStage: ch });
+}
+/** The image a run uses on the container runner: a test framework picks its own, a command the chosen one. */
+export function imageFor(kind: "tests" | "command", framework: string, chosen: string): string {
+  if (kind === "command") return chosen;
+  return ({ pytest: "python", unittest: "python", npm: "node", go: "go", make: "go", cargo: "rust" } as Record<string, string>)[framework] ?? "python";
 }
 /**
  * Splits a typed command line into words like the core's `runner::split_words`: spaces separate words and "..." keeps

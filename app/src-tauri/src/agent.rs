@@ -53,8 +53,13 @@ fn workspace(state: &State<AppState>) -> Result<p2p_ide_core::workspace::Workspa
 ///
 /// * `runs` -- true offers `run_tests` and `run_command` for this turn (phase I5b); every run waits for the
 ///   person's decision (`agent_decide`).
-/// * `runner` -- where approved runs go: `gateway` (default; the folder must be linked to a project) or `local-os`.
+/// * `runner` -- where approved runs go: `gateway` (default; the folder must be linked to a project), `local-os` or
+///   `container`.
+/// * `image` -- for `container`: the image the person picked in Run and test for commands (never the model's
+///   choice); tests use their framework's image.
 #[tauri::command]
+// A Tauri command's arguments are its IPC fields; grouping them would only rename them for the webview.
+#[allow(clippy::too_many_arguments)]
 pub async fn agent_send(
     app: AppHandle,
     state: State<'_, AppState>,
@@ -62,18 +67,26 @@ pub async fn agent_send(
     messages: Vec<Msg>,
     runs: Option<bool>,
     runner: Option<String>,
+    image: Option<String>,
     on_event: Channel<AgentEvent>,
 ) -> Result<TurnEnd, String> {
     let ws = workspace(&state)?;
     let client = active_client(&app)?;
     let runner_name = runner.unwrap_or_else(|| "gateway".into());
     let run_target = if runs.unwrap_or(false) {
-        Some(run_on(&app, &state, &runner_name).map_err(|e| format!("{e}, or turn Runs off"))?)
+        Some(
+            run_on(&app, &state, &runner_name, image.as_deref().unwrap_or("python"))
+                .map_err(|e| format!("{e}, or turn Runs off"))?,
+        )
     } else {
         None
     };
-    // The approval card names the runner; only the two known words are ever sent.
-    let runner_word: &'static str = if runner_name == "local-os" { "local-os" } else { "gateway" };
+    // The approval card names the runner; only the three known words are ever sent.
+    let runner_word: &'static str = match runner_name.as_str() {
+        "local-os" => "local-os",
+        "container" => "container",
+        _ => "gateway",
+    };
     let decision = state.run_decision.clone();
     let sync_busy = state.sync_busy.clone();
     // SECURITY: one turn at a time per window, shared with plain chat (CWE-400).

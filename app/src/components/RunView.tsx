@@ -4,8 +4,9 @@
  * tests, output).
  *
  * Runners: the active gateway's sandbox (I5b; the folder is sent to the linked project first, as in Missions) and
- * the local OS sandbox on this computer (I5c; a copy of the folder, no network, Landlock and seccomp on Linux). A
- * Docker or Podman container (I5d) is listed but not offered until it is built. The choice is shared with the chat.
+ * the local OS sandbox on this computer (I5c; a copy of the folder, no network, Landlock and seccomp on Linux, an
+ * AppContainer on Windows), and a local Docker or Podman container (I5d; images from a fixed, digest-pinned list,
+ * downloaded only when the person presses Get image). The runner and the command image are shared with the chat.
  *
  * Trust boundary: everything a run prints is untrusted program output. It is rendered by React as text in <pre>
  * blocks, never as HTML or links (CWE-79). The command is split into words here and checked again in the Rust core;
@@ -14,12 +15,15 @@
  */
 import { useEffect, useState } from "react";
 import { Play } from "lucide-react";
-import { FRAMEWORKS, runnersList, runStart, splitWords, type RunnerView, type RunResult } from "../ipc.ts";
+import { containerImages, containerPrepare, FRAMEWORKS, imageFor, runnersList, runStart, splitWords, type ImageView, type RunnerView, type RunResult } from "../ipc.ts";
 
 interface Props {
   /** The runner in use (shared with the chat's runs). */
   runner: string;
   onRunner: (r: string) => void;
+  /** The image for commands on the container runner (shared with the chat's runs). */
+  image: string;
+  onImage: (i: string) => void;
   onNotice: (m: string) => void;
   /** Opens the Missions view, where the folder is linked to a gateway project. */
   onOpenMissions: () => void;
@@ -31,6 +35,8 @@ const STAGES: Record<string, string> = {
   sending: "Sending changed files to the project…",
   copying: "Waiting for the node's copy to be up to date…",
   running: "Running in the sandbox…",
+  pulling: "Downloading the image…",
+  building: "Building the image (this downloads packages and can take minutes)…",
 };
 
 /** Labels for the runners. */
@@ -40,7 +46,7 @@ const LABELS: Record<string, string> = {
   container: "Local container, Docker or Podman",
 };
 
-export function RunView({ runner, onRunner: setRunner, onNotice, onOpenMissions }: Props) {
+export function RunView({ runner, onRunner: setRunner, image, onImage: setImage, onNotice, onOpenMissions }: Props) {
   const [runners, setRunners] = useState<RunnerView[]>([]);
   // Which runners work now (the gateway needs a linked folder; the local sandbox needs Landlock and namespaces).
   const refresh = () => { runnersList().then(setRunners).catch((e) => onNotice((e as Error).message)); };
@@ -54,8 +60,32 @@ export function RunView({ runner, onRunner: setRunner, onNotice, onOpenMissions 
   const [result, setResult] = useState<RunResult | null>(null);
   const [error, setError] = useState("");
 
+  // Container images (phase I5d): which are on this computer, so a missing one offers Get image instead of a run.
+  const [images, setImages] = useState<ImageView[]>([]);
+  const loadImages = () => { containerImages().then(setImages).catch((e) => onNotice((e as Error).message)); };
+  useEffect(() => { if (runner === "container") loadImages(); }, [runner]);
+  const needed = imageFor(kind, framework, image);
+  const neededView = images.find((i) => i.id === needed);
+  const missing = runner === "container" && neededView !== undefined && !neededView.present;
+
   const argv = splitWords(line);
-  const ready = stage === "" && (kind === "tests" || argv.length > 0);
+  const ready = stage === "" && !missing && (kind === "tests" || argv.length > 0);
+
+  const getImage = async () => {
+    setError("");
+    setStage("starting");
+    try {
+      await containerPrepare(needed, setStage);
+      onNotice(`${neededView?.label ?? needed} is ready`);
+    } catch (e) {
+      const m = (e as Error).message;
+      setError(m);
+      onNotice(m);
+    } finally {
+      setStage("");
+      loadImages();
+    }
+  };
 
   const start = async () => {
     setResult(null);
@@ -65,7 +95,7 @@ export function RunView({ runner, onRunner: setRunner, onNotice, onOpenMissions 
       const input = kind === "tests"
         ? { kind, framework, cwd, timeout_s: timeout }
         : { kind, argv, cwd, timeout_s: timeout };
-      setResult(await runStart(runner, input, (st) => setStage(runner === "local-os" && st === "copying" ? "copying_local" : st)));
+      setResult(await runStart(runner, input, (st) => setStage(runner !== "gateway" && st === "copying" ? "copying_local" : st), image));
     } catch (e) {
       const m = (e as Error).message;
       setError(m);
@@ -88,7 +118,11 @@ export function RunView({ runner, onRunner: setRunner, onNotice, onOpenMissions 
           </option>
         ))}
       </select>
-      {runner === "local-os" ? (
+      {runner === "container" ? (
+        <p className="text-xs text-ide-dim">
+          Runs on a copy of the folder in a throw-away container: no network, no capabilities, not root, a read-only image, and its changes are not kept. Secrets such as .env and keys are not copied. Images are Red Hat UBI 9, pinned by digest.
+        </p>
+      ) : runner === "local-os" ? (
         <p className="text-xs text-ide-dim">
           Runs on a copy of the folder on this computer: no network, your home folder hidden except toolchains (read only), and its changes are not kept. Secrets such as .env and keys are not copied.
         </p>
@@ -115,8 +149,26 @@ export function RunView({ runner, onRunner: setRunner, onNotice, onOpenMissions 
           <label htmlFor="run-cmd" className="text-xs text-ide-dim">Program and arguments (no shell; "quotes" keep spaces)</label>
           <input id="run-cmd" value={line} maxLength={8000} onChange={(e) => setLine(e.target.value)} placeholder="python3 -m pytest -q"
             className="rounded border border-ide-line bg-ide-bg px-2 py-1 font-mono text-ide-bright" />
+          {runner === "container" ? (
+            <>
+              <label htmlFor="run-image" className="text-xs text-ide-dim">Image</label>
+              <select id="run-image" value={image} onChange={(e) => setImage(e.target.value)} className="rounded border border-ide-line bg-ide-bg px-1 py-1 text-ide-bright">
+                {(images.length ? images : [{ id: "python", label: "Python 3.12 (UBI 9)", present: true, get: "pull" as const }]).map((i) => (
+                  <option key={i.id} value={i.id}>{i.label}{i.present ? "" : " (not on this computer yet)"}</option>
+                ))}
+              </select>
+            </>
+          ) : null}
         </>
       )}
+      {missing && neededView ? (
+        <div className="flex flex-col gap-1 rounded border border-ide-line p-2 text-xs">
+          <p>{neededView.label} is not on this computer yet. {neededView.get === "build" ? "Building it downloads the UBI 9 base and Rust packages." : "Getting it downloads the pinned image."}</p>
+          <button type="button" disabled={stage !== ""} onClick={() => void getImage()} className="self-start rounded border border-ide-line px-2 py-1 text-ide-bright disabled:opacity-50">
+            Get image
+          </button>
+        </div>
+      ) : null}
       <div className="flex gap-2">
         <label className="flex min-w-0 flex-1 flex-col text-xs text-ide-dim">Folder (from the root)
           <input aria-label="Folder to run in" value={cwd} maxLength={1000} onChange={(e) => setCwd(e.target.value)} placeholder="(root)" className="rounded border border-ide-line bg-ide-bg px-2 py-1 text-sm text-ide-bright" />

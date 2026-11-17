@@ -38,30 +38,22 @@
 //! Dependencies: libc (system calls; already in the lockfile through other crates), the core's workspace, agent
 //! (deny list), runner and testparse modules.
 
-#[cfg(any(target_os = "linux", windows))]
 use crate::runner::MAX_STREAM;
 use crate::runner::{RunRequest, RunResult};
-#[cfg(any(target_os = "linux", windows))]
 use crate::workspace::EntryKind;
 use crate::workspace::Workspace;
 use std::path::Path;
-#[cfg(any(target_os = "linux", windows))]
 use std::path::PathBuf;
 
 /// The runner's name in requests and results.
 pub const RUNNER: &str = "local-os";
 /// Most files and bytes copied into a snapshot, and the largest file.
-#[cfg(any(target_os = "linux", windows))]
 const MAX_COPY_FILES: usize = 20_000;
-#[cfg(any(target_os = "linux", windows))]
 const MAX_COPY_BYTES: u64 = 512 << 20;
-#[cfg(any(target_os = "linux", windows))]
 const MAX_COPY_FILE: u64 = 100 << 20;
 /// Folders linked read-only into the snapshot instead of copied (dependencies the tests need).
-#[cfg(any(target_os = "linux", windows))]
 const LINK_DIRS: [&str; 3] = ["node_modules", ".venv", "venv"];
 /// Folders never copied (build output and caches; the per-folder cache takes their place).
-#[cfg(any(target_os = "linux", windows))]
 const SKIP_DIRS: [&str; 6] = [".git", "target", "dist", "__pycache__", ".pytest_cache", ".mypy_cache"];
 
 /// Whether this runner can be offered here, and why not.
@@ -72,13 +64,11 @@ pub struct Availability {
     pub reason: String,
 }
 
-#[cfg(any(target_os = "linux", windows))]
 /// A copy of the folder for one run, removed when dropped.
-struct JobDir {
-    path: PathBuf,
+pub(crate) struct JobDir {
+    pub(crate) path: PathBuf,
 }
 
-#[cfg(any(target_os = "linux", windows))]
 impl Drop for JobDir {
     fn drop(&mut self) {
         // SECURITY: remove_dir_all does not follow symlinks, so the read-only links to node_modules or .venv are
@@ -87,24 +77,27 @@ impl Drop for JobDir {
     }
 }
 
-#[cfg(any(target_os = "linux", windows))]
 /// What a snapshot holds: the folders the job may read through links.
-struct Snapshot {
+pub(crate) struct Snapshot {
     /// Canonical paths of linked folders (read and execute in the sandbox). Always empty on Windows (copied).
-    #[cfg_attr(windows, allow(dead_code))]
+    #[cfg_attr(not(target_os = "linux"), allow(dead_code))]
     linked: Vec<PathBuf>,
+    #[cfg_attr(not(any(target_os = "linux", windows)), allow(dead_code))]
     /// A `.venv/bin` in the copy (Python frameworks use its interpreter first).
     venv_bin: Option<PathBuf>,
 }
 
-#[cfg(any(target_os = "linux", windows))]
-/// Copies the folder's files into `dest`: the agent deny list applies, links are not followed, build folders are
-/// skipped and dependency folders are linked read-only.
+/// Copies the folder's files into `dest`: the agent deny list applies, links are not followed and build folders are
+/// skipped. Dependency folders (`node_modules`, `.venv`) are linked read-only when `link_deps` is true (the Linux
+/// local sandbox, which mounts nothing) and copied otherwise (Windows, and containers, where a host link would
+/// point nowhere).
 ///
 /// Security: every path comes from the workspace listing (confined to the root) and passes `agent::denied`, so
 /// secrets never enter the job folder (CWE-200); symlinks in the project are not copied (CWE-59); counts and sizes
 /// are capped (CWE-400).
-fn snapshot(ws: &Workspace, dest: &Path) -> Result<Snapshot, String> {
+pub(crate) fn snapshot(ws: &Workspace, dest: &Path, link_deps: bool) -> Result<Snapshot, String> {
+    #[cfg(windows)]
+    let _ = link_deps;
     let mut snap = Snapshot { linked: vec![], venv_bin: None };
     let (mut files, mut bytes) = (0usize, 0u64);
     let mut stack: Vec<String> = vec![String::new()];
@@ -117,7 +110,7 @@ fn snapshot(ws: &Workspace, dest: &Path) -> Result<Snapshot, String> {
             let target = dest.join(&e.rel);
             match e.kind {
                 #[cfg(unix)]
-                EntryKind::Dir if LINK_DIRS.contains(&e.name.as_str()) => {
+                EntryKind::Dir if link_deps && LINK_DIRS.contains(&e.name.as_str()) => {
                     let Ok(real) = ws.root().join(&e.rel).canonicalize() else { continue };
                     // SECURITY: only a folder that really is inside the open folder is linked (CWE-22).
                     if !real.starts_with(ws.root()) {
@@ -215,9 +208,8 @@ fn find_program(name: &str, path_var: &str, avoid: &[&Path]) -> Option<PathBuf> 
     None
 }
 
-#[cfg(any(target_os = "linux", windows))]
 /// The per-folder cache: build output and package caches survive between runs of the same folder.
-fn cache_dir(data_dir: &Path, ws: &Workspace) -> Result<PathBuf, String> {
+pub(crate) fn cache_dir(data_dir: &Path, ws: &Workspace) -> Result<PathBuf, String> {
     let key = crate::projects::folder_key(ws.root());
     let short: String = key.chars().filter(char::is_ascii_alphanumeric).take(24).collect();
     let d = data_dir.join("run-cache").join(short);
@@ -233,16 +225,15 @@ fn cache_dir(data_dir: &Path, ws: &Workspace) -> Result<PathBuf, String> {
 /// system and administrators (CWE-276); the sandbox's own SID is added by `win::grant` where a job needs it.
 fn restrict(_p: &Path) {}
 
-#[cfg(target_os = "linux")]
+#[cfg(unix)]
 /// Makes a folder owner-only (0700). SECURITY: other users cannot read or plant files in it (CWE-276, CWE-732).
 fn restrict(p: &Path) {
     use std::os::unix::fs::PermissionsExt;
     let _ = std::fs::set_permissions(p, std::fs::Permissions::from_mode(0o700));
 }
 
-#[cfg(any(target_os = "linux", windows))]
 /// Reads at most `MAX_STREAM` bytes and drains the rest, so the program never blocks on a full pipe.
-fn read_capped(mut r: impl std::io::Read) -> (Vec<u8>, bool) {
+pub(crate) fn read_capped(mut r: impl std::io::Read) -> (Vec<u8>, bool) {
     let mut out = Vec::new();
     let mut buf = [0u8; 16 << 10];
     let mut cut = false;
@@ -259,9 +250,8 @@ fn read_capped(mut r: impl std::io::Read) -> (Vec<u8>, bool) {
     (out, cut)
 }
 
-#[cfg(any(target_os = "linux", windows))]
 /// Removes control characters other than newline and tab (CWE-150).
-fn clean(b: &[u8]) -> String {
+pub(crate) fn clean(b: &[u8]) -> String {
     String::from_utf8_lossy(b).chars().filter(|c| !c.is_control() || *c == '\n' || *c == '\t').collect()
 }
 
@@ -833,7 +823,7 @@ pub fn run(
     // SECURITY: a new folder (create_dir fails if it exists), owner-only (CWE-377, CWE-732).
     std::fs::create_dir(&job.path).map_err(|_| "could not prepare the run folder")?;
     restrict(&job.path);
-    let snap = snapshot(ws, &job.path)?;
+    let snap = snapshot(ws, &job.path, true)?;
     let home = job.path.join(".p2pide-home");
     let tmp = job.path.join(".p2pide-tmp");
     for d in [&home, &tmp] {
@@ -1025,7 +1015,8 @@ fn win_base_env() -> Vec<(String, String)> {
 
 #[cfg(windows)]
 /// `p` without the `\\?\` prefix that `canonicalize` adds, when it is a plain drive path.
-fn plain(p: PathBuf) -> PathBuf {
+/// Also used by the container runner: Docker Desktop does not accept `\\?\` paths in `--volume`.
+pub(crate) fn plain(p: PathBuf) -> PathBuf {
     let s = p.to_string_lossy();
     match s.strip_prefix(r"\\?\") {
         Some(rest) if rest.as_bytes().get(1) == Some(&b':') => PathBuf::from(rest),
@@ -1136,7 +1127,7 @@ pub fn run(
     // empty, so the grant is quick and the copied files inherit it (CWE-377, CWE-732).
     std::fs::create_dir(&job.path).map_err(|_| "could not prepare the run folder")?;
     win::grant(&job.path, &sid, win::RIGHTS_MODIFY)?;
-    let snap = snapshot(ws, &job.path)?;
+    let snap = snapshot(ws, &job.path, true)?;
     let home = job.path.join(".p2pide-home");
     let tmp = job.path.join(".p2pide-tmp");
     for d in [home.clone(), tmp.clone(), home.join("AppData").join("Roaming")] {
