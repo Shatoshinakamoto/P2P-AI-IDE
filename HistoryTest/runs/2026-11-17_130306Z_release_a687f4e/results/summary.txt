@@ -1,0 +1,11 @@
+id: 2026-11-17_130306Z_release_a687f4e
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: not recorded
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: 0
+duration_s: 0.0
+commit: a687f4e06e88f6a0789cdbc5c72a07be42bd3e49
+machine: cloud

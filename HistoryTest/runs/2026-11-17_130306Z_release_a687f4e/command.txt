@@ -1,0 +1,2 @@
+# run in repository folder `.`, as an argument list (no shell)
+bash -c python3 -c "import json;json.load(open('app/src-tauri/tauri.conf.json'));print('tauri.conf.json ok')" && ! git grep -nE '^(<<<<<<<|>>>>>>>) ' -- . ':!HistoryTest' && echo 'no conflict markers'
