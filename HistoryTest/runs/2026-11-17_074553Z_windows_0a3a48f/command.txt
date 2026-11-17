@@ -1,0 +1,1 @@
+conhost.exe --headless cmd /c D:\p2p-ai-ci\ide3b-build.cmd

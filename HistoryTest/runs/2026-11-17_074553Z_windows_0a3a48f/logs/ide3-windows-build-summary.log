@@ -1,0 +1,34 @@
+# Summary lines (findstr) from the two Windows build logs. Full logs stay on the PC; this extract has no
+# user names, machine name or volume serial.
+== ide3.txt (PR #3 at f3cde42)
+core-fmt-exit 0
+core-clippy-exit 0
+test result: ok. 41 passed; 0 failed (unit; 2 Unix-only tests are not compiled on Windows)
+test result: ok. 5 passed; 0 failed (integration)
+core-test-exit 0
+npm-ci-exit 0
+npm-test-exit 0
+build-exit 0
+found 0 vulnerabilities
+npm-audit-exit 0
+shell-fmt-exit 0
+shell-clippy-exit 0
+Finished `release` profile [optimized] target(s) in 2m 28s
+release-exit 0
+ide3-done
+== ide3b.txt (PR #3 at 0a3a48f, with the CRLF edit fix)
+core-fmt-exit 0
+core-clippy-exit 0
+test result: ok. 42 passed; 0 failed (unit; includes multi_line_edits_match_windows_line_endings)
+test result: ok. 5 passed; 0 failed (integration)
+core-test-exit 0
+npm-ci-exit 0
+npm-test-exit 0
+build-exit 0
+found 0 vulnerabilities
+npm-audit-exit 0
+shell-fmt-exit 0
+shell-clippy-exit 0
+Finished `release` profile [optimized] target(s) in 2m 53s
+release-exit 0
+ide3b-done

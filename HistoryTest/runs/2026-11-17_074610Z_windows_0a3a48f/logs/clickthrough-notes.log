@@ -1,0 +1,23 @@
+Windows click-through of phase I2 (real keychain) and I3 (chat tools) - 2026-11-17, release build p2p-ide.exe
+Backend: local Ollama at 127.0.0.1:11434 used as a dev gateway (OpenAI-compatible API), NOT a P2P-AI gateway.
+
+I2 keychain
+- Added gateway "Ollama dev" http://127.0.0.1:11434 with a throwaway test key. UI shows INSECURE - DEV ONLY and "key in keychain".
+- Check: "4441 ms, 56 models".
+- %APPDATA%\org.p2p-ai.ide\gateways.json holds the gateway entry with no key.
+- cmdkey /list shows the target LegacyGeneric:target=e5b5b619c90d6c1d.org.p2p-ai.ide.gateway (only this line recorded).
+
+I3 chat tools, test folder D:\p2p-ai-ci\0-ide3-ws (src\calc.py with "return a - b", CRLF; .env with a fake key; README.md)
+1. qwen2.5-coder:7b: wrote tool calls as plain text (known model limitation, documented). Screenshot 01.
+2. qwen3-coder:30b: Ollama answered HTTP 500 (model did not load next to other GPU work); the app showed "the gateway answered with an error (HTTP 500)". Screenshot 02.
+3. qwen2.5:14b at f3cde42: tool lines shown (read_file src/calc.py); read_file .env failed and the model said it is hidden;
+   edit_file failed every time -> BUG: file has CRLF, model sends LF. Screenshot 03. Fixed in 0a3a48f with a test.
+4. qwen2.5:14b at 0a3a48f: read_file ok, .env denied, edit_file src/calc.py proposed (ok). The small model then looped
+   re-proposing; Stop pressed -> "Stopped." shown, turn ended. "Changes to review (1): src/calc.py +1 -1". Screenshots 04-05.
+5. Eye button opened the diff review: left on disk "return a - b", right proposed "return a + b", "not written yet",
+   Accept and save / Reject / Close. Screenshot 06.
+6. After an interruption on my side, the app was found closed and src\calc.py on disk read
+   "def add(a, b):\r\n    return a + b\r\n" (34 bytes, CRLF kept, modified 07:24Z). Only the app's Accept writes this file,
+   so the accept path wrote it, but this session did not see the click itself; recorded as observed, not as a verified step.
+
+Not exercised on Windows (covered by ui-smoke 45/45 on Linux): Reject, Tools off, history after switching views.

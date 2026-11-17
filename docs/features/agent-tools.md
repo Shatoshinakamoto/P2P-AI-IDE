@@ -94,7 +94,9 @@ cargo audit and npm audit 2026-11-17: 0 vulnerabilities (run linked below).
 ## 6. Limitations and known risks
 
 * The model needs tool support. Small models may write calls as text; the gateway's text-tool fallback serves agent
-  runs, not chat, so such a model just answers in text here.
+  runs, not chat, so such a model just answers in text here. On Windows with Ollama, `qwen2.5-coder:7b` wrote its calls as text; `qwen2.5:14b`
+  used the tools properly.
+* Line endings: edits to CRLF files keep CRLF. A file with mixed endings may need the model to read it again.
 * The deny list is by name. A secret in an ordinary file (for example a key pasted into `config.py`) can be read and
   sent to the gateway. Keep secrets out of the code folder, or turn Tools off.
 * What the model reads goes to the gateway you chose, like anything you paste.
@@ -109,7 +111,7 @@ cargo audit and npm audit 2026-11-17: 0 vulnerabilities (run linked below).
 |---|---|
 | "open a folder first; the assistant works on the open folder" | open a folder, or turn Tools off |
 | "this gateway or model does not offer tools; turn Tools off to chat without them" | the gateway answered 404 for a tools request; pick another model or turn Tools off |
-| tool line `failed: read_file .env` | that file is hidden from the assistant on purpose |
+| tool line `failed: read_file` with no file name, after asking about `.env` | that file is hidden from the assistant on purpose; its name is not shown |
 | "the file changed on disk after the assistant read it; reject this change and ask again" | the file was edited after the proposal; reject it and ask again |
 | "the chat and the files read are larger than 2 MiB; start a new chat" | the turn read too much; start a new chat or ask about fewer files |
 
@@ -119,4 +121,7 @@ cargo audit and npm audit 2026-11-17: 0 vulnerabilities (run linked below).
 * [Tauri shell: fmt and clippy with the agent commands](../../HistoryTest/runs/2026-11-17_065239Z_shell_e919fcd/RUN.md)
 * [Webview: UI smoke 45/45 with tool steps, diff review, accept, reject and Tools off](../../HistoryTest/runs/2026-11-17_065240Z_ui-smoke_e919fcd/RUN.md)
 * [cargo audit and npm audit: 0 vulnerabilities](../../HistoryTest/runs/2026-11-17_065249Z_security-scan_e919fcd/RUN.md)
-* Windows click-through: still to do, together with I2.
+* [Core after the CRLF edit fix: 49 tests](../../HistoryTest/runs/2026-11-17_071348Z_core_0a3a48f/RUN.md)
+* [Windows build and tests at f3cde42 and 0a3a48f: all steps pass](../../HistoryTest/runs/2026-11-17_074553Z_windows_0a3a48f/RUN.md)
+* [Windows click-through with a local model: keychain, tools, .env denial, Stop and diff review pass; found the CRLF
+  bug; Reject and Tools off not repeated on Windows (partial)](../../HistoryTest/runs/2026-11-17_074610Z_windows_0a3a48f/RUN.md)

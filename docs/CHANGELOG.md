@@ -22,6 +22,9 @@ Requested by Pheonix ("keep moving forward").
 ### Fixed
 - Switching from Agent chat to another view and back lost the chat in progress (the next answer started a new saved
   chat); the chat view now stays mounted.
+- Windows: `edit_file` never matched a multi-line change in a file with CRLF line endings, because models send LF.
+  The edit now adapts to the file's line endings and keeps them (found in the Windows click-through, core tests
+  48 -> 49).
 
 ## 2026-11-17 - App icons: the P2P-AI logo with the IDE badge
 

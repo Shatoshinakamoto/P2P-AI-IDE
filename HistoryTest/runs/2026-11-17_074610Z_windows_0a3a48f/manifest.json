@@ -1,0 +1,78 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "5b94f2842bda22c33d41e411ab1be2a3a7b332aacfba4c2684f7399d991d161d",
+   "size": 2433
+  },
+  "artifacts/01-qwen25coder-text-calls.jpg": {
+   "sha256": "d3637d53cd64993bddd1a2f60b457899568d16bfc0c149080965e59fdefba52d",
+   "size": 19390
+  },
+  "artifacts/02-qwen3coder-http500.jpg": {
+   "sha256": "c6a87e8759a30f656b8e7526dd7ba69cfb41112d6b8e3f89f1e49bd22eee55e4",
+   "size": 21623
+  },
+  "artifacts/03-qwen25-14b-crlf-edit-fails.jpg": {
+   "sha256": "9b5815dcee573dfa218363df6200d957be1f92c61a0fa61c7a4612cb5e8a74f0",
+   "size": 36577
+  },
+  "artifacts/05-stopped-changes-to-review.jpg": {
+   "sha256": "f2714cce3aa602dac15e7ce5549e67458fb3d6d8f5ce6914f088ae4d18396c62",
+   "size": 3726
+  },
+  "artifacts/06-diff-review.jpg": {
+   "sha256": "92af5a7391251fc3afa3c612284c04113dc53616ec0fbf418ff503804652a32d",
+   "size": 5809
+  },
+  "command.txt": {
+   "sha256": "04f997028b83ada1dc2cc63d54942a4a686ad383c75f84780d72a852e0263c3e",
+   "size": 36
+  },
+  "environment.md": {
+   "sha256": "eed5f35704384f88d6bde1cd307d8613f0f414e42b72e587f9c9e1a1461e1344",
+   "size": 128
+  },
+  "logs/clickthrough-notes.log": {
+   "sha256": "be4064ca016e38b6458bd4211cab85395bd5cf7764a32dc637c10170a3e10243",
+   "size": 2098
+  },
+  "results/summary.txt": {
+   "sha256": "9ceebd180e82689a21958cbf2ce65b37ec700cf760d74d11baf9d395deda43d5",
+   "size": 344
+  }
+ },
+ "previous": {
+  "manifest_sha256": "d4a8ccf3be97b8f68c8a7dd2872b399d7fde8ad6ee0b4068e269fe48521f5464",
+  "run_id": "2026-11-17_074553Z_windows_0a3a48f"
+ },
+ "run": {
+  "area": "windows",
+  "branch_or_pr": "PR #3",
+  "collected_utc": "2026-11-17T07:46:10Z",
+  "commit": "0a3a48f",
+  "count_unit": "",
+  "date_utc": "2026-11-17T07:46:10Z",
+  "dirty": false,
+  "duration_s": null,
+  "exit_code": null,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_074610Z_windows_0a3a48f",
+  "kind": "manual",
+  "machine": "pc",
+  "passed": null,
+  "record": "imported",
+  "redactions": {},
+  "requested_by": "IDE phase I3 thread",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Windows click-through of I2 keychain and I3 chat tools against a local model",
+  "verdict": "partial",
+  "verdict_reason": "Reject, Tools off and history checks were not run on Windows; the Accept click was not observed directly."
+ },
+ "schema": 1
+}

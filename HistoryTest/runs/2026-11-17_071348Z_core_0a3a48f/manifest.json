@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "4c12d4f159c4e2651ad99113ef0b9d166819ae7ccf385164a7a7dad19645c07c",
+   "size": 1439
+  },
+  "command.txt": {
+   "sha256": "9e2f09528986feb8a776df515985371d750cc84350566468e622bc63fb539951",
+   "size": 169
+  },
+  "environment.md": {
+   "sha256": "825b5104d39155e0b8e033f272fc132ea023b642d437490dee96e6a2620fab6b",
+   "size": 193
+  },
+  "logs/output.log": {
+   "sha256": "556b201693609696a7b4bb3c6beb305641439c8387115973b7a31b297cc21ca0",
+   "size": 3813
+  },
+  "results/summary.txt": {
+   "sha256": "07d0e3e6f1f661789b0f69b9c7d3086a2b92ca15f9806ab2bae25b8cbe6af8ce",
+   "size": 284
+  }
+ },
+ "previous": {
+  "manifest_sha256": "aaaaff93448db223a4aacb6dd26f94c350d2a3cc762da3d91dd33a1e88c341af",
+  "run_id": "2026-11-17_065249Z_security-scan_e919fcd"
+ },
+ "run": {
+  "area": "core",
+  "branch_or_pr": "PR #3",
+  "collected_utc": "",
+  "commit": "0a3a48fcc86c5a3a8c1c2748ff7c372b0d1c9661",
+  "count_unit": "",
+  "date_utc": "2026-11-17T07:13:48Z",
+  "dirty": true,
+  "duration_s": 1.8,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_071348Z_core_0a3a48f",
+  "kind": "unit",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Core fmt, clippy and tests with the CRLF edit fix",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

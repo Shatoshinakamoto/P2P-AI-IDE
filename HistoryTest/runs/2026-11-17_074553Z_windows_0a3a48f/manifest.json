@@ -1,0 +1,62 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "de7b0cefbb8711a3805798bdba66f1a93ccf0b6f73a66fea7842f558a8e612bf",
+   "size": 1917
+  },
+  "artifacts/ide3b-build.cmd": {
+   "sha256": "725a394b3b249259e3a553a5a67aa7c6b4506db004f19f1807bfbbb7ca4368e0",
+   "size": 1585
+  },
+  "command.txt": {
+   "sha256": "7a5e7fdb37cb53aeca9d08dfbf0ce9d3fd54d4c73373bc3ab84498e954609ac7",
+   "size": 59
+  },
+  "environment.md": {
+   "sha256": "8da51311b917090f89554c8b3fc83c916e5f92b13f71f03ab77f0be9029b7db8",
+   "size": 128
+  },
+  "logs/ide3-windows-build-summary.log": {
+   "sha256": "1cf866bb5fc5171ca9b7d6abc8c3887be97e57768d337ec8c4c3b249d9807b7f",
+   "size": 1041
+  },
+  "results/summary.txt": {
+   "sha256": "503f06aa040fa24d04f78472afe2b4588100edcbe74ca614947a28a124542449",
+   "size": 220
+  }
+ },
+ "previous": {
+  "manifest_sha256": "4b43f2f5c74b422a1fd50e1f7de91d7bcf92dbc0524577431d019dcc452b7d9e",
+  "run_id": "2026-11-17_071348Z_core_0a3a48f"
+ },
+ "run": {
+  "area": "windows",
+  "branch_or_pr": "PR #3",
+  "collected_utc": "2026-11-17T07:45:53Z",
+  "commit": "0a3a48f",
+  "count_unit": "",
+  "date_utc": "2026-11-17T07:45:53Z",
+  "dirty": false,
+  "duration_s": 600.0,
+  "exit_code": null,
+  "failed": 0,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_074553Z_windows_0a3a48f",
+  "kind": "build",
+  "machine": "pc",
+  "passed": 47,
+  "record": "imported",
+  "redactions": {},
+  "requested_by": "IDE phase I3 thread",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Windows build and tests of phase I3 (f3cde42, then 0a3a48f with the CRLF fix)",
+  "verdict": "pass",
+  "verdict_reason": ""
+ },
+ "schema": 1
+}
