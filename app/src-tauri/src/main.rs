@@ -1,8 +1,9 @@
-//! main.rs -- the P2P-AI IDE's Tauri shell (phases I1-I2, docs/features/editor-shell.md,
-//! docs/features/gateways-and-chat.md).
+//! main.rs -- the P2P-AI IDE's Tauri shell (phases I1-I4, docs/features/editor-shell.md,
+//! docs/features/gateways-and-chat.md, docs/features/agent-tools.md, docs/features/missions.md).
 //!
 //! Purpose: opens the window and exposes typed commands to the webview: pick a workspace folder, show its name,
-//! list a folder, read a file, save a file and search (here), plus the gateway and chat commands in `net.rs`.
+//! list a folder, read a file, save a file and search (here), plus the gateway and chat commands in `net.rs`, the
+//! chat tools in `agent.rs` and the Missions view in `missions.rs`.
 //! All file and network work is done by p2p-ide-core.
 //!
 //! Trust boundaries: the webview is untrusted input to every command (it renders file contents and, later, model
@@ -22,6 +23,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod agent;
+mod missions;
 mod net;
 
 use p2p_ide_core::{FileText, Listing, SearchResult, Workspace, WsError};
@@ -45,6 +47,8 @@ struct AppState {
     /// Changes the agent proposed in this workspace, waiting for the person's review (phase I3). Never written
     /// without an accept; cleared when another folder opens.
     pending: Mutex<p2p_ide_core::agent::Pending>,
+    /// True while a push, collect or pull with the gateway project runs (phase I4; one at a time).
+    sync_busy: AtomicBool,
 }
 
 /// What the webview learns about the open workspace: its name only.
@@ -146,6 +150,7 @@ fn main() {
             chat_stop: Arc::new(AtomicBool::new(false)),
             public: Mutex::new(Vec::new()),
             pending: Mutex::new(Default::default()),
+            sync_busy: AtomicBool::new(false),
         })
         .invoke_handler(tauri::generate_handler![
             pick_folder,
@@ -178,7 +183,23 @@ fn main() {
             agent::changes_list,
             agent::change_get,
             agent::change_accept,
-            agent::change_reject
+            agent::change_reject,
+            missions::mission_project,
+            missions::projects_list,
+            missions::project_create,
+            missions::project_link,
+            missions::project_push,
+            missions::project_collect,
+            missions::project_pull,
+            missions::switches_set,
+            missions::missions_list,
+            missions::mission_get,
+            missions::mission_start,
+            missions::mission_control,
+            missions::approvals_list,
+            missions::approval_decide,
+            missions::proposals_list,
+            missions::proposal_act
         ])
         .run(tauri::generate_context!())
         .expect("the IDE window could not start");

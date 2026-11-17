@@ -2,6 +2,29 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-17 - Phase I4: missions (Autopilot and Auto Improve)
+
+Requested by Pheonix ("keep moving forward with the rest").
+
+### Added
+- **Missions** view: link the open folder to a gateway project (pick or create), **Send folder to the project**
+  (changed files only, secrets kept local, report of skipped files), **Autopilot** and **Auto Improve** switches,
+  start a mission with a goal, model and 1-8 acceptance checks, Pause, Resume, Stop (two clicks), approval review
+  with the exact arguments, proposals (Accept, Dismiss, Snooze a week), and **Bring the work back** (Collect changes,
+  Review changes into the existing diff review).
+- Status bar **Autopilot** and **Auto Improve** chips show the project's switches and open Missions.
+- Core modules `gwapi` (gateway API calls, multipart upload, capped download, error codes to fixed messages) and
+  `projects` (push, pull, folder links, view shapes, acceptance checks); `agent::propose_external`;
+  `Workspace::all_files` and `read_bytes`. 16 shell commands in `missions.rs`.
+- `links.json` in the app data folder (folder-to-project links).
+- Tests: core 49 -> 60 (incl. a fake-gateway integration test), UI smoke 45 -> 57.
+- Docs: `features/missions.md`, `commands/live-gateway-e2e.md`.
+- Live check `scripts/live_gateway_e2e.py` with `core/examples/live_missions.rs`: a real gateway, node and sandbox
+  run an Autopilot mission end to end from the IDE core (19 of 19).
+
+### Changed
+- `ChatView` refreshes **Changes to review** when work is brought back from a mission.
+
 ## 2026-11-17 - Phase I3: chat tools and diff review
 
 Requested by Pheonix ("keep moving forward").

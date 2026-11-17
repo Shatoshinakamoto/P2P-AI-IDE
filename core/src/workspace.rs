@@ -44,7 +44,7 @@ pub const MAX_QUERY_BYTES: usize = 256;
 pub const MAX_SEARCH_FILE_BYTES: u64 = 1024 * 1024;
 pub const MAX_SEARCH_FILES: usize = 20_000;
 /// Folders that search skips because they are large build or dependency output.
-const SEARCH_SKIP_DIRS: [&str; 6] = [".git", "node_modules", "target", "dist", ".venv", "__pycache__"];
+pub const SEARCH_SKIP_DIRS: [&str; 6] = [".git", "node_modules", "target", "dist", ".venv", "__pycache__"];
 
 /// The errors a workspace call can return. Each maps to one short message for the person (no paths, no OS text).
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -333,6 +333,56 @@ impl Workspace {
         let version = version_of(&bytes);
         let text = String::from_utf8(bytes).map_err(|_| WsError::NotText)?;
         Ok(FileText { text, version })
+    }
+
+    /// Reads a file's raw bytes (phase I4: sending the folder to a gateway project), at most `max` bytes.
+    ///
+    /// Returns `(bytes, version)`; `TooLarge` past `max`, `WrongKind` for a folder.
+    ///
+    /// Security: same confinement as [`Workspace::read_text`] (canonical path inside the root, CWE-22, CWE-59);
+    /// the read is bounded even if the file grows meanwhile (CWE-400).
+    pub fn read_bytes(&self, rel: &str, max: u64) -> Result<(Vec<u8>, String), WsError> {
+        let path = self.resolve_existing(rel)?;
+        let meta = fs::metadata(&path).map_err(io_err)?;
+        if !meta.is_file() {
+            return Err(WsError::WrongKind);
+        }
+        if meta.len() > max {
+            return Err(WsError::TooLarge);
+        }
+        let mut bytes = Vec::with_capacity(meta.len() as usize);
+        File::open(&path).map_err(io_err)?.take(max + 1).read_to_end(&mut bytes).map_err(io_err)?;
+        if bytes.len() as u64 > max {
+            return Err(WsError::TooLarge);
+        }
+        let v = version_of(&bytes);
+        Ok((bytes, v))
+    }
+
+    /// Lists every file under the root (path and size), skipping build and dependency folders and symlinks, as
+    /// search does. Stops after `max_files` and reports `true` when it did.
+    ///
+    /// Security: symlinks are never followed (CWE-59); the walk is iterative and capped (CWE-400).
+    pub fn all_files(&self, max_files: usize) -> (Vec<(String, u64)>, bool) {
+        let mut out = Vec::new();
+        let mut stack: Vec<String> = vec![String::new()];
+        while let Some(dir_rel) = stack.pop() {
+            let Ok(listing) = self.list_dir(&dir_rel) else { continue };
+            for e in listing.entries {
+                match e.kind {
+                    EntryKind::Dir if !SEARCH_SKIP_DIRS.contains(&e.name.as_str()) => stack.push(e.rel),
+                    EntryKind::File => {
+                        if out.len() >= max_files {
+                            return (out, true);
+                        }
+                        out.push((e.rel, e.size));
+                    }
+                    _ => {}
+                }
+            }
+        }
+        out.sort();
+        (out, false)
     }
 
     /// Saves a text file atomically.

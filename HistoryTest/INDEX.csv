@@ -28,3 +28,8 @@ run_id,date_utc,area,commit,branch_or_pr,machine,verdict,passed,failed,skipped,s
 2026-11-17_071348Z_core_0a3a48f,2026-11-17T07:13:48Z,core,0a3a48f,PR #3,cloud container,pass,,,,"Core fmt, clippy and tests with the CRLF edit fix"
 2026-11-17_074553Z_windows_0a3a48f,2026-11-17T07:45:53Z,windows,0a3a48f,PR #3,user PC (Windows),pass,47,0,,"Windows build and tests of phase I3 (f3cde42, then 0a3a48f with the CRLF fix)"
 2026-11-17_074610Z_windows_0a3a48f,2026-11-17T07:46:10Z,windows,0a3a48f,PR #3,user PC (Windows),partial,,,,Windows click-through of I2 keychain and I3 chat tools against a local model
+2026-11-17_082336Z_core_7e32c2d,2026-11-17T08:23:36Z,core,7e32c2d,claude/project-thread-dfop2y,cloud container,pass,,,,"Core: fmt, clippy and tests with I4 projects sync"
+2026-11-17_082340Z_shell_7e32c2d,2026-11-17T08:23:40Z,shell,7e32c2d,claude/project-thread-dfop2y,cloud container,pass,,,,Tauri shell: fmt and clippy with the missions commands
+2026-11-17_082340Z_ui-smoke_7e32c2d,2026-11-17T08:23:40Z,ui-smoke,7e32c2d,claude/project-thread-dfop2y,cloud container,pass,4,0,0,Webview: UI smoke with the Missions view
+2026-11-17_082359Z_security-scan_7e32c2d,2026-11-17T08:23:59Z,security-scan,7e32c2d,claude/project-thread-dfop2y,cloud container,pass,,,,cargo audit and npm audit for I4
+2026-11-17_085225Z_live-gateway_bfae51f,2026-11-17T08:52:25Z,live-gateway,bfae51f,PR #4,cloud container,pass,,,,"Live: IDE core against a real Go gateway, node and sandbox (Autopilot mission)"

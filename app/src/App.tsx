@@ -4,14 +4,17 @@
  * Purpose: phase I1 of docs/features/editor-shell.md (open a folder through the OS picker in Rust, browse, search,
  * edit in tabs, save) and phase I2 of docs/features/gateways-and-chat.md (Gateways view, Agent chat with history,
  * gateway chip in the status bar) and phase I3 of docs/features/agent-tools.md (chat tools on the open folder and
- * the diff review of proposed changes over the editor area). Missions and Extensions are visible but arrive in later phases.
+ * the diff review of proposed changes over the editor area) and phase I4 of docs/features/missions.md (the Missions view:
+ * Autopilot and Auto Improve on a gateway project, with the work brought back into the same diff review). Extensions
+ * are visible but arrive in a later phase.
  * Security: the webview never chooses the folder path (the Rust side shows the OS picker) and never touches files
  * itself; every call goes through ipc.ts to the checked core. All text is rendered by React or Monaco as text (CWE-79).
  */
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import { Blocks, Files, FolderOpen, MessageSquare, Network, Rocket, Search } from "lucide-react";
-import { gatewaysList, pickFolder, workspaceInfo, type GatewayList, type WorkspaceInfo } from "./ipc.ts";
+import { gatewaysList, pickFolder, workspaceInfo, type GatewayList, type Switches, type WorkspaceInfo } from "./ipc.ts";
+import { MissionsView } from "./components/MissionsView.tsx";
 import { Explorer } from "./components/Explorer.tsx";
 import { SearchView } from "./components/SearchView.tsx";
 import { Editor, type EditorHandle } from "./components/Editor.tsx";
@@ -47,6 +50,14 @@ export function App() {
   const [review, setReview] = useState<Review | null>(null);
   const onReview = useCallback((r: Review | null) => setReview(r), []);
   const onFileWritten = useCallback((rel: string) => editor.current?.fileWritten(rel), []);
+  // Bumped when files are pulled back from a mission, so the chat's "Changes to review" list reloads.
+  const [changesTick, setChangesTick] = useState(0);
+  const [switches, setSwitches] = useState<Switches | null>(null);
+  const onSwitches = useCallback((s: Switches | null) => setSwitches(s), []);
+  const onPulled = useCallback((n: number) => {
+    setChangesTick((t) => t + 1);
+    if (n > 0) setView("chat");
+  }, []);
 
   // After a webview reload the Rust side may still have a workspace open; saved gateways come from the core too.
   useEffect(() => {
@@ -91,7 +102,7 @@ export function App() {
         // ChatView stays mounted below (so a chat in progress and its pending changes survive switching views).
         return null;
       case "missions":
-        return <Placeholder title="Missions" phase="phase I4">Autopilot and Auto Improve run on the gateway on a synced copy of this folder. Auto Train stays with the gateway admin.</Placeholder>;
+        return <MissionsView gateway={activeGateway} folderName={ws?.name ?? null} onNotice={onNotice} onOpenGateways={() => setView("network")} onPulled={onPulled} onSwitches={onSwitches} />;
       case "network":
         return <NetworkView onChanged={setGateways} onNotice={onNotice} />;
       case "extensions":
@@ -125,7 +136,7 @@ export function App() {
               </Tip>
             ))}
           </nav>
-          <aside aria-label="Side bar" className={`flex ${view === "chat" || view === "network" ? "w-96" : "w-64"} shrink-0 flex-col border-r border-ide-line bg-ide-side`}>
+          <aside aria-label="Side bar" className={`flex ${view === "chat" || view === "network" || view === "missions" ? "w-96" : "w-64"} shrink-0 flex-col border-r border-ide-line bg-ide-side`}>
             <div className="px-4 py-2 text-[11px] uppercase tracking-wide text-ide-dim">{VIEWS.find((v) => v.id === view)?.label}</div>
             {ws ? (
               <div className={view === "explorer" ? "flex min-h-0 flex-1 flex-col" : "hidden"}>
@@ -133,7 +144,7 @@ export function App() {
               </div>
             ) : null}
             <div className={view === "chat" ? "flex min-h-0 flex-1 flex-col" : "hidden"}>
-              <ChatView gateway={activeGateway} workspaceKey={String(wsGen)} onNotice={onNotice} onOpenGateways={() => setView("network")} hasFolder={ws !== null} onReview={onReview} onFileWritten={onFileWritten} />
+              <ChatView gateway={activeGateway} workspaceKey={String(wsGen)} onNotice={onNotice} onOpenGateways={() => setView("network")} hasFolder={ws !== null} onReview={onReview} onFileWritten={onFileWritten} changesTick={changesTick} />
             </div>
             {side()}
           </aside>
@@ -142,7 +153,7 @@ export function App() {
             {review ? <DiffReview change={review.change} onAccept={review.accept} onReject={review.reject} onClose={() => setReview(null)} /> : null}
           </div>
         </div>
-        <StatusBar line={cursor.line} col={cursor.col} language={cursor.language} notice={notice} gateway={activeGateway} onGateway={() => setView("network")} />
+        <StatusBar line={cursor.line} col={cursor.col} language={cursor.language} notice={notice} gateway={activeGateway} onGateway={() => setView("network")} switches={switches} onMissions={() => setView("missions")} />
       </div>
     </Tooltip.Provider>
   );

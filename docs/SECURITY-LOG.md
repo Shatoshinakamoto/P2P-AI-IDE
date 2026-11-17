@@ -2,6 +2,27 @@
 
 Every security patch, hardening change, CVE remediation and accepted risk, newest first.
 
+## 2026-11-17 — Phase I4 hardening: project sync and missions with review
+- **Type:** hardening
+- **CVE / CWE / advisory:** CWE-200, CWE-538, CWE-345, CWE-494, CWE-362, CWE-367, CWE-22, CWE-73, CWE-918, CWE-93, CWE-400, CWE-79, CWE-209, CWE-532; OWASP LLM06 (none: new feature)
+- **Severity:** none (new feature built with these controls). KEV no.
+- **Affected:** `core/src/{gwapi,projects,agent,workspace,client}.rs`, `app/src-tauri/src/{missions,net,main}.rs`, `app/src/components/{MissionsView,ChatView,StatusBar}.tsx`
+- **What changed:** pushing the folder applies the agent deny list, skips symlinks and build folders, re-hashes each
+  file just before upload, and commits with `base_version`; pulled files must match the listed SHA-256, must be text,
+  never include denied names, and only become pending changes accepted per file; approval decisions carry the
+  arguments' SHA-256; gateway paths pass a strict grammar; API calls are limited to `/v1/` on the active gateway;
+  multipart names allow-listed with a random boundary; size and count caps everywhere; gateway error text replaced by
+  fixed messages; fixed audit words.
+- **Why it is secure now:** human approval for every local write (NIST AC-6, OWASP LLM06), integrity of downloaded
+  content (NIST SI-7), no lost updates (CWE-362/367), least data sent (NIST SC-8 over TLS, deny list), no
+  information leakage in errors or logs (NIST AU-3, CWE-209/532).
+- **Accepted risk:** the folder's contents (except denied names) are uploaded to the chosen gateway and copied to a
+  node to run the mission; a secret inside an ordinary file is sent. Mitigation: deny list, the skipped-files report,
+  choose a trusted gateway, keep secrets out of the code folder (features/missions.md section 6).
+- **Verification:** HistoryTest runs 2026-11-17_082336Z_core_7e32c2d (60 tests), 2026-11-17_082340Z_shell_7e32c2d,
+  2026-11-17_082340Z_ui-smoke_7e32c2d (57/57), 2026-11-17_082359Z_security-scan_7e32c2d (0 vulnerabilities), 2026-11-17_085225Z_live-gateway_bfae51f (real
+  gateway: .env never stored, stale approval digest refused, nothing written before Accept; 19/19).
+
 ## 2026-11-17 — Phase I3 hardening: human approval for every agent change
 - **Type:** hardening
 - **CVE / CWE / advisory:** CWE-200, CWE-538, CWE-22, CWE-367, CWE-20, CWE-400, CWE-79; OWASP LLM01, LLM06 (none: new feature)

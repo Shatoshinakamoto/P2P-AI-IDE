@@ -34,6 +34,8 @@ interface Props {
   onReview: (r: Review | null) => void;
   /** An accepted change was written to this file. */
   onFileWritten: (rel: string) => void;
+  /** Changes when files were pulled back from a mission (phase I4); the Changes list reloads. */
+  changesTick?: number;
 }
 
 const empty = (gateway: string, model: string): Chat => ({ id: "", title: "", gateway, model, created: 0, updated: 0, messages: [] });
@@ -55,7 +57,7 @@ function Text({ text }: { text: string }) {
   );
 }
 
-export function ChatView({ gateway, workspaceKey, onNotice, onOpenGateways, hasFolder, onReview, onFileWritten }: Props) {
+export function ChatView({ gateway, workspaceKey, onNotice, onOpenGateways, hasFolder, onReview, onFileWritten, changesTick = 0 }: Props) {
   const [tools, setTools] = useState(true);
   const [changes, setChanges] = useState<ChangeView[]>([]);
   const [models, setModels] = useState<string[]>([]);
@@ -93,6 +95,11 @@ export function ChatView({ gateway, workspaceKey, onNotice, onOpenGateways, hasF
     setShowHistory(false);
     void refreshChanges();
   }, [workspaceKey, refreshChanges]);
+
+  // Files brought back from a mission join the same list.
+  useEffect(() => {
+    if (changesTick > 0) void refreshChanges();
+  }, [changesTick, refreshChanges]);
 
   const accept = async (rel: string) => {
     try {

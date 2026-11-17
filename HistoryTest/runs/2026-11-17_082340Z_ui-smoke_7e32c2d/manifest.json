@@ -1,0 +1,62 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "7b3c9c88b9aea2f7c5d49a93d7994b6a07518b61be81cb51e942f961c04887c7",
+   "size": 1559
+  },
+  "artifacts/ui-i4.png": {
+   "sha256": "103f30033fe82ce1685da2730406eccc9f08dc649a54fad3d16e5c52a663d9ba",
+   "size": 36398
+  },
+  "command.txt": {
+   "sha256": "f6af45c4039b08540cd62f2f279b1d29fc6989272edf7e46b663053d6f6c9501",
+   "size": 223
+  },
+  "environment.md": {
+   "sha256": "2dee9272fe8998b874828074216135c3e043404959d3aa13724f0de248a8a381",
+   "size": 197
+  },
+  "logs/output.log": {
+   "sha256": "32b25a01e283d283c8ce7dd55d37e20a261b9aab748765f56394e7c7aad07b5a",
+   "size": 5014
+  },
+  "results/summary.txt": {
+   "sha256": "acd60f476c5bc673469ba1b8168d5f6f812e82ed736365200ad9ccc098efe154",
+   "size": 251
+  }
+ },
+ "previous": {
+  "manifest_sha256": "a20f7b0ce8659b2913808c4d84ce2414c5b488ca64f4ea761089c43a5c54f566",
+  "run_id": "2026-11-17_082340Z_shell_7e32c2d"
+ },
+ "run": {
+  "area": "ui-smoke",
+  "branch_or_pr": "claude/project-thread-dfop2y",
+  "collected_utc": "",
+  "commit": "7e32c2df82985819e79ddbd175b063363b409bec",
+  "count_unit": "packages",
+  "date_utc": "2026-11-17T08:23:40Z",
+  "dirty": false,
+  "duration_s": 9.3,
+  "exit_code": 0,
+  "failed": 0,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_082340Z_ui-smoke_7e32c2d",
+  "kind": "e2e",
+  "machine": "cloud",
+  "passed": 4,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "IDE phase I4 thread",
+  "shortened_logs": [],
+  "skipped": 0,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Webview: UI smoke with the Missions view",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

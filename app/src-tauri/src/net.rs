@@ -68,7 +68,7 @@ impl SecretStore for Keychain {
 }
 
 /// The app's data folder (per user, from the OS). SECURITY: never from the webview.
-fn data_dir(app: &AppHandle) -> Result<PathBuf, String> {
+pub(crate) fn data_dir(app: &AppHandle) -> Result<PathBuf, String> {
     app.path().app_data_dir().map_err(|_| "the app's data folder is not available".to_string())
 }
 
@@ -181,8 +181,14 @@ fn client_for(app: &AppHandle, id: &str) -> Result<(Client, String), String> {
 
 /// A client for the active gateway (used by chat and by the agent turn in agent.rs).
 pub(crate) fn active_client(app: &AppHandle) -> Result<Client, String> {
+    Ok(active_gateway(app)?.0)
+}
+
+/// The active gateway's client, id and name (phase I4: the missions view links a folder per gateway).
+pub(crate) fn active_gateway(app: &AppHandle) -> Result<(Client, String, String), String> {
     let active = gw_store(app)?.load().map_err(gw_err)?.active.ok_or("add a gateway in the Gateways view first")?;
-    Ok(client_for(app, &active)?.0)
+    let (c, name) = client_for(app, &active)?;
+    Ok((c, active, name))
 }
 
 /// Asks a gateway for its models and times the answer.
