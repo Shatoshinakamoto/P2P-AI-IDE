@@ -10,6 +10,34 @@ Every security patch, hardening change, CVE remediation and accepted risk, newes
 - **What changed:** the icons are generated from one committed source logo by a script in the P2P-AI repository instead of placeholders; no code, CSP or capability changed.
 - **Why it is secure now:** binary assets are reproducible and reviewable (`make_icons.py --check` catches drift), and no new dependency enters this repository.
 - **Verification:** `HistoryTest/runs/2026-11-17_062058Z_branding_ea76006` (29 of 29 checks, 11 for the IDE set).
+## 2026-11-17 — Phase I2a hardening: gateway keys, TLS and untrusted answers
+- **Type:** hardening
+- **CVE / CWE / advisory:** CWE-522, CWE-532, CWE-295, CWE-601, CWE-918, CWE-79, CWE-113, CWE-22, CWE-276, CWE-400
+- **Severity:** none (new feature built with these controls)
+- **Affected:** `core/src/{gateways,client,chats,store}.rs`, `app/src-tauri/src/net.rs`, `app/src/components/{NetworkView,ChatView}.tsx`
+- **What changed:** keys only in the OS keychain and never returned to the webview; URL allow-list; TLS always on
+  (pinned CA as the only root when set) except a badged loopback dev gateway; no redirects, no environment proxy;
+  answers rendered as text only; state files owner-only and re-checked on load; caps on every size and time.
+- **Why it is secure now:** NIST IA-5 and SC-8/SC-13, ASVS V9 (communications) and V6 (stored secrets), OWASP LLM01
+  (answers treated as untrusted data). See docs/features/gateways-and-chat.md section 3.
+- **Verification:** core tests (fake gateway: key in header only, no redirects, status mapping, stream caps, Stop),
+  UI smoke test (key never shown, `<img onerror>` in an answer stays text). HistoryTest runs listed in the feature page.
+
+## 2026-11-17 — Accepted risk: zbus 5 helper crates flagged unmaintained (Linux keychain)
+- **Type:** accepted risk
+- **CVE / CWE / advisory:** RUSTSEC-2026-0370 (zvariant), RUSTSEC-2026-0371 (zbus_names), RUSTSEC-2026-0372
+  (zvariant_derive), all "unmaintained", informational; no vulnerability and no CVE.
+- **Severity:** no CVSS (informational). KEV no.
+- **Affected:** `app/src-tauri/Cargo.lock`, Linux builds only: keyring 4.2.0 -> zbus-secret-service-keyring-store
+  1.0.1 -> zbus 5.19.0 -> zvariant 5.15.1, zbus_names 4.3.5.
+- **What changed:** nothing. The crates were folded into zbus 6 (its `wire` module) by the same authors; the
+  keyring store has not moved to zbus 6 yet. They only encode D-Bus messages to the local Secret Service.
+- **Why it is acceptable now:** the D-Bus peer is the user's own session keyring service, not a network party; the
+  data is the IDE's own key entries. Windows and macOS builds do not include these crates.
+- **Follow-up:** `TODO(security)`: move to a keyring store on zbus 6 when released; cargo audit in CI keeps
+  reporting them until then.
+- **Verification:** `cargo audit --file app/src-tauri/Cargo.lock`: 0 vulnerabilities, 5 warnings (these 3 plus the
+  2 already accepted). HistoryTest run listed in docs/features/gateways-and-chat.md.
 
 ## 2026-11-17 — Accepted risk: Object.prototype is not frozen (Monaco needs it writable)
 - **Type:** accepted risk

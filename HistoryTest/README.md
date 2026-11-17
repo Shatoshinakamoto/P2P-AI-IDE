@@ -152,6 +152,10 @@ This repository started on 2026-11-17; every run since then is here.
 | Date (UTC) | Area | Commit | Verdict | Run |
 |---|---|---|---|---|
 | 2026-11-17 06:20:58 | branding | `ea76006` | pass | [IDE icons verified (run in the P2P-AI repository)](runs/2026-11-17_062058Z_branding_ea76006/RUN.md) |
+| 2026-11-17 06:20:16 | security-scan | `bd2763f` | pass | [cargo audit of both lockfiles after adding ureq, serde_json, keyring](runs/2026-11-17_062016Z_security-scan_bd2763f/RUN.md) |
+| 2026-11-17 06:20:08 | ui-smoke | `bd2763f` | pass | [Webview type check, unit tests, build and UI smoke (30 checks incl. gateways and chat)](runs/2026-11-17_062008Z_ui-smoke_bd2763f/RUN.md) |
+| 2026-11-17 06:20:07 | shell | `bd2763f` | pass | [Tauri shell fmt and clippy with net.rs and keyring](runs/2026-11-17_062007Z_shell_bd2763f/RUN.md) |
+| 2026-11-17 06:20:06 | core | `bd2763f` | pass | [Core fmt, clippy, tests with gateways/client/chats (31 tests)](runs/2026-11-17_062006Z_core_bd2763f/RUN.md) |
 | 2026-11-17 05:51:29 | ui-smoke | `e428736` | pass | [Type check, unit tests, build and UI smoke with the tab-language check](runs/2026-11-17_055129Z_ui-smoke_e428736/RUN.md) |
 | 2026-11-17 05:45:00 | windows | `e30cb3e` | pass | [Windows rebuild of the fix (e30cb3e) and manual click-through: 9/9](runs/2026-11-17_054500Z_windows_e30cb3e/RUN.md) |
 | 2026-11-17 05:44:04 | ui-smoke | `e30cb3e` | pass | [UI smoke after the blank-window fix (freezePrototype off; test now applies the freeze when configured)](runs/2026-11-17_054404Z_ui-smoke_e30cb3e/RUN.md) |

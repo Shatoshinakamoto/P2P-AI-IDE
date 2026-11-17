@@ -11,4 +11,8 @@ run_id,date_utc,area,commit,branch_or_pr,machine,verdict,passed,failed,skipped,s
 2026-11-17_054404Z_ui-smoke_e30cb3e,2026-11-17T05:44:04Z,ui-smoke,e30cb3e,PR #1,cloud container,pass,,,,UI smoke after the blank-window fix (freezePrototype off; test now applies the freeze when configured)
 2026-11-17_054500Z_windows_e30cb3e,2026-11-17T05:45:00Z,windows,e30cb3e,PR #1,user PC (Windows),pass,9,0,,Windows rebuild of the fix (e30cb3e) and manual click-through: 9/9
 2026-11-17_055129Z_ui-smoke_e428736,2026-11-17T05:51:29Z,ui-smoke,e428736,PR #1,cloud container,pass,4,0,0,"Type check, unit tests, build and UI smoke with the tab-language check"
+2026-11-17_062006Z_core_bd2763f,2026-11-17T06:20:06Z,core,bd2763f,PR#1,cloud container,pass,,,,"Core fmt, clippy, tests with gateways/client/chats (31 tests)"
+2026-11-17_062007Z_shell_bd2763f,2026-11-17T06:20:07Z,shell,bd2763f,PR#1,cloud container,pass,,,,Tauri shell fmt and clippy with net.rs and keyring
+2026-11-17_062008Z_ui-smoke_bd2763f,2026-11-17T06:20:08Z,ui-smoke,bd2763f,PR#1,cloud container,pass,4,0,0,"Webview type check, unit tests, build and UI smoke (30 checks incl. gateways and chat)"
+2026-11-17_062016Z_security-scan_bd2763f,2026-11-17T06:20:16Z,security-scan,bd2763f,PR#1,cloud container,pass,,,,"cargo audit of both lockfiles after adding ureq, serde_json, keyring"
 2026-11-17_062058Z_branding_ea76006,2026-11-17T06:20:58Z,branding,ea76006,claude/project-thread-de9owl,cloud container,pass,29,0,,IDE icons verified (run in the P2P-AI repository)

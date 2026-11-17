@@ -2,7 +2,10 @@
 // commands replaced by an in-memory fake workspace. Run: `npm run build && npm run ui-smoke`.
 //
 // Purpose: proves the layout renders, the explorer lists, Monaco opens and edits files, Ctrl+S saves with the loaded
-// version, a conflicting save shows the banner, search opens a match, and nothing logs a page error.
+// version, a conflicting save shows the banner, search opens a match, and nothing logs a page error. Phase I2: a
+// gateway is added (key goes in, never comes back), checked, made active; a chat answer streams in over a Tauri
+// channel and is rendered as text (an <img onerror> in the answer must not become an element); the chat is saved,
+// found by history search and deleted with two clicks.
 // Security checks: the save sends the base version (lost-update guard, CWE-367); the page loads under the same CSP
 // the app ships (read from src-tauri/tauri.conf.json, ASVS V14.4) and the test fails on any CSP violation.
 // Not covered: the real Rust commands (core tests cover them) and the native window (checked on a PC).
@@ -67,11 +70,40 @@ const fake = () => {
     entries.sort((a, b) => (a.kind === b.kind ? a.name.toLowerCase().localeCompare(b.name.toLowerCase()) : a.kind === "dir" ? -1 : 1));
     return { entries, truncated: false };
   };
+  // Gateways and chats of the fake core. Keys are kept apart, as the OS keychain would, and never returned.
+  const gws = []; let active = null; const keys = new Map(); const chats = new Map(); let nextId = 1;
+  const hex = () => (nextId++).toString(16).padStart(16, "0");
+  const view = (g) => ({ id: g.id, name: g.name, url: g.url, kind: g.kind, dev: g.url.startsWith("http://"), pinned: false, has_key: keys.has(g.id) });
+  const callbacks = new Map(); let cbId = 1;
   window.__TAURI_INTERNALS__ = {
-    transformCallback: () => 0,
+    transformCallback: (cb) => { const id = cbId++; callbacks.set(id, cb); return id; },
+    unregisterCallback: (id) => callbacks.delete(id),
     invoke: async (cmd, args) => {
-      window.__calls.push({ cmd, args });
+      window.__calls.push({ cmd, args: cmd === "chat_send" ? { model: args.model, messages: args.messages } : args });
       switch (cmd) {
+        case "gateways_list": return { gateways: gws.map(view), active };
+        case "gateway_add": {
+          if (!/^https:\/\/[a-z0-9.-]+(:\d+)?$|^http:\/\/127\.0\.0\.1:\d+$/.test(args.url)) throw "use https://host[:port] (or http://127.0.0.1:port for a dev gateway), with no path";
+          const g = { id: hex(), name: args.name || "gateway", url: args.url, kind: "manual" };
+          gws.push(g); if (args.key) keys.set(g.id, args.key); if (!active) active = g.id; return g.id;
+        }
+        case "gateway_set_active": active = args.id; return null;
+        case "gateway_set_key": keys.set(args.id, args.key); return null;
+        case "gateway_remove": { const i = gws.findIndex((g) => g.id === args.id); gws.splice(i, 1); keys.delete(args.id); if (active === args.id) active = gws[0]?.id ?? null; return null; }
+        case "gateway_check": if (!keys.has(args.id)) throw "this gateway has no key yet; add one in the Gateways view"; return { latency_ms: 12, models: ["tiny-model", "big-model"] };
+        case "chat_send": {
+          const cb = callbacks.get(args.onEvent.id);
+          const pieces = ["Hello ", "from the gateway. ", "<img src=x onerror=\"window.__xss=1\">", "\n```js\nconst a = 1;\n```"];
+          pieces.forEach((text, index) => cb({ index, message: { kind: "delta", text } }));
+          cb({ index: pieces.length, end: true });
+          return { finish_reason: "stop", chars: pieces.join("").length };
+        }
+        case "chat_stop": return null;
+        case "chat_save": { const c = { ...args.chat, id: args.chat.id || hex() }; if (!c.title) c.title = c.messages.find((m) => m.role === "user")?.content.split("\n")[0] ?? "New chat"; chats.set(c.id, c); return c; }
+        case "chats_list": return [...chats.values()].map((c) => ({ id: c.id, title: c.title, updated: 1, count: c.messages.length }));
+        case "chat_load": return chats.get(args.id);
+        case "chat_delete": chats.delete(args.id); return null;
+        case "chats_search": { const q = args.query.toLowerCase(); return [...chats.values()].filter((c) => c.messages.some((m) => m.content.toLowerCase().includes(q))).map((c) => ({ id: c.id, title: c.title, preview: q })); }
         case "pick_folder": opened = true; return { name: "shop-api" };
         case "workspace_info": return opened ? { name: "shop-api" } : null;
         case "list_dir": return list(args.rel);
@@ -96,6 +128,8 @@ const fake = () => {
 };
 
 const checks = [];
+/** The last recorded call of one command. */
+const window_calls = (calls, cmd) => calls.filter((c) => c.cmd === cmd).at(-1)?.args;
 const check = (name, ok, detail = "") => { checks.push({ name, ok, detail }); console.log(`${ok ? "PASS" : "FAIL"} ${name}${detail ? ` -- ${detail}` : ""}`); };
 
 const browser = await chromium.launch();
@@ -112,8 +146,8 @@ await page.goto(`http://127.0.0.1:${port}/`);
 try {
   await page.getByText("No folder is open.").waitFor({ timeout: 10000 });
   check("welcome state shows Open folder", true);
-  check("status bar shows disabled gateway and mission switches",
-    (await page.getByRole("button", { name: "No gateway" }).isDisabled()) &&
+  check("status bar shows the gateway chip and disabled mission switches",
+    (await page.getByRole("button", { name: "No gateway" }).isVisible()) &&
     (await page.getByRole("button", { name: /Autopilot off/ }).isDisabled()) &&
     (await page.getByRole("button", { name: /Auto Improve off/ }).isDisabled()));
 
@@ -178,11 +212,71 @@ try {
   check("search finds matches", /^[1-9]\d* results? in/.test(summary), summary);
 
   // Placeholders for later phases.
-  for (const [label, phase] of [["Agent chat", "I2"], ["Gateways", "I2"], ["Missions: Autopilot and Auto Improve", "I4"], ["Extensions", "I6"]]) {
+  for (const [label, phase] of [["Missions: Autopilot and Auto Improve", "I4"], ["Extensions", "I6"]]) {
     await page.getByRole("button", { name: label, exact: true }).click();
     await page.getByText(new RegExp(`Arrives in phase ${phase}`)).waitFor();
   }
   check("later-phase views say when they arrive", true);
+
+  // ---- Phase I2: gateways.
+  await page.getByRole("button", { name: "Agent chat", exact: true }).click();
+  await page.getByText("Chat needs a gateway.").waitFor();
+  check("chat without a gateway points to the Gateways view", true);
+  await page.getByRole("button", { name: "Open Gateways" }).click();
+  await page.getByRole("button", { name: "Add gateway" }).click();
+  await page.getByLabel("Gateway name").fill("Home");
+  await page.getByLabel("Gateway address").fill("https://gw.example.org/path");
+  await page.getByLabel("Gateway key").fill("p2p_secret_key_123");
+  await page.getByRole("button", { name: "Add by address" }).click();
+  await page.getByText(/with no path/).first().waitFor();
+  check("a bad gateway address is refused with the core's message", true);
+  await page.getByLabel("Gateway address").fill("https://gw.example.org");
+  await page.getByLabel("Gateway key").fill("p2p_secret_key_123");
+  await page.getByRole("button", { name: "Add by address" }).click();
+  await page.getByRole("list", { name: "Saved gateways" }).getByText("key in keychain").waitFor();
+  const listed = await page.getByRole("list", { name: "Saved gateways" }).innerText();
+  check("added gateway is listed with its key in the keychain, key never shown", /Home/.test(listed) && !/p2p_secret_key_123/.test(await page.content()), listed.replace(/\s+/g, " "));
+  check("status bar chip names the active gateway", await page.getByRole("button", { name: /^Home/ }).isVisible());
+  await page.getByRole("button", { name: "Check" }).click();
+  await page.getByText("12 ms, 2 models").waitFor();
+  check("Check shows latency and model count", true);
+  await page.getByRole("button", { name: "Add gateway" }).click();
+  await page.getByLabel("Gateway name").fill("Dev");
+  await page.getByLabel("Gateway address").fill("http://127.0.0.1:8080");
+  await page.getByRole("button", { name: "Add by address" }).click();
+  await page.getByRole("list", { name: "Saved gateways" }).getByText("INSECURE — DEV ONLY").waitFor();
+  check("a plain-http loopback gateway is marked INSECURE — DEV ONLY", true);
+  await page.getByRole("button", { name: "Remove Dev" }).click();
+  await page.getByRole("button", { name: "Click again to remove Dev" }).click();
+  await page.getByRole("list", { name: "Saved gateways" }).getByText("Dev").waitFor({ state: "detached" });
+  check("removing a gateway takes two clicks", true);
+
+  // ---- Phase I2: chat.
+  await page.getByRole("button", { name: "Agent chat", exact: true }).click();
+  await page.getByLabel("Model").locator("option", { hasText: "tiny-model" }).waitFor({ state: "attached" });
+  await page.getByLabel("Message", { exact: true }).fill("Explain the timeout\nplease");
+  await page.keyboard.press("Control+Enter");
+  await page.getByRole("log", { name: "Messages" }).getByText(/from the gateway/).waitFor();
+  const log = page.getByRole("log", { name: "Messages" });
+  const imgs = await log.locator("img").count();
+  const shown = await log.innerText();
+  const xss = await page.evaluate(() => window.__xss);
+  check("streamed answer is shown as text (no element from the answer, no script ran)", imgs === 0 && shown.includes("<img src=x") && xss === undefined, `imgs=${imgs}`);
+  check("code fences in an answer render as a code block", (await log.locator("pre").innerText()).includes("const a = 1;"));
+  const sent = window_calls(await page.evaluate(() => window.__calls), "chat_send");
+  check("the request carries the chosen model and the user's message", sent?.model === "tiny-model" && sent.messages.at(-1).content.startsWith("Explain the timeout"), JSON.stringify(sent ?? {}).slice(0, 120));
+  await page.screenshot({ path: process.env.SHOT_CHAT ?? join(here, "..", "ui-smoke-chat.png") });
+  await page.getByRole("button", { name: "Chat history" }).click();
+  await page.getByRole("list", { name: "Saved chats" }).getByText("Explain the timeout").waitFor();
+  check("the chat is saved in history with a title from the first message", true);
+  await page.getByLabel("Search chats").fill("FROM THE GATEWAY");
+  await page.getByRole("button", { name: "Search", exact: true }).last().click();
+  await page.getByRole("list", { name: "Saved chats" }).getByText("Explain the timeout").waitFor();
+  check("history search finds the chat by answer text", true);
+  await page.getByRole("button", { name: "Delete Explain the timeout" }).click();
+  await page.getByRole("button", { name: "Confirm delete Explain the timeout" }).click();
+  await page.getByText(/No chats match|No chats yet/).waitFor();
+  check("deleting a chat takes two clicks", true);
 
   await page.getByRole("button", { name: "Explorer" }).click();
   // The tree kept its expanded folders while other views were shown.

@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "30e361f5a4a89ca17eb7d8e2e423b4832783fcb71231c923c33a2f2489fa0fcb",
+   "size": 1657
+  },
+  "command.txt": {
+   "sha256": "9e2f09528986feb8a776df515985371d750cc84350566468e622bc63fb539951",
+   "size": 169
+  },
+  "environment.md": {
+   "sha256": "3def542537ba7269be7e2e2456dc85e198e67185ab1cb10ea39b49545ded0b73",
+   "size": 193
+  },
+  "logs/output.log": {
+   "sha256": "e655eec8b79e16a62dec211756b7fa93f695397a49a7c052c21b5709ee8e3713",
+   "size": 2520
+  },
+  "results/summary.txt": {
+   "sha256": "23bd4aafa4d11e3e41fc71d0aab659cc7e458f4445b068bfca4a370b23e539c0",
+   "size": 284
+  }
+ },
+ "previous": {
+  "manifest_sha256": "b3cc2e33b6532d829e62ed53565e0f01ee7570ff6ba258398f19062c3892cee1",
+  "run_id": "2026-11-17_055129Z_ui-smoke_e428736"
+ },
+ "run": {
+  "area": "core",
+  "branch_or_pr": "PR#1",
+  "collected_utc": "",
+  "commit": "bd2763f3950da51a3d069e709e8d9645877f833f",
+  "count_unit": "",
+  "date_utc": "2026-11-17T06:20:06Z",
+  "dirty": false,
+  "duration_s": 1.6,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_062006Z_core_bd2763f",
+  "kind": "unit",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "agentic-IDE-thread:phase-I2a",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Core fmt, clippy, tests with gateways/client/chats (31 tests)",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

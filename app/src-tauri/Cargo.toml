@@ -1,5 +1,6 @@
-# app/src-tauri/Cargo.toml -- the IDE's Tauri shell (phase I1, docs/features/editor-shell.md). It only wires typed
-# commands to p2p-ide-core and opens the native folder picker.
+# app/src-tauri/Cargo.toml -- the IDE's Tauri shell (phases I1-I2, docs/features/editor-shell.md,
+# docs/features/gateways-and-chat.md). It wires typed commands to p2p-ide-core, opens the native pickers and stores
+# gateway keys in the OS keychain.
 # SECURITY: one Tauri plugin, dialog, used only from Rust (the folder picker); the webview gets no plugin permission
 # at all (capabilities/default.json), so it can reach nothing but our own commands (CWE-284, NIST AC-6). No shell, fs
 # or http plugin. Versions are locked in Cargo.lock; cargo audit runs in CI (NIST SP 800-161, SSDF PW.4).
@@ -20,6 +21,10 @@ tauri = { version = "2.12.5", features = [] }
 tauri-plugin-dialog = "2.8.4"
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1"
+# Gateway keys in the OS keychain (phase I2): Windows Credential Manager, macOS Keychain, Secret Service on Linux
+# (pure-Rust zbus, no libdbus). The default "v1" feature picks those stores. SECURITY: keys never touch our files
+# (CWE-522, NIST IA-5).
+keyring = "4.2.0"
 
 [profile.release]
 # Smaller binary, no debug symbols in the shipped app; panics abort instead of unwinding across the FFI boundary.
