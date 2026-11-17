@@ -1,0 +1,15 @@
+PASS: a throw-away key on the gateway
+PASS: the node attached and serves the model
+PASS create a project on the gateway
+PASS a run reports its stages: sending, copying, running
+PASS unittest on the gateway sandbox finds the one failing test
+PASS the failing test is named
+PASS the result says which node ran it
+PASS after a local fix the next run sees the change and passes
+PASS a command runs as an argument list; ; and $HOME reach the program as text
+PASS SECURITY: the sandbox has no network
+PASS a run past its time limit is stopped
+PASS SECURITY: a folder outside the root is refused before sending
+{"failed":0,"passed":10}
+PASS: the folder's .env value is in no file the gateway or node stored
+SUMMARY: 13 passed, 0 failed

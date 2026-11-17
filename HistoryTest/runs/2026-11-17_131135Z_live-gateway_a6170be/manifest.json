@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "3410f96cfc1b5b5c6fd358324a881cadb6223f21145463d9ed9c8e5a0930a29e",
+   "size": 1657
+  },
+  "command.txt": {
+   "sha256": "a64ba3d8ff943a70a5fcc52a488c4384fb90d0f0a386f4041b96f9031fa0c205",
+   "size": 146
+  },
+  "environment.md": {
+   "sha256": "de47c57aa2d5ba7ba5e8341772e83d9d1aa83e7444565d52ac6a275a2e858dd0",
+   "size": 231
+  },
+  "logs/output.log": {
+   "sha256": "9ebd8347303655e2e5384431d14b6c7d976bd99f884c05b5f56bf86540bc4207",
+   "size": 729
+  },
+  "results/summary.txt": {
+   "sha256": "05db47b866dd3de7969915214f76374c9689881c244404fd0eca59c12d56bcfd",
+   "size": 293
+  }
+ },
+ "previous": {
+  "manifest_sha256": "6738d99c5245467b7229e1e26d595966d191bad4dd409f078a262b4bcaac0830",
+  "run_id": "2026-11-17_130306Z_release_a687f4e"
+ },
+ "run": {
+  "area": "live-gateway",
+  "branch_or_pr": "PR #9",
+  "collected_utc": "",
+  "commit": "a6170bed3ff3df93e976e760b51d6f3b4ca40158",
+  "count_unit": "",
+  "date_utc": "2026-11-17T13:11:35Z",
+  "dirty": false,
+  "duration_s": 17.8,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_131135Z_live-gateway_a6170be",
+  "kind": "e2e",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Live run and test after merging main (cap-std workspace) into PR #9",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

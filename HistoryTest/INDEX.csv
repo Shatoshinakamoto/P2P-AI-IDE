@@ -53,3 +53,4 @@ run_id,date_utc,area,commit,branch_or_pr,machine,verdict,passed,failed,skipped,s
 2026-11-17_125953Z_live-gateway_618354d,2026-11-17T12:59:53Z,live-gateway,618354d,claude/project-thread-dfop2y,cloud container,pass,,,,"Live run and test against a real P2P-AI gateway, node and sandbox (live_runs)"
 2026-11-17_130113Z_windows_391278c,2026-11-17T13:01:13Z,windows,391278c,PR #9,user PC (Windows),pass,66,0,,Windows build and tests of phase I5b (Run and test) at 391278c
 2026-11-17_130306Z_release_a687f4e,2026-11-17T13:03:06Z,release,a687f4e,6,cloud container,pass,,,,"IDE PR 6 (installers) with main merged: config parses, merge has no conflict markers"
+2026-11-17_131135Z_live-gateway_a6170be,2026-11-17T13:11:35Z,live-gateway,a6170be,PR #9,cloud container,pass,,,,Live run and test after merging main (cap-std workspace) into PR #9
