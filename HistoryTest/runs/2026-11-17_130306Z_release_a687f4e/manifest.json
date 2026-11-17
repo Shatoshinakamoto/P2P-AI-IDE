@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "871e88eae481a826cf4510438a47261dd274b76245bc14752d4131c93d9aa4a5",
+   "size": 1614
+  },
+  "command.txt": {
+   "sha256": "2275c9f5ae7c719e651e201d1aef86f9f9728d5d79a3323f2495d00455c502f9",
+   "size": 264
+  },
+  "environment.md": {
+   "sha256": "814e68f86d9161f3f4c0e1e26010e0cf9143ac0a4d2539d60314b646cdc91771",
+   "size": 196
+  },
+  "logs/output.log": {
+   "sha256": "730ef43ba389a4fa554757eb004fea74a5b2b1e447377dd0f8af33115bf1afb9",
+   "size": 39
+  },
+  "results/summary.txt": {
+   "sha256": "ed524f5d87a6e5f7b7f5bbb44591d0a3ec1448c59cf8b6dfc6b9a25d54b5cc91",
+   "size": 287
+  }
+ },
+ "previous": {
+  "manifest_sha256": "34d9a11e5d3559e03c052f8adefb6d46fbc9884ee4ee757eac9bd6331e46267a",
+  "run_id": "2026-11-17_125233Z_security-scan_6ebd731"
+ },
+ "run": {
+  "area": "release",
+  "branch_or_pr": "6",
+  "collected_utc": "",
+  "commit": "a687f4e06e88f6a0789cdbc5c72a07be42bd3e49",
+  "count_unit": "",
+  "date_utc": "2026-11-17T13:03:06Z",
+  "dirty": false,
+  "duration_s": 0.0,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_130306Z_release_a687f4e",
+  "kind": "manual",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "Finish housekeeping and leftover work (merger)",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "IDE PR 6 (installers) with main merged: config parses, merge has no conflict markers",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

@@ -2,6 +2,18 @@
 
 Every security patch, hardening change, CVE remediation and accepted risk, newest first.
 
+## 2026-11-17 — Installers: licence gate and signed checksums
+- **Type:** hardening (supply chain); accepted risk
+- **CVE / CWE / advisory:** none. CWE-494, CWE-1357; NIST SI-7, SR-3, AC-6; SLSA build integrity
+- **Severity:** none (new release path)
+- **Affected:** `app/src-tauri/tauri.conf.json`, `app/src-tauri/THIRD-PARTY-NOTICES.txt`
+- **What changed:** installers are built by P2P-AI's `release_app.py` from a clean tagged tree, after a deny-by-default
+  licence gate; `SHA256SUMS` is cosign-signed; uploads are drafts. Per-user NSIS install (no admin).
+- **Accepted risk (Pheonix, 2026-11-17):** no Authenticode signature yet; Windows shows a SmartScreen warning and users
+  check `SHA256SUMS` with the project key.
+- **Why it is secure now:** downloads can be verified with the project key (NIST SI-7); licences are gated (SR-3).
+- **Verification:** [licence gate](../HistoryTest/runs/2026-11-17_085507Z_installers_1b95d91/RUN.md), [Linux bundle](../HistoryTest/runs/2026-11-17_085509Z_installers_1b95d91/RUN.md).
+
 ## 2026-11-17 — Workspace file access through a folder handle (TOCTOU)
 - **Type:** hardening
 - **CVE / CWE / advisory:** CWE-367, CWE-59, CWE-22 (none: no reported vulnerability)

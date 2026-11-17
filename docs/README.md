@@ -17,6 +17,8 @@ The IDE's plan and its decisions (ADR-029) live in the P2P-AI repository: `docs/
 | [commands/app-scripts.md](commands/app-scripts.md) | The npm scripts and cargo commands used to build and test the app |
 | [commands/live-gateway-e2e.md](commands/live-gateway-e2e.md) | The live check of missions against a real P2P-AI gateway, node and sandbox (development only) |
 | [commands/history-test.md](commands/history-test.md) | The test history recorder `scripts/history_test.py` (copied from the P2P-AI repository) |
+| [files/third-party-notices.md](files/third-party-notices.md) | `app/src-tauri/THIRD-PARTY-NOTICES.txt`: the licence texts shipped in the installers, how it is generated and checked |
+| [features/installers.md](features/installers.md) | Windows and Linux installers and signed releases, built on the PC with the P2P-AI release script |
 | [files/app-icons.md](files/app-icons.md) | The app icons: P2P-AI logo with the IDE badge, how they are built |
 | [configuration/tauri-conf.md](configuration/tauri-conf.md) | `tauri.conf.json` (window, CSP) and `capabilities/default.json`, every key |
 | [../HistoryTest/README.md](../HistoryTest/README.md) | The record of every test run |
