@@ -1,0 +1,62 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "647dd3b6d223af243a9dec66e42642343eccb7d152318e26fabaf21ee39001fc",
+   "size": 1612
+  },
+  "command.txt": {
+   "sha256": "eec7f72998403a7989831db3a445fdcf4744e643de10428c629f8d8bf043768d",
+   "size": 385
+  },
+  "environment.md": {
+   "sha256": "1b1a3a1167e1d7c5481e96d09192c57da9c2820f712760005ceae5b8c3bec74b",
+   "size": 202
+  },
+  "logs/output.log": {
+   "sha256": "51551e8e5ee167cb16b38f4d1c72b904bf83932e7e032975b3a4147cfa22e4b9",
+   "size": 143
+  },
+  "results/summary.txt": {
+   "sha256": "be8b0bdae771056faac7d84fff0ff0168228548e99ccc89a623325c69f83e4c3",
+   "size": 293
+  }
+ },
+ "previous": {
+  "manifest_sha256": "5f52cddcf13b1b74b7520031563a5db238bc4f7be5d98ecc9a7ff0dd4bfb6626",
+  "run_id": "2026-11-17_134706Z_local-toolchains_dbbc5cd"
+ },
+ "run": {
+  "area": "windows-cross",
+  "branch_or_pr": "claude/project-thread-dfop2y",
+  "collected_utc": "",
+  "commit": "dbbc5cd9eb2675eb40df1e3ce5f8cabea51967a1",
+  "count_unit": "",
+  "date_utc": "2026-11-17T13:47:12Z",
+  "dirty": false,
+  "duration_s": 1.0,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_134712Z_windows-cross_dbbc5cd",
+  "kind": "build",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {
+   "logs/output.log": {
+    "hostname": 1
+   }
+  },
+  "requested_by": "claude",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Cross clippy of the core for x86_64-pc-windows-msvc (Windows sandbox code)",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

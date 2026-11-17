@@ -224,3 +224,11 @@ downloaded. `icacls.exe` from the Windows system folder (never looked up on PATH
 * [Webview: UI smoke 77/77 with the runner picker and the local sandbox card text](../../HistoryTest/runs/2026-11-17_131928Z_ui-smoke_e980a8c/RUN.md)
 * [Dependency audit: cargo audit (core 88, shell 539 crates) and npm audit, 0 vulnerabilities](../../HistoryTest/runs/2026-11-17_131937Z_security-scan_e980a8c/RUN.md)
 * [Windows PC: the Linux code is left out and everything else builds; core 62 + 5 + 2 tests, webview, audit, shell clippy, release binary](../../HistoryTest/runs/2026-11-17_132300Z_windows_a8b439e/RUN.md)
+
+Windows (AppContainer port):
+
+* [First PC run at 5b8a053 (fail): every confinement check passed, the time-limit check could not use ping (no loopback), npm, unittest and the cache check failed](../../HistoryTest/runs/2026-11-17_133400Z_windows-sandbox_5b8a053/RUN.md)
+* [Second PC run at 8819a48 (fail, excerpt only): confinement test passed in full; npm and the old cache check failed](../../HistoryTest/runs/2026-11-17_134223Z_windows-sandbox_8819a48/RUN.md)
+* [PC run at dbbc5cd (partial): core 65 + 5 + 2 incl. `local_runs_are_confined_on_windows`; cargo, cargo cache, go and unittest pass inside the sandbox; make not installed; npm fails because `C:\Program Files\nodejs` does not allow app containers (section 7)](../../HistoryTest/runs/2026-11-17_134640Z_windows-sandbox_dbbc5cd/RUN.md)
+* [Cross clippy for x86_64-pc-windows-msvc from Linux](../../HistoryTest/runs/2026-11-17_134712Z_windows-cross_dbbc5cd/RUN.md)
+* [Linux core after the change](../../HistoryTest/runs/2026-11-17_134651Z_core_dbbc5cd/RUN.md), [Linux toolchains 6/6 with the corrected cache check](../../HistoryTest/runs/2026-11-17_134706Z_local-toolchains_dbbc5cd/RUN.md), [shell clippy](../../HistoryTest/runs/2026-11-17_134713Z_shell_dbbc5cd/RUN.md), [audit: 0 vulnerabilities](../../HistoryTest/runs/2026-11-17_134717Z_security-scan_dbbc5cd/RUN.md)

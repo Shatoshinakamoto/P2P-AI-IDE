@@ -1,0 +1,8 @@
+PASS cargo tests run in the local sandbox and the failing test is found
+INFO cargo run times: first 201 ms, second 152 ms
+PASS cargo's build output is kept in the per-folder cache, outside the copy
+PASS go tests run in the local sandbox and the failing test is found
+PASS npm tests run in the local sandbox and the failing test is found
+PASS make tests run in the local sandbox and the failing test is found
+PASS unittest tests run in the local sandbox and the failing test is found
+{"failed":0,"passed":6,"skipped":0}

@@ -1,0 +1,11 @@
+id: 2026-11-17_134640Z_windows-sandbox_dbbc5cd
+verdict: partial
+verdict_reason: not recorded
+passed: 76
+failed: 1
+skipped: 1
+count_unit: not recorded
+exit_code: not recorded
+duration_s: not recorded
+commit: dbbc5cd
+machine: pc

@@ -1,0 +1,11 @@
+id: 2026-11-17_134706Z_local-toolchains_dbbc5cd
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: not recorded
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: 0
+duration_s: 6.2
+commit: dbbc5cd9eb2675eb40df1e3ce5f8cabea51967a1
+machine: cloud

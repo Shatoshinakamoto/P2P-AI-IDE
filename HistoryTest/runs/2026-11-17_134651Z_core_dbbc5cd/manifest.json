@@ -1,0 +1,62 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "c5c2a3df71b35069dbc5c1271c2e30f0d5bb1a8cbc5c8d923dfc7ce0b379f13a",
+   "size": 1462
+  },
+  "command.txt": {
+   "sha256": "9e2f09528986feb8a776df515985371d750cc84350566468e622bc63fb539951",
+   "size": 169
+  },
+  "environment.md": {
+   "sha256": "9074c89d91c32a6fe7a85071ee184ed83ff3a8b462ee3e03513d6e91046722c5",
+   "size": 193
+  },
+  "logs/output.log": {
+   "sha256": "4375f7a3818415d88e7b1d297010be0020e7f171991bd35b7d7e10408a50c183",
+   "size": 5743
+  },
+  "results/summary.txt": {
+   "sha256": "158160724ca26c60e0d10c03f9075cc91210656724526fa340beb5fecba12704",
+   "size": 285
+  }
+ },
+ "previous": {
+  "manifest_sha256": "48dc76d050767769d43358bdd9ebb66e7b2a6e9b2aa7d3597e3d28ed15f0aa6b",
+  "run_id": "2026-11-17_133400Z_windows-sandbox_5b8a053"
+ },
+ "run": {
+  "area": "core",
+  "branch_or_pr": "claude/project-thread-dfop2y",
+  "collected_utc": "",
+  "commit": "dbbc5cd9eb2675eb40df1e3ce5f8cabea51967a1",
+  "count_unit": "",
+  "date_utc": "2026-11-17T13:46:51Z",
+  "dirty": false,
+  "duration_s": 14.8,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_134651Z_core_dbbc5cd",
+  "kind": "unit",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {
+   "logs/output.log": {
+    "hostname": 1
+   }
+  },
+  "requested_by": "claude",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Core on Linux with the Windows sandbox added (Linux code unchanged in behaviour)",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

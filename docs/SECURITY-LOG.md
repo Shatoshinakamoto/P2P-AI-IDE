@@ -20,7 +20,9 @@ Every security patch, hardening change, CVE remediation and accepted risk, newes
   `cmd.exe`) and run files it builds in its job folder and cache; during a run the toolchain folders it uses carry
   a read-and-execute entry for the sandbox SID; the Windows and Program Files folders are readable by any app
   container. Documented in features/local-sandbox.md section 6.
-- **Verification:** HistoryTest runs listed in features/local-sandbox.md section 8 (Windows PC).
+- **Verification:** HistoryTest runs 2026-11-17_134640Z_windows-sandbox_dbbc5cd (real Windows confinement test
+  passed; cargo, go, unittest inside the sandbox; npm blocked by the Node.js folder's permissions),
+  2026-11-17_133400Z and 134223Z (earlier failing runs), 2026-11-17_134717Z_security-scan_dbbc5cd (0 vulnerabilities).
 
 ## 2026-11-17 — Phase I5c hardening: local OS sandbox for runs on this computer
 - **Type:** hardening; accepted risk
