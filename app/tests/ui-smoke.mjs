@@ -165,6 +165,9 @@ try {
   await page.getByRole("navigation", { name: "Files" }).getByText("README.md").click();
   const tabs = await page.getByRole("tab").allInnerTexts();
   check("two files open in two tabs", tabs.length === 2, tabs.join(", "));
+  // The status bar names the new tab's language at once (it lagged one tab behind before; found on Windows).
+  const footer = await page.locator("footer").innerText();
+  check("status bar shows the new tab's language", /markdown/.test(footer), footer.replace(/\s+/g, " "));
 
   // Search.
   await page.getByRole("button", { name: "Search" }).click();

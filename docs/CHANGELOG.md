@@ -13,13 +13,14 @@ Requested by Pheonix (IDE plan, ADR-029 in the P2P-AI repository; mockup approve
 - React webview in a VS Code-style layout: activity bar, explorer, search, Monaco editor tabs with unsaved markers,
   Ctrl+S, conflict banner, status bar; Chat, Missions, Gateways and Extensions shown as coming in later phases.
 - CI: core and shell lint and tests, webview build and UI smoke test, npm audit and cargo audit.
-- Windows check: the same commit built, tested and launched on a Windows 11 PC (HistoryTest run
-  `2026-11-17_051458Z_windows_ba63e5c`).
+- Windows check: built, tested and clicked through on a Windows 11 PC (HistoryTest runs
+  `2026-11-17_051458Z_windows_ba63e5c`, `_054000Z_windows_ba63e5c`, `_054500Z_windows_e30cb3e`).
 - `HistoryTest/` and the recorder `scripts/history_test.py` (copied from the P2P-AI repository), `CLAUDE.md`, docs.
 
 ### Fixed
 - Blank window in release builds: `freezePrototype` is off because Monaco cannot load with a frozen
   `Object.prototype`; the UI smoke test now applies the freeze when the config asks for it.
+- Status bar showed the previous tab's language after switching tabs until the cursor moved.
 
 ### Security
 - Monaco's vendored DOMPurify 3.4.15 is replaced by the patched 3.4.18 at build time (SECURITY-LOG).

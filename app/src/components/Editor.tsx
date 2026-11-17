@@ -92,6 +92,10 @@ export function Editor({ ref, onActiveChange, onCursor, onNotice }: Props) {
     ed.setModel(model);
     setActive(rel);
     onActiveChange(rel);
+    // Report this file's language now: the cursor listener reads activeRef, which still names the previous tab
+    // until React re-renders, so without this the status bar kept the old language after a tab switch.
+    const pos = ed.getPosition();
+    onCursor(pos?.lineNumber ?? 1, pos?.column ?? 1, languageFor(rel));
     if (line) {
       ed.revealLineInCenter(line);
       ed.setPosition({ lineNumber: line, column: 1 });

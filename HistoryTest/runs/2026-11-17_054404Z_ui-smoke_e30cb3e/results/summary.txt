@@ -1,0 +1,11 @@
+id: 2026-11-17_054404Z_ui-smoke_e30cb3e
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: not recorded
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: 0
+duration_s: 14.3
+commit: e30cb3ee136651105e1ebba3a65de3a3e6615892
+machine: cloud

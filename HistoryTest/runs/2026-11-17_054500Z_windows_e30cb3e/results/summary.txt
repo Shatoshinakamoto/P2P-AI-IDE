@@ -1,0 +1,11 @@
+id: 2026-11-17_054500Z_windows_e30cb3e
+verdict: pass
+verdict_reason: not recorded
+passed: 9
+failed: 0
+skipped: not recorded
+count_unit: not recorded
+exit_code: not recorded
+duration_s: not recorded
+commit: e30cb3e
+machine: pc

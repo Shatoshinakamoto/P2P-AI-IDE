@@ -108,8 +108,7 @@ The same versions as the P2P-AI desktop app were chosen where both use a package
 * No network, chat, gateways, missions or extensions yet (phases I2 to I6).
 * Files over 5 MiB and non-UTF-8 files are not opened.
 * No file create, rename or delete from the explorer yet; no file watcher (use the refresh button).
-* Windows: built, tested and launched on a Windows 11 PC (window opens); the click-through UI check there and
-  any check on macOS are still to do.
+* Windows: built, tested and clicked through on a Windows 11 PC after the blank-window fix; macOS not checked yet.
 
 ## 7. Troubleshooting
 
@@ -129,4 +128,7 @@ The same versions as the P2P-AI desktop app were chosen where both use a package
 * [UI smoke in headless Chromium under the shipped CSP: 16/16](../../HistoryTest/runs/2026-11-17_045806Z_ui-smoke_fe528ba/RUN.md)
 * [npm audit: 0 vulnerabilities](../../HistoryTest/runs/2026-11-17_045808Z_security-scan_fe528ba/RUN.md)
 * [cargo audit of both lockfiles: 0 vulnerabilities, 2 warnings in Tauri's Linux GTK stack](../../HistoryTest/runs/2026-11-17_045933Z_security-scan_fe528ba/RUN.md)
-* [Windows PC: core 9 tests, webview 4 tests, build, npm audit, shell clippy, release exe, window opens](../../HistoryTest/runs/2026-11-17_051458Z_windows_ba63e5c/RUN.md)
+* [Windows PC: core 9 tests, webview 4 tests, build, npm audit, shell clippy, release exe](../../HistoryTest/runs/2026-11-17_051458Z_windows_ba63e5c/RUN.md)
+* [Windows window blank before the fix (fail, cause found)](../../HistoryTest/runs/2026-11-17_054000Z_windows_ba63e5c/RUN.md)
+* [UI smoke with the prototype freeze applied when configured: 16/16 after the fix](../../HistoryTest/runs/2026-11-17_054404Z_ui-smoke_e30cb3e/RUN.md)
+* [Windows rebuild of the fix and manual click-through: 9/9](../../HistoryTest/runs/2026-11-17_054500Z_windows_e30cb3e/RUN.md)

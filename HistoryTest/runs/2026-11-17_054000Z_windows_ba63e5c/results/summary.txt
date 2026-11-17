@@ -1,0 +1,11 @@
+id: 2026-11-17_054000Z_windows_ba63e5c
+verdict: fail
+verdict_reason: not recorded
+passed: 0
+failed: 1
+skipped: not recorded
+count_unit: not recorded
+exit_code: not recorded
+duration_s: not recorded
+commit: ba63e5ca
+machine: pc

@@ -7,3 +7,6 @@ run_id,date_utc,area,commit,branch_or_pr,machine,verdict,passed,failed,skipped,s
 2026-11-17_045933Z_security-scan_fe528ba,2026-11-17T04:59:33Z,security-scan,fe528ba,claude/project-thread-dfop2y,cloud container,pass,,,,cargo audit of both Rust lockfiles (RustSec)
 2026-11-17_050005Z_docs_70537dc,2026-11-17T05:00:05Z,docs,70537dc,claude/project-thread-dfop2y,cloud container,pass,,,,Link check of README and docs
 2026-11-17_051458Z_windows_ba63e5c,2026-11-17T05:14:58Z,windows,ba63e5c,PR #1,user PC (Windows),pass,13,0,1,"Windows PC build and tests of phase I1 (core, webview, shell, release exe)"
+2026-11-17_054000Z_windows_ba63e5c,2026-11-17T05:40:00Z,windows,ba63e5c,PR #1,user PC (Windows),fail,0,1,,Windows real-window check of ba63e5c: blank window (invalidates the earlier launch-only pass)
+2026-11-17_054404Z_ui-smoke_e30cb3e,2026-11-17T05:44:04Z,ui-smoke,e30cb3e,PR #1,cloud container,pass,,,,UI smoke after the blank-window fix (freezePrototype off; test now applies the freeze when configured)
+2026-11-17_054500Z_windows_e30cb3e,2026-11-17T05:45:00Z,windows,e30cb3e,PR #1,user PC (Windows),pass,9,0,,Windows rebuild of the fix (e30cb3e) and manual click-through: 9/9
