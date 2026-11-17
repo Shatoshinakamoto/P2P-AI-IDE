@@ -2,6 +2,24 @@
 
 Every security patch, hardening change, CVE remediation and accepted risk, newest first.
 
+## 2026-11-17 — Accepted risk: Object.prototype is not frozen (Monaco needs it writable)
+- **Type:** accepted risk
+- **CVE / CWE / advisory:** CWE-1321 (prototype pollution); no CVE.
+- **Severity:** no score; this is a defence-in-depth setting, not a known vulnerability. KEV no.
+- **Affected:** `app/src-tauri/tauri.conf.json` (`app.security.freezePrototype`), phase I1 release builds.
+- **What changed:** `freezePrototype` went from `true` to `false`. With it on, Monaco's keyboard code
+  (`KeyCodeUtils.toString = ...`) throws "Cannot assign to read only property 'toString'" while the bundle loads, so
+  React never mounts and the window stays blank. Found on the Windows PC; the headless UI smoke test missed it
+  because it did not apply the freeze.
+- **Why it is acceptable now:** the webview runs only the app's own bundled scripts (`script-src 'self'`, no eval,
+  no remote sources), so no outside script can pollute prototypes; file text and later model output are rendered as
+  text, never run. The Rust commands validate every argument themselves (paths, sizes, versions) and do not trust
+  object shapes from the webview. The UI smoke test now applies the freeze whenever the config turns it on, so a
+  future Monaco that works with it can be re-enabled safely.
+- **Verification:** UI smoke test with the freeze applied: fails with the same TypeError (reproduced); with the
+  setting off: 16/16. Windows window check after the fix: see the HistoryTest runs listed in
+  `docs/features/editor-shell.md`.
+
 ## 2026-11-17 — Accepted risk: two RustSec warnings in Tauri's Linux GTK stack
 - **Type:** accepted risk
 - **CVE / CWE / advisory:** RUSTSEC-2024-0370 (proc-macro-error unmaintained), RUSTSEC-2024-0429 (glib

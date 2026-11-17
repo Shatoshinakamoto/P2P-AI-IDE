@@ -104,6 +104,9 @@ const errors = [];
 page.on("pageerror", (e) => errors.push(String(e)));
 page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
 await page.addInitScript(fake);
+// The shipped window freezes Object.prototype when tauri.conf.json sets freezePrototype; do the same here so a
+// library that breaks under it fails this test instead of showing a blank window (phase I1 Windows finding).
+if (conf.app?.security?.freezePrototype) await page.addInitScript(() => Object.freeze(Object.prototype));
 await page.goto(`http://127.0.0.1:${port}/`);
 
 try {

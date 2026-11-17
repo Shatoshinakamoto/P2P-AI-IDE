@@ -16,7 +16,7 @@ needs a rebuild. Schema: <https://schema.tauri.app/config/2>.
 | `app.withGlobalTauri` | `false` | no `window.__TAURI__` global for page scripts |
 | `app.windows[0]` | label `main`, 1400x900, min 960x600 | the label ties the window to the capability below |
 | `app.security.csp` | see below | the main XSS control (ASVS V14.4) |
-| `app.security.freezePrototype` | `true` | freezes `Object.prototype`, so prototype pollution cannot alter IPC (CWE-1321) |
+| `app.security.freezePrototype` | `false` | `true` would freeze `Object.prototype` against prototype pollution (CWE-1321), but Monaco assigns `toString` on its own objects and stops with a TypeError, leaving a blank window. Off is an accepted risk (SECURITY-LOG 2026-11-17); the UI smoke test applies the freeze whenever this is `true`, so turning it back on is tested |
 | `bundle.*` | icons, all targets | installers come later (no signing yet) |
 
 CSP directives:

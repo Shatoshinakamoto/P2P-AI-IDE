@@ -62,6 +62,7 @@ untrusted input to every command. Assets: the user's files and, later, gateway k
 | ReDoS | search is a plain substring, not a regular expression | CWE-1333 |
 | XSS in the webview | React and Monaco render text, never HTML; strict CSP (`script-src 'self'`, no remote sources); Monaco's vendored DOMPurify replaced by the patched 3.4.18 | CWE-79, ASVS V14.4 |
 | Webview reaching OS APIs | no plugin permissions for the webview (`core:default` only); the dialog plugin is called from Rust | CWE-284, NIST AC-6 |
+| Prototype pollution | not frozen: Monaco needs `Object.prototype` writable (accepted risk, SECURITY-LOG); only bundled scripts run, and the Rust commands validate every argument | CWE-1321 |
 | Error details leaking | fixed short messages, no paths or OS text | CWE-209 |
 | Log forging or leaking | refusals logged to stderr with a timestamp and a fixed kind, never the path | NIST AU-3, CWE-117, CWE-532 |
 

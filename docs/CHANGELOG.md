@@ -17,6 +17,10 @@ Requested by Pheonix (IDE plan, ADR-029 in the P2P-AI repository; mockup approve
   `2026-11-17_051458Z_windows_ba63e5c`).
 - `HistoryTest/` and the recorder `scripts/history_test.py` (copied from the P2P-AI repository), `CLAUDE.md`, docs.
 
+### Fixed
+- Blank window in release builds: `freezePrototype` is off because Monaco cannot load with a frozen
+  `Object.prototype`; the UI smoke test now applies the freeze when the config asks for it.
+
 ### Security
 - Monaco's vendored DOMPurify 3.4.15 is replaced by the patched 3.4.18 at build time (SECURITY-LOG).
 - `style-src 'unsafe-inline'` in the CSP for Monaco (accepted risk, SECURITY-LOG).
