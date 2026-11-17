@@ -1,0 +1,2 @@
+# run in repository folder `.`, as an argument list (no shell)
+bash /tmp/claude-0/-home-user/e4585f5d-6284-5468-83c2-54263877a6cf/scratchpad/bin/bundle-linux.sh app

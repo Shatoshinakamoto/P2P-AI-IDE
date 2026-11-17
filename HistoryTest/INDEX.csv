@@ -28,3 +28,5 @@ run_id,date_utc,area,commit,branch_or_pr,machine,verdict,passed,failed,skipped,s
 2026-11-17_071348Z_core_0a3a48f,2026-11-17T07:13:48Z,core,0a3a48f,PR #3,cloud container,pass,,,,"Core fmt, clippy and tests with the CRLF edit fix"
 2026-11-17_074553Z_windows_0a3a48f,2026-11-17T07:45:53Z,windows,0a3a48f,PR #3,user PC (Windows),pass,47,0,,"Windows build and tests of phase I3 (f3cde42, then 0a3a48f with the CRLF fix)"
 2026-11-17_074610Z_windows_0a3a48f,2026-11-17T07:46:10Z,windows,0a3a48f,PR #3,user PC (Windows),partial,,,,Windows click-through of I2 keychain and I3 chat tools against a local model
+2026-11-17_085507Z_installers_1b95d91,2026-11-17T08:55:07Z,installers,1b95d91,claude/project-thread-mf0qoc,cloud container,pass,1,,,Licence gate: IDE
+2026-11-17_085509Z_installers_1b95d91,2026-11-17T08:55:09Z,installers,1b95d91,claude/project-thread-mf0qoc,cloud container,pass,1,,,Linux .deb/.rpm bundle of the IDE with the new bundle settings

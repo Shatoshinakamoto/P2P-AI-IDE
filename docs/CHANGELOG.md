@@ -2,6 +2,22 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-17 - Installers and signed releases
+
+Requested by Pheonix (thread "Ship signed installers and releases"). No Authenticode yet (Pheonix's choice); cosign-signed
+`SHA256SUMS`.
+
+### Added
+- Installer settings in `tauri.conf.json` (publisher, licence page, per-user NSIS install, SHA-256 signing digest) and
+  the licence texts as app resources: `LICENSE`, `NOTICE` and `app/src-tauri/THIRD-PARTY-NOTICES.txt`
+  ([files/third-party-notices.md](files/third-party-notices.md)).
+- Release procedure through the P2P-AI repository's `scripts/release_app.py --app ide` ([features/installers.md](features/installers.md)).
+
+### Tests
+- Cloud: licence gate, 467 packages all allowed ([run](../HistoryTest/runs/2026-11-17_085507Z_installers_1b95d91/RUN.md)); Linux .deb/.rpm
+  build with the licence files installed ([run](../HistoryTest/runs/2026-11-17_085509Z_installers_1b95d91/RUN.md)). Windows installers:
+  pending the PC run.
+
 ## 2026-11-17 - Phase I3: chat tools and diff review
 
 Requested by Pheonix ("keep moving forward").

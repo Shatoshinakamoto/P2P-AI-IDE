@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "2bf523569ecda6c2213ddc7d77213326bc070901f08fc0ddbf294f30e0543b6e",
+   "size": 1558
+  },
+  "command.txt": {
+   "sha256": "5791d92ca3907ef837fc1b7924c6279178d21035ed85f520b26822f19e10f0f9",
+   "size": 145
+  },
+  "environment.md": {
+   "sha256": "e0c8fccc28d9e663b17a3168aa0bdaf350c4907c0c1179a5c67eab7ac7c6c5c8",
+   "size": 199
+  },
+  "logs/output.log": {
+   "sha256": "1554239c38a1e03a116ad56be5e0374a81e28f407793dc5c20f84270d09aef6f",
+   "size": 74
+  },
+  "results/summary.txt": {
+   "sha256": "23e656c5618e003a21d87092ed720665c2cb608cf4f56880edd1a9f8263da6e6",
+   "size": 279
+  }
+ },
+ "previous": {
+  "manifest_sha256": "64cad019b1fd64a7865c8fe1579b8ef1f5d95493786a829fa7adbae75f38765f",
+  "run_id": "2026-11-17_074610Z_windows_0a3a48f"
+ },
+ "run": {
+  "area": "installers",
+  "branch_or_pr": "claude/project-thread-mf0qoc",
+  "collected_utc": "",
+  "commit": "1b95d91ae3d957fa080b9ecdc3542ea923d49fa7",
+  "count_unit": "",
+  "date_utc": "2026-11-17T08:55:07Z",
+  "dirty": false,
+  "duration_s": 2.5,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "13b1bc5",
+  "id": "2026-11-17_085507Z_installers_1b95d91",
+  "kind": "scan",
+  "machine": "cloud",
+  "passed": 1,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "ship-signed-installers",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Licence gate: IDE",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}
