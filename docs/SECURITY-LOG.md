@@ -17,8 +17,9 @@ Every security patch, hardening change, CVE remediation and accepted risk, newes
   network (NIST SC-7).
 - **Accepted risk:** the folder (minus the deny list) is sent to the linked gateway, as in phase I4; a person-started
   run needs no second confirmation. Documented in features/run-and-test.md section 6.
-- **Verification:** core, shell, UI smoke and live gateway runs of this change (linked from features/run-and-test.md
-  section 8).
+- **Verification:** HistoryTest runs 2026-11-17_125930Z_core_618354d, 2026-11-17_125934Z_ui-smoke_618354d (75/75),
+  2026-11-17_125953Z_live-gateway_618354d (13/13: no network, time limit, `.env` never stored),
+  2026-11-17_125944Z_security-scan_618354d (0 vulnerabilities).
 
 ## 2026-11-17 — Phase I5a hardening: running git on repositories someone else made
 - **Type:** hardening

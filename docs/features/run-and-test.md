@@ -135,4 +135,8 @@ React and lucide-react (already pinned). cargo audit and npm audit on 2026-11-17
 
 ## 8. Test evidence
 
-Links are added with the runs of this change (HistoryTest runs for core, shell, UI smoke, live gateway and audits).
+* [Core: fmt, clippy, 61 unit + 5 + 2 tests incl. request checks, output cleaning and run tools only through the runner](../../HistoryTest/runs/2026-11-17_125930Z_core_618354d/RUN.md)
+* [Tauri shell: fmt and clippy with `run_start` and `agent_decide`](../../HistoryTest/runs/2026-11-17_125932Z_shell_618354d/RUN.md)
+* [Webview: UI smoke 75/75 with the Run and test flow and the approval card (Allow and Decline)](../../HistoryTest/runs/2026-11-17_125934Z_ui-smoke_618354d/RUN.md)
+* [Live: real P2P-AI gateway, node and sandbox, 13/13 (failing test named, local fix seen, no network, time limit, `.env` never stored)](../../HistoryTest/runs/2026-11-17_125953Z_live-gateway_618354d/RUN.md)
+* [cargo audit and npm audit: 0 vulnerabilities](../../HistoryTest/runs/2026-11-17_125944Z_security-scan_618354d/RUN.md)

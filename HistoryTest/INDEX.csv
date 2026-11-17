@@ -41,3 +41,8 @@ run_id,date_utc,area,commit,branch_or_pr,machine,verdict,passed,failed,skipped,s
 2026-11-17_090845Z_windows_3a1a8bd,2026-11-17T09:08:45Z,windows,3a1a8bd,PR #7,user PC (Windows),fail,54,1,,Windows build and tests of phase I5a (Source Control) at 3a1a8bd
 2026-11-17_091314Z_core_71c6f12,2026-11-17T09:13:14Z,core,71c6f12,PR #7,cloud container,pass,,,,"Core fmt, clippy and tests after the Windows-safe real-git test fix"
 2026-11-17_091518Z_windows_71c6f12,2026-11-17T09:15:18Z,windows,71c6f12,PR #7,user PC (Windows),pass,62,0,,Windows core re-run after the real-git test fix (71c6f12)
+2026-11-17_125930Z_core_618354d,2026-11-17T12:59:30Z,core,618354d,claude/project-thread-dfop2y,cloud container,pass,,,,"Core fmt, clippy and tests for phase I5b (runner, agent run tools)"
+2026-11-17_125932Z_shell_618354d,2026-11-17T12:59:32Z,shell,618354d,claude/project-thread-dfop2y,cloud container,pass,,,,Tauri shell fmt and clippy with run_start and agent_decide
+2026-11-17_125934Z_ui-smoke_618354d,2026-11-17T12:59:34Z,ui-smoke,618354d,claude/project-thread-dfop2y,cloud container,pass,4,0,0,"Webview unit tests, build and UI smoke 75 checks incl. Run and test and the approval card"
+2026-11-17_125944Z_security-scan_618354d,2026-11-17T12:59:44Z,security-scan,618354d,claude/project-thread-dfop2y,cloud container,pass,,,,cargo audit and npm audit for phase I5b
+2026-11-17_125953Z_live-gateway_618354d,2026-11-17T12:59:53Z,live-gateway,618354d,claude/project-thread-dfop2y,cloud container,pass,,,,"Live run and test against a real P2P-AI gateway, node and sandbox (live_runs)"

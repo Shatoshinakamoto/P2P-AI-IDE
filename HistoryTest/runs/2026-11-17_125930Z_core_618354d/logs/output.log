@@ -1,0 +1,95 @@
+    Checking p2p-ide-core v0.1.0 (/home/user/p2p-ai-ide/core)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.83s
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running unittests src/lib.rs (target/debug/deps/p2p_ide_core-e3866ea32eb39ad8)
+
+running 61 tests
+test agent::tests::a_turn_runs_tools_and_ends_with_text ... ok
+test agent::tests::a_turn_stops_at_the_step_budget_and_on_stop ... ok
+test agent::tests::multi_line_edits_match_windows_line_endings ... ok
+test agent::tests::secrets_are_denied ... ok
+test agent::tests::read_tools_work_and_hide_secrets ... ok
+test agent::tests::run_tools_go_through_the_runner_only ... ok
+test agent::tests::edits_stay_pending_until_accepted ... ok
+test chats::tests::bad_chats_and_ids_are_refused ... ok
+test chats::tests::titles_and_previews_are_one_line_and_bounded ... ok
+test client::tests::a_pinned_ca_without_a_certificate_is_refused ... ok
+test client::tests::model_lists_are_cleaned ... ok
+test chats::tests::scopes_keep_workspaces_apart_and_hide_the_path ... ok
+test client::tests::no_key_and_unreachable_gateways_fail_cleanly ... ok
+test client::tests::sse_lines_parse_to_fixed_items ... ok
+test client::tests::requests_are_checked_before_sending ... ok
+test client::tests::agent_step_sends_tools_and_returns_calls ... ok
+test client::tests::streamed_tool_calls_are_assembled_by_index ... ok
+test client::tests::stream_reader_collects_stops_and_caps ... ok
+test discovery::tests::api_origin_only_takes_an_origin ... ok
+test client::tests::streams_a_chat_from_a_fake_gateway_with_the_key_in_the_header ... ok
+test discovery::tests::public_only_never_connects_to_loopback ... ok
+test discovery::tests::strict_json_refuses_duplicates_and_floats ... ok
+test discovery::tests::directories_are_checked_and_saved ... ok
+test discovery::tests::urls_refuse_private_and_tricky_hosts ... ok
+test gateways::tests::an_edited_file_with_a_bad_url_is_refused ... ok
+test gateways::tests::error_messages_carry_no_input ... ok
+test gateways::tests::names_keys_and_cas_are_checked ... ok
+test gateways::tests::setup_folder_gives_port_and_ca_but_never_secrets ... ok
+test gateways::tests::urls_are_allow_listed ... ok
+test gwapi::tests::errors_use_fixed_messages_only ... ok
+test gwapi::tests::paths_are_encoded_and_names_checked ... ok
+test projects::tests::acceptance_checks_are_strict ... ok
+test projects::tests::downloads_must_match_their_digest_and_be_text ... ok
+test projects::tests::gateway_paths_follow_the_grammar ... ok
+test projects::tests::gateway_views_are_cleaned_and_capped ... ok
+test gateways::tests::add_list_activate_remove_keeps_keys_out_of_the_file ... ok
+test projects::tests::push_and_pull_plans_compare_digests ... ok
+test projects::tests::push_keeps_secrets_and_odd_names_home ... ok
+test client::tests::status_codes_map_to_fixed_errors_and_redirects_are_not_followed ... ok
+test runner::tests::gateway_answers_are_cleaned_and_capped ... ok
+test runner::tests::words_split_like_the_missions_view ... ok
+test scm::tests::log_is_parsed_and_cleaned ... ok
+test runner::tests::requests_are_checked ... ok
+test scm::tests::repository_settings_that_run_programs_are_refused ... ok
+test scm::tests::status_is_parsed_and_odd_paths_get_no_actions ... ok
+test store::tests::files_are_owner_only_and_links_refused ... ok
+test store::tests::ids_are_unique_and_checked ... ok
+test projects::tests::links_are_saved_per_folder_and_gateway ... ok
+test store::tests::write_read_replace_and_caps ... ok
+test workspace::tests::create_new_file_only_in_existing_folder ... ok
+test workspace::tests::error_messages_never_contain_paths ... ok
+test workspace::tests::name_is_folder_name_only ... ok
+test workspace::tests::listing_is_sorted_folders_first ... ok
+test workspace::tests::open_refuses_relative_missing_file_and_root ... ok
+test workspace::tests::search_finds_plain_text_and_skips_build_folders ... ok
+test workspace::tests::read_and_save_with_version_check ... ok
+test workspace::tests::symlink_out_of_workspace_is_refused ... ok
+test workspace::tests::traversal_and_odd_paths_are_refused ... ok
+test workspace::tests::size_and_text_limits ... ok
+test scm::tests::real_git_round_trip_without_hooks ... ok
+test chats::tests::save_list_load_search_delete ... ok
+
+test result: ok. 61 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.12s
+
+     Running tests/discovery.rs (target/debug/deps/discovery-3a4ab695d81d0493)
+
+running 5 tests
+test bad_directories_are_skipped_without_fetching ... ok
+test forged_probe_gives_no_latency ... ok
+test tampering_and_bad_fields_are_refused ... ok
+test shared_vectors_verify_like_the_node ... ok
+test listing_verifies_dedupes_probes_and_counts_rejections ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/projects.rs (target/debug/deps/projects-686931ad42a0f030)
+
+running 2 tests
+test a_commit_on_a_changed_project_is_refused_not_overwritten ... ok
+test push_sends_the_folder_without_secrets_and_pull_brings_changes_for_review ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+   Doc-tests p2p_ide_core
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

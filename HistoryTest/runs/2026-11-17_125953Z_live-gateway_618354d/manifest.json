@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "218707f515aa51cb43124f333710be8fcaff69d15e29a27c134dc34c56570ba8",
+   "size": 1876
+  },
+  "command.txt": {
+   "sha256": "a64ba3d8ff943a70a5fcc52a488c4384fb90d0f0a386f4041b96f9031fa0c205",
+   "size": 146
+  },
+  "environment.md": {
+   "sha256": "d56589c5c806997ff6ecb8031c0b3b1e123410646509029c9769b3587360b895",
+   "size": 231
+  },
+  "logs/output.log": {
+   "sha256": "9ebd8347303655e2e5384431d14b6c7d976bd99f884c05b5f56bf86540bc4207",
+   "size": 729
+  },
+  "results/summary.txt": {
+   "sha256": "60b024d6c3e1220cec2d45b0dcb41eda41f6611c3af9a7697f7101a739840df0",
+   "size": 293
+  }
+ },
+ "previous": {
+  "manifest_sha256": "703f0fa5635c8e2654ebff01413ce648b213840b1beac860d25adaddb834c56a",
+  "run_id": "2026-11-17_125944Z_security-scan_618354d"
+ },
+ "run": {
+  "area": "live-gateway",
+  "branch_or_pr": "claude/project-thread-dfop2y",
+  "collected_utc": "",
+  "commit": "618354d66538be58c2fcae53f060caf7654b5fb3",
+  "count_unit": "",
+  "date_utc": "2026-11-17T12:59:53Z",
+  "dirty": false,
+  "duration_s": 16.4,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_125953Z_live-gateway_618354d",
+  "kind": "e2e",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Live run and test against a real P2P-AI gateway, node and sandbox (live_runs)",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}
