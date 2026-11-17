@@ -18,7 +18,9 @@ Requested by Pheonix ("keep moving forward with the rest").
   `Workspace::all_files` and `read_bytes`. 16 shell commands in `missions.rs`.
 - `links.json` in the app data folder (folder-to-project links).
 - Tests: core 49 -> 60 (incl. a fake-gateway integration test), UI smoke 45 -> 57.
-- Docs: `features/missions.md`.
+- Docs: `features/missions.md`, `commands/live-gateway-e2e.md`.
+- Live check `scripts/live_gateway_e2e.py` with `core/examples/live_missions.rs`: a real gateway, node and sandbox
+  run an Autopilot mission end to end from the IDE core (19 of 19).
 
 ### Changed
 - `ChatView` refreshes **Changes to review** when work is brought back from a mission.

@@ -20,7 +20,8 @@ Every security patch, hardening change, CVE remediation and accepted risk, newes
   node to run the mission; a secret inside an ordinary file is sent. Mitigation: deny list, the skipped-files report,
   choose a trusted gateway, keep secrets out of the code folder (features/missions.md section 6).
 - **Verification:** HistoryTest runs 2026-11-17_082336Z_core_7e32c2d (60 tests), 2026-11-17_082340Z_shell_7e32c2d,
-  2026-11-17_082340Z_ui-smoke_7e32c2d (57/57), 2026-11-17_082359Z_security-scan_7e32c2d (0 vulnerabilities).
+  2026-11-17_082340Z_ui-smoke_7e32c2d (57/57), 2026-11-17_082359Z_security-scan_7e32c2d (0 vulnerabilities), 2026-11-17_085225Z_live-gateway_bfae51f (real
+  gateway: .env never stored, stale approval digest refused, nothing written before Accept; 19/19).
 
 ## 2026-11-17 — Phase I3 hardening: human approval for every agent change
 - **Type:** hardening

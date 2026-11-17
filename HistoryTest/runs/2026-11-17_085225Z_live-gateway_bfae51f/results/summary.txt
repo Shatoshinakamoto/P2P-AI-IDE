@@ -1,0 +1,11 @@
+id: 2026-11-17_085225Z_live-gateway_bfae51f
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: not recorded
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: 0
+duration_s: 16.0
+commit: bfae51fd7ee2d8d54b562758dd4efc65aae32487
+machine: cloud

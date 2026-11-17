@@ -6,7 +6,7 @@
 * **Code:** `core/src/gwapi.rs`, `core/src/projects.rs`, `core/src/agent.rs` (`propose_external`),
   `core/src/workspace.rs` (`all_files`, `read_bytes`), `app/src-tauri/src/missions.rs`,
   `app/src/components/MissionsView.tsx`, `app/src/{App.tsx,ipc.ts}`, `app/src/components/{ChatView,StatusBar}.tsx`.
-* **Tests:** `core/tests/projects.rs` (fake gateway on 127.0.0.1), unit tests in `gwapi.rs` and `projects.rs`,
+* **Tests:** `core/tests/projects.rs` (fake gateway on 127.0.0.1), `core/examples/live_missions.rs` with `scripts/live_gateway_e2e.py` (real gateway), unit tests in `gwapi.rs` and `projects.rs`,
   `app/tests/ui-smoke.mjs` (Missions flow).
 * **Next:** I5 sandboxed commands, I6 TandemForge engine and the VS Code extension.
 
@@ -146,8 +146,7 @@ cargo audit (core 71 crates, shell 529 crates) and npm audit on 2026-11-17: 0 vu
   it cannot work on the code.
 * The node copy runs code from the project in the node's sandbox; this is the gateway's control, not the IDE's.
 * Pending changes stay in memory only: closing the app drops them (pull again).
-* Not yet tested against a live gateway from the IDE; the core is tested against a fake gateway that follows the
-  gateway's documented API.
+* The live check uses a scripted model; a run with a real model depends on that model's tool use.
 
 ## 7. Troubleshooting
 
@@ -170,3 +169,4 @@ cargo audit (core 71 crates, shell 529 crates) and npm audit on 2026-11-17: 0 vu
 * [Tauri shell: fmt and clippy with the 16 missions commands](../../HistoryTest/runs/2026-11-17_082340Z_shell_7e32c2d/RUN.md)
 * [Webview: UI smoke 57/57 with the Missions flow (link, send, switches, start, approval as text, stop twice, collect, review)](../../HistoryTest/runs/2026-11-17_082340Z_ui-smoke_7e32c2d/RUN.md)
 * [cargo audit and npm audit: 0 vulnerabilities](../../HistoryTest/runs/2026-11-17_082359Z_security-scan_7e32c2d/RUN.md)
+* [Live: the IDE core against a real Go gateway, node and sandbox, Autopilot mission end to end: 19 passed, 0 failed](../../HistoryTest/runs/2026-11-17_085225Z_live-gateway_bfae51f/RUN.md) ([commands/live-gateway-e2e.md](../commands/live-gateway-e2e.md))

@@ -14,6 +14,7 @@ The IDE's plan and its decisions (ADR-029) live in the P2P-AI repository: `docs/
 | [files/app-data.md](files/app-data.md) | The IDE's own data files: `gateways.json`, `directories.json`, `links.json` and chat history, every key |
 | [files/discovery-vectors.md](files/discovery-vectors.md) | The copy of the P2P-AI protocol's shared advert vectors used by the core tests, with provenance |
 | [commands/app-scripts.md](commands/app-scripts.md) | The npm scripts and cargo commands used to build and test the app |
+| [commands/live-gateway-e2e.md](commands/live-gateway-e2e.md) | The live check of missions against a real P2P-AI gateway, node and sandbox (development only) |
 | [commands/history-test.md](commands/history-test.md) | The test history recorder `scripts/history_test.py` (copied from the P2P-AI repository) |
 | [files/app-icons.md](files/app-icons.md) | The app icons: P2P-AI logo with the IDE badge, how they are built |
 | [configuration/tauri-conf.md](configuration/tauri-conf.md) | `tauri.conf.json` (window, CSP) and `capabilities/default.json`, every key |
