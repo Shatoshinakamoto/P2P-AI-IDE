@@ -68,3 +68,10 @@ run_id,date_utc,area,commit,branch_or_pr,machine,verdict,passed,failed,skipped,s
 2026-11-17_134712Z_windows-cross_dbbc5cd,2026-11-17T13:47:12Z,windows-cross,dbbc5cd,claude/project-thread-dfop2y,cloud container,pass,,,,Cross clippy of the core for x86_64-pc-windows-msvc (Windows sandbox code)
 2026-11-17_134713Z_shell_dbbc5cd,2026-11-17T13:47:13Z,shell,dbbc5cd,claude/project-thread-dfop2y,cloud container,pass,,,,Tauri shell fmt and clippy with the updated lockfile
 2026-11-17_134717Z_security-scan_dbbc5cd,2026-11-17T13:47:17Z,security-scan,dbbc5cd,claude/project-thread-dfop2y,cloud container,pass,,,,"cargo audit (core, shell) and npm audit"
+2026-11-17_140653Z_core_104f232,2026-11-17T14:06:53Z,core,104f232,claude/project-thread-dfop2y,cloud container,pass,,,,"Core fmt, clippy and tests (I5d)"
+2026-11-17_140706Z_local-containers_104f232,2026-11-17T14:07:06Z,local-containers,104f232,claude/project-thread-dfop2y,cloud container,pass,,,,Real Docker container runs (I5d)
+2026-11-17_140739Z_shell_104f232,2026-11-17T14:07:39Z,shell,104f232,claude/project-thread-dfop2y,cloud container,pass,,,,Tauri shell fmt and clippy (I5d)
+2026-11-17_140741Z_windows-cross_104f232,2026-11-17T14:07:41Z,windows-cross,104f232,claude/project-thread-dfop2y,cloud container,pass,,,,Core clippy for the Windows target (I5d)
+2026-11-17_140743Z_ui-smoke_104f232,2026-11-17T14:07:43Z,ui-smoke,104f232,claude/project-thread-dfop2y,cloud container,pass,4,0,0,"Webview tests, build and UI smoke with container runner (I5d)"
+2026-11-17_140753Z_security-scan_104f232,2026-11-17T14:07:53Z,security-scan,104f232,claude/project-thread-dfop2y,cloud container,pass,,,,cargo audit and npm audit (I5d)
+2026-11-17_140846Z_windows-containers_8bba2b4,2026-11-17T14:08:46Z,windows-containers,8bba2b4,claude/project-thread-dfop2y,user PC (Windows),pass,86,0,0,Container runner on the PC with Docker Desktop 29.9.2 at 8bba2b4: core tests and real containers

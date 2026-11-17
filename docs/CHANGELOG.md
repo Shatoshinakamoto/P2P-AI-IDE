@@ -2,6 +2,27 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-17 - Phase I5d: Local container runner (Docker or Podman)
+
+Requested by Pheonix on 2026-11-17: "include support for local container like docker or podman". Images follow the
+recommended option (Red Hat UBI per framework; decision pending).
+
+### Added
+- **Local container, Docker or Podman** runner in Run and test and for the chat's runs: each run in a throw-away
+  container on a copy of the folder, with no network, no capabilities, not as root, a read-only image and limits;
+  Podman preferred, then Docker ([features/container-runner.md](features/container-runner.md)).
+- Four images pinned by digest: UBI 9 Python 3.12, Node.js 22, Go toolset, and a Rust image built here from the
+  pinned UBI 9 base. Tests pick the image from the framework; commands use the **Image** list.
+- **Get image** in Run and test: the only way an image is downloaded or built; runs use `--pull=never`.
+- Core module `container` (engine, images, prepare, run arguments, run); shell commands `container_images` and
+  `container_prepare`; `run_start` and `agent_send` take the image.
+- `core/examples/local_containers.rs` ([commands/local-containers.md](commands/local-containers.md)).
+- Tests: core unit tests 68 -> 70, UI smoke 77 -> 81, real containers (Docker, Linux and Windows).
+
+### Changed
+- The snapshot, cache and output helpers of `localbox` are shared with the container runner; the container copy
+  includes `node_modules` and `.venv` instead of linking them.
+
 ## 2026-11-17 - Phase I5c: Local sandbox on Windows (AppContainer)
 
 Requested by Pheonix on 2026-11-17 ("include local os sandbox ported from tandemforge"). A Rust port of

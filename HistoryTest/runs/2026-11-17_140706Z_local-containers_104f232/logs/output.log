@@ -1,0 +1,15 @@
+INFO engine: docker
+INFO get image rust: the image could not be built; check the network and try again
+PASS the copy is readable and writable in /work
+PASS .env was not copied into the container
+PASS the image's file system is read-only
+PASS the container has no network
+PASS the real folder is untouched
+PASS the container runs as the person's own uid
+PASS the time limit ends the container
+SKIP cargo: the rust image is not on this computer
+PASS go tests run in a container and the failing test is found
+PASS npm tests run in a container and the failing test is found
+PASS make tests run in a container and the failing test is found
+PASS unittest tests run in a container and the failing test is found
+{"failed":0,"passed":11,"skipped":1}

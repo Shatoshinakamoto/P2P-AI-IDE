@@ -1,0 +1,62 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "34941a7a47b39728407ca9c9a099d162bcafe6bee2d38f3a22a2fe14364058a7",
+   "size": 1432
+  },
+  "artifacts/ui-i5d.png": {
+   "sha256": "544a0b32a03a65a59096ed4c7271722c694920dba97627d788a4b281c458714d",
+   "size": 65008
+  },
+  "command.txt": {
+   "sha256": "46253b6e90003d4abdae4615e3e3d3876934be7eaaa21c094dd23111fc493409",
+   "size": 224
+  },
+  "environment.md": {
+   "sha256": "e6d1d9c5288ca5cc5aaa435af37825b34dc2b81ea9f4508897f4a9d6b6d727c1",
+   "size": 197
+  },
+  "logs/output.log": {
+   "sha256": "37d315e739814ccae6e08fcf1ec25385dc3a4108d2d7ee2f9eca69472b5ade68",
+   "size": 7237
+  },
+  "results/summary.txt": {
+   "sha256": "eadd6dc4c03787dd234b011ce42ef4e6696481b226b135236412b2bd77ccbf0b",
+   "size": 252
+  }
+ },
+ "previous": {
+  "manifest_sha256": "cb5d75b20346f532477b583f0599da7e31a7f0e27a751cf73f5101f632ea510a",
+  "run_id": "2026-11-17_140741Z_windows-cross_104f232"
+ },
+ "run": {
+  "area": "ui-smoke",
+  "branch_or_pr": "claude/project-thread-dfop2y",
+  "collected_utc": "",
+  "commit": "104f2326c1f5a31d5131c19955fc2aa2a97cbc27",
+  "count_unit": "packages",
+  "date_utc": "2026-11-17T14:07:43Z",
+  "dirty": true,
+  "duration_s": 10.6,
+  "exit_code": 0,
+  "failed": 0,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_140743Z_ui-smoke_104f232",
+  "kind": "e2e",
+  "machine": "cloud",
+  "passed": 4,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "ide-i5d",
+  "shortened_logs": [],
+  "skipped": 0,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Webview tests, build and UI smoke with container runner (I5d)",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

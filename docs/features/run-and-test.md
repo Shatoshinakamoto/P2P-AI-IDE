@@ -3,9 +3,9 @@
 * **Status:** built 2026-11-17 after phase I5a was merged (PR #7). Part of phase I5 of the IDE plan in the P2P-AI
   repository (`docs/restructure/agentic-ide-plan.md`: "Commands and tests through the OS sandbox"). Order chosen by
   Pheonix on 2026-11-17: "Do recommended first but include local os sandbox ported from tandemforge and include
-  support for local container like docker or podman". So this page covers the gateway sandbox; a local OS sandbox
-  (I5c, ported from TandemForge's host runner) and a local Docker or Podman container (I5d) come next and will plug
-  into the same request and result.
+  support for local container like docker or podman". So this page covers the gateway sandbox; the local OS sandbox
+  (I5c, [local-sandbox.md](local-sandbox.md)) and the local Docker or Podman container (I5d,
+  [container-runner.md](container-runner.md)) plug into the same request and result.
 * **Code:** `core/src/runner.rs`, `core/src/agent.rs` (run tools), `core/src/gwapi.rs` (`api_slow`),
   `app/src-tauri/src/{run,agent,missions,main}.rs`, `app/src/components/{RunView,ChatView}.tsx`, `app/src/{App.tsx,ipc.ts}`.
 * **Tests:** `core/src/runner.rs`, `core/src/agent.rs` (`run_tools_go_through_the_runner_only`),
@@ -24,7 +24,9 @@ and shows the result:
 * **Where to run:** the **Gateway sandbox** runs on a node of the folder's linked project (link it in Missions). It
   has no network, its file changes are not kept, and secrets such as `.env` and keys are never sent. The **Local
   sandbox on this computer** (phase I5c, Linux first, [local-sandbox.md](local-sandbox.md)) runs on a copy of the
-  folder here, with no network and the home folder hidden. The local container (I5d) is listed as coming next.
+  folder here, with no network and the home folder hidden. The
+  **Local container, Docker or Podman** (phase I5d, [container-runner.md](container-runner.md)) runs on a copy in a
+  throw-away container with pinned Red Hat UBI images.
   The list comes from `runners_list`, which says for each runner whether it can be used and, if not, why.
 
 In **Agent chat**, the **Runs** switch (off by default, next to **Tools**) lets the assistant ask to run tests or a
@@ -117,8 +119,8 @@ React and lucide-react (already pinned). cargo audit and npm audit on 2026-11-17
 * Runs use the files on disk, not the assistant's pending changes: accept a change before asking for a run that
   should see it.
 * The gateway runs on a node of the linked project; the folder's files (minus the deny list) go to that gateway, as
-  with Missions. For runs that must stay on this computer, pick the local sandbox (I5c, Linux) or, later, the
-  container (I5d).
+  with Missions. For runs that must stay on this computer, pick the local sandbox (I5c) or the local container
+  (I5d).
 * The sandbox image decides which tools exist (python3, node, go, cargo ...). A missing program ends with
   `start_error`.
 * A person-started run is not asked again: the click is the approval.
@@ -133,7 +135,7 @@ React and lucide-react (already pinned). cargo audit and npm audit on 2026-11-17
 | "the node's copy of the project is not ready yet; try again shortly" | no node has finished copying the project within 2 minutes; check the gateway has a node online |
 | "a send, pull or run is still going on" | wait for the other step to end |
 | "pick a test framework: ..." / "a command is a program and its arguments ..." | the request did not pass the checks |
-| "this runner is not available yet" | the container runner (I5d) is not built yet; pick the gateway or the local sandbox |
+| "this runner is not available yet" | an unknown runner name reached the shell; pick one from the list |
 | Local sandbox messages | see [local-sandbox.md](local-sandbox.md) section 7 |
 | A forbidden or not-found answer from the gateway | the key needs the editor role on the project, and the gateway `GATEWAY_EXEC` |
 

@@ -1,0 +1,11 @@
+id: 2026-11-17_140846Z_windows-containers_8bba2b4
+verdict: pass
+verdict_reason: not recorded
+passed: 86
+failed: 0
+skipped: 0
+count_unit: not recorded
+exit_code: not recorded
+duration_s: not recorded
+commit: 8bba2b4
+machine: pc

@@ -207,11 +207,26 @@ const fake = () => {
         case "runners_list": return [
           { id: "gateway", available: true, reason: "" },
           { id: "local-os", available: true, reason: "" },
-          { id: "container", available: false, reason: "coming next (Docker or Podman)" },
+          { id: "container", available: true, reason: "" },
         ];
+        // Phase I5d: the Node.js image is missing until Get image.
+        case "container_images": return [
+          { id: "python", label: "Python 3.12 (UBI 9)", present: true, get: "pull" },
+          { id: "node", label: "Node.js 22 (UBI 9)", present: !!window.__nodeImage, get: "pull" },
+          { id: "go", label: "Go toolset (UBI 9)", present: true, get: "pull" },
+          { id: "rust", label: "Rust toolset (built here from UBI 9)", present: false, get: "build" },
+        ];
+        case "container_prepare": {
+          if (!["python", "node", "go", "rust"].includes(args.id)) throw "pick an image from the list";
+          const cb = callbacks.get(args.onStage.id);
+          cb({ index: 0, message: "pulling" });
+          cb({ index: 1, end: true });
+          if (args.id === "node") window.__nodeImage = true;
+          return null;
+        }
         case "run_start": {
           // Phase I5b: stages arrive on the channel; the result carries hostile output to check it is text.
-          if (args.runner !== "gateway" && args.runner !== "local-os") throw "this runner is not available yet";
+          if (!["gateway", "local-os", "container"].includes(args.runner)) throw "this runner is not available yet";
           const cb = callbacks.get(args.onStage.id);
           ["sending", "copying", "running"].forEach((message, index) => cb({ index, message }));
           cb({ index: 3, end: true });
@@ -533,7 +548,8 @@ try {
   const runnerSel = page.getByLabel("Where to run");
   await runnerSel.locator("option", { hasText: "Local sandbox" }).waitFor({ state: "attached" });
   const disabledRunners = await runnerSel.locator("option[disabled]").allInnerTexts();
-  check("the gateway and local sandbox are offered; the container is listed as coming", disabledRunners.length === 1 && /container.*coming next/i.test(disabledRunners[0]) && (await runnerSel.inputValue()) === "gateway", JSON.stringify(disabledRunners));
+  const allRunners = await runnerSel.locator("option").allInnerTexts();
+  check("the gateway, local sandbox and container runners are offered", disabledRunners.length === 0 && allRunners.length === 3 && allRunners.some((t) => /Docker or Podman/.test(t)) && (await runnerSel.inputValue()) === "gateway", JSON.stringify(allRunners));
   await page.getByRole("button", { name: "Run pytest tests" }).click();
   const res = page.getByRole("region", { name: "Run result" });
   await res.waitFor();
@@ -554,6 +570,27 @@ try {
   await page.getByRole("button", { name: "Run command" }).click();
   await res.waitFor();
   check("a run on the local sandbox goes to the local runner", window_calls(await page.evaluate(() => window.__calls), "run_start")?.runner === "local-os");
+  // Phase I5d: the container runner, with an image that has to be fetched first.
+  await runnerSel.selectOption("container");
+  await page.getByText(/throw-away container/).waitFor();
+  const imageSel = page.getByLabel("Image", { exact: true });
+  await imageSel.selectOption("node");
+  const getBtn = page.getByRole("button", { name: "Get image" });
+  await getBtn.waitFor();
+  check("a missing image offers Get image and no run", await page.getByRole("button", { name: "Run command" }).isDisabled());
+  await getBtn.click();
+  await getBtn.waitFor({ state: "detached" });
+  check("Get image asks for that image by its id", window_calls(await page.evaluate(() => window.__calls), "container_prepare")?.id === "node");
+  await page.getByRole("button", { name: "Run command" }).click();
+  await res.waitFor();
+  const rs3 = window_calls(await page.evaluate(() => window.__calls), "run_start");
+  check("a container run sends the runner and the chosen image", rs3?.runner === "container" && rs3.image === "node", JSON.stringify(rs3));
+  await page.getByRole("radio", { name: "Tests" }).check();
+  await page.getByLabel("Test framework").selectOption("cargo");
+  await page.getByRole("button", { name: "Get image" }).waitFor();
+  check("cargo tests need the Rust image, which is built here", /Building it downloads/.test(await page.getByText(/is not on this computer yet/).innerText()));
+  await page.getByLabel("Test framework").selectOption("pytest");
+  await runnerSel.selectOption("local-os");
 
   await page.getByRole("button", { name: "Agent chat", exact: true }).click();
   await page.getByRole("button", { name: "New chat" }).click();

@@ -1,0 +1,62 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "b56ced4fb6838026a8fcbabc941be864ca8227f18c2ee7284945cbfb39027746",
+   "size": 2385
+  },
+  "artifacts/ide5d-test.cmd": {
+   "sha256": "b994b42bc08362ad551adb576e1fd13af6b2b55a82fbc340b3d406b0f91d1405",
+   "size": 1293
+  },
+  "command.txt": {
+   "sha256": "698cae36f535eb91a8aeba32a8ef67dbd65fa8a0243defc6ddedb62148c16581",
+   "size": 58
+  },
+  "environment.md": {
+   "sha256": "e80282cccd584a512cd95b7083af5a9ad085dd08c06c1686f441c3d569331be4",
+   "size": 273
+  },
+  "logs/ide5d-pc.txt": {
+   "sha256": "e6286ea0b8e66062abb7574794557e7cc742441b079f7c3a601381a5930d7550",
+   "size": 6926
+  },
+  "results/summary.txt": {
+   "sha256": "97de69ce32ad3ce4b0437bc2598dc840c027605f8d7e88268c38ca85d36c4aa0",
+   "size": 227
+  }
+ },
+ "previous": {
+  "manifest_sha256": "fa24ee4482f72052aeb48f49e6b8dbb23003a655ed594f9ae111fdd0f47b7e54",
+  "run_id": "2026-11-17_140753Z_security-scan_104f232"
+ },
+ "run": {
+  "area": "windows-containers",
+  "branch_or_pr": "claude/project-thread-dfop2y",
+  "collected_utc": "2026-11-17T14:08:46Z",
+  "commit": "8bba2b4",
+  "count_unit": "",
+  "date_utc": "2026-11-17T14:08:46Z",
+  "dirty": false,
+  "duration_s": null,
+  "exit_code": null,
+  "failed": 0,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_140846Z_windows-containers_8bba2b4",
+  "kind": "integration",
+  "machine": "pc",
+  "passed": 86,
+  "record": "imported",
+  "redactions": {},
+  "requested_by": "ide-i5d",
+  "shortened_logs": [],
+  "skipped": 0,
+  "skipped_files": [],
+  "source_path": "D:\\p2p-ai-ci\\logs\\ide5d.txt",
+  "title": "Container runner on the PC with Docker Desktop 29.9.2 at 8bba2b4: core tests and real containers",
+  "verdict": "pass",
+  "verdict_reason": ""
+ },
+ "schema": 1
+}
