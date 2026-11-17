@@ -1,0 +1,11 @@
+id: 2026-11-17_061800Z_windows_71a1e22
+verdict: pass
+verdict_reason: not recorded
+passed: 29
+failed: 0
+skipped: not recorded
+count_unit: not recorded
+exit_code: not recorded
+duration_s: not recorded
+commit: 71a1e22
+machine: pc
