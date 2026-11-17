@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "3f3e6952feca394a442d0ae1da0af5bcbd18757ebd3ef13b1b1ad9cfd37f2edc",
+   "size": 1465
+  },
+  "command.txt": {
+   "sha256": "554bf7efc2c46664b0bc2b80b8b197674dd32174ee6f76c8ddf6d0570cabb9f1",
+   "size": 141
+  },
+  "environment.md": {
+   "sha256": "c9156de03643135511b046f3efff268d4d9e33ebe2f39e6ee280c258df6380d5",
+   "size": 194
+  },
+  "logs/output.log": {
+   "sha256": "8950be1e8f4499f41b8e38ef15f09a0e2671be53a43aa5dec4d794320908881d",
+   "size": 72
+  },
+  "results/summary.txt": {
+   "sha256": "5e1352eddeb1cb15822ea71e1f8571d830d2eb0e023ee31dedbc1b7169a74314",
+   "size": 285
+  }
+ },
+ "previous": {
+  "manifest_sha256": "b5921117be21bd58de50db81ee93b3b63d10f4b455d05c5291a349c34dd85b0c",
+  "run_id": "2026-11-17_082336Z_core_7e32c2d"
+ },
+ "run": {
+  "area": "shell",
+  "branch_or_pr": "claude/project-thread-dfop2y",
+  "collected_utc": "",
+  "commit": "7e32c2df82985819e79ddbd175b063363b409bec",
+  "count_unit": "",
+  "date_utc": "2026-11-17T08:23:40Z",
+  "dirty": false,
+  "duration_s": 0.6,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_082340Z_shell_7e32c2d",
+  "kind": "build",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "IDE phase I4 thread",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Tauri shell: fmt and clippy with the missions commands",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

@@ -1,0 +1,11 @@
+id: 2026-11-17_090745Z_shell_86e1c4f
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: not recorded
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: 0
+duration_s: 0.6
+commit: 86e1c4fee534e381a9b6c24709784e9b2ea2b4b4
+machine: cloud

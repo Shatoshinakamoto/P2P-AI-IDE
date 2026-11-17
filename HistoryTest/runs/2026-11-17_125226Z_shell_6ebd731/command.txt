@@ -1,0 +1,2 @@
+# run in repository folder `app/src-tauri`, as an argument list (no shell)
+cargo clippy --all-targets --locked -- -D warnings

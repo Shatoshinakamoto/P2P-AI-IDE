@@ -1,0 +1,11 @@
+id: 2026-11-17_090746Z_ui-smoke_86e1c4f
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: 4
+failed: 0
+skipped: 0
+count_unit: packages
+exit_code: 0
+duration_s: 10.8
+commit: 86e1c4fee534e381a9b6c24709784e9b2ea2b4b4
+machine: cloud

@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "855e2bd27d6c93e4bd7cf5b7d617aaace99f8341a3bd9d77cdbab6e830135ac0",
+   "size": 1409
+  },
+  "command.txt": {
+   "sha256": "94f3d2ccf9851d6a6faaae1e21e982047edfd2171318e512d0ab3b865b43fdc8",
+   "size": 126
+  },
+  "environment.md": {
+   "sha256": "56d384d1ce4aa7ca51e5caaa71d5532f7c85ebdd3c423c419066795c141313ee",
+   "size": 194
+  },
+  "logs/output.log": {
+   "sha256": "8598e181b792e83fa9d77a9504b01136981ca44828df31ac6650cdc4af6935b4",
+   "size": 2442
+  },
+  "results/summary.txt": {
+   "sha256": "e2e9c5e3bbb5293f37f6a669b70cd50b9415c0c3bbbf8cf1196247e392d118da",
+   "size": 292
+  }
+ },
+ "previous": {
+  "manifest_sha256": "a3103031466247ad70bf6f28b493089eb48d74959b9562f3de3272524b12d1ab",
+  "run_id": "2026-11-17_125223Z_core_6ebd731"
+ },
+ "run": {
+  "area": "shell",
+  "branch_or_pr": "claude/project-thread-1x3ij1",
+  "collected_utc": "",
+  "commit": "6ebd731048dc7e623d68f32e86579910ca485438",
+  "count_unit": "",
+  "date_utc": "2026-11-17T12:52:26Z",
+  "dirty": false,
+  "duration_s": 0.7,
+  "exit_code": 101,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_125226Z_shell_6ebd731",
+  "kind": "build",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Tauri shell clippy (not possible in the cloud container)",
+  "verdict": "invalid",
+  "verdict_reason": "The command ended with exit code 101."
+ },
+ "schema": 1
+}

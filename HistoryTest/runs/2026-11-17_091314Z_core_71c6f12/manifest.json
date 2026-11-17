@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "5c9d6accd55377284d4f3c6cc4160db159ac6f450d5d2d06b3bdaa9319b72537",
+   "size": 1608
+  },
+  "command.txt": {
+   "sha256": "9e2f09528986feb8a776df515985371d750cc84350566468e622bc63fb539951",
+   "size": 169
+  },
+  "environment.md": {
+   "sha256": "04ee1e9857afddb313da1bb1837621c168e8bb65f922210bccc4362d565bd0a5",
+   "size": 193
+  },
+  "logs/output.log": {
+   "sha256": "9e3dc8990915c8f031466a7bbbcf94712d692559aa06ac46a52a8f1374a24dea",
+   "size": 5113
+  },
+  "results/summary.txt": {
+   "sha256": "2b7b5fee7dcacf9d0fb1f4cbc6fa4240887aa88970bb86cb9e3d23a134102187",
+   "size": 284
+  }
+ },
+ "previous": {
+  "manifest_sha256": "a7aad06af1c7bcb5a93a80ce801d4161e2642cd0572ebd592c5e302deb67b2f0",
+  "run_id": "2026-11-17_090757Z_security-scan_86e1c4f"
+ },
+ "run": {
+  "area": "core",
+  "branch_or_pr": "PR #7",
+  "collected_utc": "",
+  "commit": "71c6f12078855af0355583200ff29e30452ee570",
+  "count_unit": "",
+  "date_utc": "2026-11-17T09:13:14Z",
+  "dirty": false,
+  "duration_s": 5.7,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_091314Z_core_71c6f12",
+  "kind": "unit",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Core fmt, clippy and tests after the Windows-safe real-git test fix",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

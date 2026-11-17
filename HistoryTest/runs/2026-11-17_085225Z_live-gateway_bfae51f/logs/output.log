@@ -1,0 +1,21 @@
+PASS: a throw-away key on the gateway
+PASS: the node attached and serves the model
+PASS create a project on the gateway
+PASS send the folder: 4 files, .env kept on this computer
+PASS a second send changes nothing
+PASS a node holds a copy of the project
+PASS Autopilot switched on and available
+PASS start an Autopilot mission
+PASS a second mission of the same kind gets the fixed message
+PASS approving with another digest is refused
+PASS the mission's write calls were approved with the shown digest
+PASS the mission finished with its check passing in the sandbox
+PASS ask the gateway to collect the node's changes
+PASS the fix was collected into a new project version
+PASS the fixed file waits in Changes to review
+PASS nothing was written locally before Accept
+PASS .env on this computer is untouched
+PASS Accept writes the mission's fix
+{"failed":0,"passed":16}
+PASS: the folder's .env value is in no file the gateway or node stored
+SUMMARY: 19 passed, 0 failed

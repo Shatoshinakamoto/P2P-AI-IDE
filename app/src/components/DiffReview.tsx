@@ -3,7 +3,8 @@
  *
  * Purpose: shows the file as it is on disk (left) and as the assistant proposes it (right) in Monaco's diff editor,
  * over the editor area, with Accept and Reject. Accept writes the file through the core with the version check;
- * nothing is written before the person presses it.
+ * nothing is written before the person presses it. Phase I5 reuses it read-only (no Accept or Reject) for the Source
+ * Control view's diff of a changed file against the last commit, with its own labels.
  * Trust boundary: both texts are untrusted (file content and model output). Monaco renders them as text in
  * read-only models; links are off; nothing in them is run (CWE-79, OWASP LLM01/LLM06).
  * Dependencies: monaco-editor (already loaded by monaco.ts).
@@ -16,12 +17,16 @@ import type { ChangeText } from "../ipc.ts";
 
 interface Props {
   change: ChangeText;
-  onAccept: () => void;
-  onReject: () => void;
+  /** Without onAccept and onReject the diff is view-only (Source Control). */
+  onAccept?: () => void;
+  onReject?: () => void;
   onClose: () => void;
+  /** Title prefix and the left/right legend; defaults describe a proposed change. */
+  title?: string;
+  legend?: string;
 }
 
-export function DiffReview({ change, onAccept, onReject, onClose }: Props) {
+export function DiffReview({ change, onAccept, onReject, onClose, title, legend }: Props) {
   const host = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -51,11 +56,11 @@ export function DiffReview({ change, onAccept, onReject, onClose }: Props) {
   return (
     <div role="dialog" aria-label={`Review change to ${change.rel}`} className="absolute inset-0 z-10 flex flex-col bg-ide-bg">
       <div className="flex shrink-0 flex-wrap items-center gap-2 border-b border-ide-line bg-ide-side px-3 py-1.5">
-        <span className="truncate text-ide-bright" title={change.rel}>{change.created ? "New file: " : "Change: "}{change.rel}</span>
-        <span className="text-xs text-ide-dim">left: on disk · right: proposed (not written yet)</span>
+        <span className="truncate text-ide-bright" title={change.rel}>{title ?? (change.created ? "New file: " : "Change: ")}{change.rel}</span>
+        <span className="text-xs text-ide-dim">{legend ?? "left: on disk · right: proposed (not written yet)"}</span>
         <span className="flex-1" />
-        <button type="button" onClick={onAccept} className="flex items-center gap-1 rounded bg-ide-accent px-3 py-1 text-white"><Check size={14} aria-hidden />Accept and save</button>
-        <button type="button" onClick={onReject} className="flex items-center gap-1 rounded border border-ide-line px-3 py-1"><X size={14} aria-hidden />Reject</button>
+        {onAccept ? <button type="button" onClick={onAccept} className="flex items-center gap-1 rounded bg-ide-accent px-3 py-1 text-white"><Check size={14} aria-hidden />Accept and save</button> : null}
+        {onReject ? <button type="button" onClick={onReject} className="flex items-center gap-1 rounded border border-ide-line px-3 py-1"><X size={14} aria-hidden />Reject</button> : null}
         <button type="button" onClick={onClose} className="rounded px-2 py-1 hover:bg-ide-hover">Close</button>
       </div>
       <div ref={host} aria-label="Diff" className="min-h-0 flex-1" />

@@ -154,3 +154,77 @@ export const chatLoad = (id: string) => call<Chat>("chat_load", { id });
 export const chatSave = (chat: Chat) => call<Chat>("chat_save", { chat });
 export const chatDelete = (id: string) => call<void>("chat_delete", { id });
 export const chatsSearch = (query: string) => call<ChatHit[]>("chats_search", { query });
+
+// ---- Missions (phase I4, docs/features/missions.md). Every field is cleaned in Rust; still rendered as text only.
+
+export interface Switches {
+  autopilot_available: boolean; improve_available: boolean; disabled: boolean;
+  autopilot: boolean; auto_improve: boolean; resource_scope: string;
+}
+export interface SyncView {
+  state: string; version: number; delta_state: string; delta_version: number;
+  delta_added: number; delta_modified: number; delta_deleted: number; delta_conflicts: string[];
+}
+export interface ProjectState {
+  gateway_name: string; project_id: string | null; project_name: string;
+  switches: Switches | null; sync: SyncView | null; note: string;
+}
+export interface ProjectView { id: string; name: string; role: string; version: number; file_count: number }
+export interface Skipped { rel: string; reason: string }
+export interface PushReport { uploaded: number; deleted: number; unchanged: number; skipped: Skipped[]; version: number; copy: string }
+export interface PullReport { proposed: number; same: number; only_local: number; skipped: Skipped[] }
+export interface TaskView { title: string; state: string }
+export interface CheckView { id: string; passed: boolean; exit_code: number; error: string }
+export interface MissionView {
+  id: string; kind: string; project_id: string; model: string; goal: string; state: string; reason: string;
+  cycle: number; max_cycles: number; tokens: number; run_id: string; waiting_approval: boolean;
+  checks_passed: number; checks_total: number; tasks_done: number; tasks_total: number; proposals_created: number;
+  updated_at: number; tasks: TaskView[]; checks: CheckView[];
+}
+export interface ApprovalView { id: string; tool: string; access: string; arguments: string; arguments_sha256: string; expires_at: number }
+export interface ProposalView {
+  id: string; title: string; kind: string; rationale: string; effort: string; steps: string[]; sources: string[]; state: string;
+}
+/** An acceptance check: a test framework, or a command split into words (no shell). */
+export interface CheckInput { id: string; kind: "tests" | "command"; framework?: string; argv?: string[] }
+
+export const missionProject = () => call<ProjectState>("mission_project");
+export const projectsList = () => call<ProjectView[]>("projects_list");
+export const projectCreate = (name: string) => call<ProjectView>("project_create", { name });
+export const projectLink = (projectId: string | null, projectName: string) => call<void>("project_link", { projectId, projectName });
+/** Sends the open folder (minus secrets) to the linked project and asks for a node copy. */
+export const projectPush = () => call<PushReport>("project_push");
+/** Collects the node copy's changes into the gateway project. */
+export const projectCollect = () => call<SyncView>("project_collect");
+/** Brings changed files back into "Changes to review" (nothing is written). */
+export const projectPull = () => call<PullReport>("project_pull");
+export const switchesSet = (autopilot: boolean, autoImprove: boolean) => call<Switches>("switches_set", { autopilot, autoImprove });
+export const missionsList = () => call<MissionView[]>("missions_list");
+export const missionGet = (id: string) => call<MissionView>("mission_get", { id });
+export const missionStart = (kind: "autopilot" | "improve", goal: string, model: string, checks: CheckInput[]) =>
+  call<MissionView>("mission_start", { kind, goal, model, checks });
+export const missionControl = (id: string, action: "pause" | "resume" | "stop") => call<void>("mission_control", { id, action });
+export const approvalsList = (runId: string) => call<ApprovalView[]>("approvals_list", { runId });
+export const approvalDecide = (runId: string, approvalId: string, decision: "approve" | "reject", argumentsSha256: string) =>
+  call<void>("approval_decide", { runId, approvalId, decision, argumentsSha256 });
+export const proposalsList = () => call<ProposalView[]>("proposals_list");
+export const proposalAct = (id: string, action: "accept" | "dismiss" | "snooze") => call<void>("proposal_act", { id, action });
+
+// ---- Phase I5: source control (src-tauri/src/scm.rs, docs/features/source-control.md)
+
+/** One changed file: git's status letters for the staged (`index`) and unstaged (`work`) side; "." = none. */
+export interface ScmFile { rel: string; index: string; work: string; conflict: boolean; untracked: boolean; actionable: boolean }
+export interface ScmStatus { branch: string; initial: boolean; ahead: number; behind: number; files: ScmFile[]; truncated: boolean }
+/** `available` is false (with a fixed `reason`) when the folder is not a repository, git is missing or refused. */
+export interface ScmState { available: boolean; reason: string; status: ScmStatus | null }
+export interface ScmDiff { rel: string; before: string; after: string; deleted: boolean }
+export interface ScmCommit { id: string; subject: string; author: string; time: number }
+
+export const scmStatus = () => call<ScmState>("scm_status");
+export const scmDiff = (rel: string) => call<ScmDiff>("scm_diff", { rel });
+/** Stages one file, or every change with null. */
+export const scmStage = (rel: string | null) => call<void>("scm_stage", { rel });
+export const scmUnstage = (rel: string | null) => call<void>("scm_unstage", { rel });
+/** Commits what is staged (hooks off); resolves to the short commit id. */
+export const scmCommit = (message: string) => call<string>("scm_commit", { message });
+export const scmLog = () => call<ScmCommit[]>("scm_log");

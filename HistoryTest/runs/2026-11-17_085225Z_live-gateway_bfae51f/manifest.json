@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "36e0c0263411e27e4b6a804ecd09fb642c105da8da6acc68e2965e5679c20929",
+   "size": 1955
+  },
+  "command.txt": {
+   "sha256": "66b3d3a11aeef80df37edc88f01ffa8470d5acd4b4877f39f356236d5c890a91",
+   "size": 214
+  },
+  "environment.md": {
+   "sha256": "7ec95acc7040c1f187653a6aff6c2208203f6f06ac3c567447de3b589864f25b",
+   "size": 201
+  },
+  "logs/output.log": {
+   "sha256": "0b54f47124df05a3b59e7bac6831e3d18f27c6e00afc3213dbece27dad3a686f",
+   "size": 966
+  },
+  "results/summary.txt": {
+   "sha256": "83c97856f211f116d9a85253d84f5290424a0604a365c80bd6aab2aad3a57d59",
+   "size": 293
+  }
+ },
+ "previous": {
+  "manifest_sha256": "c7d7428790744d755221a820cb1f2d7d7dad80607c37b1b9dc173aab24e1e9b4",
+  "run_id": "2026-11-17_082359Z_security-scan_7e32c2d"
+ },
+ "run": {
+  "area": "live-gateway",
+  "branch_or_pr": "PR #4",
+  "collected_utc": "",
+  "commit": "bfae51fd7ee2d8d54b562758dd4efc65aae32487",
+  "count_unit": "",
+  "date_utc": "2026-11-17T08:52:25Z",
+  "dirty": false,
+  "duration_s": 16.0,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_085225Z_live-gateway_bfae51f",
+  "kind": "e2e",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "IDE phase I4 thread",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Live: IDE core against a real Go gateway, node and sandbox (Autopilot mission)",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

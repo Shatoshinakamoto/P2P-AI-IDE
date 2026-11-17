@@ -14,6 +14,57 @@ Every security patch, hardening change, CVE remediation and accepted risk, newes
 - **Why it is secure now:** downloads can be verified with the project key (NIST SI-7); licences are gated (SR-3).
 - **Verification:** [licence gate](../HistoryTest/runs/2026-11-17_085507Z_installers_1b95d91/RUN.md), [Linux bundle](../HistoryTest/runs/2026-11-17_085509Z_installers_1b95d91/RUN.md).
 
+## 2026-11-17 — Workspace file access through a folder handle (TOCTOU)
+- **Type:** hardening
+- **CVE / CWE / advisory:** CWE-367, CWE-59, CWE-22 (none: no reported vulnerability)
+- **Severity:** none scored; it needed another local program racing the IDE. KEV no.
+- **Affected:** `core/src/workspace.rs`, `core/Cargo.toml`, `core/Cargo.lock`, `app/src-tauri/Cargo.lock`
+- **What changed:** the workspace keeps a cap-std `Dir` handle on the opened folder. Paths still pass the allow-list,
+  then are opened beneath that handle, which refuses any path (including through links) that leaves the folder; type
+  and size come from the open file. Saves open the parent folder once and write the temp file and rename inside it.
+- **Why it is secure now:** no check-then-use on path names remains (CWE-367); confinement is enforced by the open
+  itself (NIST AC-3, AC-6). cap-std is a Bytecode Alliance crate used by Wasmtime (NIST SP 800-161: maintained, widely used).
+- **Verification:** HistoryTest runs 2026-11-17_125223Z_core_6ebd731 (66 tests incl. the link-swap test), 2026-11-17_125233Z_security-scan_6ebd731 (OSV: 0 advisories), 2026-11-17_125226Z_shell_6ebd731 (shell build
+  not possible in the container, marked invalid).
+
+## 2026-11-17 — Phase I5a hardening: running git on repositories someone else made
+- **Type:** hardening
+- **CVE / CWE / advisory:** CWE-829, CWE-94, CWE-78, CWE-88, CWE-427, CWE-526, CWE-22, CWE-400, CWE-79, CWE-209 (none: new feature)
+- **Severity:** none (new feature built with these controls). KEV no.
+- **Affected:** `core/src/scm.rs`, `core/src/workspace.rs`, `app/src-tauri/src/{scm,main}.rs`, `app/src/components/{SourceControlView,DiffReview}.tsx`
+- **What changed:** git runs from an absolute PATH entry outside the folder, with an argument list, a cleared
+  environment, `GIT_LITERAL_PATHSPECS=1`, hooks off (`core.hooksPath` to the null device, `--no-verify`),
+  `core.fsmonitor=false`, `protocol.allow=never`; repositories whose own config sets filter programs (other than
+  git-lfs), signing, includes, `core.worktree` or worktree config are refused; paths from git pass the workspace
+  allow-list; time, output and entry caps; fixed messages.
+- **Why it is secure now:** opening or committing in an untrusted repository cannot run that repository's programs
+  (CISA Secure by Design, NIST CM-7, SI-10); no network or credentials are involved (NIST AC-6).
+- **Accepted risk:** the person's global git settings and the git installation are trusted (they are the person's
+  own); documented in features/source-control.md section 6.
+- **Verification:** HistoryTest runs 2026-11-17_090743Z_core_86e1c4f (real-git test: planted hook did not run,
+  literal `*`), 2026-11-17_090746Z_ui-smoke_86e1c4f (64/64), 2026-11-17_090757Z_security-scan_86e1c4f (0 vulnerabilities).
+
+## 2026-11-17 — Phase I4 hardening: project sync and missions with review
+- **Type:** hardening
+- **CVE / CWE / advisory:** CWE-200, CWE-538, CWE-345, CWE-494, CWE-362, CWE-367, CWE-22, CWE-73, CWE-918, CWE-93, CWE-400, CWE-79, CWE-209, CWE-532; OWASP LLM06 (none: new feature)
+- **Severity:** none (new feature built with these controls). KEV no.
+- **Affected:** `core/src/{gwapi,projects,agent,workspace,client}.rs`, `app/src-tauri/src/{missions,net,main}.rs`, `app/src/components/{MissionsView,ChatView,StatusBar}.tsx`
+- **What changed:** pushing the folder applies the agent deny list, skips symlinks and build folders, re-hashes each
+  file just before upload, and commits with `base_version`; pulled files must match the listed SHA-256, must be text,
+  never include denied names, and only become pending changes accepted per file; approval decisions carry the
+  arguments' SHA-256; gateway paths pass a strict grammar; API calls are limited to `/v1/` on the active gateway;
+  multipart names allow-listed with a random boundary; size and count caps everywhere; gateway error text replaced by
+  fixed messages; fixed audit words.
+- **Why it is secure now:** human approval for every local write (NIST AC-6, OWASP LLM06), integrity of downloaded
+  content (NIST SI-7), no lost updates (CWE-362/367), least data sent (NIST SC-8 over TLS, deny list), no
+  information leakage in errors or logs (NIST AU-3, CWE-209/532).
+- **Accepted risk:** the folder's contents (except denied names) are uploaded to the chosen gateway and copied to a
+  node to run the mission; a secret inside an ordinary file is sent. Mitigation: deny list, the skipped-files report,
+  choose a trusted gateway, keep secrets out of the code folder (features/missions.md section 6).
+- **Verification:** HistoryTest runs 2026-11-17_082336Z_core_7e32c2d (60 tests), 2026-11-17_082340Z_shell_7e32c2d,
+  2026-11-17_082340Z_ui-smoke_7e32c2d (57/57), 2026-11-17_082359Z_security-scan_7e32c2d (0 vulnerabilities), 2026-11-17_085225Z_live-gateway_bfae51f (real
+  gateway: .env never stored, stale approval digest refused, nothing written before Accept; 19/19).
+
 ## 2026-11-17 — Phase I3 hardening: human approval for every agent change
 - **Type:** hardening
 - **CVE / CWE / advisory:** CWE-200, CWE-538, CWE-22, CWE-367, CWE-20, CWE-400, CWE-79; OWASP LLM01, LLM06 (none: new feature)

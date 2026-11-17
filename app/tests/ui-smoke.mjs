@@ -75,6 +75,15 @@ const fake = () => {
   const hex = () => (nextId++).toString(16).padStart(16, "0");
   const view = (g) => ({ id: g.id, name: g.name, url: g.url, kind: g.kind, dev: g.url.startsWith("http://"), pinned: false, has_key: keys.has(g.id) });
   const callbacks = new Map(); let cbId = 1;
+  const mp = { linked: false, name: "", missions: [],
+    sw: { autopilot_available: true, improve_available: true, disabled: false, autopilot: false, auto_improve: false, resource_scope: "own" },
+    sync: { state: "none", version: 0, delta_state: "", delta_version: 0, delta_added: 0, delta_modified: 0, delta_deleted: 0, delta_conflicts: [] },
+    proposals: [{ id: "prp_1", title: "Add CI", kind: "integration", rationale: "<b>bold</b> idea", effort: "small", steps: [], sources: ["https://example.org/docs"], state: "new" }] };
+  // Phase I5: the fake repository. The first status is refused (as for a repository with a filter program).
+  const scm = { refuse: true, staged: new Set(), log: [],
+    files: [{ rel: "src/orders.py", index: ".", work: "M", conflict: false, untracked: false, actionable: true },
+      { rel: "<img src=x onerror=window.__xss5=1>.md", index: ".", work: "?", conflict: false, untracked: true, actionable: true }] };
+  const scmView = () => scm.files.map((f) => (scm.staged.has(f.rel) ? { ...f, index: f.untracked ? "A" : f.work, work: ".", untracked: false } : f));
   window.__TAURI_INTERNALS__ = {
     transformCallback: (cb) => { const id = cbId++; callbacks.set(id, cb); return id; },
     unregisterCallback: (id) => callbacks.delete(id),
@@ -135,6 +144,41 @@ const fake = () => {
         case "change_get": { const c = pending.get(args.rel); if (!c) throw "that change is no longer pending"; return { rel: args.rel, ...c }; }
         case "change_accept": { const c = pending.get(args.rel); files.set(args.rel, c.after); pending.delete(args.rel); return sha(c.after); }
         case "change_reject": pending.delete(args.rel); return null;
+        // ---- Phase I4: a gateway project with missions, held in memory like the Go gateway would.
+        case "mission_project": return mp.linked
+          ? { gateway_name: "Home", project_id: "prj_1", project_name: mp.name, switches: mp.sw, sync: mp.sync, note: "" }
+          : { gateway_name: "Home", project_id: null, project_name: "", switches: null, sync: null, note: "" };
+        case "projects_list": return [{ id: "prj_1", name: "shop-api", role: "owner", version: 0, file_count: 0 }];
+        case "project_create": if (!args.name) throw "a project name is 1 to 128 characters"; mp.linked = true; mp.name = args.name; return { id: "prj_1", name: args.name, role: "owner", version: 0, file_count: 0 };
+        case "project_link": mp.linked = args.projectId !== null; return null;
+        case "project_push": mp.sync.state = "ready"; return { uploaded: 3, deleted: 0, unchanged: 0, skipped: [{ rel: ".env", reason: "may hold secrets, kept on this computer" }], version: 1, copy: "pending" };
+        case "switches_set": mp.sw = { ...mp.sw, autopilot: args.autopilot, auto_improve: args.autoImprove }; return mp.sw;
+        case "missions_list": return mp.missions;
+        case "mission_start": {
+          const m = { id: "msn_1", kind: args.kind, project_id: "prj_1", model: args.model, goal: args.goal, state: "running", reason: "", cycle: 1, max_cycles: 20, tokens: 1200,
+            run_id: "run_1", waiting_approval: true, checks_passed: 0, checks_total: args.checks.length, tasks_done: 0, tasks_total: 1, proposals_created: 0, updated_at: 1,
+            tasks: [{ title: "<img src=x onerror=\"window.__xss3=1\">Fix orders()", state: "working" }], checks: [] };
+          mp.missions = [m]; return m;
+        }
+        case "mission_control": mp.missions = mp.missions.map((m) => (m.id === args.id ? { ...m, state: args.action === "stop" ? "stopped" : args.action === "pause" ? "paused" : "running" } : m)); return null;
+        case "approvals_list": return [{ id: "apr_1", tool: "write_file", access: "write", arguments: "{\n  \"path\": \"src/orders.py\",\n  \"content\": \"<script>window.__xss4=1</script>\"\n}", arguments_sha256: "a".repeat(64), expires_at: 1 }];
+        case "approval_decide": mp.missions = mp.missions.map((m) => ({ ...m, waiting_approval: false })); return null;
+        case "proposals_list": return mp.proposals;
+        case "proposal_act": mp.proposals = mp.proposals.map((p) => (p.id === args.id ? { ...p, state: args.action === "accept" ? "accepted" : args.action } : p)); return null;
+        case "project_collect": mp.sync = { ...mp.sync, delta_state: "committed", delta_version: 2, delta_added: 0, delta_modified: 1, delta_deleted: 0 }; return mp.sync;
+        case "project_pull": pending.set("src/orders.py", { before: files.get("src/orders.py"), after: "def orders():\n    return load()\n", created: false }); return { proposed: 1, same: 2, only_local: 0, skipped: [] };
+        case "scm_status":
+          if (scm.refuse) { scm.refuse = false; return { available: false, reason: "this repository's own git settings name programs to run (filters, signing or includes), so source control is off for it", status: null }; }
+          return { available: true, reason: "", status: { branch: "main", initial: false, ahead: 1, behind: 0, files: scmView(), truncated: false } };
+        case "scm_log": return scm.log;
+        case "scm_stage": if (args.rel === null) scm.files.forEach((f) => scm.staged.add(f.rel)); else scm.staged.add(args.rel); return null;
+        case "scm_unstage": if (args.rel === null) scm.staged.clear(); else scm.staged.delete(args.rel); return null;
+        case "scm_diff": return { rel: args.rel, before: "def orders():\n    return []\n", after: files.get(args.rel) ?? "", deleted: false };
+        case "scm_commit": {
+          if (scm.staged.size === 0) throw "stage at least one change before committing";
+          scm.log.unshift({ id: "abc1234", subject: args.message, author: "Dev", time: 1 });
+          scm.files = scm.files.filter((f) => !scm.staged.has(f.rel)); scm.staged.clear(); return "abc1234";
+        }
         case "chat_stop": return null;
         case "chat_save": { const c = { ...args.chat, id: args.chat.id || hex() }; if (!c.title) c.title = c.messages.find((m) => m.role === "user")?.content.split("\n")[0] ?? "New chat"; chats.set(c.id, c); return c; }
         case "chats_list": return [...chats.values()].map((c) => ({ id: c.id, title: c.title, updated: 1, count: c.messages.length }));
@@ -183,10 +227,10 @@ await page.goto(`http://127.0.0.1:${port}/`);
 try {
   await page.getByText("No folder is open.").waitFor({ timeout: 10000 });
   check("welcome state shows Open folder", true);
-  check("status bar shows the gateway chip and disabled mission switches",
+  check("status bar shows the gateway chip and the mission switches (off until a project says otherwise)",
     (await page.getByRole("button", { name: "No gateway" }).isVisible()) &&
-    (await page.getByRole("button", { name: /Autopilot off/ }).isDisabled()) &&
-    (await page.getByRole("button", { name: /Auto Improve off/ }).isDisabled()));
+    (await page.getByRole("button", { name: /Autopilot off/ }).isVisible()) &&
+    (await page.getByRole("button", { name: /Auto Improve off/ }).isVisible()));
 
   await page.getByRole("button", { name: "Open folder" }).first().click();
   await page.getByRole("navigation", { name: "Files" }).getByText("README.md").waitFor();
@@ -248,12 +292,38 @@ try {
   const summary = await page.getByText(/results? in \d+ files?/).innerText();
   check("search finds matches", /^[1-9]\d* results? in/.test(summary), summary);
 
+  // ---- Phase I5: source control.
+  await page.getByRole("button", { name: "Source control", exact: true }).click();
+  await page.getByText(/source control is off for it/).waitFor();
+  check("a refused repository says why and offers no actions", (await page.getByRole("button", { name: /^Stage / }).count()) === 0);
+  await page.getByRole("button", { name: "Check again" }).click();
+  await page.getByRole("region", { name: "Changes", exact: true }).getByText("src/orders.py").waitFor();
+  const scmText = await page.getByRole("region", { name: "Changes", exact: true }).innerText();
+  check("source control lists the branch's changes; odd file names are text", /onerror/.test(scmText) && (await page.evaluate(() => window.__xss5)) === undefined, scmText.replace(/\s+/g, " ").slice(0, 120));
+  check("Commit is off until something is staged and a message is written", await page.getByRole("button", { name: /^Commit/ }).isDisabled());
+  await page.getByRole("button", { name: "Stage src/orders.py" }).click();
+  await page.getByRole("region", { name: "Staged changes" }).getByText("src/orders.py").waitFor();
+  const stageCall = (await page.evaluate(() => window.__calls)).find((c) => c.cmd === "scm_stage");
+  check("staging sends one file's path", stageCall?.args.rel === "src/orders.py", JSON.stringify(stageCall?.args));
+  await page.getByRole("region", { name: "Staged changes" }).getByText("src/orders.py").click();
+  await page.getByText("left: last commit · right: on disk (view only)").waitFor();
+  check("a file's diff against the last commit is view-only (no Accept or Reject)", (await page.getByRole("button", { name: "Accept and save" }).count()) === 0);
+  await page.getByRole("dialog").getByRole("button", { name: "Close" }).click();
+  await page.getByLabel("Commit message").fill("Fix orders <b>now</b>");
+  await page.getByRole("button", { name: /^Commit 1 staged/ }).click();
+  await page.getByRole("region", { name: "History" }).getByText("abc1234").waitFor();
+  const commitCall = (await page.evaluate(() => window.__calls)).find((c) => c.cmd === "scm_commit");
+  check("Commit sends the message and the history shows it as text", commitCall?.args.message === "Fix orders <b>now</b>" && /Fix orders <b>now<\/b>/.test(await page.getByRole("region", { name: "History" }).innerText()));
+  await page.getByRole("region", { name: "Staged changes" }).getByText("Staged (0)").waitFor();
+  check("after the commit the message box is empty and Staged is empty", (await page.getByLabel("Commit message").inputValue()) === "");
+
   // Placeholders for later phases.
-  for (const [label, phase] of [["Missions: Autopilot and Auto Improve", "I4"], ["Extensions", "I6"]]) {
-    await page.getByRole("button", { name: label, exact: true }).click();
-    await page.getByText(new RegExp(`Arrives in phase ${phase}`)).waitFor();
-  }
+  await page.getByRole("button", { name: "Extensions", exact: true }).click();
+  await page.getByText(/Arrives in phase I6/).waitFor();
   check("later-phase views say when they arrive", true);
+  await page.getByRole("button", { name: "Missions: Autopilot and Auto Improve", exact: true }).click();
+  await page.getByText("Missions run on a gateway. Add one first.").waitFor();
+  check("Missions without a gateway points to the Gateways view", true);
 
   // ---- Phase I2: gateways.
   await page.getByRole("button", { name: "Agent chat", exact: true }).click();
@@ -372,6 +442,46 @@ try {
   await page.getByRole("button", { name: "Confirm delete Explain the timeout" }).click();
   await page.getByText(/No chats match|No chats yet/).waitFor();
   check("deleting a chat takes two clicks", true);
+
+  // ---- Phase I4: Missions on a gateway project.
+  await page.getByRole("button", { name: "Missions: Autopilot and Auto Improve", exact: true }).click();
+  await page.getByRole("button", { name: "Create project and link" }).click();
+  await page.getByRole("button", { name: /Send folder to the project/ }).click();
+  const lastSend = page.getByLabel("Last send");
+  await lastSend.waitFor();
+  check("sending the folder reports what was sent and what stayed home", /3 sent/.test(await lastSend.innerText()) && /1 kept on this computer/.test(await lastSend.innerText()));
+  await page.getByRole("checkbox", { name: "Autopilot" }).check();
+  await page.getByRole("button", { name: /Autopilot on/ }).waitFor();
+  check("switching Autopilot on for the project shows in the status bar", window_calls(await page.evaluate(() => window.__calls), "switches_set")?.autopilot === true);
+  await page.getByLabel("Mission goal").fill("Make the tests pass");
+  await page.getByRole("button", { name: "Start Autopilot" }).click();
+  await page.getByRole("list", { name: "Missions" }).getByText("Make the tests pass").waitFor();
+  const start = window_calls(await page.evaluate(() => window.__calls), "mission_start");
+  check("Autopilot starts with the goal, model and a tests check", start?.kind === "autopilot" && start.model === "tiny-model" && start.checks[0]?.framework === "pytest", JSON.stringify(start));
+  await page.getByRole("button", { name: "Review approval" }).click();
+  const appr = page.getByLabel("Approval write_file");
+  await appr.waitFor();
+  check("an approval shows the call's arguments as text (no element, no script)", (await appr.locator("pre").innerText()).includes("<script>") && (await appr.locator("script").count()) === 0 && (await page.evaluate(() => window.__xss4)) === undefined);
+  await appr.getByRole("button", { name: "Approve" }).click();
+  await page.getByRole("button", { name: "Review approval" }).waitFor({ state: "detached" });
+  const dec = window_calls(await page.evaluate(() => window.__calls), "approval_decide");
+  check("Approve sends the decision bound to the arguments' digest", dec?.decision === "approve" && dec.argumentsSha256 === "a".repeat(64), JSON.stringify(dec));
+  const props = page.getByRole("list", { name: "Proposals" });
+  check("proposals show text only and their sources are not links", (await props.locator("b").count()) === 0 && (await props.locator("a").count()) === 0);
+  await props.getByRole("button", { name: "Dismiss" }).click();
+  await props.getByText(/dismiss/).waitFor();
+  check("a proposal can be dismissed", true);
+  await page.getByRole("button", { name: "Stop", exact: true }).click();
+  await page.getByRole("button", { name: "Stop for good" }).click();
+  await page.getByRole("list", { name: "Missions" }).getByText("stopped").waitFor();
+  check("stopping a mission takes two clicks", true);
+  check("task titles from the gateway are shown as text", (await page.evaluate(() => window.__xss3)) === undefined);
+  await page.getByRole("button", { name: "Collect changes" }).click();
+  await page.getByLabel("Last collect").getByText(/committed/).waitFor();
+  check("Collect changes shows the new version", true);
+  await page.getByRole("button", { name: "Review changes" }).click();
+  await page.getByText("src/orders.py").first().waitFor();
+  check("pulled files wait in Changes to review and are not written", (await page.evaluate(() => window.__file("src/orders.py"))).includes("fixed") && !(await page.evaluate(() => window.__file("src/orders.py"))).includes("load()"));
 
   await page.getByRole("button", { name: "Explorer" }).click();
   // The tree kept its expanded folders while other views were shown.

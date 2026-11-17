@@ -18,6 +18,67 @@ Requested by Pheonix (thread "Ship signed installers and releases"). No Authenti
   build with the licence files installed ([run](../HistoryTest/runs/2026-11-17_085509Z_installers_1b95d91/RUN.md)). Windows installers:
   pending the PC run.
 
+## 2026-11-17 - Workspace file access through a folder handle
+
+Part of the security to-do sweep Pheonix asked for (2026-11-17).
+
+### Security
+- Every workspace read, listing, search, byte read for project sync and save now opens through a cap-std handle on the
+  opened folder instead of checking a canonical path and then opening it. A folder swapped for a link between the two
+  can no longer redirect the IDE outside the folder. Closes the `TODO(security)` in `core/src/workspace.rs`.
+
+### Added
+- Dependency `cap-std` 4.0.3 (core).
+
+### Tests
+- Core: 66 tests (2 new: folder swapped for a link after open is refused; workspace follows its renamed folder), fmt,
+  clippy ([run](../HistoryTest/runs/2026-11-17_125223Z_core_6ebd731/RUN.md)). OSV: no advisories for the new crates ([run](../HistoryTest/runs/2026-11-17_125233Z_security-scan_6ebd731/RUN.md)).
+  The Tauri shell could not build in the cloud container (no GTK libraries; marked invalid, [run](../HistoryTest/runs/2026-11-17_125226Z_shell_6ebd731/RUN.md)); CI builds it.
+
+## 2026-11-17 - Phase I5a: Source Control view
+
+Requested by Pheonix ("keep moving forward with the rest"; I5 order chosen 2026-11-17: gateway sandbox first, then a
+local OS sandbox ported from TandemForge and Docker/Podman). Source control is the part of I5 that needs no runner.
+
+### Added
+- **Source control** view: branch with ahead/behind, Staged and Changes lists, view-only diff against the last
+  commit, stage/unstage one file or all, commit with a message, the last 50 commits. Local only (no fetch, pull, push).
+- Core module `scm` (the installed git, with repository programs and hooks off); `Workspace::check_rel`; shell
+  commands `scm_status`, `scm_diff`, `scm_stage`, `scm_unstage`, `scm_commit`, `scm_log`.
+- Tests: core 60 -> 64 (incl. a real-git round trip), UI smoke 57 -> 64.
+- Docs: `features/source-control.md`.
+
+### Fixed
+- The real-git test now uses a file named `[a].txt` (a valid name on Windows that git would read as a pattern)
+  instead of `*`, which Windows cannot create; the first Windows run failed there, not in product code.
+
+### Changed
+- `DiffReview` can be view-only (no Accept or Reject) with its own labels.
+
+## 2026-11-17 - Phase I4: missions (Autopilot and Auto Improve)
+
+Requested by Pheonix ("keep moving forward with the rest").
+
+### Added
+- **Missions** view: link the open folder to a gateway project (pick or create), **Send folder to the project**
+  (changed files only, secrets kept local, report of skipped files), **Autopilot** and **Auto Improve** switches,
+  start a mission with a goal, model and 1-8 acceptance checks, Pause, Resume, Stop (two clicks), approval review
+  with the exact arguments, proposals (Accept, Dismiss, Snooze a week), and **Bring the work back** (Collect changes,
+  Review changes into the existing diff review).
+- Status bar **Autopilot** and **Auto Improve** chips show the project's switches and open Missions.
+- Core modules `gwapi` (gateway API calls, multipart upload, capped download, error codes to fixed messages) and
+  `projects` (push, pull, folder links, view shapes, acceptance checks); `agent::propose_external`;
+  `Workspace::all_files` and `read_bytes`. 16 shell commands in `missions.rs`.
+- `links.json` in the app data folder (folder-to-project links).
+- Tests: core 49 -> 60 (incl. a fake-gateway integration test), UI smoke 45 -> 57.
+- Docs: `features/missions.md`, `commands/live-gateway-e2e.md`.
+- Live check `scripts/live_gateway_e2e.py` with `core/examples/live_missions.rs`: a real gateway, node and sandbox
+  run an Autopilot mission end to end from the IDE core (19 of 19).
+- Windows build and tests pass at bfae51f (`HistoryTest/runs/2026-11-17_085943Z_windows_bfae51f`).
+
+### Changed
+- `ChatView` refreshes **Changes to review** when work is brought back from a mission.
+
 ## 2026-11-17 - Phase I3: chat tools and diff review
 
 Requested by Pheonix ("keep moving forward").

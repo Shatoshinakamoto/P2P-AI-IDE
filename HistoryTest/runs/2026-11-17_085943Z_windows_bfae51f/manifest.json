@@ -1,0 +1,62 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "2ed331080dc46aa34acd72f323a64851dbde7a854a4339011dc595c428318e9f",
+   "size": 1902
+  },
+  "artifacts/ide4-build.cmd.txt": {
+   "sha256": "e1f82693e05b2a79c47d07e49ee79413c24a0e42138ec2407a9b70fa35800435",
+   "size": 1624
+  },
+  "command.txt": {
+   "sha256": "75b5631a98f46c793ad4d651592b5032a43174f2fc8e172722c7775749f7e49d",
+   "size": 58
+  },
+  "environment.md": {
+   "sha256": "28734933776867e7ac72e088e53b08de6e34d01a1b97bba9acf58115fc5b05b8",
+   "size": 128
+  },
+  "logs/ide4-windows-build.log": {
+   "sha256": "247527f08a2bfc829457265dbc3d5a97ff5301406eff85cb770463480092cf5f",
+   "size": 38349
+  },
+  "results/summary.txt": {
+   "sha256": "6d2dca22345fc31d82e058c53ce8642df317fa32d26368d097c24831bff68b7c",
+   "size": 227
+  }
+ },
+ "previous": {
+  "manifest_sha256": "b9a88ed84c601e4e12d08b6b56241382c109432eca44773f201b16cb61784b2c",
+  "run_id": "2026-11-17_085225Z_live-gateway_bfae51f"
+ },
+ "run": {
+  "area": "windows",
+  "branch_or_pr": "PR #4",
+  "collected_utc": "2026-11-17T08:59:43Z",
+  "commit": "bfae51f",
+  "count_unit": "",
+  "date_utc": "2026-11-17T08:59:43Z",
+  "dirty": false,
+  "duration_s": null,
+  "exit_code": null,
+  "failed": 0,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_085943Z_windows_bfae51f",
+  "kind": "build",
+  "machine": "pc",
+  "passed": 58,
+  "record": "imported",
+  "redactions": {},
+  "requested_by": "IDE phase I4 thread",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Windows build and tests of phase I4 (bfae51f)",
+  "verdict": "pass",
+  "verdict_reason": ""
+ },
+ "schema": 1
+}
