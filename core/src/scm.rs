@@ -569,18 +569,19 @@ u UU N... 100644 100644 100644 100644 a b c both.txt\0\
             std::fs::set_permissions(hooks.join("pre-commit"), std::fs::Permissions::from_mode(0o755)).unwrap();
         }
         std::fs::write(d.join("a.txt"), "one\n").unwrap();
-        std::fs::write(d.join("*"), "star\n").unwrap();
+        // `[a].txt` is a valid name on every system and, read as a pattern, would also match a.txt.
+        std::fs::write(d.join("[a].txt"), "glob\n").unwrap();
         let ws = Workspace::open(&d).unwrap();
         let repo = Repo::open(&ws).unwrap();
         let st = repo.status(&ws).unwrap();
         assert!(st.initial);
         assert_eq!(st.files.iter().filter(|f| f.untracked).count(), 2);
         assert_eq!(repo.commit("x"), Err(ScmError::NothingStaged));
-        // SECURITY: a file named `*` is staged literally, not as a pattern matching a.txt too.
-        repo.stage(&ws, Some("*")).unwrap();
+        // SECURITY: a file named like a pattern is staged literally, not as a pattern matching a.txt too.
+        repo.stage(&ws, Some("[a].txt")).unwrap();
         let st = repo.status(&ws).unwrap();
         let a = st.files.iter().find(|f| f.rel == "a.txt").unwrap();
-        assert!(a.untracked, "a.txt was not staged by the `*` file");
+        assert!(a.untracked, "a.txt was not staged by the `[a].txt` file");
         repo.stage(&ws, None).unwrap();
         let id = repo.commit("first commit").unwrap();
         assert!(id.len() >= 7);

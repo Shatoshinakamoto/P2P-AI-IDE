@@ -15,6 +15,10 @@ local OS sandbox ported from TandemForge and Docker/Podman). Source control is t
 - Tests: core 60 -> 64 (incl. a real-git round trip), UI smoke 57 -> 64.
 - Docs: `features/source-control.md`.
 
+### Fixed
+- The real-git test now uses a file named `[a].txt` (a valid name on Windows that git would read as a pattern)
+  instead of `*`, which Windows cannot create; the first Windows run failed there, not in product code.
+
 ### Changed
 - `DiffReview` can be view-only (no Accept or Reject) with its own labels.
 
