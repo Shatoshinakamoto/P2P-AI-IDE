@@ -41,3 +41,6 @@ run_id,date_utc,area,commit,branch_or_pr,machine,verdict,passed,failed,skipped,s
 2026-11-17_090845Z_windows_3a1a8bd,2026-11-17T09:08:45Z,windows,3a1a8bd,PR #7,user PC (Windows),fail,54,1,,Windows build and tests of phase I5a (Source Control) at 3a1a8bd
 2026-11-17_091314Z_core_71c6f12,2026-11-17T09:13:14Z,core,71c6f12,PR #7,cloud container,pass,,,,"Core fmt, clippy and tests after the Windows-safe real-git test fix"
 2026-11-17_091518Z_windows_71c6f12,2026-11-17T09:15:18Z,windows,71c6f12,PR #7,user PC (Windows),pass,62,0,,Windows core re-run after the real-git test fix (71c6f12)
+2026-11-17_125223Z_core_6ebd731,2026-11-17T12:52:23Z,core,6ebd731,claude/project-thread-1x3ij1,cloud container,pass,,,,"Core tests, fmt and clippy after moving workspace file access to cap-std handles"
+2026-11-17_125226Z_shell_6ebd731,2026-11-17T12:52:26Z,shell,6ebd731,claude/project-thread-1x3ij1,cloud container,invalid,,,,Tauri shell clippy (not possible in the cloud container)
+2026-11-17_125233Z_security-scan_6ebd731,2026-11-17T12:52:33Z,security-scan,6ebd731,claude/project-thread-1x3ij1,cloud container,pass,,,,OSV lookup of the crates cap-std adds
