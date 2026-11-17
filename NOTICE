@@ -1,0 +1,9 @@
+P2P-AI IDE
+Copyright 2026 Johnathan Edward Brown
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+Third-party components keep their own licenses. Notable ones bundled in the app:
+Monaco Editor (MIT, Microsoft), DOMPurify (Apache-2.0 or MPL-2.0, Cure53), React (MIT),
+Radix UI (MIT), lucide-react (ISC), Tauri (Apache-2.0 or MIT). The package locks
+(app/package-lock.json, core/Cargo.lock, app/src-tauri/Cargo.lock) list every dependency.

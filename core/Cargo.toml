@@ -1,0 +1,21 @@
+# core/Cargo.toml -- the IDE's Rust core: everything that touches the user's files, kept free of any GUI so it builds
+# and is tested everywhere (docs/features/editor-shell.md). The Tauri shell in app/src-tauri links this crate.
+# SECURITY: two small, widely used crates only (supply chain, NIST SP 800-161, SSDF PW.4):
+#   * serde -- the derive for the records the shell sends to the webview;
+#   * sha2 (RustCrypto) -- SHA-256 "version" of a file, so a save never overwrites a change made outside the IDE.
+# Versions are locked in Cargo.lock and checked with cargo audit in CI.
+[package]
+name = "p2p-ide-core"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "P2P-AI IDE core: a workspace folder with confined paths, listing, reading, atomic saves and search"
+publish = false
+
+[lib]
+name = "p2p_ide_core"
+path = "src/lib.rs"
+
+[dependencies]
+serde = { version = "1.0.228", features = ["derive"] }
+sha2 = "0.10.9"

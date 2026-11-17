@@ -1,0 +1,83 @@
+# .github/workflows/ci.yml -- checks every push and pull request of the P2P-AI IDE.
+# Jobs: the Rust core (fmt, clippy, tests), the Tauri shell (clippy on Linux), the webview (type check, unit tests,
+# build, UI smoke test in headless Chromium) and supply-chain checks (npm audit, cargo audit).
+# SECURITY: read-only token (least privilege, NIST AC-6); actions pinned to full commit SHAs, not tags, so a moved tag
+# cannot change what runs (SLSA, NIST SP 800-161); no secrets are used; npm ci with --ignore-scripts so dependency
+# install scripts never run (CWE-829).
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  core:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1 (same pin as the P2P-AI repo)
+        with:
+          persist-credentials: false
+      - name: Rust core -- format, lint, tests
+        working-directory: core
+        run: |
+          cargo fmt --check
+          cargo clippy --all-targets --locked -- -D warnings
+          cargo test --locked
+
+  shell:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1 (same pin as the P2P-AI repo)
+        with:
+          persist-credentials: false
+      - name: System libraries Tauri needs on Linux (WebKitGTK)
+        run: sudo apt-get update && sudo apt-get install -y libwebkit2gtk-4.1-dev librsvg2-dev
+      - name: Tauri shell -- format and lint (needs a dist folder to exist)
+        working-directory: app/src-tauri
+        run: |
+          mkdir -p ../dist && echo '<!doctype html><title>ci</title>' > ../dist/index.html
+          cargo fmt --check
+          cargo clippy --all-targets --locked -- -D warnings
+
+  webview:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1 (same pin as the P2P-AI repo)
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+      - name: Install (lockfile only, no install scripts)
+        working-directory: app
+        run: npm ci --ignore-scripts
+      - name: Type check, unit tests, build
+        working-directory: app
+        run: |
+          npm test
+          npm run build
+      - name: UI smoke test in headless Chromium
+        working-directory: app
+        run: |
+          npm install --no-save --ignore-scripts playwright@1.63.0
+          npx playwright install --with-deps chromium
+          npm run ui-smoke
+
+  supply-chain:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1 (same pin as the P2P-AI repo)
+        with:
+          persist-credentials: false
+      - name: npm audit (fails on high or critical)
+        working-directory: app
+        run: npm audit --audit-level=high
+      - name: cargo audit (RustSec advisory database)
+        run: |
+          cargo install cargo-audit --locked --version 0.22.1
+          cargo audit --file core/Cargo.lock
+          cargo audit --file app/src-tauri/Cargo.lock

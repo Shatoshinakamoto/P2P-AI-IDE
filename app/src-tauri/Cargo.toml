@@ -1,0 +1,28 @@
+# app/src-tauri/Cargo.toml -- the IDE's Tauri shell (phase I1, docs/features/editor-shell.md). It only wires typed
+# commands to p2p-ide-core and opens the native folder picker.
+# SECURITY: one Tauri plugin, dialog, used only from Rust (the folder picker); the webview gets no plugin permission
+# at all (capabilities/default.json), so it can reach nothing but our own commands (CWE-284, NIST AC-6). No shell, fs
+# or http plugin. Versions are locked in Cargo.lock; cargo audit runs in CI (NIST SP 800-161, SSDF PW.4).
+[package]
+name = "p2p-ide"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "P2P-AI IDE: an agentic editor for the P2P-AI network"
+publish = false
+
+[build-dependencies]
+tauri-build = { version = "2.7.4", features = [] }
+
+[dependencies]
+p2p-ide-core = { path = "../../core" }
+tauri = { version = "2.12.5", features = [] }
+tauri-plugin-dialog = "2.8.4"
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1"
+
+[profile.release]
+# Smaller binary, no debug symbols in the shipped app; panics abort instead of unwinding across the FFI boundary.
+strip = true
+lto = true
+panic = "abort"

@@ -1,0 +1,16 @@
+<!doctype html>
+<!-- index.html -- the IDE's only page: an empty #root that src/main.tsx fills with the React app.
+     No remote content; scripts and styles come from this app only (the CSP in src-tauri/tauri.conf.json enforces it,
+     ASVS V14.4). -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>P2P-AI IDE</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
