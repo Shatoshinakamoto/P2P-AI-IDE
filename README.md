@@ -1,4 +1,4 @@
-# P2P-AI IDE
+# P2P-AI-IDE
 
 An agentic code editor for the P2P-AI network: a VS Code-style editor (Monaco) in a Rust + React app (Tauri), where
 you chat with the network's agents, review their edits as diffs, and switch Autopilot and Auto Improve on and off.
