@@ -140,3 +140,4 @@ React and lucide-react (already pinned). cargo audit and npm audit on 2026-11-17
 * [Webview: UI smoke 75/75 with the Run and test flow and the approval card (Allow and Decline)](../../HistoryTest/runs/2026-11-17_125934Z_ui-smoke_618354d/RUN.md)
 * [Live: real P2P-AI gateway, node and sandbox, 13/13 (failing test named, local fix seen, no network, time limit, `.env` never stored)](../../HistoryTest/runs/2026-11-17_125953Z_live-gateway_618354d/RUN.md)
 * [cargo audit and npm audit: 0 vulnerabilities](../../HistoryTest/runs/2026-11-17_125944Z_security-scan_618354d/RUN.md)
+* [Windows PC build at 391278c: core 59 + 5 + 2, webview, audit, shell, release binary, all pass](../../HistoryTest/runs/2026-11-17_130113Z_windows_391278c/RUN.md)
