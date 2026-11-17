@@ -102,7 +102,7 @@ removes all history.
 **Privacy:** chats can contain code you pasted and the model's answers. They stay on this computer; the IDE does not
 upload them anywhere except the messages you send to the gateway you chose.
 
-## run-jobs/ and run-cache/ (phase I5c, local sandbox)
+## run-jobs/ and run-cache/ (phase I5c local sandbox, phase I5d container)
 
 * `run-jobs/<32 hex>/`: one folder per local sandbox run, created fresh and owner-only (0700), holding the copy of
   the open folder plus the run's `HOME` and `TMPDIR`. It is removed when the run ends; a folder left after a crash
@@ -120,5 +120,9 @@ upload them anywhere except the messages you send to the gateway you chose.
 On Windows the job folder and the cache are also shared with the folder's sandbox SID (modify), so the AppContainer
 can use them; nothing else in the data folder is.
 
-**Security:** both folders are writable by sandboxed runs, which run untrusted project code. Nothing in them is
+The container runner (I5d) uses the same two folders: the job folder is mounted at `/work` and the cache at
+`/cache` (with `:Z` on SELinux hosts, which relabels only these folders). Its job folders also hold `.p2pide-home`
+and `.p2pide-tmp`. Images are kept by the engine, not here.
+
+**Security:** both folders are writable by sandboxed and container runs, which run untrusted project code. Nothing in them is
 trusted by the IDE; it never runs or loads files from them. See [features/local-sandbox.md](../features/local-sandbox.md).

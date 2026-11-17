@@ -2,6 +2,25 @@
 
 Every security patch, hardening change, CVE remediation and accepted risk, newest first.
 
+## 2026-11-17 — Phase I5d hardening: local container runner (Docker or Podman)
+- **Type:** hardening; accepted risk
+- **CVE / CWE / advisory:** none (new feature). CWE-78, CWE-88, CWE-20, CWE-200, CWE-250, CWE-269, CWE-284, CWE-400, CWE-426, CWE-494, CWE-522, CWE-526, CWE-770; NIST AC-6, SC-7, SI-7, SR-3; CIS Docker 5.3, 5.10, 5.12, 5.25, 5.28
+- **Severity:** none (new feature built with these controls). KEV no.
+- **Affected:** `core/src/{container,localbox,lib}.rs`, `app/src-tauri/src/{run,agent,main}.rs`, `app/src/components/{RunView,ChatView}.tsx`, `app/src/{App.tsx,ipc.ts}`
+- **What changed:** runs go into `<engine> run --rm --pull=never --network=none --cap-drop=ALL
+  --security-opt=no-new-privileges --read-only` with a small `nosuid,nodev` `/tmp`, process, memory, open-file and
+  core limits, a non-root user (own uid on Linux), only the job folder and the cache mounted (`:Z` on SELinux), a
+  fixed environment, and a wall-clock kill by container name. Images come from a fixed list pinned by sha256 digest
+  and are downloaded or built only by **Get image**; the engine is found in absolute PATH folders only; all engine
+  calls are argument lists; the image id from the webview is checked against the list.
+- **Why it is secure now:** project code in a container cannot reach the network, the person's files or secrets,
+  change the image, gain privileges or outlive its run; a swapped or tampered image tag cannot change what runs
+  (NIST AC-6, SC-7, SI-7, SR-3; SLSA).
+- **Accepted risk:** a container shares the host kernel; a kernel or engine escape is out of scope (rootless Podman
+  recommended). The Rust image's packages are not pinned one by one (`dnf install rust-toolset`); the base is.
+  Image contents are Red Hat's and were not scanned here (`trivy image <ref>` recommended).
+- **Verification:** VERIFY_PLACEHOLDER
+
 ## 2026-11-17 — Phase I5c hardening: Windows local sandbox (AppContainer and job object)
 - **Type:** hardening; accepted risk
 - **CVE / CWE / advisory:** none (new feature). CWE-78, CWE-88, CWE-158, CWE-200, CWE-403, CWE-404, CWE-426, CWE-459, CWE-526, CWE-732, CWE-400; NIST AC-6, SC-7, SC-4, SI-6

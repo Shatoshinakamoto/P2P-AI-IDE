@@ -496,7 +496,18 @@ mod tests {
         ] {
             assert!(a.iter().any(|x| x == must), "{must} missing in {a:?}");
         }
-        for never in ["--privileged", "--network=host", "--pid=host", "--ipc=host", "--device", "docker.sock"] {
+        for never in [
+            "--privileged",
+            "--cap-add",
+            "--network=host",
+            "--pid=host",
+            "--ipc=host",
+            "--device",
+            "docker.sock",
+            "podman.sock",
+            "unconfined",
+            "label=disable",
+        ] {
             assert!(!a.iter().any(|x| x.contains(never)), "{never} in {a:?}");
         }
         // The program and its arguments come last, as separate words, after the image.
