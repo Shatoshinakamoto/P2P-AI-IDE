@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "457ee728208927887a6b313c787b9b4d224e87053fbfb2a4c9dc33d3dd94026f",
+   "size": 1491
+  },
+  "command.txt": {
+   "sha256": "0dc53b5dcae0357a42a2adda08082c703817e4ae1a2c4df8d52d765cea62d2e7",
+   "size": 176
+  },
+  "environment.md": {
+   "sha256": "b87117301ff7eab77204d599edeb231e872867dc12202104ea9d067f52ab74c9",
+   "size": 202
+  },
+  "logs/output.log": {
+   "sha256": "12a63fe06f7f7eb9d94a400eeefb30aedb3282c3d2eb76249f87024fe5efad16",
+   "size": 7856
+  },
+  "results/summary.txt": {
+   "sha256": "ec0f2574766b993c4beea905afeb3157e560b0fa8fc8bea7277cbfd370b1f637",
+   "size": 293
+  }
+ },
+ "previous": {
+  "manifest_sha256": "4c1d6584a552fba5441eade6df3579e3518c1c209f8c9e8011348b5f02b50303",
+  "run_id": "2026-11-17_090746Z_ui-smoke_86e1c4f"
+ },
+ "run": {
+  "area": "security-scan",
+  "branch_or_pr": "claude/project-thread-dfop2y",
+  "collected_utc": "",
+  "commit": "86e1c4fee534e381a9b6c24709784e9b2ea2b4b4",
+  "count_unit": "",
+  "date_utc": "2026-11-17T09:07:57Z",
+  "dirty": false,
+  "duration_s": 2.5,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_090757Z_security-scan_86e1c4f",
+  "kind": "scan",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "IDE phase I5 thread",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "cargo audit and npm audit for I5a",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

@@ -2,6 +2,22 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-17 - Phase I5a: Source Control view
+
+Requested by Pheonix ("keep moving forward with the rest"; I5 order chosen 2026-11-17: gateway sandbox first, then a
+local OS sandbox ported from TandemForge and Docker/Podman). Source control is the part of I5 that needs no runner.
+
+### Added
+- **Source control** view: branch with ahead/behind, Staged and Changes lists, view-only diff against the last
+  commit, stage/unstage one file or all, commit with a message, the last 50 commits. Local only (no fetch, pull, push).
+- Core module `scm` (the installed git, with repository programs and hooks off); `Workspace::check_rel`; shell
+  commands `scm_status`, `scm_diff`, `scm_stage`, `scm_unstage`, `scm_commit`, `scm_log`.
+- Tests: core 60 -> 64 (incl. a real-git round trip), UI smoke 57 -> 64.
+- Docs: `features/source-control.md`.
+
+### Changed
+- `DiffReview` can be view-only (no Accept or Reject) with its own labels.
+
 ## 2026-11-17 - Phase I4: missions (Autopilot and Auto Improve)
 
 Requested by Pheonix ("keep moving forward with the rest").

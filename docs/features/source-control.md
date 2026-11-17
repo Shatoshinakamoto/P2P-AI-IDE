@@ -116,4 +116,7 @@ lucide-react (already pinned). cargo audit and npm audit on 2026-11-17 (run link
 
 ## 8. Test evidence
 
-* See the HistoryTest runs linked from the CHANGELOG entry for this phase (core, shell, UI smoke, security scan).
+* [Core: fmt, clippy, 57 unit + 5 + 2 tests incl. the scm config check, status and log parsing, and a real-git round trip where a planted pre-commit hook must not run and a file named `*` is staged literally](../../HistoryTest/runs/2026-11-17_090743Z_core_86e1c4f/RUN.md)
+* [Tauri shell: fmt and clippy with the 6 source control commands](../../HistoryTest/runs/2026-11-17_090745Z_shell_86e1c4f/RUN.md)
+* [Webview: UI smoke 64/64 with the Source Control flow (refused repository, stage, view-only diff, commit, names as text)](../../HistoryTest/runs/2026-11-17_090746Z_ui-smoke_86e1c4f/RUN.md)
+* [cargo audit and npm audit: 0 vulnerabilities](../../HistoryTest/runs/2026-11-17_090757Z_security-scan_86e1c4f/RUN.md)
