@@ -1,0 +1,11 @@
+id: 2026-11-17_193821Z_installers_377af6f
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: not recorded
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: 0
+duration_s: 1.9
+commit: 377af6fe7362fd49a4d058b230f7377db4ac4191
+machine: cloud

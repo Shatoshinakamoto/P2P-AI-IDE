@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "9a6360984003fa4bce5f80c4353cd36305ad5bac010d27a53cd85aee83d214be",
+   "size": 1644
+  },
+  "command.txt": {
+   "sha256": "948600c5c74c68a5e5442030d5c6b52bfce3d6ebd492430b71eaf50adb15019e",
+   "size": 176
+  },
+  "environment.md": {
+   "sha256": "6da04d092fb4c83df92d6acab5e5b891fb30d761cc6ceb58f4d4c38779eac104",
+   "size": 199
+  },
+  "logs/output.log": {
+   "sha256": "b5bfb26556c199e3e85d16f026b088167b71f69243e6db561a3fa15e53a29c26",
+   "size": 74
+  },
+  "results/summary.txt": {
+   "sha256": "9094c4607518be17ed64671a6d0974b180ab9ba251bea304d6957473b0eb26f0",
+   "size": 290
+  }
+ },
+ "previous": {
+  "manifest_sha256": "ae271a1fc83394c340b051f83cc7b761507d9f8f0208951da0e3352c8ae4b338",
+  "run_id": "2026-11-17_140846Z_windows-containers_8bba2b4"
+ },
+ "run": {
+  "area": "installers",
+  "branch_or_pr": "",
+  "collected_utc": "",
+  "commit": "377af6fe7362fd49a4d058b230f7377db4ac4191",
+  "count_unit": "",
+  "date_utc": "2026-11-17T19:38:21Z",
+  "dirty": true,
+  "duration_s": 1.9,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_193821Z_installers_377af6f",
+  "kind": "scan",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Licence gate after regenerating THIRD-PARTY-NOTICES.txt (I5c/I5d crates)",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}
