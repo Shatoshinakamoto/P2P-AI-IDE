@@ -38,3 +38,19 @@ cap-std = "4.0.3"
 # lockfile through other crates, so no new code is downloaded.
 [target.'cfg(unix)'.dependencies]
 libc = "0.2.191"
+
+# Phase I5c (Windows): raw Win32 bindings for the AppContainer sandbox (profiles, job objects, process attributes,
+# pipes). Microsoft's own crate, the version already in both lockfiles through other crates, so no new code is
+# downloaded; only the features the sandbox calls.
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.61.2", features = [
+  "Win32_Foundation",
+  "Win32_Security",
+  "Win32_Security_Authorization",
+  "Win32_Security_Isolation",
+  "Win32_Storage_FileSystem",
+  "Win32_System_Com",
+  "Win32_System_JobObjects",
+  "Win32_System_Pipes",
+  "Win32_System_Threading",
+] }

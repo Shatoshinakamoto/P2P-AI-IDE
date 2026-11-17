@@ -38,30 +38,30 @@
 //! Dependencies: libc (system calls; already in the lockfile through other crates), the core's workspace, agent
 //! (deny list), runner and testparse modules.
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", windows))]
 use crate::runner::MAX_STREAM;
 use crate::runner::{RunRequest, RunResult};
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", windows))]
 use crate::workspace::EntryKind;
 use crate::workspace::Workspace;
 use std::path::Path;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", windows))]
 use std::path::PathBuf;
 
 /// The runner's name in requests and results.
 pub const RUNNER: &str = "local-os";
 /// Most files and bytes copied into a snapshot, and the largest file.
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", windows))]
 const MAX_COPY_FILES: usize = 20_000;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", windows))]
 const MAX_COPY_BYTES: u64 = 512 << 20;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", windows))]
 const MAX_COPY_FILE: u64 = 100 << 20;
 /// Folders linked read-only into the snapshot instead of copied (dependencies the tests need).
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", windows))]
 const LINK_DIRS: [&str; 3] = ["node_modules", ".venv", "venv"];
 /// Folders never copied (build output and caches; the per-folder cache takes their place).
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", windows))]
 const SKIP_DIRS: [&str; 6] = [".git", "target", "dist", "__pycache__", ".pytest_cache", ".mypy_cache"];
 
 /// Whether this runner can be offered here, and why not.
@@ -72,13 +72,13 @@ pub struct Availability {
     pub reason: String,
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", windows))]
 /// A copy of the folder for one run, removed when dropped.
 struct JobDir {
     path: PathBuf,
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", windows))]
 impl Drop for JobDir {
     fn drop(&mut self) {
         // SECURITY: remove_dir_all does not follow symlinks, so the read-only links to node_modules or .venv are
@@ -87,16 +87,17 @@ impl Drop for JobDir {
     }
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", windows))]
 /// What a snapshot holds: the folders the job may read through links.
 struct Snapshot {
-    /// Canonical paths of linked folders (read and execute in the sandbox).
+    /// Canonical paths of linked folders (read and execute in the sandbox). Always empty on Windows (copied).
+    #[cfg_attr(windows, allow(dead_code))]
     linked: Vec<PathBuf>,
     /// A `.venv/bin` in the copy (Python frameworks use its interpreter first).
     venv_bin: Option<PathBuf>,
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", windows))]
 /// Copies the folder's files into `dest`: the agent deny list applies, links are not followed, build folders are
 /// skipped and dependency folders are linked read-only.
 ///
@@ -115,6 +116,7 @@ fn snapshot(ws: &Workspace, dest: &Path) -> Result<Snapshot, String> {
             }
             let target = dest.join(&e.rel);
             match e.kind {
+                #[cfg(unix)]
                 EntryKind::Dir if LINK_DIRS.contains(&e.name.as_str()) => {
                     let Ok(real) = ws.root().join(&e.rel).canonicalize() else { continue };
                     // SECURITY: only a folder that really is inside the open folder is linked (CWE-22).
@@ -126,6 +128,17 @@ fn snapshot(ws: &Workspace, dest: &Path) -> Result<Snapshot, String> {
                         snap.venv_bin = Some(target.join("bin"));
                     }
                     snap.linked.push(real);
+                }
+                // Windows: links need extra rights there, so dependency folders are copied like any folder (within
+                // the same caps); a virtual environment's programs are in `Scripts`.
+                #[cfg(windows)]
+                EntryKind::Dir if LINK_DIRS.contains(&e.name.as_str()) => {
+                    std::fs::create_dir(&target).map_err(|_| "could not prepare the run folder")?;
+                    if e.name != "node_modules" && dir_rel.is_empty() && ws.root().join(&e.rel).join("Scripts").is_dir()
+                    {
+                        snap.venv_bin = Some(target.join("Scripts"));
+                    }
+                    stack.push(e.rel);
                 }
                 EntryKind::Dir if SKIP_DIRS.contains(&e.name.as_str()) => {}
                 EntryKind::Dir => {
@@ -202,7 +215,7 @@ fn find_program(name: &str, path_var: &str, avoid: &[&Path]) -> Option<PathBuf> 
     None
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", windows))]
 /// The per-folder cache: build output and package caches survive between runs of the same folder.
 fn cache_dir(data_dir: &Path, ws: &Workspace) -> Result<PathBuf, String> {
     let key = crate::projects::folder_key(ws.root());
@@ -215,6 +228,11 @@ fn cache_dir(data_dir: &Path, ws: &Workspace) -> Result<PathBuf, String> {
     Ok(d)
 }
 
+#[cfg(windows)]
+/// Windows: the IDE's data folder is below `%APPDATA%`, whose inherited ACL already allows only the person, the
+/// system and administrators (CWE-276); the sandbox's own SID is added by `win::grant` where a job needs it.
+fn restrict(_p: &Path) {}
+
 #[cfg(target_os = "linux")]
 /// Makes a folder owner-only (0700). SECURITY: other users cannot read or plant files in it (CWE-276, CWE-732).
 fn restrict(p: &Path) {
@@ -222,7 +240,7 @@ fn restrict(p: &Path) {
     let _ = std::fs::set_permissions(p, std::fs::Permissions::from_mode(0o700));
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", windows))]
 /// Reads at most `MAX_STREAM` bytes and drains the rest, so the program never blocks on a full pipe.
 fn read_capped(mut r: impl std::io::Read) -> (Vec<u8>, bool) {
     let mut out = Vec::new();
@@ -241,7 +259,7 @@ fn read_capped(mut r: impl std::io::Read) -> (Vec<u8>, bool) {
     (out, cut)
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", windows))]
 /// Removes control characters other than newline and tab (CWE-150).
 fn clean(b: &[u8]) -> String {
     String::from_utf8_lossy(b).chars().filter(|c| !c.is_control() || *c == '\n' || *c == '\t').collect()
@@ -750,7 +768,36 @@ pub fn available() -> Availability {
         }
         Availability { available: true, reason: String::new() }
     }
-    #[cfg(not(all(target_os = "linux", any(target_arch = "x86_64", target_arch = "aarch64"))))]
+    #[cfg(windows)]
+    {
+        // SECURITY: fail closed: a real confined run (cmd.exe exits with 7) must work before the runner is
+        // offered; checked once per start of the IDE (NIST SI-6).
+        static PROBE: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
+        let ok = *PROBE.get_or_init(|| {
+            let root = std::env::var_os("SystemRoot").map(PathBuf::from).filter(|p| p.is_absolute());
+            let root = root.unwrap_or_else(|| PathBuf::from(r"C:\Windows"));
+            let env = win_base_env();
+            win::run_confined(
+                "P2PAI.IDE.Probe",
+                &root.join("System32").join("cmd.exe"),
+                &["/d".into(), "/c".into(), "exit 7".into()],
+                &env,
+                &root,
+                std::time::Duration::from_secs(20),
+                20,
+            )
+            .is_ok_and(|o| o.exit_code == Some(7))
+        });
+        if ok {
+            Availability { available: true, reason: String::new() }
+        } else {
+            Availability {
+                available: false,
+                reason: "the Windows sandbox (AppContainer) could not be started here".into(),
+            }
+        }
+    }
+    #[cfg(not(any(windows, all(target_os = "linux", any(target_arch = "x86_64", target_arch = "aarch64")))))]
     {
         Availability { available: false, reason: "the local sandbox is not built for this system yet".into() }
     }
@@ -947,8 +994,293 @@ pub fn run(
     })
 }
 
-/// Not built for this system yet (Windows comes next; macOS later).
-#[cfg(not(target_os = "linux"))]
+#[cfg(windows)]
+#[path = "localbox_win.rs"]
+mod win;
+
+#[cfg(windows)]
+/// The variables Windows programs expect, copied from the IDE's own environment (no secrets: folder names and
+/// machine facts only). `LOCALAPPDATA` is required: CreateProcessW refuses an AppContainer start without it.
+fn win_base_env() -> Vec<(String, String)> {
+    const KEEP: [&str; 16] = [
+        "SystemRoot",
+        "windir",
+        "SystemDrive",
+        "ComSpec",
+        "PATHEXT",
+        "OS",
+        "NUMBER_OF_PROCESSORS",
+        "PROCESSOR_ARCHITECTURE",
+        "ProgramFiles",
+        "ProgramFiles(x86)",
+        "ProgramW6432",
+        "CommonProgramFiles",
+        "CommonProgramFiles(x86)",
+        "CommonProgramW6432",
+        "ProgramData",
+        "LOCALAPPDATA",
+    ];
+    KEEP.iter().filter_map(|k| std::env::var(k).ok().map(|v| (k.to_string(), v))).collect()
+}
+
+#[cfg(windows)]
+/// `p` without the `\\?\` prefix that `canonicalize` adds, when it is a plain drive path.
+fn plain(p: PathBuf) -> PathBuf {
+    let s = p.to_string_lossy();
+    match s.strip_prefix(r"\\?\") {
+        Some(rest) if rest.as_bytes().get(1) == Some(&b':') => PathBuf::from(rest),
+        _ => p,
+    }
+}
+
+#[cfg(windows)]
+/// Lower-case text of a path, for prefix checks (Windows paths are case-insensitive).
+fn low(p: &Path) -> String {
+    let mut s = p.to_string_lossy().to_lowercase().replace('/', "\\");
+    while s.ends_with('\\') && s.len() > 3 {
+        s.pop();
+    }
+    s
+}
+
+#[cfg(windows)]
+/// True when `p` is `root` or below it (case-insensitive).
+fn under(p: &Path, root: &Path) -> bool {
+    let (p, r) = (low(p), low(root));
+    p == r || p.starts_with(&format!("{r}\\"))
+}
+
+#[cfg(windows)]
+/// Toolchain folders below the home folder, in groups: a group is shared with the sandbox when the program lies in
+/// its first folder. Not the whole `.cargo`: `.cargo\credentials.toml` holds a secret (CWE-200, CWE-522).
+const WIN_TOOLCHAINS: [&[&str]; 4] = [
+    &[".cargo\\bin", ".rustup", ".cargo\\registry", ".cargo\\git"],
+    &["go\\bin", "go\\pkg\\mod"],
+    &[".bun\\bin"],
+    &[".deno\\bin"],
+];
+
+#[cfg(windows)]
+/// Finds `name` (an `.exe`, the extension optional) in `dirs`. `npm` and `npx` become `node.exe <cli.js>`, since
+/// their `.cmd` launchers are refused; `python3` falls back to `python`.
+///
+/// Returns the program and the arguments to put before the request's own.
+fn win_program(name: &str, dirs: &[PathBuf]) -> Result<(PathBuf, Vec<String>), String> {
+    // SECURITY: a name only, never a path (CWE-426, CWE-427).
+    if name.contains(['/', '\\', ':']) || name.starts_with('.') {
+        return Err("give the program by name (it is looked up on PATH), not by path".into());
+    }
+    let find = |n: &str| dirs.iter().map(|d| d.join(n)).find(|p| p.is_file());
+    let lower = name.to_lowercase();
+    let stem = match Path::new(&lower).extension().map(|e| e.to_string_lossy().to_string()) {
+        None => lower.clone(),
+        Some(e) if e == "exe" => lower.trim_end_matches(".exe").to_string(),
+        // SECURITY: .bat, .cmd, .com, .ps1 and scripts are not started (CWE-78, CWE-88).
+        Some(_) => return Err("only .exe programs can be started on Windows".into()),
+    };
+    if stem == "npm" || stem == "npx" {
+        let node = find("node.exe").ok_or("the program was not found on this computer")?;
+        let dir = node.parent().map(Path::to_path_buf).unwrap_or_default();
+        let cli = dir.join("node_modules").join("npm").join("bin").join(format!("{stem}-cli.js"));
+        if !cli.is_file() {
+            return Err("the program was not found on this computer".into());
+        }
+        return Ok((node, vec![cli.to_string_lossy().to_string()]));
+    }
+    if let Some(p) = find(&format!("{stem}.exe")) {
+        return Ok((p, vec![]));
+    }
+    if stem == "python3" {
+        if let Some(p) = find("python.exe") {
+            return Ok((p, vec![]));
+        }
+    }
+    Err("the program was not found on this computer".into())
+}
+
+/// Runs a checked request in the Windows sandbox (AppContainer and job object; see `localbox_win.rs`).
+///
+/// Same contract as the Linux `run`: errors are fixed messages and the result's `place` is `this computer`.
+#[cfg(windows)]
+pub fn run(
+    ws: &Workspace,
+    req: &RunRequest,
+    data_dir: &Path,
+    stage: &mut dyn FnMut(&'static str),
+) -> Result<RunResult, String> {
+    use std::time::{Duration, Instant};
+
+    let a = available();
+    if !a.available {
+        return Err(a.reason);
+    }
+    stage("copying");
+    let profile = win::profile_name(&crate::projects::folder_key(ws.root()));
+    let sid = win::profile_sid(&profile)?;
+    // SECURITY: grants outside the IDE's data folder are recorded and removed when this run ends (CWE-732).
+    let mut grants = win::Grants::start(data_dir);
+    let cache = cache_dir(data_dir, ws)?;
+    // The cache is the folder's own and only its sandbox SID is given it; granted once (inheritance then covers
+    // what builds write there). The marker only saves time: if a job deletes it, the grant is made again.
+    let marker = cache.join(".sandbox-shared");
+    if !marker.is_file() {
+        win::grant(&cache, &sid, win::RIGHTS_MODIFY)?;
+        let _ = std::fs::write(&marker, b"");
+    }
+    let jobs = data_dir.join("run-jobs");
+    std::fs::create_dir_all(&jobs).map_err(|_| "could not prepare the run folder")?;
+    let job = JobDir { path: jobs.join(crate::store::random_id()) };
+    // SECURITY: a new folder (create_dir fails if it exists), shared with this sandbox only while it is still
+    // empty, so the grant is quick and the copied files inherit it (CWE-377, CWE-732).
+    std::fs::create_dir(&job.path).map_err(|_| "could not prepare the run folder")?;
+    win::grant(&job.path, &sid, win::RIGHTS_MODIFY)?;
+    let snap = snapshot(ws, &job.path)?;
+    let home = job.path.join(".p2pide-home");
+    let tmp = job.path.join(".p2pide-tmp");
+    for d in [home.clone(), tmp.clone(), home.join("AppData").join("Roaming")] {
+        std::fs::create_dir_all(&d).map_err(|_| "could not prepare the run folder")?;
+    }
+
+    let (argv, extra_env): (Vec<String>, Vec<(&str, &str)>) = if req.tool == "run_tests" {
+        let (a, e) = crate::testparse::framework_command(&req.framework).ok_or("unknown test framework")?;
+        (a.iter().map(|s| s.to_string()).collect(), e)
+    } else {
+        (req.argv.clone(), vec![])
+    };
+    let user_home = std::env::var_os("USERPROFILE").map(PathBuf::from).filter(|h| h.is_absolute());
+    let system_roots: Vec<PathBuf> = ["SystemRoot", "ProgramFiles", "ProgramFiles(x86)", "ProgramW6432"]
+        .iter()
+        .filter_map(|k| std::env::var_os(k).map(PathBuf::from))
+        .filter(|p| p.is_absolute())
+        .collect();
+    let groups: Vec<Vec<PathBuf>> = WIN_TOOLCHAINS
+        .iter()
+        .map(|g| match &user_home {
+            Some(h) => g.iter().map(|t| h.join(t)).filter(|p| p.is_dir()).collect(),
+            None => vec![],
+        })
+        .collect();
+    // PATH: the copy's .venv\Scripts first, then the person's PATH folders that are system or toolchain folders
+    // or hold a program (absolute, outside the open folder, never the Store's app aliases).
+    let mut path_dirs: Vec<PathBuf> = vec![];
+    if let Some(v) = &snap.venv_bin {
+        path_dirs.push(v.clone());
+    }
+    for d in std::env::split_paths(&std::env::var_os("PATH").unwrap_or_default()) {
+        let ok = d.is_absolute()
+            && !under(&d, &plain(ws.root().to_path_buf()))
+            && !low(&d).contains("\\windowsapps")
+            && d.is_dir()
+            && !path_dirs.iter().any(|p| low(p) == low(&d));
+        if ok {
+            path_dirs.push(d);
+        }
+    }
+    let (program, mut pre) = win_program(&argv[0], &path_dirs)?;
+    let mut args: Vec<String> = std::mem::take(&mut pre);
+    args.extend(argv[1..].iter().cloned());
+
+    // What the job may reach besides its folders: the toolchain group the program is in, and the program's own
+    // folder when it is not a system or toolchain folder. Never the home folder itself or a drive root.
+    let prog_dir =
+        program.parent().map(|d| plain(d.to_path_buf())).ok_or("the program was not found on this computer")?;
+    let mut share: Vec<PathBuf> = vec![];
+    for g in &groups {
+        if g.first().is_some_and(|first| under(&prog_dir, first)) {
+            share.extend(g.iter().cloned());
+        }
+    }
+    if program.file_name().is_some_and(|n| n.eq_ignore_ascii_case("go.exe")) {
+        if let Some(m) = groups.get(1).and_then(|g| g.iter().find(|p| low(p).ends_with("\\pkg\\mod"))) {
+            share.push(m.clone());
+        }
+    }
+    let in_system = system_roots.iter().any(|r| under(&prog_dir, r));
+    let in_shared = share.iter().any(|s| under(&prog_dir, s)) || under(&prog_dir, &job.path);
+    if !in_system && !in_shared {
+        let is_home = user_home.as_ref().is_some_and(|h| under(h, &prog_dir));
+        if is_home || prog_dir.components().count() < 3 {
+            return Err("the program's folder cannot be shared with the sandbox".into());
+        }
+        share.push(prog_dir.clone());
+    }
+    for s in &share {
+        grants.add(s, &sid, win::RIGHTS_EXEC)?;
+    }
+
+    let cwd = if req.cwd.is_empty() { job.path.clone() } else { job.path.join(&req.cwd) };
+    if !cwd.is_dir() {
+        return Err("the folder to run in is not in the copy".into());
+    }
+    let cargo_home = cache.join("cargo-home");
+    if let Some(h) = &user_home {
+        // Cargo writes its locks below CARGO_HOME; the person's registry is linked into the cache's own one
+        // (read only through the grant above). Links need Developer Mode on Windows; without it, offline builds
+        // work only for projects without dependencies (documented).
+        for sub in ["registry", "git"] {
+            let link = cargo_home.join(sub);
+            if std::fs::symlink_metadata(&link).is_err() && h.join(".cargo").join(sub).is_dir() {
+                let _ = std::os::windows::fs::symlink_dir(h.join(".cargo").join(sub), &link);
+            }
+        }
+    }
+    // SECURITY: the whole environment is built here; nothing of the IDE's is inherited (CWE-526, CWE-426).
+    let mut env = win_base_env();
+    let s = |p: &Path| p.to_string_lossy().to_string();
+    let job_path = std::env::join_paths(&path_dirs).map_err(|_| "a PATH folder is not usable")?;
+    env.extend([
+        ("PATH".to_string(), job_path.to_string_lossy().to_string()),
+        ("USERPROFILE".into(), s(&home)),
+        ("HOME".into(), s(&home)),
+        ("APPDATA".into(), s(&home.join("AppData").join("Roaming"))),
+        ("TEMP".into(), s(&tmp)),
+        ("TMP".into(), s(&tmp)),
+        ("CARGO_HOME".into(), s(&cargo_home)),
+        ("CARGO_TARGET_DIR".into(), s(&cache.join("target"))),
+        ("GOCACHE".into(), s(&cache.join("go-build"))),
+        ("GOPATH".into(), s(&cache.join("gopath"))),
+        ("GOFLAGS".into(), "-mod=mod".into()),
+        ("npm_config_cache".into(), s(&cache.join("npm"))),
+        ("CI".into(), "true".into()),
+    ]);
+    if let Some(h) = &user_home {
+        if h.join(".rustup").is_dir() {
+            env.push(("RUSTUP_HOME".into(), s(&h.join(".rustup"))));
+        }
+        if h.join("go").join("pkg").join("mod").is_dir() {
+            env.push(("GOMODCACHE".into(), s(&h.join("go").join("pkg").join("mod"))));
+        }
+    }
+    for (k, v) in extra_env {
+        env.push((k.to_string(), v.to_string()));
+    }
+    stage("running");
+    let t = Instant::now();
+    let limit = Duration::from_secs(u64::from(req.timeout_s));
+    let outcome = win::run_confined(&profile, &program, &args, &env, &cwd, limit, u64::from(req.timeout_s) * 8);
+    win::clear_container_folder(&sid);
+    drop(grants);
+    let o = outcome?;
+    let stdout = clean(&o.stdout);
+    let stderr = clean(&o.stderr);
+    let tests = if req.tool == "run_tests" { crate::testparse::parse(&req.framework, &stdout, &stderr) } else { None };
+    Ok(RunResult {
+        runner: RUNNER.into(),
+        place: "this computer".into(),
+        summary: req.summary(),
+        exit_code: o.exit_code,
+        timed_out: o.timed_out,
+        duration_ms: t.elapsed().as_millis() as i64,
+        stdout,
+        stderr,
+        truncated: o.cut,
+        tests,
+        error: String::new(),
+    })
+}
+
+/// Not built for this system yet (macOS later).
+#[cfg(not(any(target_os = "linux", windows)))]
 pub fn run(
     _ws: &Workspace,
     _req: &RunRequest,
@@ -1080,5 +1412,102 @@ mod tests {
         }
         let p = linux::Plan::new(&[], &[], 10);
         assert!(p.is_ok());
+    }
+}
+
+#[cfg(all(test, windows))]
+mod win_tests {
+    use super::*;
+    use crate::runner::{check, RunInput};
+
+    fn cmd(line: &str, timeout: Option<u32>) -> RunInput {
+        RunInput {
+            kind: "command".into(),
+            argv: vec!["cmd".into(), "/d".into(), "/c".into(), line.into()],
+            timeout_s: timeout,
+            ..Default::default()
+        }
+    }
+
+    /// The Windows sandbox end to end on the real system: AppContainer, job object and folder grants. Uses only
+    /// programs from the Windows folder (cmd.exe, curl.exe, ping.exe), which every app container may run.
+    #[test]
+    fn local_runs_are_confined_on_windows() {
+        let a = available();
+        if !a.available {
+            eprintln!("skipped: {}", a.reason);
+            return;
+        }
+        let base = std::env::temp_dir().join(format!("p2pide-lbw-{}", crate::store::random_id()));
+        let (proj, data, outside) = (base.join("ws"), base.join("data"), base.join("outside"));
+        for d in [&proj, &data, &outside] {
+            std::fs::create_dir_all(d).unwrap();
+        }
+        std::fs::write(proj.join("hello.txt"), "hello from the copy\n").unwrap();
+        std::fs::write(proj.join(".env"), "API_KEY=local-do-not-copy\n").unwrap();
+        let secret = outside.join("secret.txt");
+        std::fs::write(&secret, "outside-secret\n").unwrap();
+        let ws = Workspace::open(&proj).unwrap();
+        let go = |input: RunInput| {
+            let req = check(&ws, &input).unwrap();
+            run(&ws, &req, &data, &mut |_| {}).unwrap()
+        };
+
+        // Reads and writes inside the copy work; the deny list kept .env out.
+        let r = go(cmd(
+            "type hello.txt && echo made> made.txt && type made.txt && if exist .env (echo ENV) else (echo NOENV)",
+            None,
+        ));
+        assert_eq!(r.exit_code, Some(0), "{r:?}");
+        assert!(
+            r.stdout.contains("hello from the copy") && r.stdout.contains("made") && r.stdout.contains("NOENV"),
+            "{r:?}"
+        );
+        assert_eq!(r.runner, "local-os");
+        // The real folder is untouched.
+        assert!(!proj.join("made.txt").exists());
+
+        // A file outside the granted folders cannot be read (the person's own files stay hidden).
+        let r = go(cmd(&format!("type \"{}\"", secret.display()), None));
+        assert_ne!(r.exit_code, Some(0), "{r:?}");
+        assert!(!r.stdout.contains("outside-secret"), "{r:?}");
+
+        // Writing outside is refused too.
+        let r = go(cmd(&format!("echo x> \"{}\"", outside.join("planted.txt").display()), None));
+        assert!(!outside.join("planted.txt").exists(), "{r:?}");
+
+        // No network: not the internet, not this computer's loopback.
+        let curl = std::env::var("SystemRoot").map(|r| Path::new(&r).join("System32").join("curl.exe")).unwrap();
+        if curl.is_file() {
+            for url in ["http://1.1.1.1/", "http://127.0.0.1:9/"] {
+                let r = go(RunInput {
+                    kind: "command".into(),
+                    argv: vec!["curl".into(), "-s".into(), "-m".into(), "5".into(), url.into()],
+                    ..Default::default()
+                });
+                assert_ne!(r.exit_code, Some(0), "{url}: {r:?}");
+            }
+        }
+
+        // A background program does not outlive the run, and the run does not wait for it.
+        let t = std::time::Instant::now();
+        let r = go(cmd("start /b ping -n 40 127.0.0.1 >nul & echo started", None));
+        assert!(r.stdout.contains("started"), "{r:?}");
+        assert!(t.elapsed().as_secs() < 30, "the run waited for the background program");
+
+        // The time limit ends the run.
+        let r = go(cmd("ping -n 60 127.0.0.1 >nul", Some(10)));
+        assert!(r.timed_out, "{r:?}");
+
+        // .bat and .cmd programs are refused; a path is refused.
+        for p in ["build.cmd", "x.bat", r"C:\Windows\System32\cmd.exe"] {
+            let req =
+                check(&ws, &RunInput { kind: "command".into(), argv: vec![p.into()], ..Default::default() }).unwrap();
+            assert!(run(&ws, &req, &data, &mut |_| {}).is_err(), "{p}");
+        }
+
+        // No grant outside the data folder is left behind.
+        assert!(!data.join("run-grants.json").exists());
+        let _ = std::fs::remove_dir_all(&base);
     }
 }
