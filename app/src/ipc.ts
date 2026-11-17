@@ -139,11 +139,14 @@ export interface ChangeText { rel: string; before: string; after: string; create
  * Runs one agent turn with the folder tools (phase I3). Proposed edits are not written: they wait for review.
  * SECURITY: answer text and tool targets are untrusted; callers render them as text only (CWE-79).
  */
-export async function agentSend(model: string, messages: Msg[], onEvent: (e: AgentEvent) => void, runs = false): Promise<TurnEnd> {
+export async function agentSend(model: string, messages: Msg[], onEvent: (e: AgentEvent) => void, runs = false, runner = "gateway"): Promise<TurnEnd> {
   const ch = new Channel<AgentEvent>();
   ch.onmessage = onEvent;
-  return call<TurnEnd>("agent_send", { model, messages, runs, onEvent: ch });
+  return call<TurnEnd>("agent_send", { model, messages, runs, runner, onEvent: ch });
 }
+/** A runner the Run and test view can offer (phase I5c): `gateway`, `local-os` or `container`. */
+export interface RunnerView { id: string; available: boolean; reason: string }
+export const runnersList = () => call<RunnerView[]>("runners_list");
 /** The person's answer to a run request on the approval card (phase I5b). Only the waiting request's id counts. */
 export const agentDecide = (id: string, allow: boolean) => call<void>("agent_decide", { id, allow });
 

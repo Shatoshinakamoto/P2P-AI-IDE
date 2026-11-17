@@ -125,6 +125,17 @@ fn temp_name(path: &Path) -> PathBuf {
     path.with_file_name(name)
 }
 
+/// An unguessable id: 32 lowercase hex characters from the OS CSPRNG (phase I5b run requests: only the waiting
+/// request's own id answers it, CWE-330, CWE-639). Falls back to [`new_id`] twice over if the CSPRNG fails, which
+/// keeps ids unique; the approval still needs the person's click.
+pub fn random_id() -> String {
+    let mut b = [0u8; 16];
+    if getrandom::getrandom(&mut b).is_ok() {
+        return b.iter().map(|x| format!("{x:02x}")).collect();
+    }
+    format!("{}{}", new_id(), new_id())
+}
+
 /// A new record id: 16 lowercase hex characters. Ids name files and must be unique, not secret, so a SHA-256 of
 /// time, process id and a counter is enough (no CSPRNG needed; not used for any security decision).
 pub fn new_id() -> String {

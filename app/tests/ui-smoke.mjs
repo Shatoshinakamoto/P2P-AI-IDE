@@ -93,7 +93,7 @@ const fake = () => {
     transformCallback: (cb) => { const id = cbId++; callbacks.set(id, cb); return id; },
     unregisterCallback: (id) => callbacks.delete(id),
     invoke: async (cmd, args) => {
-      window.__calls.push({ cmd, args: cmd === "chat_send" || cmd === "agent_send" ? { model: args.model, messages: args.messages, runs: args.runs } : args });
+      window.__calls.push({ cmd, args: cmd === "chat_send" || cmd === "agent_send" ? { model: args.model, messages: args.messages, runs: args.runs, runner: args.runner } : args });
       switch (cmd) {
         case "gateways_list": return { gateways: gws.map(view), active };
         case "gateway_add": {
@@ -133,7 +133,7 @@ const fake = () => {
           if (args.runs) {
             // Phase I5b: the assistant asks to run; nothing runs until agent_decide answers this id.
             const id = hex();
-            cb({ index: 0, message: { kind: "approval", id, summary: "run_tests pytest <i>now</i>", runner: "gateway" } });
+            cb({ index: 0, message: { kind: "approval", id, summary: "run_tests pytest <i>now</i>", runner: args.runner } });
             const allow = await new Promise((res) => { window.__decide = { id, res }; });
             if (allow) {
               cb({ index: 1, message: { kind: "run", id, result: { ...runResult, summary: "run_tests pytest", exit_code: 0, tests: { passed: 4, failed: 0, skipped: 0, total: 4, failures: [] } } } });
@@ -204,9 +204,14 @@ const fake = () => {
           if (!window.__decide || window.__decide.id !== args.id) throw "that run request is no longer waiting";
           const d = window.__decide; window.__decide = null; d.res(args.allow); return null;
         }
+        case "runners_list": return [
+          { id: "gateway", available: true, reason: "" },
+          { id: "local-os", available: true, reason: "" },
+          { id: "container", available: false, reason: "coming next (Docker or Podman)" },
+        ];
         case "run_start": {
           // Phase I5b: stages arrive on the channel; the result carries hostile output to check it is text.
-          if (args.runner !== "gateway") throw "this runner is not available yet; use the gateway sandbox";
+          if (args.runner !== "gateway" && args.runner !== "local-os") throw "this runner is not available yet";
           const cb = callbacks.get(args.onStage.id);
           ["sending", "copying", "running"].forEach((message, index) => cb({ index, message }));
           cb({ index: 3, end: true });
@@ -526,8 +531,9 @@ try {
   // ---- Phase I5b: Run and test view, and runs the assistant asks for.
   await page.getByRole("button", { name: "Run and test", exact: true }).click();
   const runnerSel = page.getByLabel("Where to run");
-  const disabledRunners = await runnerSel.locator("option[disabled]").count();
-  check("only the gateway runner is offered until the local runners are built", disabledRunners === 2 && (await runnerSel.inputValue()) === "gateway");
+  await runnerSel.locator("option", { hasText: "Local sandbox" }).waitFor({ state: "attached" });
+  const disabledRunners = await runnerSel.locator("option[disabled]").allInnerTexts();
+  check("the gateway and local sandbox are offered; the container is listed as coming", disabledRunners.length === 1 && /container.*coming next/i.test(disabledRunners[0]) && (await runnerSel.inputValue()) === "gateway", JSON.stringify(disabledRunners));
   await page.getByRole("button", { name: "Run pytest tests" }).click();
   const res = page.getByRole("region", { name: "Run result" });
   await res.waitFor();
@@ -542,6 +548,12 @@ try {
   await res.getByText(/run_command echo a b/).waitFor();
   const rs2 = window_calls(await page.evaluate(() => window.__calls), "run_start");
   check("a command is sent as words; shell signs are plain words", JSON.stringify(rs2?.input.argv) === JSON.stringify(["echo", "a b", ";", "ls", "$HOME"]), JSON.stringify(rs2?.input));
+  // Phase I5c: the local sandbox.
+  await runnerSel.selectOption("local-os");
+  await page.getByText(/your home folder hidden/).waitFor();
+  await page.getByRole("button", { name: "Run command" }).click();
+  await res.waitFor();
+  check("a run on the local sandbox goes to the local runner", window_calls(await page.evaluate(() => window.__calls), "run_start")?.runner === "local-os");
 
   await page.getByRole("button", { name: "Agent chat", exact: true }).click();
   await page.getByRole("button", { name: "New chat" }).click();
@@ -556,12 +568,13 @@ try {
   await page.keyboard.press("Control+Enter");
   const card = page.getByRole("alertdialog", { name: "Run request" });
   await card.waitFor();
-  check("a run request shows exactly what would run, as text", (await card.locator("pre").innerText()) === "run_tests pytest <i>now</i>" && (await card.locator("i").count()) === 0);
+  check("a run request shows exactly what would run and where, as text", (await card.locator("pre").innerText()) === "run_tests pytest <i>now</i>" && (await card.locator("i").count()) === 0 && /local sandbox on this computer/.test(await card.innerText()));
   check("nothing runs before Allow", window_calls(await page.evaluate(() => window.__calls), "agent_send")?.runs === true && !(await page.evaluate(() => window.__calls)).some((c) => c.cmd === "agent_decide"));
   await card.getByRole("button", { name: "Allow run" }).click();
   await page.getByRole("log", { name: "Messages" }).getByText("All 4 tests pass.").waitFor();
   const dec1 = window_calls(await page.evaluate(() => window.__calls), "agent_decide");
   check("Allow answers the request's own id", dec1?.allow === true && typeof dec1.id === "string" && dec1.id.length > 8, JSON.stringify(dec1));
+  check("the chat's runs use the runner chosen in Run and test", window_calls(await page.evaluate(() => window.__calls), "agent_send")?.runner === "local-os");
   check("the chat shows the run and its result", /ran run_tests pytest: exit code 0, tests 4 passed, 0 failed/.test(await page.getByRole("log", { name: "Messages" }).innerText()));
   await page.getByLabel("Message", { exact: true }).fill("again");
   await page.keyboard.press("Control+Enter");

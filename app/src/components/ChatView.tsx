@@ -39,6 +39,8 @@ interface Props {
   onFileWritten: (rel: string) => void;
   /** Changes when files were pulled back from a mission (phase I4); the Changes list reloads. */
   changesTick?: number;
+  /** Where approved runs go (phase I5c): the runner chosen in Run and test. */
+  runner?: string;
 }
 
 const empty = (gateway: string, model: string): Chat => ({ id: "", title: "", gateway, model, created: 0, updated: 0, messages: [] });
@@ -60,11 +62,11 @@ function Text({ text }: { text: string }) {
   );
 }
 
-export function ChatView({ gateway, workspaceKey, onNotice, onOpenGateways, hasFolder, onReview, onFileWritten, changesTick = 0 }: Props) {
+export function ChatView({ gateway, workspaceKey, onNotice, onOpenGateways, hasFolder, onReview, onFileWritten, changesTick = 0, runner = "gateway" }: Props) {
   const [tools, setTools] = useState(true);
   // SECURITY: runs are off until the person turns them on; even then each run needs its own Allow (OWASP LLM06).
   const [runs, setRuns] = useState(false);
-  const [ask, setAsk] = useState<{ id: string; summary: string } | null>(null);
+  const [ask, setAsk] = useState<{ id: string; summary: string; runner: string } | null>(null);
   const [changes, setChanges] = useState<ChangeView[]>([]);
   const [models, setModels] = useState<string[]>([]);
   const [model, setModel] = useState("");
@@ -172,7 +174,7 @@ export function ChatView({ gateway, workspaceKey, onNotice, onOpenGateways, hasF
             if (last.role === "assistant") turn[turn.length - 1] = { ...last, content: last.content + e.text, at: now() };
             else turn.push({ role: "assistant", content: e.text, at: now() });
           } else if (e.kind === "approval") {
-            setAsk({ id: e.id, summary: e.summary });
+            setAsk({ id: e.id, summary: e.summary, runner: e.runner });
             turn.push({ role: "tool", content: `asks to run: ${e.summary}`, at: now() });
           } else if (e.kind === "run") {
             setAsk(null);
@@ -186,7 +188,7 @@ export function ChatView({ gateway, workspaceKey, onNotice, onOpenGateways, hasF
             turn.push({ role: "tool", content: line.trim(), at: now() });
           }
           show();
-        }, useRuns);
+        }, useRuns, runner);
       } else {
         await chatSend(model, wire, (t) => {
           turn[0] = { ...turn[0], content: turn[0].content + t, at: now() };
@@ -270,7 +272,7 @@ export function ChatView({ gateway, workspaceKey, onNotice, onOpenGateways, hasF
           aria-label="Runs"
           aria-pressed={runs && tools && hasFolder}
           disabled={!hasFolder || !tools}
-          title={runs ? "Runs on: the assistant may ask to run tests or a program in the gateway sandbox; you allow or decline each one" : "Runs off: the assistant cannot ask to run anything"}
+          title={runs ? `Runs on: the assistant may ask to run tests or a program (${runner === "local-os" ? "local sandbox" : "gateway sandbox"}, chosen in Run and test); you allow or decline each one` : "Runs off: the assistant cannot ask to run anything"}
           onClick={() => setRuns(!runs)}
           className={`flex items-center gap-1 rounded px-1.5 py-1 text-xs disabled:opacity-40 ${runs && tools && hasFolder ? "bg-[#264f78] text-white" : "hover:bg-ide-hover"}`}
         ><FlaskConical size={13} aria-hidden />Runs</button>
@@ -316,10 +318,10 @@ export function ChatView({ gateway, workspaceKey, onNotice, onOpenGateways, hasF
       )}
       {ask ? (
         <section role="alertdialog" aria-label="Run request" className="flex shrink-0 flex-col gap-1 border-t border-[#cca700] bg-[#3a3000] px-3 py-2">
-          <div className="text-xs font-semibold text-ide-bright">The assistant asks to run this in the gateway sandbox:</div>
+          <div className="text-xs font-semibold text-ide-bright">The assistant asks to run this {ask.runner === "local-os" ? "in the local sandbox on this computer" : "in the gateway sandbox"}:</div>
           {/* SECURITY: the request is model output; shown as text, exactly as it would run. */}
           <pre className="whitespace-pre-wrap break-all rounded bg-ide-bg p-1 font-mono text-xs text-ide-bright">{ask.summary}</pre>
-          <div className="text-xs text-ide-dim">It runs on the files on disk (not the pending changes), with no network; its changes are not kept.</div>
+          <div className="text-xs text-ide-dim">It runs on a copy of the files on disk (not the pending changes), with no network; its changes are not kept.</div>
           <div className="flex gap-2">
             <button type="button" onClick={() => void decide(true)} className="rounded bg-ide-accent px-2 py-1 text-xs text-white">Allow run</button>
             <button type="button" onClick={() => void decide(false)} className="rounded border border-ide-line px-2 py-1 text-xs text-ide-bright">Decline</button>

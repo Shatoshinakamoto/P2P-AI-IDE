@@ -23,13 +23,12 @@
 //!
 //! Dependencies: tauri, p2p-ide-core.
 
-use crate::missions::linked;
 use crate::net::active_client;
-use crate::run::RunBusy;
+use crate::run::{run_on, RunBusy};
 use crate::{audit, AppState};
 use p2p_ide_core::agent::{self, AgentEvent, ChangeView, TurnEnd};
 use p2p_ide_core::client::{Msg, NetError};
-use p2p_ide_core::runner::{self, RunRequest, RunResult};
+use p2p_ide_core::runner::{RunRequest, RunResult};
 use serde::Serialize;
 use std::sync::atomic::Ordering;
 use std::sync::mpsc::{self, RecvTimeoutError};
@@ -52,8 +51,9 @@ fn workspace(state: &State<AppState>) -> Result<p2p_ide_core::workspace::Workspa
 /// Runs one agent turn: the conversation (user and assistant messages) with the folder tools. Text and tool steps
 /// arrive through `on_event`; proposed edits wait in the pending list.
 ///
-/// * `runs` -- true offers `run_tests` and `run_command` for this turn (phase I5b). The folder must be linked to a
-///   project on the active gateway; every run waits for the person's decision (`agent_decide`).
+/// * `runs` -- true offers `run_tests` and `run_command` for this turn (phase I5b); every run waits for the
+///   person's decision (`agent_decide`).
+/// * `runner` -- where approved runs go: `gateway` (default; the folder must be linked to a project) or `local-os`.
 #[tauri::command]
 pub async fn agent_send(
     app: AppHandle,
@@ -61,15 +61,19 @@ pub async fn agent_send(
     model: String,
     messages: Vec<Msg>,
     runs: Option<bool>,
+    runner: Option<String>,
     on_event: Channel<AgentEvent>,
 ) -> Result<TurnEnd, String> {
     let ws = workspace(&state)?;
     let client = active_client(&app)?;
+    let runner_name = runner.unwrap_or_else(|| "gateway".into());
     let run_target = if runs.unwrap_or(false) {
-        Some(linked(&app, &state).map_err(|e| format!("{e}, or turn Runs off"))?)
+        Some(run_on(&app, &state, &runner_name).map_err(|e| format!("{e}, or turn Runs off"))?)
     } else {
         None
     };
+    // The approval card names the runner; only the two known words are ever sent.
+    let runner_word: &'static str = if runner_name == "local-os" { "local-os" } else { "gateway" };
     let decision = state.run_decision.clone();
     let sync_busy = state.sync_busy.clone();
     // SECURITY: one turn at a time per window, shared with plain chat (CWE-400).
@@ -94,15 +98,21 @@ pub async fn agent_send(
         let stop_run = stop.clone();
         // SECURITY: the approval gate. The core hands over a checked request; nothing runs until the person
         // answers this request's id with Allow (OWASP LLM06, NIST AC-3).
+        let mut run_target = run_target;
+        let has_runner = run_target.is_some();
         let mut run = |req: &RunRequest| -> Result<RunResult, String> {
-            let Some((run_client, pid, run_ws)) = run_target.as_ref() else {
+            let Some(target) = run_target.as_mut() else {
                 return Err("running is not available here".into());
             };
-            let id = p2p_ide_core::store::new_id();
+            // SECURITY: an unguessable id from the OS CSPRNG (CWE-330, CWE-639).
+            let id = p2p_ide_core::store::random_id();
             let (tx, rx) = mpsc::channel();
             *decision.lock().map_err(|_| "internal error".to_string())? = Some((id.clone(), tx));
-            let shown =
-                events.send(AgentEvent::Approval { id: id.clone(), summary: req.summary(), runner: "gateway".into() });
+            let shown = events.send(AgentEvent::Approval {
+                id: id.clone(),
+                summary: req.summary(),
+                runner: runner_word.into(),
+            });
             let t = Instant::now();
             let allowed = shown.is_ok()
                 && loop {
@@ -122,11 +132,10 @@ pub async fn agent_send(
             }
             audit("run", "allowed");
             let _busy = RunBusy::take(&sync_busy)?;
-            let r = runner::gateway_run(run_client, run_ws, pid, req, &mut |_| {}).map_err(|e| e.message())?;
+            let r = target(req, &mut |_| {})?;
             let _ = events.send(AgentEvent::Run { id, result: r.clone() });
             Ok(r)
         };
-        let has_runner = run_target.is_some();
         let r = agent::run_turn(
             &ws,
             &mut pending,

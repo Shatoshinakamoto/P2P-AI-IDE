@@ -101,3 +101,16 @@ removes all history.
 
 **Privacy:** chats can contain code you pasted and the model's answers. They stay on this computer; the IDE does not
 upload them anywhere except the messages you send to the gateway you chose.
+
+## run-jobs/ and run-cache/ (phase I5c, local sandbox)
+
+* `run-jobs/<32 hex>/`: one folder per local sandbox run, created fresh and owner-only (0700), holding the copy of
+  the open folder plus the run's `HOME` and `TMPDIR`. It is removed when the run ends; a folder left after a crash
+  can be deleted safely.
+* `run-cache/<24 hex>/`: build caches kept between runs of the same folder so a second run does not rebuild
+  everything: `target` (Cargo), `go-build`, `gopath`, `npm`, `xdg`, and `cargo-home` (its `registry` and `git` are
+  links to `~/.cargo`, which the sandbox can only read). The name is the start of the folder key (SHA-256 of the folder's path, as in `links.json`), so the path
+  itself is not in the name (CWE-359). Delete the whole folder to free space; the next run rebuilds.
+
+**Security:** both folders are writable by sandboxed runs, which run untrusted project code. Nothing in them is
+trusted by the IDE; it never runs or loads files from them. See [features/local-sandbox.md](../features/local-sandbox.md).

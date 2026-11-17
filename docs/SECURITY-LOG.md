@@ -2,6 +2,26 @@
 
 Every security patch, hardening change, CVE remediation and accepted risk, newest first.
 
+## 2026-11-17 — Phase I5c hardening: local OS sandbox for runs on this computer
+- **Type:** hardening; accepted risk
+- **CVE / CWE / advisory:** none (new feature). CWE-200, CWE-522, CWE-22, CWE-59, CWE-269, CWE-250, CWE-693, CWE-400, CWE-404, CWE-426, CWE-526, CWE-668, CWE-78; NIST AC-3, AC-6, SC-4, SC-7, SI-6
+- **Severity:** none (new feature built with these controls). KEV no.
+- **Affected:** `core/src/{localbox,testparse,store}.rs`, `app/src-tauri/src/{run,agent,main}.rs`, `app/src/components/{RunView,ChatView}.tsx`
+- **What changed:** local runs execute on a fresh owner-only copy of the folder (deny list, no links, caps) inside
+  new user, network, PID, mount, IPC, UTS and cgroup namespaces; Landlock allows only system and toolchain folders
+  (read and execute) and the job folder and cache (write), and denies TCP; seccomp refuses namespace, mount, ptrace,
+  bpf, io_uring, keyring and similar calls, Unix sockets and TIOCSTI, and kills other architectures; no_new_privs,
+  rlimits, PID-1 job with parent-death signal, wall-clock kill; cleared environment; program only from PATH folders
+  outside the project. Any failed setup step exits 126 before the program starts; the runner is offered only when
+  Landlock and user namespaces work.
+- **Why it is secure now:** untrusted project code cannot read the person's secrets, change their files, reach the
+  network or local services, or outlive the run (NIST AC-6, SC-7, SC-4; fail closed per NIST SI-6).
+- **Accepted risk (pending Pheonix's choice):** toolchain mode lets the job execute any program in system and
+  toolchain folders, including shells; `/etc` is readable; a kernel bug in namespaces, Landlock or seccomp is out of
+  scope. Documented in features/local-sandbox.md section 6.
+- **Verification:** HistoryTest runs listed in features/local-sandbox.md section 8 (core with the real-kernel
+  confinement test, real toolchains 6/6, UI smoke 77/77, dependency audit).
+
 ## 2026-11-17 — Phase I5b hardening: running tests and commands, and the assistant asking to run
 - **Type:** hardening
 - **CVE / CWE / advisory:** CWE-78, CWE-88, CWE-22, CWE-200, CWE-400, CWE-79, CWE-150, CWE-639; OWASP LLM01, LLM06 (none: new feature)

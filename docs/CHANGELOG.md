@@ -2,6 +2,27 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-17 - Phase I5c: Local sandbox on this computer (Linux)
+
+Requested by Pheonix on 2026-11-17: "include local os sandbox ported from tandemforge". A Rust port of TandemForge's
+host runner (`hostrun/confine.py`) in toolchain mode (the recommended option; decision pending).
+
+### Added
+- **Local sandbox on this computer** runner in Run and test and for the chat's runs: a copy of the folder, run in
+  new user, network, PID, mount, IPC, UTS and cgroup namespaces with Landlock, seccomp, rlimits and a wall-clock
+  limit; no network, home folder hidden except toolchain folders (read only), changes thrown away
+  ([features/local-sandbox.md](features/local-sandbox.md)).
+- Core modules `localbox` (`available`, `run`) and `testparse` (framework commands and test counts, as the
+  gateway's); `store::random_id`.
+- Shell command `runners_list`; `run_start` and `agent_send` take the runner (`gateway` or `local-os`); the approval
+  card says where the run happens.
+- Per-folder build cache under `run-cache/` ([files/app-data.md](files/app-data.md)).
+- `core/examples/local_toolchains.rs` ([commands/local-toolchains.md](commands/local-toolchains.md)).
+- Tests: core 68 -> 70 (incl. the real-kernel `local_runs_are_confined`), UI smoke 75 -> 77, real toolchains 6/6.
+
+### Changed
+- `libc` 0.2.191 is a direct dependency of the core on Unix (already in the lockfiles).
+
 ## 2026-11-17 - Phase I5b: Run and test on the gateway sandbox
 
 Requested by Pheonix (I5 order chosen 2026-11-17: gateway sandbox first, then a local OS sandbox ported from

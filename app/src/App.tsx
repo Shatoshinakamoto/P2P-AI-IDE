@@ -43,6 +43,8 @@ const VIEWS: { id: View; label: string; icon: ReactNode }[] = [
 export function App() {
   const [ws, setWs] = useState<WorkspaceInfo | null>(null);
   const [view, setView] = useState<View>("explorer");
+  // Where runs go (phase I5c): chosen in Run and test, used by the chat's runs too.
+  const [runner, setRunner] = useState("gateway");
   const [activeRel, setActiveRel] = useState<string | null>(null);
   const [cursor, setCursor] = useState({ line: 1, col: 1, language: "plaintext" });
   const [notice, setNotice] = useState("");
@@ -158,11 +160,11 @@ export function App() {
             ) : null}
             {ws ? (
               <div key={`run-${wsGen}`} className={view === "run" ? "flex min-h-0 flex-1 flex-col" : "hidden"}>
-                <RunView onNotice={onNotice} onOpenMissions={() => setView("missions")} />
+                <RunView runner={runner} onRunner={setRunner} onNotice={onNotice} onOpenMissions={() => setView("missions")} />
               </div>
             ) : null}
             <div className={view === "chat" ? "flex min-h-0 flex-1 flex-col" : "hidden"}>
-              <ChatView gateway={activeGateway} workspaceKey={String(wsGen)} onNotice={onNotice} onOpenGateways={() => setView("network")} hasFolder={ws !== null} onReview={onReview} onFileWritten={onFileWritten} changesTick={changesTick} />
+              <ChatView gateway={activeGateway} workspaceKey={String(wsGen)} onNotice={onNotice} onOpenGateways={() => setView("network")} hasFolder={ws !== null} onReview={onReview} onFileWritten={onFileWritten} changesTick={changesTick} runner={runner} />
             </div>
             {side()}
           </aside>
