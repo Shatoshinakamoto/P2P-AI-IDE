@@ -179,6 +179,12 @@ fn client_for(app: &AppHandle, id: &str) -> Result<(Client, String), String> {
     Ok((Client::new(&gw, key).map_err(|e| e.message())?, name))
 }
 
+/// A client for the active gateway (used by chat and by the agent turn in agent.rs).
+pub(crate) fn active_client(app: &AppHandle) -> Result<Client, String> {
+    let active = gw_store(app)?.load().map_err(gw_err)?.active.ok_or("add a gateway in the Gateways view first")?;
+    Ok(client_for(app, &active)?.0)
+}
+
 /// Asks a gateway for its models and times the answer.
 #[tauri::command]
 pub async fn gateway_check(app: AppHandle, id: String) -> Result<GatewayCheck, String> {

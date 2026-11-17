@@ -131,6 +131,29 @@ pub struct StreamEnd {
     pub chars: usize,
 }
 
+/// One streamed piece of a tool call. OpenAI streams a call as several pieces with the same `index`: the first
+/// carries `id` and `name`, later ones add to `arguments`.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ToolPiece {
+    pub index: usize,
+    pub id: String,
+    pub name: String,
+    pub args: String,
+}
+
+/// A complete tool call the model asked for. Untrusted: the agent checks the name and arguments.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+pub struct ToolCall {
+    pub id: String,
+    pub name: String,
+    /// The arguments as the JSON text the model wrote.
+    pub arguments: String,
+}
+
+/// Most tool calls accepted in one answer, and the largest arguments text of one call (CWE-400).
+pub const MAX_TOOL_CALLS: usize = 8;
+pub const MAX_TOOL_ARGS_BYTES: usize = 1 << 20;
+
 /// One parsed server-sent event line.
 #[derive(Debug, PartialEq, Eq)]
 pub enum SseItem {
@@ -138,6 +161,8 @@ pub enum SseItem {
     Delta(String),
     /// The model's finish reason.
     Finish(String),
+    /// Pieces of tool calls (phase I3): `delta.tool_calls[]` as `(index, id, name, arguments fragment)`.
+    Tools(Vec<ToolPiece>),
     /// `data: [DONE]`.
     Done,
     /// The gateway sent an error object.
@@ -164,6 +189,29 @@ pub fn parse_sse_line(line: &str) -> Result<SseItem, NetError> {
     let Some(choice) = v.get("choices").and_then(|c| c.get(0)) else {
         return Ok(SseItem::Skip);
     };
+    if let Some(tc) = choice.get("delta").and_then(|d| d.get("tool_calls")).and_then(Value::as_array) {
+        if !tc.is_empty() {
+            let mut pieces = Vec::new();
+            for (pos, c) in tc.iter().enumerate() {
+                let index = c.get("index").and_then(Value::as_u64).map(|i| i as usize).unwrap_or(pos);
+                let f = c.get("function");
+                let text = |v: Option<&Value>| v.and_then(Value::as_str).unwrap_or("").to_string();
+                // Ollama sends arguments as an object; OpenAI as a JSON string. Both end up as JSON text.
+                let args = match f.and_then(|f| f.get("arguments")) {
+                    Some(Value::String(a)) => a.clone(),
+                    Some(v @ Value::Object(_)) => v.to_string(),
+                    _ => String::new(),
+                };
+                pieces.push(ToolPiece {
+                    index,
+                    id: text(c.get("id")),
+                    name: text(f.and_then(|f| f.get("name"))),
+                    args,
+                });
+            }
+            return Ok(SseItem::Tools(pieces));
+        }
+    }
     if let Some(t) = choice.get("delta").and_then(|d| d.get("content")).and_then(Value::as_str) {
         if !t.is_empty() {
             return Ok(SseItem::Delta(t.to_string()));
@@ -296,8 +344,74 @@ impl Client {
     }
 }
 
+impl Client {
+    /// One step of an agent turn (phase I3): sends `messages` (already checked by the agent) with the tool
+    /// definitions, streams answer text to `on_delta`, and returns the text end and any tool calls.
+    ///
+    /// Security: same transport controls as [`Client::chat_stream`]; the body is capped at 2 MiB; tool calls are
+    /// returned as untrusted text for the agent to check.
+    pub fn agent_step(
+        &self,
+        model: &str,
+        messages: &[Value],
+        tools: &Value,
+        on_delta: &mut dyn FnMut(&str) -> bool,
+    ) -> Result<(StreamEnd, Vec<ToolCall>), NetError> {
+        check_model(model)?;
+        let body = json!({"model": model, "messages": messages, "tools": tools, "stream": true}).to_string();
+        if body.len() > MAX_REQUEST_BYTES {
+            return Err(NetError::BadRequest("the chat and the files read are larger than 2 MiB; start a new chat"));
+        }
+        let resp = self
+            .long
+            .post(format!("{}/v1/chat/completions", self.base))
+            .header("Authorization", self.auth())
+            .header("Content-Type", "application/json")
+            .header("Accept", "text/event-stream")
+            .send(body.as_bytes())
+            .map_err(map_ureq)?;
+        check_status(resp.status().as_u16())?;
+        let reader = resp.into_body().into_reader().take(MAX_STREAM_BYTES);
+        read_stream_calls(BufReader::new(reader), on_delta)
+    }
+}
+
 /// Reads an SSE body line by line. Split out so tests can feed it bytes.
-pub fn read_stream(mut r: impl BufRead, on_delta: &mut dyn FnMut(&str) -> bool) -> Result<StreamEnd, NetError> {
+pub fn read_stream(r: impl BufRead, on_delta: &mut dyn FnMut(&str) -> bool) -> Result<StreamEnd, NetError> {
+    read_stream_calls(r, on_delta).map(|(end, _)| end)
+}
+
+/// Adds tool-call pieces to the calls collected so far (by index), with caps.
+fn add_pieces(calls: &mut Vec<ToolCall>, pieces: Vec<ToolPiece>) -> Result<(), NetError> {
+    for p in pieces {
+        if p.index >= MAX_TOOL_CALLS {
+            return Err(NetError::TooLarge);
+        }
+        while calls.len() <= p.index {
+            calls.push(ToolCall { id: String::new(), name: String::new(), arguments: String::new() });
+        }
+        let c = &mut calls[p.index];
+        if c.id.is_empty() && !p.id.is_empty() {
+            c.id = p.id.chars().take(64).collect();
+        }
+        if c.name.is_empty() && !p.name.is_empty() {
+            c.name = p.name.chars().take(64).collect();
+        }
+        c.arguments.push_str(&p.args);
+        // SECURITY: arguments are capped while they stream in (CWE-400).
+        if c.arguments.len() > MAX_TOOL_ARGS_BYTES {
+            return Err(NetError::TooLarge);
+        }
+    }
+    Ok(())
+}
+
+/// Like [`read_stream`], and also returns the tool calls the model asked for (phase I3).
+pub fn read_stream_calls(
+    mut r: impl BufRead,
+    on_delta: &mut dyn FnMut(&str) -> bool,
+) -> Result<(StreamEnd, Vec<ToolCall>), NetError> {
+    let mut calls: Vec<ToolCall> = Vec::new();
     let mut end = StreamEnd { finish_reason: None, chars: 0 };
     let mut total: u64 = 0;
     let mut line = Vec::new();
@@ -310,7 +424,7 @@ pub fn read_stream(mut r: impl BufRead, on_delta: &mut dyn FnMut(&str) -> bool) 
             if total >= MAX_STREAM_BYTES {
                 return Err(NetError::TooLarge);
             }
-            return Ok(end);
+            return Ok((end, calls));
         }
         total += n as u64;
         if line.len() > MAX_LINE_BYTES {
@@ -325,7 +439,8 @@ pub fn read_stream(mut r: impl BufRead, on_delta: &mut dyn FnMut(&str) -> bool) 
                 }
             }
             SseItem::Finish(f) => end.finish_reason = Some(f),
-            SseItem::Done => return Ok(end),
+            SseItem::Tools(p) => add_pieces(&mut calls, p)?,
+            SseItem::Done => return Ok((end, calls)),
             SseItem::Error => return Err(NetError::Upstream),
             SseItem::Skip => {}
         }
@@ -400,6 +515,26 @@ mod tests {
         assert_eq!(parse_sse_line(r#"data: {"choices":[]}"#).unwrap(), SseItem::Skip);
         assert_eq!(parse_sse_line(r#"data: {"error":{"message":"x"}}"#).unwrap(), SseItem::Error);
         assert_eq!(parse_sse_line("data: {not json"), Err(NetError::BadAnswer));
+    }
+
+    #[test]
+    fn streamed_tool_calls_are_assembled_by_index() {
+        let body = "data: {\"choices\":[{\"delta\":{\"tool_calls\":[{\"index\":0,\"id\":\"call_1\",\"type\":\"function\",\"function\":{\"name\":\"read_file\",\"arguments\":\"{\\\"pa\"}}]}}]}\n\n\
+                    data: {\"choices\":[{\"delta\":{\"tool_calls\":[{\"index\":0,\"function\":{\"arguments\":\"th\\\":\\\"a.py\\\"}\"}}]}}]}\n\n\
+                    data: {\"choices\":[{\"delta\":{\"tool_calls\":[{\"index\":1,\"id\":\"c2\",\"function\":{\"name\":\"search\",\"arguments\":{\"query\":\"x\"}}}]}}]}\n\n\
+                    data: {\"choices\":[{\"delta\":{},\"finish_reason\":\"tool_calls\"}]}\n\ndata: [DONE]\n\n";
+        let (end, calls) = read_stream_calls(body.as_bytes(), &mut |_| true).unwrap();
+        assert_eq!(end.finish_reason.as_deref(), Some("tool_calls"));
+        assert_eq!(calls.len(), 2);
+        assert_eq!(
+            (calls[0].id.as_str(), calls[0].name.as_str(), calls[0].arguments.as_str()),
+            ("call_1", "read_file", r#"{"path":"a.py"}"#)
+        );
+        assert_eq!((calls[1].name.as_str(), calls[1].arguments.as_str()), ("search", r#"{"query":"x"}"#));
+        // An index past the cap is refused.
+        let many =
+            "data: {\"choices\":[{\"delta\":{\"tool_calls\":[{\"index\":9,\"function\":{\"name\":\"x\"}}]}}]}\n\n";
+        assert_eq!(read_stream_calls(many.as_bytes(), &mut |_| true).err(), Some(NetError::TooLarge));
     }
 
     #[test]
@@ -479,6 +614,23 @@ mod tests {
             String::from_utf8_lossy(&req).to_string()
         });
         (url, h)
+    }
+
+    #[test]
+    fn agent_step_sends_tools_and_returns_calls() {
+        let body = "data: {\"choices\":[{\"delta\":{\"tool_calls\":[{\"index\":0,\"id\":\"call_a\",\"type\":\"function\",\"function\":{\"name\":\"list_dir\",\"arguments\":\"{\\\"path\\\":\\\"\\\"}\"}}]}}]}\n\ndata: {\"choices\":[{\"delta\":{},\"finish_reason\":\"tool_calls\"}]}\n\ndata: [DONE]\n\n".to_string();
+        let (url, h) = fake("200 OK", body);
+        let c = Client::new(&gw(&url), Some("p2p_secret_key_1".into())).unwrap();
+        let tools = crate::agent::tool_defs();
+        let msgs = vec![json!({"role": "user", "content": "list"})];
+        let (end, calls) = c.agent_step("tiny", &msgs, &tools, &mut |_| true).unwrap();
+        assert_eq!(end.finish_reason.as_deref(), Some("tool_calls"));
+        assert_eq!(
+            calls,
+            vec![ToolCall { id: "call_a".into(), name: "list_dir".into(), arguments: r#"{"path":""}"#.into() }]
+        );
+        let req = h.join().unwrap();
+        assert!(req.contains("\"tools\":[") && req.contains("\"edit_file\"") && req.contains("\"stream\":true"));
     }
 
     fn gw(url: &str) -> Gateway {

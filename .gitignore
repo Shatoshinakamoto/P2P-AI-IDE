@@ -9,3 +9,4 @@ app/ui-smoke.png
 *.pem
 *.key
 app/ui-smoke-chat.png
+app/ui-smoke-diff.png

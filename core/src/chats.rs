@@ -37,7 +37,8 @@ const MAX_HITS: usize = 200;
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct ChatMessage {
-    /// `user`, `assistant` or `error` (an error line shown in the chat, never sent to a model).
+    /// `user`, `assistant`, `error` (an error line shown in the chat) or `tool` (a tool step line, phase I3); `error`
+    /// and `tool` lines are never sent to a model.
     pub role: String,
     pub content: String,
     /// Seconds since 1970.
@@ -135,7 +136,7 @@ pub fn check_chat(c: &Chat) -> Result<(), ChatError> {
     if c.messages.len() > MAX_CHAT_MESSAGES {
         return Err(ChatError::BadChat("a chat can hold up to 400 messages; start a new chat"));
     }
-    if c.messages.iter().any(|m| !matches!(m.role.as_str(), "user" | "assistant" | "error")) {
+    if c.messages.iter().any(|m| !matches!(m.role.as_str(), "user" | "assistant" | "error" | "tool")) {
         return Err(ChatError::BadChat("a message has an unknown role"));
     }
     Ok(())

@@ -21,6 +21,7 @@
 
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod agent;
 mod net;
 
 use p2p_ide_core::{FileText, Listing, SearchResult, Workspace, WsError};
@@ -41,6 +42,9 @@ struct AppState {
     /// The last public gateway list (phase I2b). `gateway_add_public` takes the address from here, never from the
     /// webview, so a picked gateway's address is the one in its verified advert (CWE-345).
     public: Mutex<Vec<p2p_ide_core::discovery::PublicGateway>>,
+    /// Changes the agent proposed in this workspace, waiting for the person's review (phase I3). Never written
+    /// without an accept; cleared when another folder opens.
+    pending: Mutex<p2p_ide_core::agent::Pending>,
 }
 
 /// What the webview learns about the open workspace: its name only.
@@ -91,6 +95,8 @@ async fn pick_folder(app: tauri::AppHandle, state: State<'_, AppState>) -> Resul
     let ws = Workspace::open(&path).map_err(refuse)?;
     let info = WorkspaceInfo { name: ws.name() };
     *state.workspace.lock().map_err(|_| "internal error".to_string())? = Some(ws);
+    // SECURITY: pending agent changes belong to the folder they were proposed in; never carry them over.
+    *state.pending.lock().map_err(|_| "internal error".to_string())? = Default::default();
     audit("workspace", "opened");
     Ok(Some(info))
 }
@@ -139,6 +145,7 @@ fn main() {
             chat_busy: AtomicBool::new(false),
             chat_stop: Arc::new(AtomicBool::new(false)),
             public: Mutex::new(Vec::new()),
+            pending: Mutex::new(Default::default()),
         })
         .invoke_handler(tauri::generate_handler![
             pick_folder,
@@ -166,7 +173,12 @@ fn main() {
             net::directories_list,
             net::directories_set,
             net::public_list,
-            net::gateway_add_public
+            net::gateway_add_public,
+            agent::agent_send,
+            agent::changes_list,
+            agent::change_get,
+            agent::change_accept,
+            agent::change_reject
         ])
         .run(tauri::generate_context!())
         .expect("the IDE window could not start");

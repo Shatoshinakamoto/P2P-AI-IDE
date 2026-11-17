@@ -71,7 +71,7 @@ const fake = () => {
     return { entries, truncated: false };
   };
   // Gateways and chats of the fake core. Keys are kept apart, as the OS keychain would, and never returned.
-  const gws = []; let active = null; let dirs = []; const keys = new Map(); const chats = new Map(); let nextId = 1;
+  const gws = []; let active = null; let dirs = []; const pending = new Map(); const keys = new Map(); const chats = new Map(); let nextId = 1;
   const hex = () => (nextId++).toString(16).padStart(16, "0");
   const view = (g) => ({ id: g.id, name: g.name, url: g.url, kind: g.kind, dev: g.url.startsWith("http://"), pinned: false, has_key: keys.has(g.id) });
   const callbacks = new Map(); let cbId = 1;
@@ -79,7 +79,7 @@ const fake = () => {
     transformCallback: (cb) => { const id = cbId++; callbacks.set(id, cb); return id; },
     unregisterCallback: (id) => callbacks.delete(id),
     invoke: async (cmd, args) => {
-      window.__calls.push({ cmd, args: cmd === "chat_send" ? { model: args.model, messages: args.messages } : args });
+      window.__calls.push({ cmd, args: cmd === "chat_send" || cmd === "agent_send" ? { model: args.model, messages: args.messages } : args });
       switch (cmd) {
         case "gateways_list": return { gateways: gws.map(view), active };
         case "gateway_add": {
@@ -114,6 +114,27 @@ const fake = () => {
           cb({ index: pieces.length, end: true });
           return { finish_reason: "stop", chars: pieces.join("").length };
         }
+        case "agent_send": {
+          // Phase I3: text, a tool step, hostile text, and two proposed changes that are NOT written.
+          const cb = callbacks.get(args.onEvent.id);
+          const evs = [
+            { kind: "delta", text: "Hello " },
+            { kind: "tool", name: "read_file", target: "src/orders.py", ok: true },
+            { kind: "tool", name: "read_file", target: ".env", ok: false },
+            { kind: "delta", text: "from the gateway. " },
+            { kind: "delta", text: "<img src=x onerror=\"window.__xss=1\">" },
+            { kind: "delta", text: "\n```js\nconst a = 1;\n```" },
+          ];
+          evs.forEach((message, index) => cb({ index, message }));
+          cb({ index: evs.length, end: true });
+          pending.set("src/orders.py", { before: files.get("src/orders.py"), after: "def orders():\n    return [\"<b>fixed</b>\"]\n", created: false });
+          pending.set("src/new_util.py", { before: "", after: "x = 1\n", created: true });
+          return { steps: 2, tool_calls: 2, pending: pending.size, finish_reason: "stop" };
+        }
+        case "changes_list": return [...pending].map(([rel, c]) => ({ rel, created: c.created, added: 1, removed: c.created ? 0 : 1 }));
+        case "change_get": { const c = pending.get(args.rel); if (!c) throw "that change is no longer pending"; return { rel: args.rel, ...c }; }
+        case "change_accept": { const c = pending.get(args.rel); files.set(args.rel, c.after); pending.delete(args.rel); return sha(c.after); }
+        case "change_reject": pending.delete(args.rel); return null;
         case "chat_stop": return null;
         case "chat_save": { const c = { ...args.chat, id: args.chat.id || hex() }; if (!c.title) c.title = c.messages.find((m) => m.role === "user")?.content.split("\n")[0] ?? "New chat"; chats.set(c.id, c); return c; }
         case "chats_list": return [...chats.values()].map((c) => ({ id: c.id, title: c.title, updated: 1, count: c.messages.length }));
@@ -305,8 +326,40 @@ try {
   const xss = await page.evaluate(() => window.__xss);
   check("streamed answer is shown as text (no element from the answer, no script ran)", imgs === 0 && shown.includes("<img src=x") && xss === undefined, `imgs=${imgs}`);
   check("code fences in an answer render as a code block", (await log.locator("pre").innerText()).includes("const a = 1;"));
-  const sent = window_calls(await page.evaluate(() => window.__calls), "chat_send");
-  check("the request carries the chosen model and the user's message", sent?.model === "tiny-model" && sent.messages.at(-1).content.startsWith("Explain the timeout"), JSON.stringify(sent ?? {}).slice(0, 120));
+  const sent = window_calls(await page.evaluate(() => window.__calls), "agent_send");
+  check("with a folder open and Tools on, the turn runs with tools and carries the model and message", sent?.model === "tiny-model" && sent.messages.at(-1).content.startsWith("Explain the timeout"), JSON.stringify(sent ?? {}).slice(0, 120));
+  // ---- Phase I3: tool steps and the review of proposed changes.
+  check("tool steps are shown in the chat (name and target only)", /read_file src\/orders\.py/.test(shown) && /failed: read_file \.env/.test(shown), shown.replace(/\s+/g, " ").slice(0, 160));
+  const changesBox = page.getByRole("list", { name: "Pending changes" });
+  await changesBox.getByText("src/orders.py").waitFor();
+  check("proposed edits are listed under Changes and not written yet", (await page.evaluate(() => window.__file("src/orders.py"))) === "def orders():\n    return []\n");
+  // Open the file in the editor first, so the accept must refresh its tab.
+  await page.getByRole("button", { name: "Explorer" }).click();
+  await page.getByRole("navigation", { name: "Files" }).getByText("orders.py").click();
+  await page.locator(".view-lines").getByText("return []").waitFor();
+  await page.getByRole("button", { name: "Agent chat", exact: true }).click();
+  await page.getByRole("button", { name: "Review src/orders.py" }).click();
+  const dlg = page.getByRole("dialog", { name: "Review change to src/orders.py" });
+  await dlg.waitFor();
+  await dlg.locator(".monaco-diff-editor").waitFor();
+  await dlg.getByText("fixed").first().waitFor();
+  check("the diff view shows the proposed text as text (no element from it)", (await dlg.locator("b").count()) === 0);
+  await page.screenshot({ path: process.env.SHOT_DIFF ?? join(here, "..", "ui-smoke-diff.png") });
+  await dlg.getByRole("button", { name: "Accept and save" }).click();
+  await dlg.waitFor({ state: "detached" });
+  check("Accept writes the reviewed file", (await page.evaluate(() => window.__file("src/orders.py"))).includes("fixed"));
+  await page.locator(".view-lines").getByText("fixed").waitFor({ timeout: 5000 });
+  check("an open clean tab reloads after the change is accepted", true);
+  await page.getByRole("button", { name: "Reject src/new_util.py" }).click();
+  await changesBox.waitFor({ state: "detached" });
+  check("Reject drops a change without writing it", (await page.evaluate(() => window.__file("src/new_util.py"))) === undefined);
+  await page.getByRole("button", { name: "Tools", exact: true }).click();
+  await page.getByLabel("Message", { exact: true }).fill("plain question");
+  await page.keyboard.press("Control+Enter");
+  await page.getByRole("log", { name: "Messages" }).getByText("plain question").waitFor();
+  await page.getByRole("button", { name: "Stop" }).waitFor({ state: "detached" });
+  const plain = window_calls(await page.evaluate(() => window.__calls), "chat_send");
+  check("with Tools off the turn is a plain chat, and tool lines are not sent to the model", plain?.messages.at(-1).content === "plain question" && plain.messages.every((m) => m.role === "user" || m.role === "assistant"), JSON.stringify(plain?.messages.map((m) => m.role)));
   await page.screenshot({ path: process.env.SHOT_CHAT ?? join(here, "..", "ui-smoke-chat.png") });
   await page.getByRole("button", { name: "Chat history" }).click();
   await page.getByRole("list", { name: "Saved chats" }).getByText("Explain the timeout").waitFor();
@@ -324,9 +377,11 @@ try {
   // The tree kept its expanded folders while other views were shown.
   await page.getByRole("navigation", { name: "Files" }).getByText("server.py").click({ timeout: 5000 });
   check("explorer keeps expanded folders across views", true);
+  const saves = (await page.evaluate(() => window.__calls)).filter((c) => c.cmd === "chat_save").map((c) => c.args.chat.id);
+  check("switching views keeps the chat in progress (one chat, saved twice)", saves.length === 2 && saves[0] === "" && saves[1] !== "", JSON.stringify(saves));
   await page.screenshot({ path: process.env.SHOT ?? join(here, "..", "ui-smoke.png") });
 } catch (e) {
-  check("flow completed", false, String(e).split("\n")[0]);
+  check("flow completed", false, String(e).split("\n").slice(0, 6).join(" | "));
 }
 
 const cspErrors = errors.filter((e) => /Content Security Policy/i.test(e));
