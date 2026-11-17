@@ -11,6 +11,7 @@ The IDE's plan and its decisions (ADR-029) live in the P2P-AI repository: `docs/
 | [features/public-gateways.md](features/public-gateways.md) | Phase I2b: public gateway list from signed directory adverts, verified like the node; threat model and controls |
 | [features/agent-tools.md](features/agent-tools.md) | Phase I3: chat tools on the open folder (list, read, search, propose edits) and the diff review; threat model and controls |
 | [features/missions.md](features/missions.md) | Phase I4: send the folder to a gateway project, Autopilot and Auto Improve missions, approvals, proposals, review of returned work; threat model and controls |
+| [features/source-control.md](features/source-control.md) | Phase I5a: the Source Control view (status, diff, stage, commit) through the installed git, with repository programs and hooks off; threat model and controls |
 | [files/app-data.md](files/app-data.md) | The IDE's own data files: `gateways.json`, `directories.json`, `links.json` and chat history, every key |
 | [files/discovery-vectors.md](files/discovery-vectors.md) | The copy of the P2P-AI protocol's shared advert vectors used by the core tests, with provenance |
 | [commands/app-scripts.md](commands/app-scripts.md) | The npm scripts and cargo commands used to build and test the app |

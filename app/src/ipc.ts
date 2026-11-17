@@ -209,3 +209,22 @@ export const approvalDecide = (runId: string, approvalId: string, decision: "app
   call<void>("approval_decide", { runId, approvalId, decision, argumentsSha256 });
 export const proposalsList = () => call<ProposalView[]>("proposals_list");
 export const proposalAct = (id: string, action: "accept" | "dismiss" | "snooze") => call<void>("proposal_act", { id, action });
+
+// ---- Phase I5: source control (src-tauri/src/scm.rs, docs/features/source-control.md)
+
+/** One changed file: git's status letters for the staged (`index`) and unstaged (`work`) side; "." = none. */
+export interface ScmFile { rel: string; index: string; work: string; conflict: boolean; untracked: boolean; actionable: boolean }
+export interface ScmStatus { branch: string; initial: boolean; ahead: number; behind: number; files: ScmFile[]; truncated: boolean }
+/** `available` is false (with a fixed `reason`) when the folder is not a repository, git is missing or refused. */
+export interface ScmState { available: boolean; reason: string; status: ScmStatus | null }
+export interface ScmDiff { rel: string; before: string; after: string; deleted: boolean }
+export interface ScmCommit { id: string; subject: string; author: string; time: number }
+
+export const scmStatus = () => call<ScmState>("scm_status");
+export const scmDiff = (rel: string) => call<ScmDiff>("scm_diff", { rel });
+/** Stages one file, or every change with null. */
+export const scmStage = (rel: string | null) => call<void>("scm_stage", { rel });
+export const scmUnstage = (rel: string | null) => call<void>("scm_unstage", { rel });
+/** Commits what is staged (hooks off); resolves to the short commit id. */
+export const scmCommit = (message: string) => call<string>("scm_commit", { message });
+export const scmLog = () => call<ScmCommit[]>("scm_log");

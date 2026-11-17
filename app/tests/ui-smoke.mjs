@@ -79,6 +79,11 @@ const fake = () => {
     sw: { autopilot_available: true, improve_available: true, disabled: false, autopilot: false, auto_improve: false, resource_scope: "own" },
     sync: { state: "none", version: 0, delta_state: "", delta_version: 0, delta_added: 0, delta_modified: 0, delta_deleted: 0, delta_conflicts: [] },
     proposals: [{ id: "prp_1", title: "Add CI", kind: "integration", rationale: "<b>bold</b> idea", effort: "small", steps: [], sources: ["https://example.org/docs"], state: "new" }] };
+  // Phase I5: the fake repository. The first status is refused (as for a repository with a filter program).
+  const scm = { refuse: true, staged: new Set(), log: [],
+    files: [{ rel: "src/orders.py", index: ".", work: "M", conflict: false, untracked: false, actionable: true },
+      { rel: "<img src=x onerror=window.__xss5=1>.md", index: ".", work: "?", conflict: false, untracked: true, actionable: true }] };
+  const scmView = () => scm.files.map((f) => (scm.staged.has(f.rel) ? { ...f, index: f.untracked ? "A" : f.work, work: ".", untracked: false } : f));
   window.__TAURI_INTERNALS__ = {
     transformCallback: (cb) => { const id = cbId++; callbacks.set(id, cb); return id; },
     unregisterCallback: (id) => callbacks.delete(id),
@@ -162,6 +167,18 @@ const fake = () => {
         case "proposal_act": mp.proposals = mp.proposals.map((p) => (p.id === args.id ? { ...p, state: args.action === "accept" ? "accepted" : args.action } : p)); return null;
         case "project_collect": mp.sync = { ...mp.sync, delta_state: "committed", delta_version: 2, delta_added: 0, delta_modified: 1, delta_deleted: 0 }; return mp.sync;
         case "project_pull": pending.set("src/orders.py", { before: files.get("src/orders.py"), after: "def orders():\n    return load()\n", created: false }); return { proposed: 1, same: 2, only_local: 0, skipped: [] };
+        case "scm_status":
+          if (scm.refuse) { scm.refuse = false; return { available: false, reason: "this repository's own git settings name programs to run (filters, signing or includes), so source control is off for it", status: null }; }
+          return { available: true, reason: "", status: { branch: "main", initial: false, ahead: 1, behind: 0, files: scmView(), truncated: false } };
+        case "scm_log": return scm.log;
+        case "scm_stage": if (args.rel === null) scm.files.forEach((f) => scm.staged.add(f.rel)); else scm.staged.add(args.rel); return null;
+        case "scm_unstage": if (args.rel === null) scm.staged.clear(); else scm.staged.delete(args.rel); return null;
+        case "scm_diff": return { rel: args.rel, before: "def orders():\n    return []\n", after: files.get(args.rel) ?? "", deleted: false };
+        case "scm_commit": {
+          if (scm.staged.size === 0) throw "stage at least one change before committing";
+          scm.log.unshift({ id: "abc1234", subject: args.message, author: "Dev", time: 1 });
+          scm.files = scm.files.filter((f) => !scm.staged.has(f.rel)); scm.staged.clear(); return "abc1234";
+        }
         case "chat_stop": return null;
         case "chat_save": { const c = { ...args.chat, id: args.chat.id || hex() }; if (!c.title) c.title = c.messages.find((m) => m.role === "user")?.content.split("\n")[0] ?? "New chat"; chats.set(c.id, c); return c; }
         case "chats_list": return [...chats.values()].map((c) => ({ id: c.id, title: c.title, updated: 1, count: c.messages.length }));
@@ -274,6 +291,31 @@ try {
   await page.getByText(/results? in \d+ files?/).waitFor();
   const summary = await page.getByText(/results? in \d+ files?/).innerText();
   check("search finds matches", /^[1-9]\d* results? in/.test(summary), summary);
+
+  // ---- Phase I5: source control.
+  await page.getByRole("button", { name: "Source control", exact: true }).click();
+  await page.getByText(/source control is off for it/).waitFor();
+  check("a refused repository says why and offers no actions", (await page.getByRole("button", { name: /^Stage / }).count()) === 0);
+  await page.getByRole("button", { name: "Check again" }).click();
+  await page.getByRole("region", { name: "Changes", exact: true }).getByText("src/orders.py").waitFor();
+  const scmText = await page.getByRole("region", { name: "Changes", exact: true }).innerText();
+  check("source control lists the branch's changes; odd file names are text", /onerror/.test(scmText) && (await page.evaluate(() => window.__xss5)) === undefined, scmText.replace(/\s+/g, " ").slice(0, 120));
+  check("Commit is off until something is staged and a message is written", await page.getByRole("button", { name: /^Commit/ }).isDisabled());
+  await page.getByRole("button", { name: "Stage src/orders.py" }).click();
+  await page.getByRole("region", { name: "Staged changes" }).getByText("src/orders.py").waitFor();
+  const stageCall = (await page.evaluate(() => window.__calls)).find((c) => c.cmd === "scm_stage");
+  check("staging sends one file's path", stageCall?.args.rel === "src/orders.py", JSON.stringify(stageCall?.args));
+  await page.getByRole("region", { name: "Staged changes" }).getByText("src/orders.py").click();
+  await page.getByText("left: last commit · right: on disk (view only)").waitFor();
+  check("a file's diff against the last commit is view-only (no Accept or Reject)", (await page.getByRole("button", { name: "Accept and save" }).count()) === 0);
+  await page.getByRole("dialog").getByRole("button", { name: "Close" }).click();
+  await page.getByLabel("Commit message").fill("Fix orders <b>now</b>");
+  await page.getByRole("button", { name: /^Commit 1 staged/ }).click();
+  await page.getByRole("region", { name: "History" }).getByText("abc1234").waitFor();
+  const commitCall = (await page.evaluate(() => window.__calls)).find((c) => c.cmd === "scm_commit");
+  check("Commit sends the message and the history shows it as text", commitCall?.args.message === "Fix orders <b>now</b>" && /Fix orders <b>now<\/b>/.test(await page.getByRole("region", { name: "History" }).innerText()));
+  await page.getByRole("region", { name: "Staged changes" }).getByText("Staged (0)").waitFor();
+  check("after the commit the message box is empty and Staged is empty", (await page.getByLabel("Commit message").inputValue()) === "");
 
   // Placeholders for later phases.
   await page.getByRole("button", { name: "Extensions", exact: true }).click();
