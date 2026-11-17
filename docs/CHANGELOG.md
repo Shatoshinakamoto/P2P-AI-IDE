@@ -2,6 +2,11 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-17 - Third-party notices brought up to date
+
+### Fixed
+- `app/src-tauri/THIRD-PARTY-NOTICES.txt` regenerated: the I5c and I5d sandbox crates (12 more, 479 packages in all) were missing, so the release build's licence gate refused to build the installers on the PC. Every licence is on the allow-list. Run: [HistoryTest/runs/2026-11-17_193821Z_installers_377af6f](../HistoryTest/runs/2026-11-17_193821Z_installers_377af6f/RUN.md).
+
 ## 2026-11-17 - Phase I5d: Local container runner (Docker or Podman)
 
 Requested by Pheonix on 2026-11-17: "include support for local container like docker or podman". Images follow the
