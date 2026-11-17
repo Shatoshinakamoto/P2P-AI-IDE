@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "233a1a3104cfe9bc21068df3d03ee43e0c0a214c9dee37c26ad317251ebdd198",
+   "size": 1546
+  },
+  "command.txt": {
+   "sha256": "9e2f09528986feb8a776df515985371d750cc84350566468e622bc63fb539951",
+   "size": 169
+  },
+  "environment.md": {
+   "sha256": "44f9e48c3ae3dc6569a11e31a35c8596e59ec7595dc350b50698ead9a29b8d54",
+   "size": 193
+  },
+  "logs/output.log": {
+   "sha256": "cb8baca40e613cab948410564ef4893a0f2ee5aad5d6e463bd9fc62159d3d642",
+   "size": 3308
+  },
+  "results/summary.txt": {
+   "sha256": "0b22c62db330e5ed8fda21c1b9641119627d247f1459c8ec783f89a892009577",
+   "size": 251
+  }
+ },
+ "previous": {
+  "manifest_sha256": "1ba308661875522d8a88731b2c9e5b05473a11e86593ccde9e7ef267972ef071",
+  "run_id": "2026-11-17_062016Z_security-scan_bd2763f"
+ },
+ "run": {
+  "area": "core",
+  "branch_or_pr": "PR #1",
+  "collected_utc": "",
+  "commit": "545bdf4",
+  "count_unit": "",
+  "date_utc": "2026-11-17T06:38:19Z",
+  "dirty": false,
+  "duration_s": 1.7,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_063819Z_core_545bdf4",
+  "kind": "unit",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "Claude",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Core: fmt, clippy, tests incl. shared advert vectors (phase I2b)",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

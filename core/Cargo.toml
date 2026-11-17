@@ -1,11 +1,14 @@
 # core/Cargo.toml -- the IDE's Rust core: everything that touches the user's files, kept free of any GUI so it builds
 # and is tested everywhere (docs/features/editor-shell.md). The Tauri shell in app/src-tauri links this crate.
-# SECURITY: four widely used crates only (supply chain, NIST SP 800-161, SSDF PW.4):
+# SECURITY: a few widely used crates only (supply chain, NIST SP 800-161, SSDF PW.4):
 #   * serde -- the derive for the records the shell sends to the webview;
 #   * serde_json -- saved gateways and chats, gateway answers (phase I2);
 #   * sha2 (RustCrypto) -- SHA-256 "version" of a file, so a save never overwrites a change made outside the IDE;
 #   * ureq 3 -- the HTTPS client for gateways (phase I2): rustls with the ring provider and the Mozilla roots
 #     (webpki-roots); default features off so no gzip. The same version the P2P-AI desktop app locks.
+#   * ed25519-dalek 2 + base64 0.22 -- verify signed gateway advertisements for the public gateway list (phase
+#     I2b); the same crates and versions the P2P-AI node uses for the same check;
+#   * getrandom 0.2 -- OS CSPRNG for probe nonces (already in the tree through ring, so no new code).
 # Versions are locked in Cargo.lock and checked with cargo audit in CI.
 [package]
 name = "p2p-ide-core"
@@ -24,3 +27,6 @@ serde = { version = "1.0.228", features = ["derive"] }
 sha2 = "0.10.9"
 serde_json = "1.0.154"
 ureq = { version = "3.5.2", default-features = false, features = ["rustls"] }
+ed25519-dalek = "2.2.0"
+base64 = "0.22.1"
+getrandom = "0.2.17"

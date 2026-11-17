@@ -1,0 +1,11 @@
+id: 2026-11-17_063821Z_shell_545bdf4
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: not recorded
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: 0
+duration_s: 1.3
+commit: 545bdf4
+machine: cloud

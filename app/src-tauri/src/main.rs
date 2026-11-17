@@ -38,6 +38,9 @@ struct AppState {
     chat_busy: AtomicBool,
     /// Set by the Stop button; the streaming loop checks it between pieces of text.
     chat_stop: Arc<AtomicBool>,
+    /// The last public gateway list (phase I2b). `gateway_add_public` takes the address from here, never from the
+    /// webview, so a picked gateway's address is the one in its verified advert (CWE-345).
+    public: Mutex<Vec<p2p_ide_core::discovery::PublicGateway>>,
 }
 
 /// What the webview learns about the open workspace: its name only.
@@ -135,6 +138,7 @@ fn main() {
             workspace: Mutex::new(None),
             chat_busy: AtomicBool::new(false),
             chat_stop: Arc::new(AtomicBool::new(false)),
+            public: Mutex::new(Vec::new()),
         })
         .invoke_handler(tauri::generate_handler![
             pick_folder,
@@ -158,7 +162,11 @@ fn main() {
             net::chat_load,
             net::chat_save,
             net::chat_delete,
-            net::chats_search
+            net::chats_search,
+            net::directories_list,
+            net::directories_set,
+            net::public_list,
+            net::gateway_add_public
         ])
         .run(tauri::generate_context!())
         .expect("the IDE window could not start");

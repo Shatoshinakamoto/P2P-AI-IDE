@@ -14,14 +14,18 @@
 //!   * CA files and local gateway setup folders are chosen in the OS dialog, not typed by the webview (CWE-73); the
 //!     core checks them and never reads the setup folder's `secrets/` (NIST AC-6).
 //!   * One chat turn at a time; Stop cancels it (CWE-400). Network calls run on the blocking pool, not the UI thread.
-//!   * Audit lines (stderr, fixed words only): gateway added, removed, key set, chat sent, refusals (NIST AU-3,
-//!     CWE-117).
+//!   * Public gateway list (phase I2b): adverts are fetched and verified in the core; the address of a picked public
+//!     gateway is taken from the cached verified list, never from the webview (CWE-345), and such a gateway is only
+//!     ever reached at a public address (CWE-918).
+//!   * Audit lines (stderr, fixed words only): gateway added, removed, key set, chat sent, public list fetched,
+//!     refusals (NIST AU-3, CWE-117).
 //!
 //! Dependencies: keyring 4 (OS keychain, default "v1" stores), tauri, tauri-plugin-dialog, p2p-ide-core.
 
 use crate::{audit, AppState};
 use p2p_ide_core::chats::{scope_for, Chat, ChatError, ChatHit, ChatStore, ChatSummary};
 use p2p_ide_core::client::{Client, Msg, NetError, StreamEnd};
+use p2p_ide_core::discovery::{self, DirError, DirectoryStore, PublicList};
 use p2p_ide_core::gateways::{self, GatewayStore, GatewayView, GwError, Kind, SecretStore, KEY_SERVICE};
 use p2p_ide_core::store;
 use serde::Serialize;
@@ -276,4 +280,77 @@ pub fn chat_delete(app: AppHandle, state: State<AppState>, id: String) -> Result
 #[tauri::command]
 pub fn chats_search(app: AppHandle, state: State<AppState>, query: String) -> Result<Vec<ChatHit>, String> {
     chat_store(&app, &state)?.search(&query).map_err(chat_err)
+}
+
+// ------------------------------------------------------------------ public gateway list (phase I2b)
+
+fn dir_err(e: DirError) -> String {
+    if e == DirError::BadUrl {
+        audit("refused", "directory_input");
+    }
+    e.message().to_string()
+}
+
+/// The directories the person chose for the public list (empty until they add one).
+#[tauri::command]
+pub fn directories_list(app: AppHandle) -> Result<Vec<String>, String> {
+    DirectoryStore::new(&data_dir(&app)?).load().map_err(dir_err)
+}
+
+/// Replaces the directory list (each entry checked in the core). Returns the saved list.
+#[tauri::command]
+pub fn directories_set(app: AppHandle, directories: Vec<String>) -> Result<Vec<String>, String> {
+    if directories.len() > 64 {
+        return Err(dir_err(DirError::TooMany));
+    }
+    let saved = DirectoryStore::new(&data_dir(&app)?).set(&directories).map_err(dir_err)?;
+    audit("directories", "set");
+    Ok(saved)
+}
+
+/// Fetches and verifies the public list from the saved directories, probes each gateway and caches the result for
+/// `gateway_add_public`. Sends no key anywhere.
+#[tauri::command]
+pub async fn public_list(app: AppHandle, state: State<'_, AppState>) -> Result<PublicList, String> {
+    let dirs = DirectoryStore::new(&data_dir(&app)?).load().map_err(dir_err)?;
+    if dirs.is_empty() {
+        return Err("add a directory first".into());
+    }
+    let list = tauri::async_runtime::spawn_blocking(move || {
+        let fetch = discovery::real_fetch();
+        discovery::list_public(&dirs, store::now_s(), &fetch)
+    })
+    .await
+    .map_err(|_| "internal error".to_string())?;
+    audit("public_list", "fetched");
+    *state.public.lock().map_err(|_| "internal error".to_string())? = list.gateways.clone();
+    Ok(list)
+}
+
+/// Saves a gateway from the last public list by its advert id, optionally with a key. The address comes from the
+/// verified advert in the cache. Returns the new gateway id.
+#[tauri::command]
+pub fn gateway_add_public(
+    app: AppHandle,
+    state: State<AppState>,
+    gateway_id: String,
+    key: Option<String>,
+) -> Result<String, String> {
+    let picked = {
+        let cache = state.public.lock().map_err(|_| "internal error".to_string())?;
+        cache.iter().find(|g| g.gateway_id == gateway_id).cloned()
+    };
+    let g = picked.ok_or("that gateway is not in the last list; refresh it")?;
+    let url = discovery::api_origin(&g.access.api_url)
+        .ok_or("this gateway's API address has a path, which the IDE cannot use yet")?;
+    // SECURITY: the name is built from checked advert fields only (region is one short line, id is hex).
+    let region: String = g.region.chars().filter(|c| c.is_ascii_alphanumeric() || *c == '-').take(16).collect();
+    let name = if region.is_empty() {
+        format!("Public {}", &g.gateway_id[..8])
+    } else {
+        format!("Public {} ({region})", &g.gateway_id[..8])
+    };
+    let id = gw_store(&app)?.add(&Keychain, &name, &url, Kind::Public, None, key.as_deref()).map_err(gw_err)?;
+    audit("gateway", "added_public");
+    Ok(id)
 }

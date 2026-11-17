@@ -5,8 +5,8 @@
   moving forward", 2026-11-17).
 * **Code:** `core/src/{gateways,client,chats,store}.rs`, `app/src-tauri/src/net.rs`,
   `app/src/components/{NetworkView,ChatView}.tsx`, `app/src/ipc.ts`.
-* **Next:** I2b adds the public gateway list from signed directory adverts. I3 gives the chat its tools (read,
-  search, patch) with diff review.
+* **Next:** I2b, the public gateway list from signed directory adverts, is done: [public-gateways.md](public-gateways.md).
+  I3 gives the chat its tools (read, search, patch) with diff review.
 
 ## 1. Overview
 
@@ -102,7 +102,7 @@ real keys.
 
 ## 6. Limitations and known risks
 
-* No public gateway list yet (I2b). No email sign-in (D4 later option).
+* No email sign-in (D4 later option). The public gateway list is in [public-gateways.md](public-gateways.md).
 * No proxy support: the IDE connects directly. People behind a company proxy cannot reach outside gateways yet.
 * On Linux the keychain needs a running Secret Service (GNOME Keyring or KWallet). Without it, adding a key fails
   with "the system keychain could not store or read the key".
@@ -129,3 +129,4 @@ real keys.
 * [Tauri shell: fmt and clippy with net.rs and keyring](../../HistoryTest/runs/2026-11-17_062007Z_shell_bd2763f/RUN.md)
 * [Webview: type check, 4 unit tests, build, UI smoke 30/30 with gateways and chat](../../HistoryTest/runs/2026-11-17_062008Z_ui-smoke_bd2763f/RUN.md)
 * [cargo audit of both lockfiles: 0 vulnerabilities, 5 unmaintained warnings (accepted)](../../HistoryTest/runs/2026-11-17_062016Z_security-scan_bd2763f/RUN.md)
+* [Windows PC: build, 29 core tests, release exe (click-through still to do)](../../HistoryTest/runs/2026-11-17_061800Z_windows_71a1e22/RUN.md)

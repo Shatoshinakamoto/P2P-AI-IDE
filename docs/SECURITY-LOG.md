@@ -10,6 +10,23 @@ Every security patch, hardening change, CVE remediation and accepted risk, newes
 - **What changed:** the icons are generated from one committed source logo by a script in the P2P-AI repository instead of placeholders; no code, CSP or capability changed.
 - **Why it is secure now:** binary assets are reproducible and reviewable (`make_icons.py --check` catches drift), and no new dependency enters this repository.
 - **Verification:** `HistoryTest/runs/2026-11-17_062058Z_branding_ea76006` (29 of 29 checks, 11 for the IDE set).
+## 2026-11-17 — Phase I2b hardening: signed public gateway list
+- **Type:** hardening
+- **CVE / CWE / advisory:** CWE-347, CWE-345, CWE-694, CWE-918, CWE-350, CWE-601, CWE-295, CWE-294, CWE-330, CWE-79,
+  CWE-400 (none: new feature)
+- **Severity:** none (new feature built with these controls)
+- **Affected:** `core/src/discovery.rs`, `core/src/client.rs` (public-only agent for kind `public`),
+  `app/src-tauri/src/net.rs`, `app/src/components/PublicGateways.tsx`
+- **What changed:** adverts are listed only after the same checks as the P2P-AI node (strict JSON, id bound to key,
+  ed25519 signature before time, public https URLs, closed `client_access` values); a resolver drops private
+  addresses after DNS for directories, probes and every request to a public-list gateway; probe nonces come from the
+  OS CSPRNG and replies must be signed; the saved address comes from the verified cache, not the webview; advert text
+  is shown as text, links not clickable; caps on every size and count.
+- **Why it is secure now:** NIST SC-13 and SC-8, SI-10 (input validation), ASVS V5 (validation) and V12.6 (SSRF);
+  the verifier passes the protocol's shared vectors, including all 25 refusal cases.
+- **Verification:** HistoryTest runs 2026-11-17_063819Z_core_545bdf4 (41 tests),
+  2026-11-17_063823Z_ui-smoke_545bdf4 (37/37), 2026-11-17_063832Z_security-scan_545bdf4 (0 vulnerabilities).
+
 ## 2026-11-17 — Phase I2a hardening: gateway keys, TLS and untrusted answers
 - **Type:** hardening
 - **CVE / CWE / advisory:** CWE-522, CWE-532, CWE-295, CWE-601, CWE-918, CWE-79, CWE-113, CWE-22, CWE-276, CWE-400

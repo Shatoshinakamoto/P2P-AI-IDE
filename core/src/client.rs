@@ -25,7 +25,8 @@
 //!
 //! Dependencies: ureq 3 (rustls + ring, same as the P2P-AI desktop app), serde_json.
 
-use crate::gateways::Gateway;
+use crate::discovery::PublicOnly;
+use crate::gateways::{Gateway, Kind};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::io::{BufRead, BufReader, Read};
@@ -211,7 +212,7 @@ impl Client {
         };
         let tls = ureq::tls::TlsConfig::builder().root_certs(roots).build();
         let make = |total: Duration| -> ureq::Agent {
-            ureq::Agent::config_builder()
+            let config = ureq::Agent::config_builder()
                 .tls_config(tls.clone())
                 // SECURITY: no proxy from the environment and no redirects, so the key reaches only this host.
                 .proxy(None)
@@ -222,8 +223,14 @@ impl Client {
                 .timeout_connect(Some(Duration::from_secs(10)))
                 .timeout_global(Some(total))
                 .user_agent("p2p-ai-ide/0.1")
-                .build()
-                .into()
+                .build();
+            if gw.kind == Kind::Public {
+                // SECURITY: a gateway from the public list may only be reached at a public address, even if its
+                // name later resolves elsewhere (DNS rebinding, CWE-918); the key never goes to a private host.
+                ureq::Agent::with_parts(config, ureq::unversioned::transport::DefaultConnector::default(), PublicOnly)
+            } else {
+                config.into()
+            }
         };
         Ok(Client {
             base: gw.url.clone(),
