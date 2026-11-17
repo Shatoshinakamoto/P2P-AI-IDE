@@ -2,6 +2,18 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-17 - App icons: the P2P-AI logo with the IDE badge
+
+Requested by Pheonix: one logo (the brain with network nodes) for every P2P-AI app, with something different per app.
+
+### Changed
+- `app/src-tauri/icons`: the logo with a purple `</>` badge replaces the placeholder; `bundle.icon` now lists the
+  full Tauri set (`32x32.png`, `128x128.png`, `128x128@2x.png`, `icon.png`, `icon.icns`, `icon.ico`). Built by
+  `branding/make_icons.py --ide-root` in the P2P-AI repository ([files/app-icons.md](files/app-icons.md)).
+
+### Test evidence
+- `HistoryTest/runs/2026-11-17_062058Z_branding_ea76006` (icons up to date and verified, imported from the P2P-AI run).
+
 ## 2026-11-17 - Phase I1: editor shell
 
 Requested by Pheonix (IDE plan, ADR-029 in the P2P-AI repository; mockup approved 2026-11-17).

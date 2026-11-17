@@ -1,0 +1,11 @@
+id: 2026-11-17_062058Z_branding_ea76006
+verdict: pass
+verdict_reason: not recorded
+passed: 29
+failed: 0
+skipped: not recorded
+count_unit: not recorded
+exit_code: not recorded
+duration_s: not recorded
+commit: ea76006ab21f344b9a66fef4e8bf2e6b42da0966
+machine: cloud

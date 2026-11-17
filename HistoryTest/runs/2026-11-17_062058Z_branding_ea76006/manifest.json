@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "b0c41989320bc7fd519f38ffb70e954a7121b406404808d8d0e866f5f0d5e338",
+   "size": 1982
+  },
+  "command.txt": {
+   "sha256": "1badc5085d381f421fa2d19e453fb89fac7909799bce8288e71a9607c3d3fa3b",
+   "size": 49
+  },
+  "environment.md": {
+   "sha256": "734c935eee2234c939dfb808f2efc31add16302f48903e682b20418048c2eb67",
+   "size": 106
+  },
+  "logs/output.log": {
+   "sha256": "380de410f2a268f3b2093ceddaf8cfc883c9d82d3e4a9d89721d4531778b93e8",
+   "size": 1217
+  },
+  "results/summary.txt": {
+   "sha256": "cbb29fedf5bbd645e8fc55d9207fcf3bc535b4b7b4fc7c37434e665da71960c5",
+   "size": 264
+  }
+ },
+ "previous": {
+  "manifest_sha256": "b3cc2e33b6532d829e62ed53565e0f01ee7570ff6ba258398f19062c3892cee1",
+  "run_id": "2026-11-17_055129Z_ui-smoke_e428736"
+ },
+ "run": {
+  "area": "branding",
+  "branch_or_pr": "claude/project-thread-de9owl",
+  "collected_utc": "2026-11-17T06:20:58Z",
+  "commit": "ea76006ab21f344b9a66fef4e8bf2e6b42da0966",
+  "count_unit": "",
+  "date_utc": "2026-11-17T06:20:58Z",
+  "dirty": false,
+  "duration_s": null,
+  "exit_code": null,
+  "failed": 0,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_062058Z_branding_ea76006",
+  "kind": "build",
+  "machine": "cloud",
+  "passed": 29,
+  "record": "imported",
+  "redactions": {},
+  "requested_by": "Apply the new logo across all apps thread",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "IDE icons verified (run in the P2P-AI repository)",
+  "verdict": "pass",
+  "verdict_reason": ""
+ },
+ "schema": 1
+}
