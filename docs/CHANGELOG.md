@@ -21,6 +21,7 @@ Requested by Pheonix ("keep moving forward with the rest").
 - Docs: `features/missions.md`, `commands/live-gateway-e2e.md`.
 - Live check `scripts/live_gateway_e2e.py` with `core/examples/live_missions.rs`: a real gateway, node and sandbox
   run an Autopilot mission end to end from the IDE core (19 of 19).
+- Windows build and tests pass at bfae51f (`HistoryTest/runs/2026-11-17_085943Z_windows_bfae51f`).
 
 ### Changed
 - `ChatView` refreshes **Changes to review** when work is brought back from a mission.

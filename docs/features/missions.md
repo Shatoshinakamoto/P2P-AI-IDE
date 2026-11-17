@@ -170,3 +170,4 @@ cargo audit (core 71 crates, shell 529 crates) and npm audit on 2026-11-17: 0 vu
 * [Webview: UI smoke 57/57 with the Missions flow (link, send, switches, start, approval as text, stop twice, collect, review)](../../HistoryTest/runs/2026-11-17_082340Z_ui-smoke_7e32c2d/RUN.md)
 * [cargo audit and npm audit: 0 vulnerabilities](../../HistoryTest/runs/2026-11-17_082359Z_security-scan_7e32c2d/RUN.md)
 * [Live: the IDE core against a real Go gateway, node and sandbox, Autopilot mission end to end: 19 passed, 0 failed](../../HistoryTest/runs/2026-11-17_085225Z_live-gateway_bfae51f/RUN.md) ([commands/live-gateway-e2e.md](../commands/live-gateway-e2e.md))
+* [Windows build and tests at bfae51f: every step passes (core 58 tests, npm audit 0, release build); PC click-through not done](../../HistoryTest/runs/2026-11-17_085943Z_windows_bfae51f/RUN.md)

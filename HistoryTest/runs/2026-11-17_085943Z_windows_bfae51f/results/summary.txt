@@ -1,0 +1,11 @@
+id: 2026-11-17_085943Z_windows_bfae51f
+verdict: pass
+verdict_reason: not recorded
+passed: 58
+failed: 0
+skipped: not recorded
+count_unit: not recorded
+exit_code: not recorded
+duration_s: not recorded
+commit: bfae51f
+machine: pc
