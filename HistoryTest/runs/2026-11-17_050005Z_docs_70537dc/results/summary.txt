@@ -1,0 +1,11 @@
+id: 2026-11-17_050005Z_docs_70537dc
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: not recorded
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: 0
+duration_s: 0.0
+commit: 70537dce35534a338d540890604218b780f1527c
+machine: cloud

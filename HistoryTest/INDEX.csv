@@ -5,3 +5,4 @@ run_id,date_utc,area,commit,branch_or_pr,machine,verdict,passed,failed,skipped,s
 2026-11-17_045806Z_ui-smoke_fe528ba,2026-11-17T04:58:06Z,ui-smoke,fe528ba,claude/project-thread-dfop2y,cloud container,pass,,,,"UI smoke: built webview in headless Chromium with a fake workspace, under the shipped CSP"
 2026-11-17_045808Z_security-scan_fe528ba,2026-11-17T04:58:08Z,security-scan,fe528ba,claude/project-thread-dfop2y,cloud container,pass,,,,npm audit of the webview dependencies (after the DOMPurify override)
 2026-11-17_045933Z_security-scan_fe528ba,2026-11-17T04:59:33Z,security-scan,fe528ba,claude/project-thread-dfop2y,cloud container,pass,,,,cargo audit of both Rust lockfiles (RustSec)
+2026-11-17_050005Z_docs_70537dc,2026-11-17T05:00:05Z,docs,70537dc,claude/project-thread-dfop2y,cloud container,pass,,,,Link check of README and docs

@@ -1,0 +1,62 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "fc949b5f1f2eb2973c135b2d9cd308ec33cdb52b1d23870cd4bdee224f6e4854",
+   "size": 1481
+  },
+  "artifacts/linkcheck.py": {
+   "sha256": "3e618fefd08059a6f0549edb1bcde1b92388c11e94dcf7838e9509dffe6b610f",
+   "size": 560
+  },
+  "command.txt": {
+   "sha256": "5b5b8d3141c1ff9cf89f3559d3771ca01c557fee9fd2bac80a0c3d65d572eb34",
+   "size": 197
+  },
+  "environment.md": {
+   "sha256": "890440ccdd97142a8d3255db09d8aae0bdb5c3c471f0eb2942e435035d0bb9e5",
+   "size": 193
+  },
+  "logs/output.log": {
+   "sha256": "a6345963738404f8f68a4358cabb2a4148faaf21382d9889944cfccfe9d3baaf",
+   "size": 1323
+  },
+  "results/summary.txt": {
+   "sha256": "bd4a4a3dd8fe04f58947f6dc91f14d37a148bc9ee3db507de2217335389a0b70",
+   "size": 284
+  }
+ },
+ "previous": {
+  "manifest_sha256": "a1a1eb3b4d181b8a29733cc02c6bdee0c5dee0d1107f934a8ace16e03ee67a53",
+  "run_id": "2026-11-17_045933Z_security-scan_fe528ba"
+ },
+ "run": {
+  "area": "docs",
+  "branch_or_pr": "claude/project-thread-dfop2y",
+  "collected_utc": "",
+  "commit": "70537dce35534a338d540890604218b780f1527c",
+  "count_unit": "",
+  "date_utc": "2026-11-17T05:00:05Z",
+  "dirty": false,
+  "duration_s": 0.0,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_050005Z_docs_70537dc",
+  "kind": "other",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "Build the P2P-AI IDE app shell (phase I1)",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Link check of README and docs",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}
