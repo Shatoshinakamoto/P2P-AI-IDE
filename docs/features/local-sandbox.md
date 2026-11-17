@@ -55,7 +55,10 @@ sequenceDiagram
   linked read-only instead of copied. Limits: 20 000 files, 512 MiB, and files over 100 MiB are left out.
 * **Per-folder cache.** `<data>/run-cache/<folder key>/` holds `target` (`CARGO_TARGET_DIR`), `go-build`
   (`GOCACHE`), `gopath`, `npm` and `xdg` caches, plus a `cargo-home` whose `registry` and `git` link to
-  `~/.cargo` (read only). A second run reuses builds (verified: the second cargo run did not recompile).
+  `~/.cargo` (read only). Built dependencies are reused by the next run (verified: the build output lands in the
+  cache). The project's own crate or package is rebuilt each run, since every run works on a fresh copy at a new
+  path. (Corrected 2026-11-17: an earlier version of this page said the second cargo run did not recompile; the
+  check behind that could not see compiling with `--quiet`.)
 * **Program.** The program is looked up on PATH: the copy's `.venv/bin` first, then the person's PATH entries that
   lie in system or toolchain folders (absolute, outside the open folder). A program given with a path is refused.
 * **Frameworks.** The same command lines as the gateway, for example `cargo test --offline --quiet` and
@@ -216,7 +219,7 @@ downloaded. `icacls.exe` from the Windows system folder (never looked up on PATH
 ## 8. Test evidence
 
 * [Core: fmt, clippy, 68 unit + 5 + 2 tests incl. `local_runs_are_confined` on the real kernel (no network, home hidden, real folder untouched, background process gone)](../../HistoryTest/runs/2026-11-17_131847Z_core_e980a8c/RUN.md)
-* [Real toolchains inside the sandbox: cargo twice (cache reused), go, npm, make, unittest: 6 passed, 0 failed, 0 skipped](../../HistoryTest/runs/2026-11-17_131900Z_local-toolchains_e980a8c/RUN.md)
+* [Real toolchains inside the sandbox: cargo twice, go, npm, make, unittest: 6 passed, 0 failed, 0 skipped](../../HistoryTest/runs/2026-11-17_131900Z_local-toolchains_e980a8c/RUN.md)
 * [Tauri shell: fmt and clippy with `runners_list` and `run_on`](../../HistoryTest/runs/2026-11-17_131926Z_shell_e980a8c/RUN.md)
 * [Webview: UI smoke 77/77 with the runner picker and the local sandbox card text](../../HistoryTest/runs/2026-11-17_131928Z_ui-smoke_e980a8c/RUN.md)
 * [Dependency audit: cargo audit (core 88, shell 539 crates) and npm audit, 0 vulnerabilities](../../HistoryTest/runs/2026-11-17_131937Z_security-scan_e980a8c/RUN.md)
