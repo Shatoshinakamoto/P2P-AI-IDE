@@ -152,7 +152,7 @@ This repository started on 2026-11-17; every run since then is here.
 | Date (UTC) | Area | Commit | Verdict | Run |
 |---|---|---|---|---|
 | 2026-11-17 12:52:33 | security-scan | `6ebd731` | pass | [OSV lookup of the crates cap-std adds](runs/2026-11-17_125233Z_security-scan_6ebd731/RUN.md) |
-| 2026-11-17 12:52:26 | shell | `6ebd731` | invalid | [Tauri shell clippy (not possible in the cloud container)](runs/2026-11-17_125226Z_shell_6ebd731/RUN.md) |
+| 2026-11-17 12:52:26 | shell | `6ebd731` | invalid | [INVALID (The cloud container has no GTK/WebKit development libraries (gdk-sys build script failed), so the Tauri shell cannot build here. No public function of core changed, so the shell's calls are u](runs/2026-11-17_125226Z_shell_6ebd731/RUN.md) |
 | 2026-11-17 12:52:23 | core | `6ebd731` | pass | [Core tests, fmt and clippy after moving workspace file access to cap-std handles](runs/2026-11-17_125223Z_core_6ebd731/RUN.md) |
 | 2026-11-17 09:15:18 | windows | `71c6f12` | pass | [Windows core re-run after the real-git test fix (71c6f12)](runs/2026-11-17_091518Z_windows_71c6f12/RUN.md) |
 | 2026-11-17 09:13:14 | core | `71c6f12` | pass | [Core fmt, clippy and tests after the Windows-safe real-git test fix](runs/2026-11-17_091314Z_core_71c6f12/RUN.md) |
