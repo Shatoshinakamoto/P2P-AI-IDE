@@ -2,7 +2,10 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
-## 2026-11-17 - Picomatch ReDoS logged as an accepted risk
+## 2026-11-17 - npm audit gate with dated dev-only exceptions; picomatch ReDoS logged as an accepted risk
+
+### Changed
+- CI's supply-chain job and the local CI run `scripts/npm_audit_gate.py app` instead of `npm audit --audit-level=high`: shipped dependencies stay strict, and dev dependencies too, except advisories listed with an expiry in `app/npm-audit-exceptions.json` ([commands/npm-audit-gate.md](commands/npm-audit-gate.md)). The owner chose this option. Tests: [run](../HistoryTest/runs/2026-11-17_235209Z_security-scan_dc6d647/RUN.md).
 
 ### Security
 - GHSA-fc5q-39xc-vjpf (picomatch ReDoS, CVE-2026-112366) has no fixed release; it reaches only build tooling (`vite`, `@tailwindcss/vite`), not the installers. Logged as an accepted risk in [SECURITY-LOG.md](SECURITY-LOG.md), to revisit when picomatch ships a fix. Run: [HistoryTest/runs/2026-11-17_232934Z_security-scan_64acea3](../HistoryTest/runs/2026-11-17_232934Z_security-scan_64acea3/RUN.md).

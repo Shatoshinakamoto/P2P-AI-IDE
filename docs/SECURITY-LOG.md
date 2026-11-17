@@ -10,9 +10,11 @@ Every security patch, hardening change, CVE remediation and accepted risk, newes
 - **Affected:** `picomatch` up to and including 4.0.7 (every published version; 4.0.7 is the newest on npm as of
   2026-11-17). Reached only through dev dependencies in `app/` (`vite` 6 and `@tailwindcss/vite`, through `tinyglobby` and `fdir`). `npm audit --omit=dev` reports 0 vulnerabilities,
   so nothing shipped in the installers contains it.
-- **What changed:** nothing in the code yet. There is no patched release to move to (upstream fix proposed in
-  micromatch/picomatch PR 194, not released). npm's suggested "fix" is a vite downgrade that still pulls picomatch,
-  so it was not applied.
+- **What changed:** no dependency change: there is no patched release to move to (upstream fix proposed in
+  micromatch/picomatch PR 194, not released), and npm's suggested "fix" is a vite downgrade that still pulls
+  picomatch. The owner chose a dated exception: CI and the local CI now run `scripts/npm_audit_gate.py`, which fails
+  on any high or critical advisory in shipped dependencies, and in dev dependencies unless the exact advisory is
+  listed, unexpired, in `app/npm-audit-exceptions.json` (this one expires 2026-12-31).
 - **Why the risk is accepted:** the flaw is a CPU-exhaustion (availability) issue when an attacker controls a glob
   pattern such as `+(*)`. In this repository picomatch runs only inside build and lint tools on a developer or CI
   machine, with glob patterns written in our own config files; no user, network peer or model output supplies a
