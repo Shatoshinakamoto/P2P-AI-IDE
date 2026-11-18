@@ -1,0 +1,2 @@
+# run in repository folder `.`, as an argument list (no shell)
+bash -c python3 -m unittest discover -s scripts -p 'test_npm_audit_gate*.py' && python3 scripts/npm_audit_gate.py app
