@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "aa90d3184d9254651408f2caf4a8a2e08e6c7ee5fa6f14a7ca422b4725dddfd6",
+   "size": 1855
+  },
+  "command.txt": {
+   "sha256": "1badc5085d381f421fa2d19e453fb89fac7909799bce8288e71a9607c3d3fa3b",
+   "size": 49
+  },
+  "environment.md": {
+   "sha256": "edcb4b24d0eda398045ed8b1719697ed10abf05a0071ddb3970098cef58ffd95",
+   "size": 132
+  },
+  "logs/audit-ide.log": {
+   "sha256": "a33a2a2953ac0c84cb38a05c439c4f13042c349d88026ee0e63ceeb1a58319c6",
+   "size": 886
+  },
+  "results/summary.txt": {
+   "sha256": "dc0893b075f12bd2061e8e7d437bd3ab44883b1cf77e7d67d32f57104356d248",
+   "size": 335
+  }
+ },
+ "previous": {
+  "manifest_sha256": "5874b2e666e60f638c1ce9549f8c432f3f024e3ec1b608c6ee848032420bd32c",
+  "run_id": "2026-11-17_193821Z_installers_377af6f"
+ },
+ "run": {
+  "area": "security-scan",
+  "branch_or_pr": "claude/project-thread-jm1j5r",
+  "collected_utc": "2026-11-17T23:29:34Z",
+  "commit": "64acea317b35bcaac6645d1675eafa3b1c276a0a",
+  "count_unit": "",
+  "date_utc": "2026-11-17T23:29:34Z",
+  "dirty": true,
+  "duration_s": null,
+  "exit_code": null,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_232934Z_security-scan_64acea3",
+  "kind": "scan",
+  "machine": "cloud",
+  "passed": null,
+  "record": "imported",
+  "redactions": {},
+  "requested_by": "picomatch ReDoS thread",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "npm audit for GHSA-fc5q-39xc-vjpf (picomatch ReDoS)",
+  "verdict": "partial",
+  "verdict_reason": "Expected result; the advisory is dev-only and unfixed."
+ },
+ "schema": 1
+}

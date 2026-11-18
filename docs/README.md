@@ -26,4 +26,6 @@ The IDE's plan and its decisions (ADR-029) live in the P2P-AI repository: `docs/
 | [features/installers.md](features/installers.md) | Windows and Linux installers and signed releases, built on the PC with the P2P-AI release script |
 | [files/app-icons.md](files/app-icons.md) | The app icons: P2P-AI logo with the IDE badge, how they are built |
 | [configuration/tauri-conf.md](configuration/tauri-conf.md) | `tauri.conf.json` (window, CSP) and `capabilities/default.json`, every key |
+| [commands/npm-audit-gate.md](commands/npm-audit-gate.md) | The npm audit gate `scripts/npm_audit_gate.py`: shipped deps always strict, dated dev-only exceptions |
+| [files/npm-audit-exceptions.md](files/npm-audit-exceptions.md) | `app/npm-audit-exceptions.json`: the dev-only advisory exceptions and why each is there |
 | [../HistoryTest/README.md](../HistoryTest/README.md) | The record of every test run |

@@ -1,0 +1,14 @@
+{
+  "comment": "Read by scripts/npm_audit_gate.py. Each entry is documented in docs/files/npm-audit-exceptions.md and docs/SECURITY-LOG.md. Dev-only advisories with no fixed version; never applies to shipped dependencies.",
+  "exceptions": [
+    {
+      "id": "GHSA-fc5q-39xc-vjpf",
+      "package": "picomatch",
+      "reason": "ReDoS (CVE-2026-112366, CWE-1333) in picomatch <= 4.0.7, no fixed release yet. Reached only through vite and tailwind build tooling (devDependencies); not in the installers. Globs come from our own config files, not from users.",
+      "requested_by": "project owner, via the picomatch ReDoS thread (2026-11-17)",
+      "added": "2026-11-17",
+      "expires": "2026-12-31",
+      "review": "npm view picomatch version: when a release after 4.0.7 exists, update the lock file and remove this entry."
+    }
+  ]
+}

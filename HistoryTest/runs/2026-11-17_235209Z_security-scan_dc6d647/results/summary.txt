@@ -1,0 +1,11 @@
+id: 2026-11-17_235209Z_security-scan_dc6d647
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: 14
+failed: 0
+skipped: 0
+count_unit: tests
+exit_code: 0
+duration_s: 0.8
+commit: dc6d6473062820a4ff42436332672c54c02fa950
+machine: cloud

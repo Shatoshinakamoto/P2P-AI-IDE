@@ -76,3 +76,6 @@ run_id,date_utc,area,commit,branch_or_pr,machine,verdict,passed,failed,skipped,s
 2026-11-17_140753Z_security-scan_104f232,2026-11-17T14:07:53Z,security-scan,104f232,claude/project-thread-dfop2y,cloud container,pass,,,,cargo audit and npm audit (I5d)
 2026-11-17_140846Z_windows-containers_8bba2b4,2026-11-17T14:08:46Z,windows-containers,8bba2b4,claude/project-thread-dfop2y,user PC (Windows),pass,86,0,0,Container runner on the PC with Docker Desktop 29.9.2 at 8bba2b4: core tests and real containers
 2026-11-17_193821Z_installers_377af6f,2026-11-17T19:38:21Z,installers,377af6f,,cloud container,pass,,,,Licence gate after regenerating THIRD-PARTY-NOTICES.txt (I5c/I5d crates)
+2026-11-17_232934Z_security-scan_64acea3,2026-11-17T23:29:34Z,security-scan,64acea3,claude/project-thread-jm1j5r,cloud container,partial,,,,npm audit for GHSA-fc5q-39xc-vjpf (picomatch ReDoS)
+2026-11-17_235209Z_security-scan_dc6d647,2026-11-17T23:52:09Z,security-scan,dc6d647,#15,cloud container,pass,14,0,0,npm audit gate: unit tests and live gate on app/
+2026-11-18_011129Z_security-scan_aee787c,2026-11-18T01:11:29Z,security-scan,aee787c,PR #15 before merge,cloud container,pass,14,0,0,npm audit gate on app/ and its unit tests before merging PR 15
