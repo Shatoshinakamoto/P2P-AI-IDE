@@ -2,6 +2,18 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-17 - README and user guide with screenshots
+
+### Added
+- [user-guide.md](user-guide.md): a screenshot tour of every view (editor, search, source control, gateways, agent chat, change review, missions, run and test, run approval), written for people new to the IDE.
+- `docs/images/` (10 pictures) and `app/tests/docs-shots.mjs`, which retakes them from the built webview ([commands/docs-screenshots.md](commands/docs-screenshots.md)).
+
+### Changed
+- README.md rewritten for new users: what the IDE does, a feature table with screenshots, getting started, and an up-to-date status (it still said phase I1).
+
+### Tests
+- Screenshots: [run](../HistoryTest/runs/2026-11-17_225231Z_docs-shots_64acea3/RUN.md), 10 pictures, exit 0. UI smoke test still passes: [run](../HistoryTest/runs/2026-11-17_225240Z_ui_64acea3/RUN.md), 81 of 81.
+
 ## 2026-11-17 - npm audit gate with dated dev-only exceptions; picomatch ReDoS logged as an accepted risk
 
 ### Changed

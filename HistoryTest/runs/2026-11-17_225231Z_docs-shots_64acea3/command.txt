@@ -1,0 +1,2 @@
+# run in repository folder `app`, as an argument list (no shell)
+node tests/docs-shots.mjs

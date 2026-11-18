@@ -1,0 +1,11 @@
+id: 2026-11-17_225240Z_ui_64acea3
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: not recorded
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: 0
+duration_s: 5.8
+commit: 64acea317b35bcaac6645d1675eafa3b1c276a0a
+machine: cloud

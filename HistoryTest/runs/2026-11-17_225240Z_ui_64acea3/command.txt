@@ -1,0 +1,2 @@
+# run in repository folder `app`, as an argument list (no shell)
+env SHOT=/tmp/claude-0/s1.png SHOT_DIFF=/tmp/claude-0/s2.png SHOT_CHAT=/tmp/claude-0/s3.png SHOT_RUN=/tmp/claude-0/s4.png node tests/ui-smoke.mjs

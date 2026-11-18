@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "910184c95c530e95b6581be155d6f68056d42763d9244b035eae6959ef7786d3",
+   "size": 1713
+  },
+  "command.txt": {
+   "sha256": "d22e5b5a776cc01e9c0f526bed84991e2c91b13503660e9cb2c1155b21463dc8",
+   "size": 91
+  },
+  "environment.md": {
+   "sha256": "70d4a7e591007c845e2f069381087c93f5d2f8d53cbacfdfafdea5032ff8cc32",
+   "size": 199
+  },
+  "logs/output.log": {
+   "sha256": "96c8fa7b2a4860c0d3b13508584e8b4d05810f0d25fd4f87f5761baa8911201b",
+   "size": 199
+  },
+  "results/summary.txt": {
+   "sha256": "f8515272bae67a6e4ab791bc47c52961f5a4885d05c176242582e53596128701",
+   "size": 280
+  }
+ },
+ "previous": {
+  "manifest_sha256": "5874b2e666e60f638c1ce9549f8c432f3f024e3ec1b608c6ee848032420bd32c",
+  "run_id": "2026-11-17_193821Z_installers_377af6f"
+ },
+ "run": {
+  "area": "docs-shots",
+  "branch_or_pr": "claude/project-thread-fudnju",
+  "collected_utc": "",
+  "commit": "64acea317b35bcaac6645d1675eafa3b1c276a0a",
+  "count_unit": "",
+  "date_utc": "2026-11-17T22:52:31Z",
+  "dirty": true,
+  "duration_s": 8.7,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_225231Z_docs-shots_64acea3",
+  "kind": "e2e",
+  "machine": "cloud",
+  "passed": 10,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "Write docs and README with screenshots",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "IDE documentation screenshots (10) from the built webview with the ui-smoke fake bridge",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}
