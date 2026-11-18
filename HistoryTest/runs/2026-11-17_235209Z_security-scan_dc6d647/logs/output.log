@@ -1,0 +1,21 @@
+test_clean_passes (test_npm_audit_gate.GateTests.test_clean_passes) ... ok
+test_dev_advisory_with_exception_passes (test_npm_audit_gate.GateTests.test_dev_advisory_with_exception_passes) ... ok
+test_dev_advisory_without_exception_fails (test_npm_audit_gate.GateTests.test_dev_advisory_without_exception_fails) ... ok
+test_exception_bound_to_package (test_npm_audit_gate.GateTests.test_exception_bound_to_package) ... ok
+test_exception_never_applies_to_shipped (test_npm_audit_gate.GateTests.test_exception_never_applies_to_shipped) ... ok
+test_expired_fails (test_npm_audit_gate.GateTests.test_expired_fails) ... ok
+test_missing_key_fails (test_npm_audit_gate.GateTests.test_missing_key_fails) ... ok
+test_moderate_ignored (test_npm_audit_gate.GateTests.test_moderate_ignored) ... ok
+test_npm_error_fails (test_npm_audit_gate.GateTests.test_npm_error_fails) ... ok
+test_old_report_format_fails (test_npm_audit_gate.GateTests.test_old_report_format_fails) ... ok
+test_other_advisory_still_fails (test_npm_audit_gate.GateTests.test_other_advisory_still_fails) ... ok
+test_too_long_fails (test_npm_audit_gate.GateTests.test_too_long_fails) ... ok
+test_unused_exception_is_note_not_failure (test_npm_audit_gate.GateTests.test_unused_exception_is_note_not_failure) ... ok
+test_wildcard_id_fails (test_npm_audit_gate.GateTests.test_wildcard_id_fails) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.001s
+
+OK
+excepted (dev only): picomatch GHSA-fc5q-39xc-vjpf, see npm-audit-exceptions.json
+npm audit gate: passed

@@ -1,0 +1,7 @@
+..............
+----------------------------------------------------------------------
+Ran 14 tests in 0.001s
+
+OK
+excepted (dev only): picomatch GHSA-fc5q-39xc-vjpf, see npm-audit-exceptions.json
+npm audit gate: passed

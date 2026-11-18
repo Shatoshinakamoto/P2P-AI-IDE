@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "2d204238961c086160cfdf714c4c26eceea02e8f8a18e3aa0bad6abde28100b0",
+   "size": 1486
+  },
+  "command.txt": {
+   "sha256": "f26f415238d2cfc5e5c8a57674a445d1c8c273be3aa32024ed84c3e222324fc4",
+   "size": 190
+  },
+  "environment.md": {
+   "sha256": "8ae2498d12cb96c4d871b2af791a81d945d00524a39294590aebe22cbc2ec948",
+   "size": 202
+  },
+  "logs/output.log": {
+   "sha256": "be667cd776690154acbabf8f3b5a831e4fb6b2192d9c966382208a3e662fd95e",
+   "size": 1556
+  },
+  "results/summary.txt": {
+   "sha256": "d82db42f9bf006d20bfa724195988d0a6ee4b3dcbc45ba3783b7e8bce4c44295",
+   "size": 254
+  }
+ },
+ "previous": {
+  "manifest_sha256": "d9cc0ae27c43ba91d9905426cc9be8c2a2a0f78ba3f1b0a7202555238fcf57c0",
+  "run_id": "2026-11-17_232934Z_security-scan_64acea3"
+ },
+ "run": {
+  "area": "security-scan",
+  "branch_or_pr": "#15",
+  "collected_utc": "",
+  "commit": "dc6d6473062820a4ff42436332672c54c02fa950",
+  "count_unit": "tests",
+  "date_utc": "2026-11-17T23:52:09Z",
+  "dirty": true,
+  "duration_s": 0.8,
+  "exit_code": 0,
+  "failed": 0,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-17_235209Z_security-scan_dc6d647",
+  "kind": "scan",
+  "machine": "cloud",
+  "passed": 14,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "picomatch ReDoS thread",
+  "shortened_logs": [],
+  "skipped": 0,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "npm audit gate: unit tests and live gate on app/",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

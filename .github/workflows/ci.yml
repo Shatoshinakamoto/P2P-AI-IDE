@@ -1,6 +1,6 @@
 # .github/workflows/ci.yml -- checks every push and pull request of the P2P-AI IDE.
 # Jobs: the Rust core (fmt, clippy, tests), the Tauri shell (clippy on Linux), the webview (type check, unit tests,
-# build, UI smoke test in headless Chromium) and supply-chain checks (npm audit, cargo audit).
+# build, UI smoke test in headless Chromium) and supply-chain checks (npm audit gate, cargo audit).
 # SECURITY: read-only token (least privilege, NIST AC-6); actions pinned to full commit SHAs, not tags, so a moved tag
 # cannot change what runs (SLSA, NIST SP 800-161); no secrets are used; npm ci with --ignore-scripts so dependency
 # install scripts never run (CWE-829).
@@ -73,9 +73,12 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1 (same pin as the P2P-AI repo)
         with:
           persist-credentials: false
-      - name: npm audit (fails on high or critical)
-        working-directory: app
-        run: npm audit --audit-level=high
+      # SECURITY: fails on any high or critical advisory in shipped dependencies, and in dev dependencies unless it
+      # is listed, unexpired, in app/npm-audit-exceptions.json (docs/files/npm-audit-exceptions.md; NIST RA-5, SI-2).
+      - name: npm audit gate (fails on high or critical; dated dev-only exceptions)
+        run: |
+          python3 -I -m unittest discover -s scripts -p test_npm_audit_gate.py
+          python3 -I scripts/npm_audit_gate.py app
       - name: cargo audit (RustSec advisory database)
         run: |
           cargo install cargo-audit --locked --version 0.22.1

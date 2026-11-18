@@ -1,0 +1,11 @@
+id: 2026-11-18_011129Z_security-scan_aee787c
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: 14
+failed: 0
+skipped: 0
+count_unit: tests
+exit_code: 0
+duration_s: 1.1
+commit: aee787c77ca3cf320ea8cc11f78770befd599eb6
+machine: cloud
