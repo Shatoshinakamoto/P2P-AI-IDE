@@ -15,6 +15,7 @@ import {
   gatewaySetKey, gatewaysList, type GatewayCheck, type GatewayList,
 } from "../ipc.ts";
 import { PublicGateways } from "./PublicGateways.tsx";
+import { TandemForgeConnect } from "./TandemForgeConnect.tsx";
 import { Tip } from "./Tip.tsx";
 
 interface Props {
@@ -101,13 +102,13 @@ export function NetworkView({ onChanged, onNotice }: Props) {
               <label className="flex items-center gap-2">
                 <input type="radio" name="active-gateway" checked={list.active === g.id} onChange={() => void act(() => gatewaySetActive(g.id), `Using ${g.name}`)} />
                 <span className="truncate font-semibold text-ide-bright">{g.name}</span>
-                <span className="ml-auto text-[11px] text-ide-dim">{g.kind === "local" ? "this computer" : g.kind === "public" ? "public list" : "manual"}</span>
+                <span className="ml-auto text-[11px] text-ide-dim">{g.kind === "local" ? "this computer" : g.kind === "public" ? "public list" : g.kind === "tandemforge" ? "TandemForge" : "manual"}</span>
               </label>
               <div className="truncate pl-5 text-xs text-ide-dim" title={g.url}>{g.url}</div>
               <div className="flex flex-wrap items-center gap-1 pl-5 pt-1 text-xs">
                 {g.dev ? <span className="flex items-center gap-1 rounded bg-[#5a1d1d] px-1.5 text-white"><ShieldAlert size={12} aria-hidden />INSECURE — DEV ONLY</span> : null}
                 {g.pinned ? <span className="flex items-center gap-1 text-ide-dim"><Lock size={12} aria-hidden />CA pinned</span> : null}
-                {g.has_key ? <span className="flex items-center gap-1 text-ide-dim"><KeyRound size={12} aria-hidden />key in keychain</span> : <span className="text-[#cca700]">no key</span>}
+                {g.has_key ? <span className="flex items-center gap-1 text-ide-dim"><KeyRound size={12} aria-hidden />{g.kind === "tandemforge" ? "paired (code in keychain)" : "key in keychain"}</span> : <span className="text-[#cca700]">no key</span>}
               </div>
               {c ? (
                 <div className="pl-5 pt-1 text-xs" role="status">
@@ -118,10 +119,14 @@ export function NetworkView({ onChanged, onNotice }: Props) {
               ) : null}
               <div className="flex flex-wrap gap-1 pl-4 pt-1 text-xs">
                 <button type="button" className={btn} onClick={() => void check(g.id)}><RefreshCw size={12} className="mr-1 inline" aria-hidden />Check</button>
-                <button type="button" className={btn} onClick={() => { setKeyFor(keyFor === g.id ? null : g.id); setNewKey(""); }}>{g.has_key ? "Replace key" : "Add key"}</button>
-                <Tip text="Trust only this CA for this gateway (for a private or self-signed gateway).">
-                  <button type="button" className={btn} onClick={() => void act(() => gatewayPickCa(g.id))}>{g.pinned ? "Change CA" : "Pin CA"}</button>
-                </Tip>
+                {g.kind === "tandemforge" ? null : (
+                  <>
+                    <button type="button" className={btn} onClick={() => { setKeyFor(keyFor === g.id ? null : g.id); setNewKey(""); }}>{g.has_key ? "Replace key" : "Add key"}</button>
+                    <Tip text="Trust only this CA for this gateway (for a private or self-signed gateway).">
+                      <button type="button" className={btn} onClick={() => void act(() => gatewayPickCa(g.id))}>{g.pinned ? "Change CA" : "Pin CA"}</button>
+                    </Tip>
+                  </>
+                )}
                 {g.pinned && g.kind !== "local" ? <button type="button" className={btn} onClick={() => void act(() => gatewayClearCa(g.id), "CA removed")}>Unpin</button> : null}
                 <button
                   type="button"
@@ -154,6 +159,7 @@ export function NetworkView({ onChanged, onNotice }: Props) {
           );
         })}
       </ul>
+      <TandemForgeConnect onPaired={() => void refresh()} onNotice={onNotice} />
       {adding ? (
         <form className="flex flex-col gap-2 rounded border border-ide-line p-2" onSubmit={(e) => { e.preventDefault(); void add(false); }}>
           <label className="text-xs text-ide-dim">Name<input aria-label="Gateway name" value={name} onChange={(e) => setName(e.target.value)} className={input} placeholder="My gateway" /></label>

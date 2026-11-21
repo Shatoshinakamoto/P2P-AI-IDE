@@ -48,6 +48,9 @@ pub enum Kind {
     /// Picked from the public list (phase I2b): its address came from a signed advert. Connections to it go only
     /// to public addresses (discovery::PublicOnly, CWE-918).
     Public,
+    /// TandemForge running on this computer (phase I7): always `http://127.0.0.1:<port>`, the port re-read from
+    /// TandemForge's engine file before each use (see tandemforge.rs).
+    TandemForge,
 }
 
 /// One saved gateway. `ca_pem` is the pinned trust root when present.
@@ -63,9 +66,10 @@ pub struct Gateway {
 }
 
 impl Gateway {
-    /// True for a plain-http loopback URL (INSECURE — DEV ONLY).
+    /// True for a plain-http loopback URL typed in by hand (INSECURE — DEV ONLY). TandemForge on this computer is
+    /// plain http on loopback by design (a local process, nothing leaves the computer), so it is not flagged.
     pub fn dev(&self) -> bool {
-        self.url.starts_with("http://")
+        self.url.starts_with("http://") && self.kind != Kind::TandemForge
     }
 }
 
@@ -304,6 +308,8 @@ impl GatewayStore {
             let ok = store::id_ok(&g.id)
                 && check_name(&g.name).is_ok()
                 && check_url(&g.url).as_deref() == Ok(g.url.as_str())
+                // SECURITY: a TandemForge entry may only ever point at 127.0.0.1 (NIST SC-7).
+                && (g.kind != Kind::TandemForge || crate::tandemforge::is_engine_url(&g.url))
                 && g.ca_pem.as_deref().map(|c| check_ca(c).is_ok()).unwrap_or(true);
             if !ok {
                 return Err(GwError::Store(StoreError::Bad));
@@ -383,6 +389,62 @@ impl GatewayStore {
         self.save(&list)
     }
 
+    /// Saves (or updates) the TandemForge-on-this-computer entry with its current URL and pairing code, and makes
+    /// it active. There is at most one. Returns its id.
+    ///
+    /// Security: the URL must be one [`crate::tandemforge::url_for`] made (loopback only); the code goes to the
+    /// keychain, never to the list file.
+    pub fn save_tandemforge(&self, secrets: &dyn SecretStore, url: &str, code: &str) -> Result<String, GwError> {
+        if !crate::tandemforge::is_engine_url(url) {
+            return Err(GwError::BadUrl);
+        }
+        let code = crate::tandemforge::check_code(code).map_err(|_| GwError::BadKey)?;
+        let mut list = self.load()?;
+        // Another saved gateway at the same address (a manual dev entry) would be ambiguous.
+        if list.gateways.iter().any(|g| g.url == url && g.kind != Kind::TandemForge) {
+            return Err(GwError::Duplicate);
+        }
+        let id = match list.gateways.iter_mut().find(|g| g.kind == Kind::TandemForge) {
+            Some(g) => {
+                g.url = url.to_string();
+                g.id.clone()
+            }
+            None => {
+                if list.gateways.len() >= MAX_GATEWAYS {
+                    return Err(GwError::TooMany);
+                }
+                let id = store::new_id();
+                list.gateways.push(Gateway {
+                    id: id.clone(),
+                    name: "TandemForge (this computer)".into(),
+                    url: url.to_string(),
+                    kind: Kind::TandemForge,
+                    ca_pem: None,
+                });
+                id
+            }
+        };
+        secrets.set(&id, &code)?;
+        list.active = Some(id.clone());
+        self.save(&list)?;
+        Ok(id)
+    }
+
+    /// Points the TandemForge entry `id` at TandemForge's port of this launch.
+    pub fn set_tandemforge_url(&self, id: &str, url: &str) -> Result<(), GwError> {
+        if !crate::tandemforge::is_engine_url(url) {
+            return Err(GwError::BadUrl);
+        }
+        let mut list = self.load()?;
+        let g =
+            list.gateways.iter_mut().find(|g| g.id == id && g.kind == Kind::TandemForge).ok_or(GwError::NotFound)?;
+        if g.url == url {
+            return Ok(());
+        }
+        g.url = url.to_string();
+        self.save(&list)
+    }
+
     /// Replaces (or with `None`, removes) the pinned CA of a gateway.
     pub fn set_ca(&self, id: &str, ca_pem: Option<&str>) -> Result<(), GwError> {
         let ca = ca_pem.map(check_ca).transpose()?;
@@ -422,6 +484,39 @@ impl GatewayStore {
             })
             .collect();
         Ok((views, list.active))
+    }
+}
+
+#[cfg(test)]
+mod tandemforge_tests {
+    use super::*;
+
+    #[test]
+    fn one_tandemforge_entry_on_loopback_with_its_code_in_the_keychain() {
+        let dir = std::env::temp_dir().join(format!("gw-tf-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).unwrap();
+        let s = GatewayStore::new(&dir);
+        let sec = MemSecrets::default();
+        let code = format!("tfa_{}", "b".repeat(43));
+        assert_eq!(s.save_tandemforge(&sec, "http://10.0.0.5:41234", &code), Err(GwError::BadUrl));
+        assert_eq!(s.save_tandemforge(&sec, "http://127.0.0.1:41234", "sk-nope"), Err(GwError::BadKey));
+        let id = s.save_tandemforge(&sec, "http://127.0.0.1:41234", &code).unwrap();
+        let again = s.save_tandemforge(&sec, "http://127.0.0.1:41999", &code).unwrap();
+        assert_eq!(id, again);
+        let list = s.load().unwrap();
+        assert_eq!(list.gateways.len(), 1);
+        assert_eq!(list.active.as_deref(), Some(id.as_str()));
+        let g = s.get(&id).unwrap();
+        assert_eq!((g.kind, g.url.as_str(), g.dev()), (Kind::TandemForge, "http://127.0.0.1:41999", false));
+        assert_eq!(sec.get(&id).unwrap().as_deref(), Some(code.as_str()));
+        assert!(!std::fs::read_to_string(dir.join(FILE)).unwrap().contains(&code));
+        s.set_tandemforge_url(&id, "http://127.0.0.1:42000").unwrap();
+        assert_eq!(s.set_tandemforge_url(&id, "https://example.org"), Err(GwError::BadUrl));
+        // An edited list file cannot point the TandemForge entry elsewhere.
+        let text = std::fs::read_to_string(dir.join(FILE)).unwrap().replace("127.0.0.1:42000", "localhost:42000");
+        std::fs::write(dir.join(FILE), text).unwrap();
+        assert!(s.load().is_err());
     }
 }
 

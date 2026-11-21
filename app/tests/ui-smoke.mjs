@@ -73,7 +73,7 @@ const fake = () => {
   // Gateways and chats of the fake core. Keys are kept apart, as the OS keychain would, and never returned.
   const gws = []; let active = null; let dirs = []; const pending = new Map(); const keys = new Map(); const chats = new Map(); let nextId = 1;
   const hex = () => (nextId++).toString(16).padStart(16, "0");
-  const view = (g) => ({ id: g.id, name: g.name, url: g.url, kind: g.kind, dev: g.url.startsWith("http://"), pinned: false, has_key: keys.has(g.id) });
+  const view = (g) => ({ id: g.id, name: g.name, url: g.url, kind: g.kind, dev: g.kind !== "tandemforge" && g.url.startsWith("http://"), pinned: false, has_key: keys.has(g.id) });
   const callbacks = new Map(); let cbId = 1;
   const mp = { linked: false, name: "", missions: [],
     sw: { autopilot_available: true, improve_available: true, disabled: false, autopilot: false, auto_improve: false, resource_scope: "own" },
@@ -273,6 +273,14 @@ const fake = () => {
           if (!ext.installed.some((e) => e.id === args.id && e.enabled)) throw "extension not found";
           if (args.path !== "themes/night.json") throw "file not found";
           return new TextEncoder().encode(extThemeFile).buffer;
+        }
+        // Phase I7: TandemForge on this computer. The fake engine accepts one pairing code; the core keeps it.
+        case "tandemforge_status": return { running: true, reason: null, id: gws.find((g) => g.kind === "tandemforge")?.id ?? null };
+        case "tandemforge_connect": {
+          if (!/^tfa_[A-Za-z0-9_-]{40,100}$/.test(args.code.trim())) throw "paste the pairing code from TandemForge (Settings > Connected apps); it starts with tfa_";
+          if (args.code.trim() !== "tfa_" + "Q".repeat(43)) throw "TandemForge did not accept this code; connect the IDE again in TandemForge";
+          const g = { id: hex(), name: "TandemForge (this computer)", url: "http://127.0.0.1:41234", kind: "tandemforge" };
+          gws.push(g); keys.set(g.id, args.code.trim()); active = g.id; return { latency_ms: 3, models: ["llama3.2:1b"] };
         }
         default: throw "unknown command";
       }
@@ -667,6 +675,27 @@ try {
   await page.getByText("No extensions installed.").waitFor();
   check("Remove takes the extension off the list and out of the theme picker", (await page.getByRole("option", { name: /Smoke Night/ }).count()) === 0);
   check("removing the theme in use goes back to Dark Modern", (await page.getByRole("combobox", { name: "Colour theme" }).inputValue()) === "Dark Modern" && (await bg()) !== "rgb(18, 52, 86)", await bg());
+
+  // Phase I7: pair with TandemForge on this computer. A wrong code is refused; the right one is stored, never shown.
+  await page.getByRole("button", { name: "Gateways", exact: true }).click();
+  const tf = page.getByRole("region", { name: "TandemForge on this computer" });
+  await tf.getByText("Running. Pair the IDE to use its local models.").waitFor();
+  check("TandemForge running here is found without typing a port", true);
+  await tf.getByRole("button", { name: "Pair with TandemForge" }).click();
+  await tf.getByLabel("TandemForge pairing code").fill("tfa_" + "W".repeat(43));
+  await tf.getByRole("button", { name: "Pair" }).click();
+  await page.getByText(/TandemForge did not accept this code/).first().waitFor();
+  check("a code TandemForge does not know is refused, and the field is cleared", (await tf.getByLabel("TandemForge pairing code").inputValue()) === "");
+  await tf.getByLabel("TandemForge pairing code").fill("  tfa_" + "Q".repeat(43) + "  ");
+  await tf.getByRole("button", { name: "Pair" }).click();
+  const tfSaved = page.getByRole("list", { name: "Saved gateways" });
+  await tfSaved.getByText("TandemForge (this computer)").waitFor();
+  await tf.getByText(/Running and paired/).waitFor();
+  const tfRow = tfSaved.locator("li", { hasText: "TandemForge (this computer)" });
+  const tfText = await tfRow.innerText();
+  check("paired TandemForge is listed and active, code in the keychain, never shown", /paired \(code in keychain\)/.test(tfText) && (await tfRow.getByRole("radio").isChecked()) && !(await page.content()).includes("Q".repeat(43)), tfText.replace(/\s+/g, " "));
+  check("the loopback TandemForge entry is not marked INSECURE and has no key or CA buttons", !/INSECURE/.test(tfText) && (await tfRow.getByRole("button", { name: /key|CA/i }).count()) === 0, tfText.replace(/\s+/g, " "));
+  await page.screenshot({ path: process.env.SHOT_TF ?? join(here, "..", "ui-smoke-tf.png") });
 
   await page.screenshot({ path: process.env.SHOT ?? join(here, "..", "ui-smoke.png") });
 } catch (e) {
