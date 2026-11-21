@@ -39,6 +39,9 @@ cap-std = "4.0.3"
 zip = { version = "9.8.1", default-features = false, features = ["deflate-flate2"] }
 # flate2 needs a backend named: the default pure-Rust one (miniz_oxide, already in the app lockfile).
 flate2 = { version = "1.1.11", default-features = false, features = ["rust_backend"] }
+# Phase I6c: read the VSCodium server's .tar.gz. Read-only use: node_host.rs checks and writes every entry itself
+# (never the crate's `unpack`), so links, `..` and absolute paths are refused there. No default features (no xattr).
+tar = { version = "0.4.46", default-features = false }
 
 # Phase I5c: system calls for the local OS sandbox (namespaces, Landlock, seccomp, rlimits). Already in the
 # lockfile through other crates, so no new code is downloaded.
