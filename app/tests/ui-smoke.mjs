@@ -101,15 +101,22 @@ const fake = () => {
   const extWebCode = `const vscode = require("vscode");
 exports.activate = async (ctx) => {
   const tryFetch = async (u) => { try { await fetch(u); return "open"; } catch { return "blocked"; } };
-  const net = await tryFetch("https://example.org/");
+  // Straight past the IDE: XMLHttpRequest is not routed, so the CSP must stop it.
+  const xhr = await new Promise((r) => { try { const x = new XMLHttpRequest(); x.onload = () => r("open"); x.onerror = () => r("blocked"); x.open("GET", "https://example.org/xhr"); x.send(); } catch { r("blocked"); } });
   const local = await tryFetch(location.origin.startsWith("http") ? location.origin + "/index.html" : "http://127.0.0.1/");
   const ipc = await tryFetch("ipc://localhost/read_file");
+  const plain = await tryFetch("http://example.org/");
   const tauri = typeof self.__TAURI_INTERNALS__ === "undefined" ? "none" : "present";
   const dom = typeof document === "undefined" ? "none" : "present";
   let opened = "refused";
   try { opened = (await vscode.env.openExternal(vscode.Uri.parse("https://example.org/?leak=1"))) ? "opened" : "refused"; } catch { opened = "refused"; }
-  const report = "WEBEXT net=" + net + " ipc=" + ipc + " tauri=" + tauri + " dom=" + dom + " open=" + opened + " local=" + local;
-  ctx.subscriptions.push(vscode.languages.registerHoverProvider({ language: "python" }, { provideHover: () => new vscode.Hover(report) }));
+  const report = "WEBEXT xhr=" + xhr + " ipc=" + ipc + " http=" + plain + " tauri=" + tauri + " dom=" + dom + " open=" + opened + " local=" + local;
+  // Through the IDE: allowed only after the person says yes. A call with no extension code on the stack is refused.
+  const live = async () => { try { const r = await fetch("https://example.org/hover", { headers: { "x-probe": "1" } }); return r.status + ":" + (await r.text()); } catch { return "blocked"; } };
+  // fetch called by a promise job that no extension code awaits: no extension frame on the stack.
+  let borrowed = "none";
+  const borrow = () => { Promise.resolve("https://example.org/borrow").then(fetch).then(() => { borrowed = "open"; }, () => { borrowed = "blocked"; }); };
+  ctx.subscriptions.push(vscode.languages.registerHoverProvider({ language: "python" }, { provideHover: async () => { const l = await live(); if (l.startsWith("200")) borrow(); return new vscode.Hover(report + " live=" + l + " borrow=" + borrowed); } }));
 };`;
   window.__TAURI_INTERNALS__ = {
     transformCallback: (cb) => { const id = cbId++; callbacks.set(id, cb); return id; },
@@ -290,6 +297,19 @@ exports.activate = async (ctx) => {
         case "ext_list": return ext.installed;
         case "ext_set_enabled": ext.installed = ext.installed.map((e) => (e.id === args.id ? { ...e, enabled: args.enabled } : e)); return ext.installed.find((e) => e.id === args.id);
         case "ext_uninstall": ext.installed = ext.installed.filter((e) => e.id !== args.id); return null;
+        case "ext_set_network": {
+          const e = ext.installed.find((x) => x.id === args.id);
+          if (!e) throw "extension not found";
+          if (args.allowed && e.kind !== "web") throw "bad input";
+          e.network = args.allowed; return { ...e };
+        }
+        case "ext_fetch": {
+          const e = ext.installed.find((x) => x.id === args.id && x.enabled && x.kind === "web");
+          if (!e) throw "extension not found";
+          if (!e.network) throw "internet is not allowed for this extension";
+          if (!args.request.url.startsWith("https://")) throw "extensions may reach public https sites only";
+          return { status: 200, status_text: "OK", headers: [["content-type", "text/plain"]], url: args.request.url, body_b64: btoa("hello-from-site") };
+        }
         case "ext_manifest": if (!ext.installed.some((e) => e.id === args.id && e.enabled)) throw "extension not found"; return args.id === "smoke.hover-web" ? extWeb : extTheme;
         case "ext_file": {
           if (!ext.installed.some((e) => e.id === args.id && e.enabled)) throw "extension not found";
@@ -706,23 +726,71 @@ try {
   await page.getByLabel("Search Open VSX").fill("hover");
   await page.getByLabel("Search Open VSX").press("Enter");
   await page.getByRole("button", { name: "Install Hover Web" }).click();
-  await page.getByRole("region", { name: "Installed extensions" }).getByText("Hover Web").waitFor();
-  check("a web extension installs and is listed as one", /web extension \(runs in the editor sandbox, no network\)/.test(await page.getByRole("region", { name: "Installed extensions" }).innerText()));
+  await page.getByRole("region", { name: "Installed extensions" }).getByText("Hover Web", { exact: true }).waitFor();
+  check("a web extension installs and is listed as one", /web extension \(runs in the editor sandbox, no internet\)/.test(await page.getByRole("region", { name: "Installed extensions" }).innerText()));
   await page.getByRole("button", { name: "Explorer" }).click();
   await page.getByRole("navigation", { name: "Files" }).getByText("server.py").click({ timeout: 5000 });
   // Earlier steps left "changed elsewhere" in server.py; any Python word will do for the hover.
   const token = page.locator(".monaco-editor .view-line", { hasText: "changed elsewhere" }).first();
-  let hover = "";
-  for (let i = 0; i < 20 && !/WEBEXT/.test(hover); i++) {
-    await token.hover({ position: { x: 20, y: 5 } });
-    await page.waitForTimeout(700);
-    hover = await page.locator(".monaco-hover:visible").allInnerTexts().then((t) => t.join(" ")).catch(() => "");
-    if (!/WEBEXT/.test(hover)) await page.mouse.move(5, 5);
-  }
+  const consent = page.getByRole("alertdialog", { name: "Allow internet for Hover Web?" });
+  const hoverText = async (want) => {
+    let text = "";
+    for (let i = 0; i < 20 && !want.test(text); i++) {
+      await token.hover({ position: { x: 20, y: 5 } });
+      await page.waitForTimeout(700);
+      text = await page.locator(".monaco-hover:visible").allInnerTexts().then((t) => t.join(" ")).catch(() => "");
+      if (!want.test(text)) await page.mouse.move(5, 5);
+    }
+    return text;
+  };
+  // The first hover makes the extension ask for https://example.org/hover: the IDE asks the person first.
+  for (let i = 0; i < 20 && !(await consent.isVisible()); i++) { await token.hover({ position: { x: 20, y: 5 } }); await page.waitForTimeout(700); }
+  const consentText = (await consent.isVisible()) ? await consent.innerText() : "";
+  check("the first internet request of a web extension asks the person, naming the site", /wants to reach example\.org/.test(consentText) && (await page.evaluate(() => window.__calls.filter((c) => c.cmd === "ext_fetch").length)) === 0, consentText.replace(/\s+/g, " ").slice(0, 160));
+  await consent.getByRole("button", { name: "Not now" }).click();
+  await page.mouse.move(5, 5);
+  let hover = await hoverText(/WEBEXT.*live=/);
   check("the web extension's code runs in the worker host and its hover shows in the editor", /WEBEXT/.test(hover), hover.slice(0, 200));
-  check("the web extension can't reach the network, the Tauri bridge or the page", /net=blocked/.test(hover) && /ipc=blocked/.test(hover) && /tauri=none/.test(hover) && /dom=none/.test(hover), hover.slice(0, 200));
+  check("Not now: no request is made and the extension gets an error", /live=blocked/.test(hover) && (await page.evaluate(() => window.__calls.filter((c) => c.cmd === "ext_fetch").length)) === 0, hover.slice(0, 200));
+  check("the web extension can't reach the network itself, the Tauri bridge or the page", /xhr=blocked/.test(hover) && /ipc=blocked/.test(hover) && /http=blocked/.test(hover) && /tauri=none/.test(hover) && /dom=none/.test(hover), hover.slice(0, 200));
   const opened = await page.evaluate(() => window.__opened);
   check("the web extension can't open a link or window on its own", /open=refused/.test(hover) && !opened.some((u) => /leak/.test(u)), JSON.stringify(opened));
+  await page.mouse.move(5, 5);
+  // Allow from the Extensions view: requests now go through the core and answer.
+  await page.getByRole("button", { name: "Extensions", exact: true }).click();
+  await page.getByRole("button", { name: "Allow internet for Hover Web" }).click();
+  await page.getByRole("region", { name: "Installed extensions" }).getByText(/internet allowed/).waitFor();
+  const grant = await page.evaluate(() => window.__calls.filter((c) => c.cmd === "ext_set_network").pop());
+  check("Allow internet saves the grant for that extension only", grant?.args?.id === "smoke.hover-web" && grant?.args?.allowed === true, JSON.stringify(grant?.args));
+  await page.getByRole("button", { name: "Explorer" }).click();
+  hover = await hoverText(/live=200.*borrow=(open|blocked)/);
+  const fetches = await page.evaluate(() => window.__calls.filter((c) => c.cmd === "ext_fetch").map((c) => c.args));
+  check("an allowed extension's https request goes through the core and gets the answer", /live=200:hello-from-site/.test(hover) && fetches.some((a) => a.id === "smoke.hover-web" && a.request.url === "https://example.org/hover" && a.request.method === "GET" && a.request.headers.some(([n, v]) => n === "x-probe" && v === "1")), hover.slice(0, 200));
+  check("a call with no extension code on the stack is refused even while allowed", /borrow=blocked/.test(hover) && !fetches.some((a) => /borrow/.test(a.request.url)), hover.slice(0, 200));
+  // Code that learns the public hello name later can't open a channel of its own: only the first hello counts.
+  const forged = await page.evaluate(async () => {
+    const ch = "ab".repeat(24);
+    new BroadcastChannel("p2p-ide-ext-net-hello").postMessage({ t: "hello", ch });
+    await new Promise((r) => setTimeout(r, 200));
+    const c = new BroadcastChannel(ch);
+    let got = "none";
+    c.onmessage = (e) => { got = JSON.stringify(e.data).slice(0, 80); };
+    c.postMessage({ t: "req", rid: "r1", ids: ["smoke.hover-web"], method: "GET", url: "https://example.org/forged", headers: [], body_b64: "" });
+    await new Promise((r) => setTimeout(r, 600));
+    c.close();
+    return got;
+  });
+  check("a forged hello later on is ignored, so forged requests get nothing made", forged === "none" && !(await page.evaluate(() => window.__calls.some((c) => c.cmd === "ext_fetch" && /forged/.test(c.args.request.url)))), forged);
+  await page.screenshot({ path: process.env.SHOT_WEBEXT ?? join(here, "..", "ui-smoke-webext.png") });
+  await page.mouse.move(5, 5);
+  await page.getByRole("button", { name: "Extensions", exact: true }).click();
+  await page.getByRole("button", { name: "Stop internet for Hover Web" }).click();
+  await page.getByRole("region", { name: "Installed extensions" }).getByText(/no internet/).waitFor();
+  await page.getByRole("button", { name: "Explorer" }).click();
+  const fetchesBefore = (await page.evaluate(() => window.__calls.filter((c) => c.cmd === "ext_fetch").length));
+  hover = await hoverText(/live=blocked/);
+  check("Stop internet takes it away at once", /live=blocked/.test(hover) && (await page.evaluate(() => window.__calls.filter((c) => c.cmd === "ext_fetch").length)) === fetchesBefore, hover.slice(0, 200));
+  await page.mouse.move(5, 5);
   // The header CSP allows eval only for the extension host iframe; the page's own meta CSP takes it away again.
   // (page.evaluate itself is exempt from CSP, so a string timer is used: the page's own code path, not the tool's.)
   const before = errors.length;
@@ -735,7 +803,6 @@ try {
   check("the IDE page itself still can't evaluate strings (only the extension host iframe can)", evalRan === undefined);
   const frameAttrs = await page.locator("iframe.web-worker-ext-host-iframe").evaluateAll((fs) => fs.map((f) => `${f.getAttribute("sandbox")}|${f.style.display}`));
   check("the extension host runs in a hidden, sandboxed iframe of the app's own origin", frameAttrs.length === 1 && frameAttrs[0] === "allow-scripts allow-same-origin|none", frameAttrs.join(","));
-  await page.screenshot({ path: process.env.SHOT_WEBEXT ?? join(here, "..", "ui-smoke-webext.png") });
   // Removing it takes its hover away without a restart.
   await page.mouse.move(5, 5);
   await page.getByRole("button", { name: "Extensions", exact: true }).click();

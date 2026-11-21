@@ -301,10 +301,12 @@ export const scmLog = () => call<ScmCommit[]>("scm_log");
 
 /** One Open VSX search result. Plain text only: render as text, never HTML. */
 export interface ExtSummary { namespace: string; name: string; version: string; display_name: string; description: string; downloads: number }
-/** An installed extension. `kind` is what it needs to run; I6a installs only "declarative" ones. */
+/** An installed extension. `kind` is what it needs to run ("declarative" and "web" install; "node" waits for I6c).
+ * `network`: the person allowed this web extension to reach public https sites (phase I6b). */
 export interface ExtInstalled {
   id: string; namespace: string; name: string; version: string; display_name: string; description: string;
   kind: "declarative" | "web" | "node"; enabled: boolean; installed_at: number; sha256: string; verified_publisher: boolean; folder: string;
+  network?: boolean;
 }
 
 export const extSearch = (query: string, offset = 0) => call<ExtSummary[]>("ext_search", { query, offset });
@@ -316,3 +318,9 @@ export const extUninstall = (id: string) => call<void>("ext_uninstall", { id });
 export const extManifest = (id: string) => call<Record<string, unknown>>("ext_manifest", { id });
 /** One file of an enabled extension, as bytes. */
 export const extFile = (id: string, path: string) => call<ArrayBuffer>("ext_file", { id, path });
+/** Allows or stops internet for a web extension; only call on the person's click (phase I6b). */
+export const extSetNetwork = (id: string, allowed: boolean) => call<ExtInstalled>("ext_set_network", { id, allowed });
+/** A web extension's https request, body as base64; the core checks it (public https only) and makes it. */
+export interface ExtNetCall { method: string; url: string; headers: [string, string][]; body_b64: string }
+export interface ExtNetAnswer { status: number; status_text: string; headers: [string, string][]; url: string; body_b64: string }
+export const extFetch = (id: string, request: ExtNetCall) => call<ExtNetAnswer>("ext_fetch", { id, request });

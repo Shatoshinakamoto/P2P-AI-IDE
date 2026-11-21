@@ -165,6 +165,10 @@ pub struct Installed {
     pub verified_publisher: bool,
     /// Folder name under the extensions folder.
     pub folder: String,
+    /// Phase I6b: the person allowed this web extension to reach public https sites (through [`crate::ext_net`]).
+    /// Off by default and for lists saved before this field existed (deny by default).
+    #[serde(default)]
+    pub network: bool,
 }
 
 /// The network seam: GET a URL, return at most `max` bytes. Tests pass a fake; [`real_get`] is the real one.
@@ -500,6 +504,8 @@ impl ExtStore {
             sha256: got,
             verified_publisher: meta.get("verified").and_then(|v| v.as_bool()).unwrap_or(false),
             folder,
+            // SECURITY: a new or reinstalled copy starts without internet; the person is asked again (deny by default).
+            network: false,
         };
         list.retain(|e| e.id != id);
         list.push(entry.clone());
@@ -512,6 +518,22 @@ impl ExtStore {
         let mut list = self.list()?;
         let e = list.iter_mut().find(|e| e.id == id).ok_or(ExtError::NotFound)?;
         e.enabled = enabled;
+        let out = e.clone();
+        self.save(&list)?;
+        Ok(out)
+    }
+
+    /// Allows or stops internet access for a web extension (phase I6b). Only web extensions can have it.
+    ///
+    /// Security: the shell calls this only from the person's click on the consent card or the Extensions view
+    /// (NIST AC-3); declarative and Node extensions are refused (they never run in the worker host).
+    pub fn set_network(&self, id: &str, allowed: bool) -> Result<Installed, ExtError> {
+        let mut list = self.list()?;
+        let e = list.iter_mut().find(|e| e.id == id).ok_or(ExtError::NotFound)?;
+        if allowed && e.kind != Kind::Web {
+            return Err(ExtError::BadInput);
+        }
+        e.network = allowed;
         let out = e.clone();
         self.save(&list)?;
         Ok(out)
@@ -694,6 +716,7 @@ mod tests {
         let fake = Fake::new(THEME, &[("extension/themes/x.json", b"{\"colors\":{}}")], |_| {});
         let store = ExtStore::new(tmp());
         let e = store.install(&|u, m| fake.get(u, m), "acme", "theme-x", "latest").unwrap();
+        assert_eq!(store.set_network(&e.id, true), Err(ExtError::BadInput), "only web extensions can have internet");
         assert_eq!(
             (e.id.as_str(), e.version.as_str(), e.kind, e.enabled),
             ("acme.theme-x", "1.0.0", Kind::Declarative, true)
@@ -759,6 +782,11 @@ mod tests {
         let fake = Fake::new(&web, &[], |_| {});
         let got = store.install(&|u, m| fake.get(u, m), "acme", "theme-x", "latest").unwrap();
         assert_eq!(got.kind, Kind::Web);
+        assert!(!got.network, "internet is off until the person allows it");
+        assert!(store.set_network(&got.id, true).unwrap().network);
+        assert!(store.list().unwrap()[0].network);
+        assert!(!store.set_network(&got.id, false).unwrap().network);
+        assert_eq!(store.set_network("acme.missing", true), Err(ExtError::NotFound));
     }
 
     #[test]

@@ -21,6 +21,7 @@ import { Explorer } from "./components/Explorer.tsx";
 import { SearchView } from "./components/SearchView.tsx";
 import { Editor, type EditorHandle } from "./components/Editor.tsx";
 import { StatusBar } from "./components/StatusBar.tsx";
+import { ExtNetConsent } from "./components/ExtNetConsent.tsx";
 import { ExtensionsView } from "./components/ExtensionsView.tsx";
 import { NetworkView } from "./components/NetworkView.tsx";
 import { ChatView, type Review } from "./components/ChatView.tsx";
@@ -183,6 +184,7 @@ export function App() {
             ) : null}
           </div>
         </div>
+        <ExtNetConsent />
         <StatusBar line={cursor.line} col={cursor.col} language={cursor.language} notice={notice} gateway={activeGateway} onGateway={() => setView("network")} switches={switches} onMissions={() => setView("missions")} />
       </div>
     </Tooltip.Provider>
