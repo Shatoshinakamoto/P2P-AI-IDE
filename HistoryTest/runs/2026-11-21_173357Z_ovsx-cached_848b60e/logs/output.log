@@ -1,0 +1,4 @@
+search: 20 results, dracula-theme listed: true
+installed dracula-theme.theme-dracula 2.25.1 kind Declarative verified_publisher true sha256 f4d8c28fc64874b1b959cc90dbd39c84d5d35c9cf203e32b7a758dc9abf5b1cb theme file 39820 bytes
+material-icon-theme: Err("this extension runs Node.js code; the Node extension host arrives in phase I6c")
+redhat.vscode-yaml refused: this extension runs Node.js code; the Node extension host arrives in phase I6c

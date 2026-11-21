@@ -109,8 +109,8 @@ phase I6c".
 | `@codingame/monaco-vscode-api` and its `-editor-api`, extensions, textmate, theme, languages and configuration service overrides | 39.0.5 (exact) | VS Code's editor services for the web | `npm audit` via `scripts/npm_audit_gate.py app`, 2026-11-21: passed |
 | `@codingame/monaco-vscode-*-default-extension` (theme-defaults and 19 languages) | 39.0.5 (exact) | Built-in themes and grammars | same |
 | `dompurify` (override) | 3.4.18 | Used by the editor services' markdown rendering; replaces the old patched copy | same |
-| `zip` | 9.8.1, only `deflate-flate2` | Reads `.vsix` archives | `cargo audit`, see the pull request run |
-| `flate2` | 1.1.11, `rust_backend` | Pure-Rust deflate for `zip` | same |
+| `zip` | 9.8.1, only `deflate-flate2` | Reads `.vsix` archives | `cargo audit` 2026-11-21: no advisories (2026-11-21_173522Z_security-scan_848b60e) |
+| `flate2` | 1.1.11, `rust_backend` | Pure-Rust deflate for `zip` | same scan: no advisories |
 | `ureq`, `sha2`, `ed25519-dalek`, `base64`, `cap-std` | unchanged | Already used by the core | unchanged |
 
 ## 6. Limitations and known risks
@@ -133,9 +133,11 @@ phase I6c".
 
 ## 8. Test evidence
 
-* Core unit tests (`cargo test --lib`, 9 new extension tests) and the real install path on cached Open VSX files
-  (`core/examples/ovsx_cached.rs`: Dracula installed with a verified signature; a Node extension and a language
-  server refused), UI smoke test (87 of 87, including search, refused code extension, install, theme switch and
-  remove): run folders are listed in [CHANGELOG.md](../CHANGELOG.md) under 2026-11-21.
-* Not yet run: a live install from open-vsx.org from the PC (the cloud container reaches the internet only through a
+* Core unit tests with 9 new extension tests: [2026-11-21_173347Z_core_848b60e](../HistoryTest/runs/2026-11-21_173347Z_core_848b60e/RUN.md).
+* Real install path on Open VSX files cached with curl (Dracula 2.25.1 installed with a verified signature;
+  material-icon-theme and redhat.vscode-yaml refused as Node extensions): [2026-11-21_173357Z_ovsx-cached_848b60e](../HistoryTest/runs/2026-11-21_173357Z_ovsx-cached_848b60e/RUN.md).
+* UI smoke test, 87 of 87 (search results as text, refused code extension, install, theme switch, removing the theme
+  in use): [2026-11-21_173412Z_ui_848b60e](../HistoryTest/runs/2026-11-21_173412Z_ui_848b60e/RUN.md).
+* Static checks and scans: [2026-11-21_173522Z_security-scan_848b60e](../HistoryTest/runs/2026-11-21_173522Z_security-scan_848b60e/RUN.md).
+* Not yet run: a live install from open-vsx.org on the PC (the cloud container reaches the internet only through a
   proxy, which the IDE's client deliberately does not use).

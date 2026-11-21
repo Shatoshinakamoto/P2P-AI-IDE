@@ -2,6 +2,26 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-21 - Phase I6a: Extensions from Open VSX, VS Code editor services
+
+### Added
+- **Extensions view** ([features/extensions.md](features/extensions.md)): search Open VSX, install with one click, turn extensions on or off, remove them, and pick a colour theme. Phase I6a installs extensions that only contribute files (colour and icon themes, grammars, snippets, language settings); extensions that run code are refused with the phase that adds their host (I6b web worker, I6c Node).
+- Core `extensions` module: verified install (published SHA-256 **and** Open VSX Ed25519 signature, manifest must match the request), archive unpacked entry by entry with a path allow-list and size caps, store in the app data folder ([files/app-data.md](files/app-data.md)).
+- Shell commands `ext_search`, `ext_install`, `ext_list`, `ext_set_enabled`, `ext_uninstall`, `ext_manifest`, `ext_file`.
+- `app/stubs/jschardet`: a stand-in that keeps an unused LGPL-2.1+ dependency out of the installers ([files/jschardet-stub.md](files/jschardet-stub.md)).
+
+### Changed
+- The editor runs on `@codingame/monaco-vscode-api` 39.0.5 (VS Code's editor services): VS Code's TextMate grammars for about 30 languages and its Dark Modern theme. File language ids are VS Code's (`.tsx` is `typescriptreact`, shell scripts `shellscript`).
+- CSP: `'wasm-unsafe-eval'` in `script-src`; `'self' data: blob:` in `connect-src`; `blob:` in `img-src` and `font-src` ([configuration/tauri-conf.md](configuration/tauri-conf.md)).
+- `dompurify` is now an npm override (3.4.18) instead of the patched copy in `vite.config.ts`.
+- New crates `zip` 9.8.1 (deflate only) and `flate2` 1.1.11 (pure Rust); THIRD-PARTY-NOTICES.txt regenerated (527 packages).
+
+### Tests
+- Core unit tests with 9 new extension tests [run](../HistoryTest/runs/2026-11-21_173347Z_core_848b60e/RUN.md); real install path on Open VSX files cached with curl (Dracula installed with a verified signature, two Node extensions refused) [run](../HistoryTest/runs/2026-11-21_173357Z_ovsx-cached_848b60e/RUN.md).
+- UI smoke test 87 of 87 with 6 new Extensions checks, under the shipped CSP [run](../HistoryTest/runs/2026-11-21_173412Z_ui_848b60e/RUN.md); app unit tests [run](../HistoryTest/runs/2026-11-21_173418Z_app-unit_848b60e/RUN.md).
+- tsc, rustfmt, clippy, `cargo audit` (no vulnerabilities), npm audit gate, licence gate [run](../HistoryTest/runs/2026-11-21_173522Z_security-scan_848b60e/RUN.md).
+- Not run yet: a live install from open-vsx.org on the PC (the cloud container reaches the internet only through a proxy, which the IDE does not use).
+
 ## 2026-11-21 - Roadmap checklist in this repository
 
 ### Added

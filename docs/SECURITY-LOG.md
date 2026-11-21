@@ -2,6 +2,16 @@
 
 Every security patch, hardening change, CVE remediation and accepted risk, newest first.
 
+## 2026-11-21 — Phase I6a hardening: verified Open VSX extensions, editor services, CSP
+- **Type:** hardening; accepted risk
+- **CVE / CWE / advisory:** none (new feature). CWE-22, CWE-59, CWE-79, CWE-94, CWE-117, CWE-209, CWE-345, CWE-400, CWE-409, CWE-494, CWE-601, CWE-918; NIST SI-7, AU-2, AU-3, AC-3, CM-7; SSDF PS.2
+- **Severity:** none (new feature built with these controls). KEV no.
+- **Affected:** `core/src/extensions.rs`, `app/src-tauri/src/{ext,main}.rs`, `app/src/{extensions,monaco,main,ipc}.ts`, `app/src/components/ExtensionsView.tsx`, `app/src-tauri/tauri.conf.json`, `app/package.json`, `app/stubs/jschardet`
+- **What changed:** extensions install only on the person's click, one at a time, after the `.vsix` matches the SHA-256 Open VSX publishes and its Ed25519 signature verifies with the key Open VSX publishes; unsigned extensions and any with code (`main`/`browser`) are refused. Downloads are https only, public addresses only, no environment proxy, at most one redirect to the two Open VSX hosts, with size caps. The archive is unpacked entry by entry (only `extension/`, allow-listed path parts, no links, 10,000 files / 50 MiB each / 300 MiB total) through cap-std into a staging folder that is renamed into place. The webview gets files only for enabled extensions and only from their own folder. CSP: `'wasm-unsafe-eval'` added to `script-src` (WebAssembly compilation for the TextMate regex engine; JavaScript `eval` stays blocked), `'self' data: blob:` to `connect-src` and `blob:` to `img-src`/`font-src` for files made inside the page; no remote host added. `jschardet` (LGPL-2.1+) replaced by a stand-in.
+- **Why it is secure now:** a swapped download, a package under a borrowed name, extension code, zip slip, zip bombs, SSRF and markup from the registry are each refused before anything is written or shown (NIST SI-7, CM-7; OWASP ASVS V5, V12, V14.4).
+- **Accepted risk:** Open VSX is trusted to publish the right hash and key; a compromise of open-vsx.org itself would pass the check (the verified-publisher badge and the person's choice remain). `'wasm-unsafe-eval'` lets any script already allowed by `script-src 'self'` compile WebAssembly. `cargo audit` warnings carried over from before (Tauri's Linux GTK stack: glib 0.18 unsound iterator; chrono, proc-macro-error, zbus_names, zvariant unmaintained), no vulnerabilities.
+- **Verification:** HistoryTest runs 2026-11-21_173347Z_core_848b60e, 2026-11-21_173357Z_ovsx-cached_848b60e, 2026-11-21_173412Z_ui_848b60e (87/87), 2026-11-21_173418Z_app-unit_848b60e, 2026-11-21_173522Z_security-scan_848b60e.
+
 ## 2026-11-17 — picomatch ReDoS in build tooling (GHSA-fc5q-39xc-vjpf), no fixed version yet
 - **Type:** accepted risk
 - **CVE / CWE / advisory:** CVE-2026-112366, GHSA-fc5q-39xc-vjpf, CWE-1333 (inefficient regular expression)
