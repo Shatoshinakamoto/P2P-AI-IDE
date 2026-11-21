@@ -3,8 +3,9 @@
  * extension with one click, turn installed ones on or off, remove them, and pick a colour theme.
  *
  * Phase I6a installs extensions that only contribute files (themes, icon themes, grammars, snippets, language
- * settings). Extensions that run code are refused by the Rust core with a message naming the phase that adds their
- * host; the view shows that message.
+ * settings). Phase I6b adds web extensions, whose code runs in the editor's web worker extension host (sandboxed
+ * iframe, no network, no file system, no Node). Extensions with Node code are refused by the Rust core with a
+ * message naming the phase that adds their host; the view shows that message.
  *
  * Trust boundary: search results, names and descriptions come from Open VSX and are rendered by React as text only
  * (CWE-79). Nothing is installed without the person's click on Install; the core checks the download's SHA-256 and
@@ -115,8 +116,9 @@ export function ExtensionsView({ onNotice }: Props) {
         <button type="submit" disabled={searching || !query.trim()} className="rounded bg-ide-accent px-2 py-1 text-white disabled:opacity-50">{searching ? "…" : "Search"}</button>
       </form>
       <p className="text-xs text-ide-dim">
-        This phase installs themes, icon themes, language grammars and snippets. Each download is checked against its
-        SHA-256 and Open VSX signature first. Extensions that run code come with the extension hosts in later phases.
+        Installs themes, icon themes, language grammars, snippets and web extensions. Each download is checked against
+        its SHA-256 and Open VSX signature first. Web extensions run in a sandbox inside the editor: they see the files
+        open in the editor, with no network and no other access to your computer. Extensions that need Node.js come with the Node extension host in a later phase.
       </p>
 
       {results && (
@@ -159,7 +161,9 @@ export function ExtensionsView({ onNotice }: Props) {
                   {e.display_name || e.name}
                   {e.verified_publisher && <BadgeCheck size={13} aria-label="Verified publisher on Open VSX" />}
                 </div>
-                <div className="truncate text-xs text-ide-dim">{e.namespace} · v{e.version}</div>
+                <div className="truncate text-xs text-ide-dim">
+                  {e.namespace} · v{e.version}{e.kind === "web" ? " · web extension (runs in the editor sandbox, no network)" : ""}
+                </div>
               </div>
               <label className="flex items-center gap-1 text-xs">
                 <input type="checkbox" checked={e.enabled} disabled={busy !== null} onChange={(ev) => { const on = ev.target.checked; void act(e.id, async () => { if (!on) await leaveThemeOf(e.id); return extSetEnabled(e.id, on); }, on ? `Turned on ${e.name}` : `Turned off ${e.name}`); }} />

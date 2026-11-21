@@ -94,6 +94,23 @@ const fake = () => {
   const extTheme = { name: "night-theme", publisher: "smoke", displayName: "Night Theme", version: "1.0.0", engines: { vscode: "^1.80.0" },
     contributes: { themes: [{ id: "Smoke Night", label: "Smoke Night", uiTheme: "vs-dark", path: "./themes/night.json" }] } };
   const extThemeFile = JSON.stringify({ name: "Smoke Night", type: "dark", colors: { "editor.background": "#123456" }, tokenColors: [] });
+  // Phase I6b: a web extension. Its code runs in the web worker host, adds a Python hover, and reports what it can
+  // reach: the network (https and the dev server), the Tauri bridge, and the page's DOM. All must be out of reach.
+  const extWeb = { name: "hover-web", publisher: "smoke", displayName: "Hover Web", version: "1.0.0", engines: { vscode: "^1.80.0" },
+    browser: "./dist/web", activationEvents: ["onLanguage:python"], contributes: {} };
+  const extWebCode = `const vscode = require("vscode");
+exports.activate = async (ctx) => {
+  const tryFetch = async (u) => { try { await fetch(u); return "open"; } catch { return "blocked"; } };
+  const net = await tryFetch("https://example.org/");
+  const local = await tryFetch(location.origin.startsWith("http") ? location.origin + "/index.html" : "http://127.0.0.1/");
+  const ipc = await tryFetch("ipc://localhost/read_file");
+  const tauri = typeof self.__TAURI_INTERNALS__ === "undefined" ? "none" : "present";
+  const dom = typeof document === "undefined" ? "none" : "present";
+  let opened = "refused";
+  try { opened = (await vscode.env.openExternal(vscode.Uri.parse("https://example.org/?leak=1"))) ? "opened" : "refused"; } catch { opened = "refused"; }
+  const report = "WEBEXT net=" + net + " ipc=" + ipc + " tauri=" + tauri + " dom=" + dom + " open=" + opened + " local=" + local;
+  ctx.subscriptions.push(vscode.languages.registerHoverProvider({ language: "python" }, { provideHover: () => new vscode.Hover(report) }));
+};`;
   window.__TAURI_INTERNALS__ = {
     transformCallback: (cb) => { const id = cbId++; callbacks.set(id, cb); return id; },
     unregisterCallback: (id) => callbacks.delete(id),
@@ -259,18 +276,24 @@ const fake = () => {
         }
         case "ext_search": return [
           { namespace: "smoke", name: "night-theme", version: "1.0.0", display_name: "Night Theme", description: "<img src=x onerror=window.__xss6=1> a dark theme", downloads: 1234 },
-          { namespace: "smoke", name: "runs-code", version: "2.0.0", display_name: "Runs Code", description: "needs a host", downloads: 5 }];
+          { namespace: "smoke", name: "runs-code", version: "2.0.0", display_name: "Runs Code", description: "needs a host", downloads: 5 },
+          { namespace: "smoke", name: "hover-web", version: "1.0.0", display_name: "Hover Web", description: "a web extension", downloads: 7 }];
         case "ext_install": {
           if (args.name === "runs-code") throw "this extension runs Node.js code; the Node extension host arrives in phase I6c";
+          if (args.name === "hover-web") {
+            const w = { id: "smoke.hover-web", namespace: "smoke", name: "hover-web", version: "1.0.0", display_name: "Hover Web", description: "", kind: "web", enabled: true, installed_at: 2, sha256: "c".repeat(64), verified_publisher: true, folder: "smoke.hover-web-1.0.0" };
+            ext.installed = [...ext.installed.filter((x) => x.id !== w.id), w]; return w;
+          }
           const e = { id: "smoke.night-theme", namespace: "smoke", name: "night-theme", version: "1.0.0", display_name: "Night Theme", description: "", kind: "declarative", enabled: true, installed_at: 1, sha256: "b".repeat(64), verified_publisher: true, folder: "smoke.night-theme-1.0.0" };
-          ext.installed = [e]; return e;
+          ext.installed = [...ext.installed.filter((x) => x.id !== e.id), e]; return e;
         }
         case "ext_list": return ext.installed;
         case "ext_set_enabled": ext.installed = ext.installed.map((e) => (e.id === args.id ? { ...e, enabled: args.enabled } : e)); return ext.installed.find((e) => e.id === args.id);
         case "ext_uninstall": ext.installed = ext.installed.filter((e) => e.id !== args.id); return null;
-        case "ext_manifest": if (!ext.installed.some((e) => e.id === args.id && e.enabled)) throw "extension not found"; return extTheme;
+        case "ext_manifest": if (!ext.installed.some((e) => e.id === args.id && e.enabled)) throw "extension not found"; return args.id === "smoke.hover-web" ? extWeb : extTheme;
         case "ext_file": {
           if (!ext.installed.some((e) => e.id === args.id && e.enabled)) throw "extension not found";
+          if (args.id === "smoke.hover-web") { if (args.path !== "dist/web.js") throw "file not found"; return new TextEncoder().encode(extWebCode).buffer; }
           if (args.path !== "themes/night.json") throw "file not found";
           return new TextEncoder().encode(extThemeFile).buffer;
         }
@@ -288,6 +311,8 @@ const fake = () => {
   };
   // The test changes a file "outside the IDE" through this hook.
   window.__outsideEdit = (rel, text) => files.set(rel, text);
+  // Phase I6b: record any attempt to open a window or link (a web extension must not open one on its own).
+  window.__opened = []; window.open = (u) => { window.__opened.push(String(u)); return null; };
   window.__file = (rel) => files.get(rel);
 };
 
@@ -300,7 +325,7 @@ const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1400, height: 900 }, deviceScaleFactor: 1 });
 const errors = [];
 page.on("pageerror", (e) => errors.push(String(e)));
-page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
+page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); if (/I6BDBG/.test(m.text())) console.log(m.text()); });
 await page.addInitScript(fake);
 // The shipped window freezes Object.prototype when tauri.conf.json sets freezePrototype; do the same here so a
 // library that breaks under it fails this test instead of showing a blank window (phase I1 Windows finding).
@@ -675,6 +700,57 @@ try {
   await page.getByText("No extensions installed.").waitFor();
   check("Remove takes the extension off the list and out of the theme picker", (await page.getByRole("option", { name: /Smoke Night/ }).count()) === 0);
   check("removing the theme in use goes back to Dark Modern", (await page.getByRole("combobox", { name: "Colour theme" }).inputValue()) === "Dark Modern" && (await bg()) !== "rgb(18, 52, 86)", await bg());
+
+  // Phase I6b: a web extension runs in the web worker host. Its hover reaches the editor; it reaches nothing else.
+  await page.getByRole("button", { name: "Extensions", exact: true }).click();
+  await page.getByLabel("Search Open VSX").fill("hover");
+  await page.getByLabel("Search Open VSX").press("Enter");
+  await page.getByRole("button", { name: "Install Hover Web" }).click();
+  await page.getByRole("region", { name: "Installed extensions" }).getByText("Hover Web").waitFor();
+  check("a web extension installs and is listed as one", /web extension \(runs in the editor sandbox, no network\)/.test(await page.getByRole("region", { name: "Installed extensions" }).innerText()));
+  await page.getByRole("button", { name: "Explorer" }).click();
+  await page.getByRole("navigation", { name: "Files" }).getByText("server.py").click({ timeout: 5000 });
+  // Earlier steps left "changed elsewhere" in server.py; any Python word will do for the hover.
+  const token = page.locator(".monaco-editor .view-line", { hasText: "changed elsewhere" }).first();
+  let hover = "";
+  for (let i = 0; i < 20 && !/WEBEXT/.test(hover); i++) {
+    await token.hover({ position: { x: 20, y: 5 } });
+    await page.waitForTimeout(700);
+    hover = await page.locator(".monaco-hover:visible").allInnerTexts().then((t) => t.join(" ")).catch(() => "");
+    if (!/WEBEXT/.test(hover)) await page.mouse.move(5, 5);
+  }
+  check("the web extension's code runs in the worker host and its hover shows in the editor", /WEBEXT/.test(hover), hover.slice(0, 200));
+  check("the web extension can't reach the network, the Tauri bridge or the page", /net=blocked/.test(hover) && /ipc=blocked/.test(hover) && /tauri=none/.test(hover) && /dom=none/.test(hover), hover.slice(0, 200));
+  const opened = await page.evaluate(() => window.__opened);
+  check("the web extension can't open a link or window on its own", /open=refused/.test(hover) && !opened.some((u) => /leak/.test(u)), JSON.stringify(opened));
+  // The header CSP allows eval only for the extension host iframe; the page's own meta CSP takes it away again.
+  // (page.evaluate itself is exempt from CSP, so a string timer is used: the page's own code path, not the tool's.)
+  const before = errors.length;
+  await page.evaluate(() => { setTimeout("window.__evalRan = 1", 0); });
+  await page.waitForTimeout(300);
+  const evalRan = await page.evaluate(() => window.__evalRan);
+  // The one expected report is this refused timer; take it out so the CSP check below sees only unexpected ones.
+  const refused = errors.splice(before).filter((e) => !/unsafe-eval/.test(e));
+  errors.push(...refused);
+  check("the IDE page itself still can't evaluate strings (only the extension host iframe can)", evalRan === undefined);
+  const frameAttrs = await page.locator("iframe.web-worker-ext-host-iframe").evaluateAll((fs) => fs.map((f) => `${f.getAttribute("sandbox")}|${f.style.display}`));
+  check("the extension host runs in a hidden, sandboxed iframe of the app's own origin", frameAttrs.length === 1 && frameAttrs[0] === "allow-scripts allow-same-origin|none", frameAttrs.join(","));
+  await page.screenshot({ path: process.env.SHOT_WEBEXT ?? join(here, "..", "ui-smoke-webext.png") });
+  // Removing it takes its hover away without a restart.
+  await page.mouse.move(5, 5);
+  await page.getByRole("button", { name: "Extensions", exact: true }).click();
+  await page.getByRole("button", { name: "Remove Hover Web" }).click();
+  await page.getByText("No extensions installed.").waitFor();
+  await page.getByRole("button", { name: "Explorer" }).click();
+  await page.waitForTimeout(800);
+  let after = "";
+  for (let i = 0; i < 3; i++) {
+    await token.hover({ position: { x: 20, y: 5 } });
+    await page.waitForTimeout(900);
+    after += await page.locator(".monaco-hover:visible").allInnerTexts().then((t) => t.join(" ")).catch(() => "");
+    await page.mouse.move(5, 5);
+  }
+  check("removing the web extension stops its code (no hover from it)", !/WEBEXT/.test(after), after.slice(0, 120));
 
   // Phase I7: pair with TandemForge on this computer. A wrong code is refused; the right one is stored, never shown.
   await page.getByRole("button", { name: "Gateways", exact: true }).click();

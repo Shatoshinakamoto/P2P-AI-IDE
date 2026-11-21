@@ -1,4 +1,4 @@
-//! ext.rs -- the shell's Extensions commands (phase I6a, docs/features/extensions.md).
+//! ext.rs -- the shell's Extensions commands (phases I6a-I6b, docs/features/extensions.md).
 //!
 //! Purpose: lets the Extensions view search Open VSX, install an extension the person picked, list, turn on or off and
 //! remove installed ones, and read the files an installed extension contributes. The work is done by
@@ -36,6 +36,7 @@ fn kind_word(e: &ExtError) -> &'static str {
         ExtError::BadSignature => "bad_signature",
         ExtError::UnsafePath => "unsafe_path",
         ExtError::NeedsHost(_) => "needs_host",
+        ExtError::ProposedApi => "proposed_api",
         ExtError::NotFound => "not_found",
         ExtError::Io => "io",
     }
