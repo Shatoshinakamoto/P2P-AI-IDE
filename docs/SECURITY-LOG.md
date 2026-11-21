@@ -2,6 +2,16 @@
 
 Every security patch, hardening change, CVE remediation and accepted risk, newest first.
 
+## 2026-11-21 — Phase I6b: internet for web extensions through the core, asked per extension
+- **Type:** hardening; accepted risk
+- **CVE / CWE / advisory:** none (new feature). CWE-113, CWE-345, CWE-400, CWE-532, CWE-565, CWE-601, CWE-862, CWE-918; NIST AC-3, SC-7, SC-8, AU-2
+- **Severity:** none (new feature built with these controls). KEV no.
+- **Affected:** `core/src/{ext_net,extensions,lib}.rs`, `app/src-tauri/src/{ext,main}.rs`, `app/src/{extNetShim,extHostWorker,extNet,extensions,monaco,ipc,App}.ts(x)`, `app/src/components/{ExtNetConsent,ExtensionsView}.tsx`
+- **What changed:** web extensions may reach public https sites only after the person allows it once per extension (consent card naming the site; Extensions view shows, allows and stops it). Their `fetch` calls go over a private BroadcastChannel to the page and are made by the Rust core, which accepts public https hosts only (checked in the URL and again at connect time), checks every redirect (at most 3), allow-lists methods and headers, drops `Cookie`/`Host`/proxy/hop-by-hop headers, never returns `Set-Cookie`, caps sizes and time, runs at most 8 at once and logs only the extension id and host. The worker's CSP is unchanged.
+- **Why it is secure now:** internet is deny by default, granted only by the person's click and checked again by the core on every request (NIST AC-3, CWE-862); an allowed extension still can't reach this computer, the local network, the gateway, TandemForge or cloud metadata (CWE-918, NIST SC-7).
+- **Accepted risk:** all web extensions share one worker, so a hostile extension could borrow the access of one the person allowed (by having it make the call, or by forging stack traces through `Error.prepareStackTrace`, which VS Code lets extensions set). The docs say to install only trusted extensions while any has internet. An allowed extension can send what it sees in the editor to the sites it reaches.
+- **Verification:** HistoryTest runs 2026-11-21_231802Z_core_caf40d4 (87 passed), 2026-11-21_231813Z_ui_caf40d4 (105/105, including a forged channel and a no-extension-frame call), 2026-11-21_231829Z_app-unit_caf40d4, 2026-11-21_231829Z_security-scan_caf40d4 (no vulnerabilities).
+
 ## 2026-11-21 — Phase I6b hardening and accepted risk: web extensions in a sandboxed worker
 - **Type:** hardening; accepted risk
 - **CVE / CWE / advisory:** none (new feature). CWE-94, CWE-95, CWE-201, CWE-693, CWE-918, CWE-1021; NIST SC-7, AC-4, CM-7; ASVS V14.4

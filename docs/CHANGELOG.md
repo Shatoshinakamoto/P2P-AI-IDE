@@ -2,6 +2,18 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-21 - Phase I6b: internet for web extensions, asked once per extension
+
+### Added
+- **Internet for web extensions** ([features/extensions.md](features/extensions.md#internet-for-web-extensions)), Pheonix's choice 2026-11-21: the first time a web extension tries to reach an https site, a card asks "Allow internet for X?" and names the site. Allowed extensions' `fetch` requests are made by the Rust core (public https only). The Extensions view shows which extensions have internet, with **Allow internet** and **Stop internet**.
+- Core module `ext_net` (request checks and the request itself); shell commands `ext_set_network` and `ext_fetch`; extension entries gain `network` (off by default and after a reinstall).
+
+### Changed
+- The web worker extension host starts from `app/src/extHostWorker.ts`, which loads the request shim before VS Code's worker. The worker's CSP is unchanged (no network of its own).
+
+### Tests
+- Core unit tests 87 passed [run](../HistoryTest/runs/2026-11-21_231802Z_core_caf40d4/RUN.md); UI smoke test 105 of 105 [run](../HistoryTest/runs/2026-11-21_231813Z_ui_caf40d4/RUN.md); app unit tests [run](../HistoryTest/runs/2026-11-21_231829Z_app-unit_caf40d4/RUN.md); static checks [run](../HistoryTest/runs/2026-11-21_231829Z_security-scan_caf40d4/RUN.md).
+
 ## 2026-11-21 - Phase I6b: web extensions in a Web Worker
 
 ### Added

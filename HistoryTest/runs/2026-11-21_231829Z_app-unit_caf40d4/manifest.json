@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "26e47ddf0e74b22453f380aff68146336b1ee8ca9599a2dee82a596c7f54824b",
+   "size": 1452
+  },
+  "command.txt": {
+   "sha256": "7597f46acbcfa009e3ff718a56a919ba9e774fd681099c655a37c4f6780d060b",
+   "size": 74
+  },
+  "environment.md": {
+   "sha256": "8b7f617c090d708ef5f5a8c300de3735d323ed7878e5f56298c1fd3ae211ab8b",
+   "size": 197
+  },
+  "logs/output.log": {
+   "sha256": "f8d14b2e026c9f5f74a85a395756283783077223eb03b18ed8cbe90d82c327c3",
+   "size": 622
+  },
+  "results/summary.txt": {
+   "sha256": "8be64a38643d2cccf717334aac18fd281d9f1b1c5d00f148b9eb9680886ec0bd",
+   "size": 251
+  }
+ },
+ "previous": {
+  "manifest_sha256": "15339267cb8f5f7bfed0330da1ff33293184ea7185f4834263ebad22c69b917d",
+  "run_id": "2026-11-21_231813Z_ui_caf40d4"
+ },
+ "run": {
+  "area": "app-unit",
+  "branch_or_pr": "claude/project-thread-8u4b8a",
+  "collected_utc": "",
+  "commit": "caf40d480c68b85817313924b88668170b48cb76",
+  "count_unit": "packages",
+  "date_utc": "2026-11-21T23:18:29Z",
+  "dirty": true,
+  "duration_s": 0.3,
+  "exit_code": 0,
+  "failed": 0,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-21_231829Z_app-unit_caf40d4",
+  "kind": "unit",
+  "machine": "cloud",
+  "passed": 4,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "Finish TandemForge and IDE roadmaps thread",
+  "shortened_logs": [],
+  "skipped": 0,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Phase I6b internet consent: app unit tests",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}
