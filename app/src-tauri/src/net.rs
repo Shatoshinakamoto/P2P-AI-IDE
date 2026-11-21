@@ -17,6 +17,9 @@
 //!   * Public gateway list (phase I2b): adverts are fetched and verified in the core; the address of a picked public
 //!     gateway is taken from the cached verified list, never from the webview (CWE-345), and such a gateway is only
 //!     ever reached at a public address (CWE-918).
+//!   * TandemForge on this computer (phase I7): its port is read from TandemForge's own engine file before each
+//!     use, never from the webview, and the entry can only point at 127.0.0.1; the pairing code is stored in the
+//!     keychain like a gateway key (NIST SC-7, IA-5).
 //!   * Audit lines (stderr, fixed words only): gateway added, removed, key set, chat sent, public list fetched,
 //!     refusals (NIST AU-3, CWE-117).
 //!
@@ -28,6 +31,7 @@ use p2p_ide_core::client::{Client, Msg, NetError, StreamEnd};
 use p2p_ide_core::discovery::{self, DirError, DirectoryStore, PublicList};
 use p2p_ide_core::gateways::{self, GatewayStore, GatewayView, GwError, Kind, SecretStore, KEY_SERVICE};
 use p2p_ide_core::store;
+use p2p_ide_core::tandemforge;
 use serde::Serialize;
 use std::path::PathBuf;
 use std::sync::atomic::Ordering;
@@ -173,7 +177,14 @@ pub struct GatewayCheck {
 }
 
 fn client_for(app: &AppHandle, id: &str) -> Result<(Client, String), String> {
-    let gw = gw_store(app)?.get(id).map_err(gw_err)?;
+    let store = gw_store(app)?;
+    let mut gw = store.get(id).map_err(gw_err)?;
+    if gw.kind == Kind::TandemForge {
+        // TandemForge picks a new port at each launch: follow it (phase I7).
+        let url = tandemforge::find().map_err(|e| e.message().to_string())?;
+        store.set_tandemforge_url(id, &url).map_err(gw_err)?;
+        gw.url = url;
+    }
     let key = Keychain.get(id).map_err(gw_err)?;
     let name = gw.name.clone();
     Ok((Client::new(&gw, key).map_err(|e| e.message())?, name))
@@ -189,6 +200,58 @@ pub(crate) fn active_gateway(app: &AppHandle) -> Result<(Client, String, String)
     let active = gw_store(app)?.load().map_err(gw_err)?.active.ok_or("add a gateway in the Gateways view first")?;
     let (c, name) = client_for(app, &active)?;
     Ok((c, active, name))
+}
+
+/// Whether TandemForge is running on this computer with an app connection open, and whether the IDE is paired.
+#[derive(Serialize)]
+pub struct TandemForgeStatus {
+    /// TandemForge's engine file was found (it runs and has a connected app).
+    running: bool,
+    /// Why not, when it is not found (a fixed sentence).
+    reason: Option<String>,
+    /// The saved TandemForge entry, when the IDE is paired.
+    id: Option<String>,
+}
+
+#[tauri::command]
+pub fn tandemforge_status(app: AppHandle) -> Result<TandemForgeStatus, String> {
+    let found = tandemforge::find();
+    let list = gw_store(&app)?.load().map_err(gw_err)?;
+    Ok(TandemForgeStatus {
+        running: found.is_ok(),
+        reason: found.err().map(|e| e.message().to_string()),
+        id: list.gateways.iter().find(|g| g.kind == Kind::TandemForge).map(|g| g.id.clone()),
+    })
+}
+
+/// Pairs the IDE with the TandemForge running on this computer using the code TandemForge showed, checks the code
+/// against it (a `/v1/models` call), saves it and makes it the active engine. Returns the models it offers.
+#[tauri::command]
+pub async fn tandemforge_connect(app: AppHandle, code: String) -> Result<GatewayCheck, String> {
+    let code = tandemforge::check_code(&code).map_err(|e| {
+        audit("refused", "tandemforge_code");
+        e.message().to_string()
+    })?;
+    let url = tandemforge::find().map_err(|e| e.message().to_string())?;
+    // Check the code before saving it, so a wrong code is never kept.
+    let probe = gateways::Gateway {
+        id: "0000000000000000".into(),
+        name: "TandemForge".into(),
+        url: url.clone(),
+        kind: Kind::TandemForge,
+        ca_pem: None,
+    };
+    let client = Client::new(&probe, Some(code.clone())).map_err(|e| e.message())?;
+    let r = tauri::async_runtime::spawn_blocking(move || client.models())
+        .await
+        .map_err(|_| "internal error".to_string())?;
+    let (models, latency_ms) = r.map_err(|e| match e {
+        NetError::Auth => "TandemForge did not accept this code; connect the IDE again in TandemForge".to_string(),
+        other => other.message(),
+    })?;
+    gw_store(&app)?.save_tandemforge(&Keychain, &url, &code).map_err(gw_err)?;
+    audit("gateway", "tandemforge_paired");
+    Ok(GatewayCheck { latency_ms, models })
 }
 
 /// Asks a gateway for its models and times the answer.

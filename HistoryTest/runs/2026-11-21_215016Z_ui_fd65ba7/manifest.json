@@ -1,0 +1,62 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "4179d057f6a16eccc88339711f00f0e525c88b603e2a4e178162465825dc0b46",
+   "size": 2106
+  },
+  "artifacts/ui-smoke-webext.png": {
+   "sha256": "1f23a85a8593ce5999b0e0e30dbd722bc5a0213153e445931860a0e2423f96d4",
+   "size": 62163
+  },
+  "command.txt": {
+   "sha256": "2bd3d4c52dcc5229938e526c0c26637148d14b9a8a9aafa0c7c3e6b46435ea14",
+   "size": 89
+  },
+  "environment.md": {
+   "sha256": "8d6e841c874463321c02cf454b5e5827b8455f4f761c13ea2523e7853024e630",
+   "size": 191
+  },
+  "logs/output.log": {
+   "sha256": "8cf9bdf60ab4d1fc4590af5b81c32215c4974f75a903069664b574d9fad62539",
+   "size": 8246
+  },
+  "results/summary.txt": {
+   "sha256": "ebdf15848fc97e9056a23092f4cbd82531cca4ea56ec95efbf897563bdd770d5",
+   "size": 283
+  }
+ },
+ "previous": {
+  "manifest_sha256": "5a212b9f9e4df103956be6586a113cb2e51593cfbcbc50546b2d4df0ac279aa4",
+  "run_id": "2026-11-21_215005Z_core_fd65ba7"
+ },
+ "run": {
+  "area": "ui",
+  "branch_or_pr": "claude/project-thread-8u4b8a",
+  "collected_utc": "",
+  "commit": "fd65ba793886f4d8583d070938ec0042901556a2",
+  "count_unit": "",
+  "date_utc": "2026-11-21T21:50:16Z",
+  "dirty": true,
+  "duration_s": 12.1,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-21_215016Z_ui_fd65ba7",
+  "kind": "e2e",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "Finish TandemForge and IDE roadmaps thread",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Phase I6b UI smoke test with a web extension in the worker host (headless Chromium, shipped CSP)",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

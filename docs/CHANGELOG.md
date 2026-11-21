@@ -2,6 +2,36 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-21 - Phase I6b: web extensions in a Web Worker
+
+### Added
+- **Web extensions** ([features/extensions.md](features/extensions.md#web-extensions-i6b)): extensions from Open VSX with a `browser` entry now install and run in VS Code's web worker extension host, a Web Worker in a hidden sandboxed iframe with no network, no Node, no Tauri commands and no page access. They work with the files open in the editor. The Extensions view labels them.
+- Removing or turning off a web extension restarts the extension host without it, so its code stops at once.
+
+### Changed
+- The core installs extensions with a `browser` entry (also when they have a `main` entry too) as kind `web`; Node-only extensions are still refused (I6c). New refusal: web extensions asking for proposed VS Code APIs.
+- CSP ([configuration/tauri-conf.md](configuration/tauri-conf.md)): `'unsafe-eval'` and the extension host iframe's script hash in `script-src`, `frame-src 'self'`, `frame-ancestors 'self'`. The IDE page gets its own stricter meta CSP without `'unsafe-eval'` (`app/vite.config.ts`).
+
+### Tests
+- Core unit tests 83 passed [run](../HistoryTest/runs/2026-11-21_215005Z_core_fd65ba7/RUN.md); UI smoke test 98 of 98 with 7 new web extension checks [run](../HistoryTest/runs/2026-11-21_215016Z_ui_fd65ba7/RUN.md); app unit tests [run](../HistoryTest/runs/2026-11-21_215028Z_app-unit_fd65ba7/RUN.md); static checks and scans [run](../HistoryTest/runs/2026-11-21_215028Z_security-scan_fd65ba7/RUN.md).
+- Not run yet: the real desktop webviews on the PC and a live web extension install from open-vsx.org.
+
+## 2026-11-21 - Phase I7: TandemForge on this computer as a model engine
+
+### Added
+- **TandemForge on this computer** ([features/tandemforge-engine.md](features/tandemforge-engine.md)): pair the IDE with a running TandemForge using the code it shows in Settings > Connected apps; chat and the agent then use TandemForge's local models (Ollama, LM Studio) through the same OpenAI-style API as a gateway. Nothing leaves the computer.
+- Core module `tandemforge` (finds TandemForge's `engine.json`, loopback URL only, pairing code check) and gateway kind `tandemforge` (one entry; its port follows TandemForge at each use).
+- Shell commands `tandemforge_status`, `tandemforge_connect`; Gateways view panel "TandemForge on this computer".
+- Core test `tests/tandemforge_engine.rs` (ignored by default) that runs against a real TandemForge backend.
+
+### Changed
+- The HTTP client allows plain http only for loopback URLs the gateway check already allowed (dev gateway, TandemForge); everything else stays https only.
+
+### Tests
+- Core unit tests 83 passed [run](../HistoryTest/runs/2026-11-21_205545Z_core_1e284ce/RUN.md); UI smoke test 91 of 91 with 4 new checks [run](../HistoryTest/runs/2026-11-21_205557Z_ui_1e284ce/RUN.md); app unit tests [run](../HistoryTest/runs/2026-11-21_205604Z_app-unit_1e284ce/RUN.md).
+- End to end against a real TandemForge backend with a fake Ollama [run](../HistoryTest/runs/2026-11-21_205630Z_tf-engine-e2e_1e284ce/RUN.md); static checks and scans [run](../HistoryTest/runs/2026-11-21_205639Z_security-scan_1e284ce/RUN.md).
+- Not run yet: the two desktop apps side by side on the PC with a real model.
+
 ## 2026-11-21 - Phase I6a: Extensions from Open VSX, VS Code editor services
 
 ### Added

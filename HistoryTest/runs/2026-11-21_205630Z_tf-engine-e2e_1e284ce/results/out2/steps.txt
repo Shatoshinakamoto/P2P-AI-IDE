@@ -1,0 +1,12 @@
+engine.json before pairing: absent
+engine.json after pairing: {'api': 1, 'port': 8798, 'pid': '<pid>'}
+engine.json mode: 600; connected-apps.json mode: 600
+code stored in connected-apps.json: 0 (0 = only the digest)
+pairing code on /api/connected-apps: HTTP 401
+no credentials on /v1/models: HTTP 401
+browser Origin on /v1/models: HTTP 403
+after revoke, code on /v1/models: HTTP 401
+engine.json after revoke: absent
+ollama /api/chat requests: 4 models: ['tiny-chat:1b']
+tool-call arguments sent to Ollama as objects: True 1
+pairing code in backend log (count): 0

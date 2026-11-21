@@ -268,8 +268,9 @@ impl Client {
                 // SECURITY: no proxy from the environment and no redirects, so the key reaches only this host.
                 .proxy(None)
                 .max_redirects(0)
-                // SECURITY: https only, except the loopback dev gateway the URL check allowed (NIST SC-8).
-                .https_only(!gw.dev())
+                // SECURITY: https only, except loopback plain http the URL check allowed: a dev gateway, or TandemForge
+                // on this computer (phase I7); check_url refuses http to any other host (NIST SC-8).
+                .https_only(!gw.url.starts_with("http://"))
                 .http_status_as_error(false)
                 .timeout_connect(Some(Duration::from_secs(10)))
                 .timeout_global(Some(total))

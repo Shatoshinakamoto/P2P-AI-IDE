@@ -27,7 +27,8 @@ pages in [features/](features/).
 If you have used VS Code, you will feel at home:
 
 - **Activity bar** (the icons on the far left), top to bottom: Explorer, Search, Source control, Run and test, Agent
-  chat, Missions, Gateways, Extensions (extensions arrive in a later version).
+  chat, Missions, Gateways, Extensions (themes, grammars, snippets and web extensions from Open VSX; see
+  [features/extensions.md](features/extensions.md)).
 - **Side panel** next to it shows the view you picked.
 - **Editor** in the middle, with tabs.
 - **Status bar** at the bottom: the active gateway, where tools run (Tools: Local), the latest message, the
@@ -79,6 +80,9 @@ The agent's models run on a P2P-AI **gateway**. Open the **Gateways** view (the 
 3. **Public gateways**: add a directory address and press **Refresh list** to see gateways that welcome new users.
    Each one is checked against its signature, and the list shows its region, models, latency, how to sign up, and
    whether it keeps prompts. **Add** saves it.
+4. **TandemForge on this computer**: if you run TandemForge, it can lend the IDE its local models. In TandemForge
+   open Settings, Connected apps, and press **Connect**; copy the code it shows once. Here press **Pair with
+   TandemForge** and paste it. Nothing leaves your computer.
 
 ![Gateways and the public list](images/gateways.png)
 

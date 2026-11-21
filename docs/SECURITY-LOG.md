@@ -2,6 +2,25 @@
 
 Every security patch, hardening change, CVE remediation and accepted risk, newest first.
 
+## 2026-11-21 — Phase I6b hardening and accepted risk: web extensions in a sandboxed worker
+- **Type:** hardening; accepted risk
+- **CVE / CWE / advisory:** none (new feature). CWE-94, CWE-95, CWE-201, CWE-693, CWE-918, CWE-1021; NIST SC-7, AC-4, CM-7; ASVS V14.4
+- **Severity:** none (new feature built with these controls). KEV no.
+- **Affected:** `core/src/extensions.rs`, `app/src-tauri/src/ext.rs`, `app/src/{extensions,monaco}.ts`, `app/src/components/ExtensionsView.tsx`, `app/src-tauri/tauri.conf.json`, `app/vite.config.ts`
+- **What changed:** web extensions (a `browser` entry) install after the same hash and signature checks and run only in VS Code's web worker extension host: a Worker created by a hidden iframe (`sandbox="allow-scripts allow-same-origin"`) of the app's own origin. Node-only extensions and extensions asking for proposed APIs are refused. The app CSP gained `'unsafe-eval'` (VS Code loads web extension code with `new Function`), the iframe script's SHA-256 hash, `frame-src 'self'` and `frame-ancestors 'self'` (was `'none'`). The IDE page gets a second, stricter meta CSP without `'unsafe-eval'`, built from the same string. Turning off or removing a web extension restarts the host without it.
+- **Why it is secure now:** the worker is bound by both the app CSP and the iframe's own CSP, so it can fetch only `'self'` and `data:`; it has no DOM and no Tauri bridge; `vscode.env.openExternal` is refused. Each was proven from inside a running extension in the UI smoke test (NIST SC-7, AC-4). The page keeps its no-eval policy (CWE-95). Other sites still can't frame the app (CWE-1021).
+- **Accepted risk:** `'unsafe-eval'` in the header CSP (the meta CSP removes it for the page; the iframe and its worker keep it). A web extension can read and change the text of files open in the editor, like any editor extension, and can fetch the app's own bundled files. The iframe hash pins monaco-vscode-api 39.0.5. The real desktop webviews (WebView2, WebKitGTK) are not yet checked; that is on the PC list.
+- **Verification:** HistoryTest runs 2026-11-21_215005Z_core_fd65ba7 (83 passed), 2026-11-21_215016Z_ui_fd65ba7 (98/98), 2026-11-21_215028Z_app-unit_fd65ba7, 2026-11-21_215028Z_security-scan_fd65ba7 (no vulnerabilities).
+
+## 2026-11-21 — Phase I7 hardening: pairing with TandemForge on this computer
+- **Type:** hardening
+- **CVE / CWE / advisory:** none (new feature). CWE-20, CWE-209, CWE-400, CWE-522, CWE-532, CWE-918; NIST SC-7, SC-8, IA-2, AC-4
+- **Severity:** none (new feature built with these controls). KEV no.
+- **Affected:** `core/src/{tandemforge,gateways,client,lib}.rs`, `app/src-tauri/src/{net,main}.rs`, `app/src/ipc.ts`, `app/src/components/{NetworkView,TandemForgeConnect}.tsx`
+- **What changed:** the IDE reads only a port from TandemForge's `engine.json` (4 KiB cap, strict JSON, `api` 1, port 1024 to 65535) and talks only to `http://127.0.0.1:<port>`; a saved TandemForge entry with any other URL is refused when the list loads. The pairing code (`tfa_` + 40 to 100 base64url characters) is checked against TandemForge before it is saved, kept only in the OS keychain, and sent only as a bearer header to loopback. The HTTP client's https-only switch is now off only for loopback http URLs the URL check already allowed.
+- **Why it is secure now:** the code never leaves the computer or reaches the webview, logs or files (NIST SC-7, IA-5; CWE-522, CWE-532); TandemForge on its side limits the code to its `/v1` engine routes and local models (TandemForge SECURITY-LOG, same date).
+- **Verification:** HistoryTest runs 2026-11-21_205545Z_core_1e284ce, 2026-11-21_205557Z_ui_1e284ce (91/91), 2026-11-21_205630Z_tf-engine-e2e_1e284ce (wrong code 401, pairing code refused on `/api`, browser Origin 403, revoke closes access), 2026-11-21_205639Z_security-scan_1e284ce (no vulnerabilities; carried-over warnings only).
+
 ## 2026-11-21 — Phase I6a hardening: verified Open VSX extensions, editor services, CSP
 - **Type:** hardening; accepted risk
 - **CVE / CWE / advisory:** none (new feature). CWE-22, CWE-59, CWE-79, CWE-94, CWE-117, CWE-209, CWE-345, CWE-400, CWE-409, CWE-494, CWE-601, CWE-918; NIST SI-7, AU-2, AU-3, AC-3, CM-7; SSDF PS.2

@@ -6,7 +6,8 @@
 //! Phase I2 adds the network side: saved gateways ([`gateways`]), the HTTPS client for models and streamed chat
 //! ([`client`]), chat history ([`chats`]) and the small-file store they share ([`store`]). Phase I3 adds the chat
 //! tools ([`agent`]); phase I4 the gateway project API ([`gwapi`]) and missions support ([`projects`]); phase I5
-//! source control through the installed git ([`scm`]).
+//! source control through the installed git ([`scm`]). Phase I7 finds a TandemForge running on this computer
+//! ([`tandemforge`]) and uses it as a model engine.
 //! Dependencies: serde, serde_json, sha2, ureq (see Cargo.toml).
 
 pub mod agent;
@@ -22,6 +23,7 @@ pub mod projects;
 pub mod runner;
 pub mod scm;
 pub mod store;
+pub mod tandemforge;
 pub mod testparse;
 pub mod workspace;
 

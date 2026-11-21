@@ -1,0 +1,11 @@
+id: 2026-11-21_205630Z_tf-engine-e2e_1e284ce
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: not recorded
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: 0
+duration_s: 8.6
+commit: 1e284ce08423ed2b2a8ebe130b7e2497edeff82e
+machine: cloud

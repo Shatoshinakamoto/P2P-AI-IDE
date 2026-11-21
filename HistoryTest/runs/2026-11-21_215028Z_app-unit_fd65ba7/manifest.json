@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "eb6e294604ef3dc37d086731615f562a2b7f1f4739295a7491558913497f25ba",
+   "size": 1434
+  },
+  "command.txt": {
+   "sha256": "7597f46acbcfa009e3ff718a56a919ba9e774fd681099c655a37c4f6780d060b",
+   "size": 74
+  },
+  "environment.md": {
+   "sha256": "9469720f20bd28a673c282e034ffab12c2c6fc9a56846824d9b680eab5ba4c91",
+   "size": 197
+  },
+  "logs/output.log": {
+   "sha256": "ab56b84938bfe7e2dc4c1de7bea0ef8c9c5f3421550905fc71c313b19d211ed7",
+   "size": 624
+  },
+  "results/summary.txt": {
+   "sha256": "45eb9e9730c99b134c3400597d20d209320b211271decd20dc9c4f8c590c53d1",
+   "size": 251
+  }
+ },
+ "previous": {
+  "manifest_sha256": "f60735341cd67df697f92f73ef6b96e1c3cf6e3d2572fae9501f519447b60e14",
+  "run_id": "2026-11-21_215016Z_ui_fd65ba7"
+ },
+ "run": {
+  "area": "app-unit",
+  "branch_or_pr": "claude/project-thread-8u4b8a",
+  "collected_utc": "",
+  "commit": "fd65ba793886f4d8583d070938ec0042901556a2",
+  "count_unit": "packages",
+  "date_utc": "2026-11-21T21:50:28Z",
+  "dirty": true,
+  "duration_s": 0.3,
+  "exit_code": 0,
+  "failed": 0,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-21_215028Z_app-unit_fd65ba7",
+  "kind": "unit",
+  "machine": "cloud",
+  "passed": 4,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "Finish TandemForge and IDE roadmaps thread",
+  "shortened_logs": [],
+  "skipped": 0,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Phase I6b app unit tests",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

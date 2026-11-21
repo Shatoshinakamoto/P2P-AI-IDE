@@ -1,0 +1,2 @@
+# run in repository folder `.`, as an argument list (no shell)
+/tmp/claude-0/i7-e2e/run.sh /tmp/claude-0/i7-e2e/out2

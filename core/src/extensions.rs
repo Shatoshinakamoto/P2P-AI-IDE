@@ -1,14 +1,16 @@
 //! extensions -- VS Code / VSCodium extensions from Open VSX: search, verified install, list, enable, remove
-//! (phase I6a, ADR-029 D1; docs/features/extensions.md).
+//! (phases I6a-I6b, ADR-029 D1; docs/features/extensions.md).
 //!
 //! Purpose: the Extensions view searches Open VSX (the registry VSCodium uses) and installs an extension only when the
 //! person clicks Install. This module downloads the `.vsix`, checks it, unpacks it into the app's own data folder and
 //! keeps the list of installed extensions. The webview then reads the files an extension contributes (themes,
 //! grammars, snippets, language settings) through [`ExtStore::read_file`] and hands them to the editor services.
 //!
-//! Phase I6a installs **declarative** extensions only: no `main` (Node code) and no `browser` (web worker code), so
-//! nothing an extension ships is ever run. Extensions with code are refused with a message saying which phase brings
-//! their host (I6b web worker, I6c Node sidecar).
+//! Phase I6a installs **declarative** extensions (no code). Phase I6b also installs **web** extensions (a `browser`
+//! entry): their code runs only in the editor's web worker extension host, inside a sandboxed hidden iframe under the
+//! app's Content-Security-Policy, with no Node, no file system and no network (see docs/features/extensions.md).
+//! Extensions with only a `main` (Node code) are refused until the Node sidecar (I6c). Web extensions that ask for
+//! proposed VS Code APIs (`enabledApiProposals`) are refused: those APIs are unstable and not offered (CWE-693).
 //!
 //! Inputs and trust boundaries:
 //!   * Search text, namespace, name and version come from the webview (untrusted): allow-listed before they reach a URL.
@@ -80,6 +82,8 @@ pub enum ExtError {
     UnsafePath,
     /// The extension runs code; `kind` says which host it needs.
     NeedsHost(Kind),
+    /// A web extension asks for proposed (unstable) VS Code APIs.
+    ProposedApi,
     /// Not installed, or no such file in the extension.
     NotFound,
     /// The app's data folder could not be read or written.
@@ -97,8 +101,8 @@ impl ExtError {
             ExtError::HashMismatch => "the download does not match its published SHA-256; nothing was installed".into(),
             ExtError::BadSignature => "the extension has no valid Open VSX signature; nothing was installed".into(),
             ExtError::UnsafePath => "the extension holds a file path that is not allowed; nothing was installed".into(),
-            ExtError::NeedsHost(Kind::Web) => {
-                "this extension runs code in a web worker; that extension host arrives in phase I6b".into()
+            ExtError::ProposedApi => {
+                "this extension uses proposed VS Code APIs, which the IDE does not offer; nothing was installed".into()
             }
             ExtError::NeedsHost(_) => {
                 "this extension runs Node.js code; the Node extension host arrives in phase I6c".into()
@@ -327,10 +331,12 @@ pub fn verify_signature(vsix: &[u8], sigzip: &[u8], key_pem: &[u8]) -> Result<()
 /// Decides what an extension needs from its `package.json`.
 pub fn kind_of(manifest: &serde_json::Value) -> Kind {
     let has = |k: &str| manifest.get(k).and_then(|v| v.as_str()).is_some_and(|s| !s.trim().is_empty());
-    if has("main") {
-        Kind::Node
-    } else if has("browser") {
+    // An extension with both entries runs its `browser` code in the web worker host (phase I6b), as VS Code for the
+    // Web does; its Node code is never run.
+    if has("browser") {
         Kind::Web
+    } else if has("main") {
+        Kind::Node
     } else {
         Kind::Declarative
     }
@@ -449,8 +455,16 @@ impl ExtStore {
             return Err(ExtError::BadPackage);
         }
         let kind = kind_of(&manifest);
-        if kind != Kind::Declarative {
+        // Phase I6b: declarative and web worker extensions install; Node extensions wait for I6c.
+        if kind == Kind::Node {
             return Err(ExtError::NeedsHost(kind));
+        }
+        // SECURITY: proposed (unstable) VS Code APIs are refused: they are not part of the reviewed API surface the
+        // web worker host offers (CWE-1357, NIST CM-7).
+        if kind == Kind::Web
+            && manifest.get("enabledApiProposals").and_then(|v| v.as_array()).is_some_and(|a| !a.is_empty())
+        {
+            return Err(ExtError::ProposedApi);
         }
 
         let id = format!("{}.{}", namespace.to_ascii_lowercase(), name.to_ascii_lowercase());
@@ -725,7 +739,7 @@ mod tests {
     }
 
     #[test]
-    fn refuses_extensions_with_code() {
+    fn refuses_node_extensions_and_installs_web_ones() {
         let node = THEME.replace("\"displayName\"", "\"main\":\"./out/ext.js\",\"displayName\"");
         let fake = Fake::new(&node, &[], |_| {});
         let store = ExtStore::new(tmp());
@@ -733,12 +747,18 @@ mod tests {
             store.install(&|u, m| fake.get(u, m), "acme", "theme-x", "latest"),
             Err(ExtError::NeedsHost(Kind::Node))
         );
-        let web = THEME.replace("\"displayName\"", "\"browser\":\"./dist/web.js\",\"displayName\"");
-        let fake = Fake::new(&web, &[], |_| {});
-        assert_eq!(
-            store.install(&|u, m| fake.get(u, m), "acme", "theme-x", "latest"),
-            Err(ExtError::NeedsHost(Kind::Web))
+        // Phase I6b: a web extension installs, unless it asks for proposed APIs.
+        let web = THEME.replace(
+            "\"displayName\"",
+            "\"browser\":\"./dist/web.js\",\"enabledApiProposals\":[\"fileSearchProvider\"],\"displayName\"",
         );
+        let fake = Fake::new(&web, &[], |_| {});
+        assert_eq!(store.install(&|u, m| fake.get(u, m), "acme", "theme-x", "latest"), Err(ExtError::ProposedApi));
+        let web =
+            THEME.replace("\"displayName\"", "\"browser\":\"./dist/web.js\",\"main\":\"./out/n.js\",\"displayName\"");
+        let fake = Fake::new(&web, &[], |_| {});
+        let got = store.install(&|u, m| fake.get(u, m), "acme", "theme-x", "latest").unwrap();
+        assert_eq!(got.kind, Kind::Web);
     }
 
     #[test]

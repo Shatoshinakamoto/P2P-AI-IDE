@@ -1,0 +1,20 @@
+engine.json before pairing: absent
+engine.json after pairing: {'api': 1, 'port': 8798, 'pid': '<pid>'}
+engine.json mode: 600; connected-apps.json mode: 600
+code stored in connected-apps.json: 0 (0 = only the digest)
+pairing code on /api/connected-apps: HTTP 401
+no credentials on /v1/models: HTTP 401
+browser Origin on /v1/models: HTTP 403
+PASS wrong pairing code refused (401)
+PASS models ["tiny-chat:1b"] in 47 ms
+PASS chat "Hello from tiny-chat <b>on this computer</b>." finish Some("stop")
+PASS slow reply after keep-alives
+PASS agent asked for read_file {"path": "README.md"}
+PASS agent answered with the tool result "The file says: # Shop API\nA tiny shop."
+PASS gateway model refused: Some("the gateway answered with an error (HTTP 400)")
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.16s
+after revoke, code on /v1/models: HTTP 401
+engine.json after revoke: absent
+ollama /api/chat requests: 4 models: ['tiny-chat:1b']
+tool-call arguments sent to Ollama as objects: True 1
+pairing code in backend log (count): 0

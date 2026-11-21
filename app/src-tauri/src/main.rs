@@ -187,6 +187,8 @@ fn main() {
             net::gateway_remove,
             net::gateway_set_active,
             net::gateway_check,
+            net::tandemforge_status,
+            net::tandemforge_connect,
             net::chat_send,
             net::chat_stop,
             net::chats_list,

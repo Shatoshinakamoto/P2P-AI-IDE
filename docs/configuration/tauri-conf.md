@@ -31,14 +31,18 @@ CSP directives:
 | Directive | Value | Why |
 |---|---|---|
 | `default-src` | `'self'` | nothing remote by default |
-| `script-src` | `'self' 'wasm-unsafe-eval'` | only the app's own bundled scripts; no inline scripts, no JavaScript eval. `'wasm-unsafe-eval'` (phase I6a) lets the bundled oniguruma WebAssembly module compile; it colours code with TextMate grammars. It allows WebAssembly compilation only, not `eval()` |
+| `script-src` | `'self' 'wasm-unsafe-eval' 'unsafe-eval' 'sha256-2EBQn+AFduI8Wb0riLwbeshEGP4dJlHornyvuFAgYnA='` | only the app's own bundled scripts. `'wasm-unsafe-eval'` (phase I6a) lets the bundled oniguruma WebAssembly module compile (TextMate colours). Phase I6b: the hash allows the one inline script of the web worker extension host iframe (monaco-vscode-api 39.0.5; a new version needs the new hash), and `'unsafe-eval'` lets that iframe's worker load web extension code. **The IDE page itself does not get `'unsafe-eval'`**: its `<meta>` CSP (`app/vite.config.ts`, the same string without it) applies on top, and the stricter of the two wins |
 | `style-src` | `'self' 'unsafe-inline'` | Monaco creates `<style>` elements at run time. Accepted risk, SECURITY-LOG 2026-11-17 |
 | `img-src`, `font-src` | `'self' data: blob:` | Monaco's icon font and small inline images; `blob:` (phase I6a) for icons and fonts an installed icon theme contributes, which the page turns into `blob:` URLs from bytes the Rust core read |
 | `worker-src` | `'self' blob:` | Monaco's language workers (bundled files; `blob:` for Monaco's fallback) |
 | `connect-src` | `'self' data: blob: ipc: http://ipc.localhost` | Tauri's own IPC, the app's bundled files, and `data:`/`blob:` URLs made in the page (phase I6a: the editor services load built-in and installed extension files this way). No remote host: Open VSX and gateways are reached only by the Rust core |
-| `object-src`, `base-uri`, `frame-ancestors`, `form-action` | `'none'` | no plugins, base tag tricks, framing or form posts |
+| `object-src`, `base-uri`, `form-action` | `'none'` | no plugins, base tag tricks or form posts |
+| `frame-src` | `'self'` (phase I6b) | only the app's own extension host iframe page |
+| `frame-ancestors` | `'self'` (phase I6b; was `'none'`) | the app may frame its own pages (the extension host iframe); no other site can frame the IDE. Header only: the meta CSP leaves it out, as browsers ignore it there |
 
 Secure values: never add a remote host to `script-src` or `connect-src`; network access belongs in the Rust core.
+Never remove the page CSP plugin from `vite.config.ts` while `'unsafe-eval'` is here; the build refuses a page CSP
+that contains it. See [features/extensions.md](../features/extensions.md#web-extensions-i6b).
 
 ## `capabilities/default.json`
 

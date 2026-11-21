@@ -60,6 +60,15 @@ import "@codingame/monaco-vscode-swift-default-extension";
  */
 export const DEFAULT_THEME = "Dark Modern";
 
+// Phase I6b: the web extension host. VS Code runs it in a Worker started from a hidden iframe; both files are bundled
+// by Vite (`?worker&url` builds the worker with its imports; the package itself emits the iframe page) and served
+// from 'self'.
+import extHostWorkerUrl from "@codingame/monaco-vscode-api/workers/extensionHost.worker?worker&url";
+
+const workerUrls: Record<string, string> = {
+  extensionHostWorkerMain: extHostWorkerUrl,
+};
+
 // The services ask this hook for a worker by label. Unknown labels get the plain editor worker.
 const workers: Record<string, () => Worker> = {
   TextEditorWorker: () =>
@@ -68,8 +77,17 @@ const workers: Record<string, () => Worker> = {
     new Worker(new URL("@codingame/monaco-vscode-textmate-service-override/worker", import.meta.url), { type: "module" }),
 };
 self.MonacoEnvironment = {
-  getWorker(_id: string, label: string): Worker {
+  getWorker(_id: string, label: string): Worker | undefined {
+    // Labels served by URL (the extension host) are started by VS Code itself from getWorkerUrl.
+    if (label in workerUrls) return undefined;
     return (workers[label] ?? workers.TextEditorWorker)();
+  },
+  getWorkerUrl(_id: string, label: string): string | undefined {
+    return workerUrls[label];
+  },
+  // The bundled extension host worker is an ES module, so the iframe must start it with import(), not importScripts().
+  getWorkerOptions(_id: string, label: string): WorkerOptions | undefined {
+    return label in workerUrls ? { type: "module" } : undefined;
   },
 };
 
@@ -83,7 +101,7 @@ export function startEditor(): Promise<void> {
     await initUserConfiguration(JSON.stringify({ "workbench.colorTheme": DEFAULT_THEME }));
     await initialize({
       ...getConfigurationServiceOverride(),
-      ...getExtensionServiceOverride({ enableWorkerExtensionHost: false }),
+      ...getExtensionServiceOverride({ enableWorkerExtensionHost: true }),
       ...getTextmateServiceOverride(),
       ...getThemeServiceOverride(),
       ...getLanguagesServiceOverride(),

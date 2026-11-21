@@ -18,7 +18,7 @@ The IDE's plan and its decisions (ADR-029) live in the P2P-AI repository: `docs/
 | [features/run-and-test.md](features/run-and-test.md) | Phase I5b: the Run and test view and the chat's runs with per-run approval, on the gateway sandbox; threat model and controls |
 | [features/local-sandbox.md](features/local-sandbox.md) | Phase I5c: the local OS sandbox on this computer (Linux: namespaces, Landlock, seccomp), ported from TandemForge; threat model and controls |
 | [features/container-runner.md](features/container-runner.md) | Phase I5d: the local container runner (Docker or Podman) with pinned Red Hat UBI images; threat model and controls |
-| [features/extensions.md](features/extensions.md) | Phase I6a: the Extensions view, Open VSX search and verified install of themes, grammars and snippets, colour themes; threat model and controls |
+| [features/extensions.md](features/extensions.md) | Phases I6a and I6b: the Extensions view, Open VSX search and verified install, themes, grammars and snippets, web extensions in a sandboxed worker; threat model and controls |
 | [files/jschardet-stub.md](files/jschardet-stub.md) | `app/stubs/jschardet`: the stand-in that keeps an unused LGPL library out of the installers |
 | [files/app-data.md](files/app-data.md) | The IDE's own data files: `gateways.json`, `directories.json`, `links.json` and chat history, every key |
 | [files/discovery-vectors.md](files/discovery-vectors.md) | The copy of the P2P-AI protocol's shared advert vectors used by the core tests, with provenance |
@@ -28,6 +28,7 @@ The IDE's plan and its decisions (ADR-029) live in the P2P-AI repository: `docs/
 | [commands/local-containers.md](commands/local-containers.md) | The live check of the container runner with a real engine, and every engine command and flag the IDE uses (development only) |
 | [commands/history-test.md](commands/history-test.md) | The test history recorder `scripts/history_test.py` (copied from the P2P-AI repository) |
 | [files/third-party-notices.md](files/third-party-notices.md) | `app/src-tauri/THIRD-PARTY-NOTICES.txt`: the licence texts shipped in the installers, how it is generated and checked |
+| [features/tandemforge-engine.md](features/tandemforge-engine.md) | Phase I7: use TandemForge on this computer as a model engine (pairing code, loopback only); threat model and controls |
 | [features/installers.md](features/installers.md) | Windows and Linux installers and signed releases, built on the PC with the P2P-AI release script |
 | [files/app-icons.md](files/app-icons.md) | The app icons: P2P-AI logo with the IDE badge, how they are built |
 | [configuration/tauri-conf.md](configuration/tauri-conf.md) | `tauri.conf.json` (window, CSP) and `capabilities/default.json`, every key |
