@@ -1,0 +1,11 @@
+id: 2026-11-21_215028Z_security-scan_fd65ba7
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: 5
+failed: 0
+skipped: 0
+count_unit: packages
+exit_code: 0
+duration_s: 7.1
+commit: fd65ba793886f4d8583d070938ec0042901556a2
+machine: cloud

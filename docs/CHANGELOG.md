@@ -2,6 +2,20 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-21 - Phase I6b: web extensions in a Web Worker
+
+### Added
+- **Web extensions** ([features/extensions.md](features/extensions.md#web-extensions-i6b)): extensions from Open VSX with a `browser` entry now install and run in VS Code's web worker extension host, a Web Worker in a hidden sandboxed iframe with no network, no Node, no Tauri commands and no page access. They work with the files open in the editor. The Extensions view labels them.
+- Removing or turning off a web extension restarts the extension host without it, so its code stops at once.
+
+### Changed
+- The core installs extensions with a `browser` entry (also when they have a `main` entry too) as kind `web`; Node-only extensions are still refused (I6c). New refusal: web extensions asking for proposed VS Code APIs.
+- CSP ([configuration/tauri-conf.md](configuration/tauri-conf.md)): `'unsafe-eval'` and the extension host iframe's script hash in `script-src`, `frame-src 'self'`, `frame-ancestors 'self'`. The IDE page gets its own stricter meta CSP without `'unsafe-eval'` (`app/vite.config.ts`).
+
+### Tests
+- Core unit tests 83 passed [run](../HistoryTest/runs/2026-11-21_215005Z_core_fd65ba7/RUN.md); UI smoke test 98 of 98 with 7 new web extension checks [run](../HistoryTest/runs/2026-11-21_215016Z_ui_fd65ba7/RUN.md); app unit tests [run](../HistoryTest/runs/2026-11-21_215028Z_app-unit_fd65ba7/RUN.md); static checks and scans [run](../HistoryTest/runs/2026-11-21_215028Z_security-scan_fd65ba7/RUN.md).
+- Not run yet: the real desktop webviews on the PC and a live web extension install from open-vsx.org.
+
 ## 2026-11-21 - Phase I7: TandemForge on this computer as a model engine
 
 ### Added

@@ -2,6 +2,16 @@
 
 Every security patch, hardening change, CVE remediation and accepted risk, newest first.
 
+## 2026-11-21 — Phase I6b hardening and accepted risk: web extensions in a sandboxed worker
+- **Type:** hardening; accepted risk
+- **CVE / CWE / advisory:** none (new feature). CWE-94, CWE-95, CWE-201, CWE-693, CWE-918, CWE-1021; NIST SC-7, AC-4, CM-7; ASVS V14.4
+- **Severity:** none (new feature built with these controls). KEV no.
+- **Affected:** `core/src/extensions.rs`, `app/src-tauri/src/ext.rs`, `app/src/{extensions,monaco}.ts`, `app/src/components/ExtensionsView.tsx`, `app/src-tauri/tauri.conf.json`, `app/vite.config.ts`
+- **What changed:** web extensions (a `browser` entry) install after the same hash and signature checks and run only in VS Code's web worker extension host: a Worker created by a hidden iframe (`sandbox="allow-scripts allow-same-origin"`) of the app's own origin. Node-only extensions and extensions asking for proposed APIs are refused. The app CSP gained `'unsafe-eval'` (VS Code loads web extension code with `new Function`), the iframe script's SHA-256 hash, `frame-src 'self'` and `frame-ancestors 'self'` (was `'none'`). The IDE page gets a second, stricter meta CSP without `'unsafe-eval'`, built from the same string. Turning off or removing a web extension restarts the host without it.
+- **Why it is secure now:** the worker is bound by both the app CSP and the iframe's own CSP, so it can fetch only `'self'` and `data:`; it has no DOM and no Tauri bridge; `vscode.env.openExternal` is refused. Each was proven from inside a running extension in the UI smoke test (NIST SC-7, AC-4). The page keeps its no-eval policy (CWE-95). Other sites still can't frame the app (CWE-1021).
+- **Accepted risk:** `'unsafe-eval'` in the header CSP (the meta CSP removes it for the page; the iframe and its worker keep it). A web extension can read and change the text of files open in the editor, like any editor extension, and can fetch the app's own bundled files. The iframe hash pins monaco-vscode-api 39.0.5. The real desktop webviews (WebView2, WebKitGTK) are not yet checked; that is on the PC list.
+- **Verification:** HistoryTest runs 2026-11-21_215005Z_core_fd65ba7 (83 passed), 2026-11-21_215016Z_ui_fd65ba7 (98/98), 2026-11-21_215028Z_app-unit_fd65ba7, 2026-11-21_215028Z_security-scan_fd65ba7 (no vulnerabilities).
+
 ## 2026-11-21 — Phase I7 hardening: pairing with TandemForge on this computer
 - **Type:** hardening
 - **CVE / CWE / advisory:** none (new feature). CWE-20, CWE-209, CWE-400, CWE-522, CWE-532, CWE-918; NIST SC-7, SC-8, IA-2, AC-4

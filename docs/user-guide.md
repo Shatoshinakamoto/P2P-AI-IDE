@@ -27,7 +27,8 @@ pages in [features/](features/).
 If you have used VS Code, you will feel at home:
 
 - **Activity bar** (the icons on the far left), top to bottom: Explorer, Search, Source control, Run and test, Agent
-  chat, Missions, Gateways, Extensions (extensions arrive in a later version).
+  chat, Missions, Gateways, Extensions (themes, grammars, snippets and web extensions from Open VSX; see
+  [features/extensions.md](features/extensions.md)).
 - **Side panel** next to it shows the view you picked.
 - **Editor** in the middle, with tabs.
 - **Status bar** at the bottom: the active gateway, where tools run (Tools: Local), the latest message, the
