@@ -8,7 +8,7 @@
   `app/src/components/MissionsView.tsx`, `app/src/{App.tsx,ipc.ts}`, `app/src/components/{ChatView,StatusBar}.tsx`.
 * **Tests:** `core/tests/projects.rs` (fake gateway on 127.0.0.1), `core/examples/live_missions.rs` with `scripts/live_gateway_e2e.py` (real gateway), unit tests in `gwapi.rs` and `projects.rs`,
   `app/tests/ui-smoke.mjs` (Missions flow).
-* **Next:** I5 sandboxed commands, I6 TandemForge engine and the VS Code extension.
+* **Next:** I5 shipped (#7, #9 to #12); see [ROADMAP.md](../ROADMAP.md) for I6 extensions and I7.
 
 ## 1. Overview
 

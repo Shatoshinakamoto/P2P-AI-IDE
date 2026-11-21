@@ -1,0 +1,42 @@
+# P2P-AI IDE roadmap and checklist
+
+The plan and its decisions (ADR-029) live in the P2P-AI repository, `docs/restructure/agentic-ide-plan.md`, section 8.
+This page tracks where each phase stands, with the pull request that shipped it. Tick items in the same pull request
+that ships them.
+
+Status key: `[ ]` not started · `[~]` in progress or partly done · `[x]` done.
+Last checked against `main` (468ee3b): 2026-11-21.
+
+## Phases
+
+- [x] **I0** Clickable mockup for Pheonix's approval (Design canvas, 2026-11-17)
+- [x] **I1** Shell: open folder, explorer, Monaco tabs, save with conflict check, search, settings, no network (#1)
+- [x] **I2** Gateways: local, manual and public list from signed adverts; keys in the OS keychain; streamed chat with history (#1)
+- [x] **I3** Interactive agent: list, read, search and propose-edit tools on the open folder; diff review (#3)
+- [x] **I4** Missions: sync to a gateway project, Autopilot and Auto Improve, Missions view, review of returned work (#4, Windows evidence #5)
+- [x] **I5** Commands and tests, source control
+  - [x] I5a Source Control view (#7)
+  - [x] I5b Run and test on the gateway sandbox, per-run approval in chat (#9)
+  - [x] I5c Local OS sandbox, Linux (#10) and Windows AppContainer (#11), ported from TandemForge
+  - [x] I5d Local container runner, Docker or Podman, pinned UBI images (#12)
+- [ ] **I6** Extensions (design fixed in ADR-029 D1)
+  - [ ] I6a VS Code workbench services on Monaco (`@codingame/monaco-vscode-api`) and extension install from Open VSX by explicit user action
+  - [ ] I6b Web extensions in a Web Worker
+  - [ ] I6c Node extension-host sidecar started by the Rust core, workspace trust (untrusted folder = no host), no gateway keys
+  - [ ] I6d Optional Electron compatibility host for extensions with Electron-built native modules (download on first need, pinned and hashed, off by default)
+- [ ] **I7** TandemForge local engine (how the IDE uses TandemForge asked 2026-11-21)
+
+## Side tracks
+
+- [ ] **X** VSCodium / VS Code extension sharing one TypeScript gateway client with the IDE: X1 chat and gateway picker, X2 local agent tools with diff review, X3 missions
+- [ ] **Accounts** Email sign-in on gateways with universal accounts (ADR-030 phase A3, built with the P2P-AI accounts work)
+
+## Also shipped
+
+- App icons with the IDE badge (#2); installers, bundle settings and licence notices (#6); workspace access through a
+  folder handle against link swaps (#8); third-party notices for the sandbox crates (#13); README and user guide (#14);
+  npm audit gate (#15).
+
+## Not planned now
+
+- Signed installers and releases: paused until everything is implemented and tested (Pheonix, 2026-11-21).

@@ -4,6 +4,7 @@ The IDE's plan and its decisions (ADR-029) live in the P2P-AI repository: `docs/
 
 | Document | Description |
 |---|---|
+| [ROADMAP.md](ROADMAP.md) | Roadmap and checklist: where each phase (I0 to I7, side track X) stands, with the PR that shipped it |
 | [user-guide.md](user-guide.md) | **The user guide, a screenshot tour**: every view of the IDE, what it does and how to use it |
 | [commands/docs-screenshots.md](commands/docs-screenshots.md) | `app/tests/docs-shots.mjs`: retakes the screenshots in `docs/images/` |
 | [CHANGELOG.md](CHANGELOG.md) | Every addition, change, fix and removal, newest first |
