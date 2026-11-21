@@ -31,11 +31,11 @@ CSP directives:
 | Directive | Value | Why |
 |---|---|---|
 | `default-src` | `'self'` | nothing remote by default |
-| `script-src` | `'self'` | only the app's own bundled scripts; no inline scripts, no eval |
+| `script-src` | `'self' 'wasm-unsafe-eval'` | only the app's own bundled scripts; no inline scripts, no JavaScript eval. `'wasm-unsafe-eval'` (phase I6a) lets the bundled oniguruma WebAssembly module compile; it colours code with TextMate grammars. It allows WebAssembly compilation only, not `eval()` |
 | `style-src` | `'self' 'unsafe-inline'` | Monaco creates `<style>` elements at run time. Accepted risk, SECURITY-LOG 2026-11-17 |
-| `img-src`, `font-src` | `'self' data:` | Monaco's icon font and small inline images |
+| `img-src`, `font-src` | `'self' data: blob:` | Monaco's icon font and small inline images; `blob:` (phase I6a) for icons and fonts an installed icon theme contributes, which the page turns into `blob:` URLs from bytes the Rust core read |
 | `worker-src` | `'self' blob:` | Monaco's language workers (bundled files; `blob:` for Monaco's fallback) |
-| `connect-src` | `ipc: http://ipc.localhost` | only Tauri's own IPC; no network from the page (gateways in phase I2 go through Rust) |
+| `connect-src` | `'self' data: blob: ipc: http://ipc.localhost` | Tauri's own IPC, the app's bundled files, and `data:`/`blob:` URLs made in the page (phase I6a: the editor services load built-in and installed extension files this way). No remote host: Open VSX and gateways are reached only by the Rust core |
 | `object-src`, `base-uri`, `frame-ancestors`, `form-action` | `'none'` | no plugins, base tag tricks, framing or form posts |
 
 Secure values: never add a remote host to `script-src` or `connect-src`; network access belongs in the Rust core.

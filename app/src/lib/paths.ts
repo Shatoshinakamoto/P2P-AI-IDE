@@ -23,14 +23,18 @@ export function crumbs(rel: string): string[] {
   return rel === "" ? [] : rel.split("/");
 }
 
-/** Monaco language id per file extension or file name; "plaintext" when unknown. */
+/**
+ * Language id per file extension or file name; "plaintext" when unknown. The ids are VS Code's (phase I6a: the
+ * editor colours code with the grammars of VS Code's built-in extensions, registered in monaco.ts), so `.tsx` is
+ * "typescriptreact" and shell scripts are "shellscript". Kotlin has no built-in VS Code grammar and shows as plain text.
+ */
 const BY_EXT: Record<string, string> = {
-  ts: "typescript", tsx: "typescript", mts: "typescript", cts: "typescript",
-  js: "javascript", jsx: "javascript", mjs: "javascript", cjs: "javascript",
+  ts: "typescript", tsx: "typescriptreact", mts: "typescript", cts: "typescript",
+  js: "javascript", jsx: "javascriptreact", mjs: "javascript", cjs: "javascript",
   json: "json", jsonc: "json", md: "markdown", markdown: "markdown",
-  py: "python", rs: "rust", go: "go", java: "java", kt: "kotlin", c: "c", h: "c",
+  py: "python", rs: "rust", go: "go", java: "java", c: "c", h: "c",
   cpp: "cpp", cc: "cpp", hpp: "cpp", cs: "csharp", rb: "ruby", php: "php", swift: "swift",
-  sh: "shell", bash: "shell", ps1: "powershell", psm1: "powershell", bat: "bat", cmd: "bat",
+  sh: "shellscript", bash: "shellscript", ps1: "powershell", psm1: "powershell", bat: "bat", cmd: "bat",
   yml: "yaml", yaml: "yaml", toml: "ini", ini: "ini", cfg: "ini", xml: "xml", svg: "xml",
   html: "html", htm: "html", css: "css", scss: "scss", less: "less", sql: "sql", lua: "lua",
   dockerfile: "dockerfile",

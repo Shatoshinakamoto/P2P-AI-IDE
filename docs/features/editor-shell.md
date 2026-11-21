@@ -18,7 +18,9 @@ What works now:
 * **Editor tabs**: one Monaco model per file, so each tab keeps its own undo history; an unsaved dot on the tab; a
   dirty tab needs two clicks to close.
 * **Editing**: everything Monaco offers, including multi-cursor (Alt+Click, Add Cursor Below: Ctrl+Alt+Down on
-  Windows, Shift+Alt+Down on Linux), column selection, find and replace, and syntax colouring for about 40 languages.
+  Windows, Shift+Alt+Down on Linux), column selection, find and replace, and syntax colouring for about 30
+  languages (since phase I6a with VS Code's own TextMate grammars and Dark Modern theme; see
+  [extensions.md](extensions.md)).
 * **Save** with Ctrl+S (Cmd+S on macOS). If the file changed on disk since you opened it, the save is refused and a
   banner offers "Reload from disk" or "Keep editing".
 * **Search**: plain text across the workspace, case-insensitive; click a result to open the file at that line.

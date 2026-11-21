@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "9ae76d0789a6a872938f76d6c8bdc94d0002ad003ca184fda1f61efae608f963",
+   "size": 1797
+  },
+  "command.txt": {
+   "sha256": "f1544bb82d1e86f95b6578d1d69d80cd526156a1ad0895344a22f2eb6129b6d4",
+   "size": 135
+  },
+  "environment.md": {
+   "sha256": "21c7b74aa3abd3df33487fe825a90d97eef7693ac393e858838f4e09d3d062a5",
+   "size": 200
+  },
+  "logs/output.log": {
+   "sha256": "3dbb37d2865be0e02bf8d186dd078474b3d1ab51b78d616da96b8c9f45c0c0a4",
+   "size": 442
+  },
+  "results/summary.txt": {
+   "sha256": "73d3dea9a296d1d8d29fb65a6993fc74ad595e0aeb64e72c283e1210da37d89c",
+   "size": 291
+  }
+ },
+ "previous": {
+  "manifest_sha256": "f92ec19ebdc8252ca554940faf8ccf650035f54cdc5a57d4ec71fbe7350cf9d6",
+  "run_id": "2026-11-21_173347Z_core_848b60e"
+ },
+ "run": {
+  "area": "ovsx-cached",
+  "branch_or_pr": "claude/project-thread-8u4b8a",
+  "collected_utc": "",
+  "commit": "848b60eea05e6f9400485da287d314e214ef32dd",
+  "count_unit": "",
+  "date_utc": "2026-11-21T17:33:57Z",
+  "dirty": false,
+  "duration_s": 0.9,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-21_173357Z_ovsx-cached_848b60e",
+  "kind": "integration",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "Finish the TandemForge and IDE roadmaps",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Real install path on Open VSX files cached with curl",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

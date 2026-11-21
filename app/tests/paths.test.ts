@@ -18,7 +18,9 @@ test("crumbs", () => {
 });
 
 test("languageFor maps extensions and names", () => {
-  assert.equal(languageFor("src/App.tsx"), "typescript");
+  assert.equal(languageFor("src/App.tsx"), "typescriptreact");
+  assert.equal(languageFor("lib/x.ts"), "typescript");
+  assert.equal(languageFor("run.sh"), "shellscript");
   assert.equal(languageFor("main.py"), "python");
   assert.equal(languageFor("core/lib.RS"), "rust");
   assert.equal(languageFor("Dockerfile"), "dockerfile");

@@ -20,7 +20,7 @@ Last checked against `main` (468ee3b): 2026-11-21.
   - [x] I5c Local OS sandbox, Linux (#10) and Windows AppContainer (#11), ported from TandemForge
   - [x] I5d Local container runner, Docker or Podman, pinned UBI images (#12)
 - [ ] **I6** Extensions (design fixed in ADR-029 D1)
-  - [ ] I6a VS Code workbench services on Monaco (`@codingame/monaco-vscode-api`) and extension install from Open VSX by explicit user action
+  - [x] I6a VS Code workbench services on Monaco (`@codingame/monaco-vscode-api`) and extension install from Open VSX by explicit user action (this branch, 2026-11-21: themes, icon themes, grammars, snippets; [features/extensions.md](features/extensions.md)). Still to do: a live install from open-vsx.org on the PC
   - [ ] I6b Web extensions in a Web Worker
   - [ ] I6c Node extension-host sidecar started by the Rust core, workspace trust (untrusted folder = no host), no gateway keys
   - [ ] I6d Optional Electron compatibility host for extensions with Electron-built native modules (download on first need, pinned and hashed, off by default)

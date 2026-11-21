@@ -1,0 +1,62 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "4923be4cc9e2d195924f4e8c08040aa852a9fa848c3b7e7f6a74c73653ca9e6d",
+   "size": 2209
+  },
+  "command.txt": {
+   "sha256": "236fdca38d3a4372ffa9d4558965d940898852a6a87d769a26b98af948f31ec4",
+   "size": 96
+  },
+  "environment.md": {
+   "sha256": "617e7d2ca31f341fdb950345135e7c7b032a8b0329f83e47f2c003620828c944",
+   "size": 274
+  },
+  "logs/output.log": {
+   "sha256": "ad52c736fb31a785c6e3f679040c1c12a1e0f88a2b09606fdd2d52e6b8255d85",
+   "size": 2493
+  },
+  "projects/input/i6-static.sh": {
+   "sha256": "8fcee49a98269e3a70a50e6cfc5e1bd9c9dfa2b63713a815ee74f254af2ac7be",
+   "size": 775
+  },
+  "results/summary.txt": {
+   "sha256": "8cc040a806c35ab28f1fd2e91091c8d5aac6e213c6eb80e3e2b9fa4ec28e9f50",
+   "size": 256
+  }
+ },
+ "previous": {
+  "manifest_sha256": "99a7a591767c93fad071a557ebb1e6bcd7049214aea5b0ca800f609accd285c9",
+  "run_id": "2026-11-21_173418Z_app-unit_848b60e"
+ },
+ "run": {
+  "area": "security-scan",
+  "branch_or_pr": "claude/project-thread-8u4b8a",
+  "collected_utc": "",
+  "commit": "848b60eea05e6f9400485da287d314e214ef32dd",
+  "count_unit": "packages",
+  "date_utc": "2026-11-21T17:35:22Z",
+  "dirty": false,
+  "duration_s": 6.9,
+  "exit_code": 0,
+  "failed": 0,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-21_173522Z_security-scan_848b60e",
+  "kind": "scan",
+  "machine": "cloud",
+  "passed": 5,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "Finish the TandemForge and IDE roadmaps",
+  "shortened_logs": [],
+  "skipped": 0,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Phase I6a static checks: tsc, rustfmt, clippy, cargo audit, npm audit gate, licence notices",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

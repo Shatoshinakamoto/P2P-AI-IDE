@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "d1a47319ae30db0aa65d9d64aeecf9a2a8a2e3835fc3c3e216ae2fb8971ddae7",
+   "size": 1573
+  },
+  "command.txt": {
+   "sha256": "4f5e53f9eaf4abf77fa104d8c75f92828e352a0c2645bbac3d49fb61e35d57d4",
+   "size": 83
+  },
+  "environment.md": {
+   "sha256": "2ba7b14be63e270fb3d94b2df84c8732329b27af3f4979198eff41eea3e86100",
+   "size": 193
+  },
+  "logs/output.log": {
+   "sha256": "0f25d93a3eb6819909bf7eeb5a99eaff8a7dc736165692e818aa0bd3418dfc3c",
+   "size": 5459
+  },
+  "results/summary.txt": {
+   "sha256": "c589a2d1d3937d204bcb54540f5d547b6dad668e7c57290657d189f18bb3f3ff",
+   "size": 285
+  }
+ },
+ "previous": {
+  "manifest_sha256": "da56096258cf89596b556dcfa0f6c7ad09c919d6e9da6cb9c569951870b6c90e",
+  "run_id": "2026-11-18_011129Z_security-scan_aee787c"
+ },
+ "run": {
+  "area": "core",
+  "branch_or_pr": "claude/project-thread-8u4b8a",
+  "collected_utc": "",
+  "commit": "848b60eea05e6f9400485da287d314e214ef32dd",
+  "count_unit": "",
+  "date_utc": "2026-11-21T17:33:47Z",
+  "dirty": false,
+  "duration_s": 10.9,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-21_173347Z_core_848b60e",
+  "kind": "unit",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "Finish the TandemForge and IDE roadmaps",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Core unit tests incl. 9 new Open VSX extension tests",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

@@ -1,0 +1,8 @@
+{
+  "name": "jschardet",
+  "version": "0.0.0-p2p-ide-stub",
+  "description": "Stand-in for jschardet (LGPL-2.1+), which the IDE does not use. See index.js.",
+  "license": "Apache-2.0",
+  "private": true,
+  "main": "index.js"
+}

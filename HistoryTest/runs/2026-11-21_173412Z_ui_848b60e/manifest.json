@@ -1,0 +1,78 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "101b187d8527bbd150abb9d78b2b6597548c436d9ef5028ae417de414159107a",
+   "size": 1973
+  },
+  "artifacts/i6shots/chat.png": {
+   "sha256": "32780c576a2d21d94d9c6fe172ddc9a8f287c49a0fc9427bffc8fe524c040e09",
+   "size": 84926
+  },
+  "artifacts/i6shots/diff.png": {
+   "sha256": "5709e332f8937cc83535e3e922a0ae4d38e364e08cc8a23041a01ebe5ec123e5",
+   "size": 91610
+  },
+  "artifacts/i6shots/extensions.png": {
+   "sha256": "3e80a1e500cc8638d4a9960daef3dd982016be5a7972209bd1cfd5df5a6bba8f",
+   "size": 91574
+  },
+  "artifacts/i6shots/run.png": {
+   "sha256": "a2ce822efccc24f5ef9a02c2883f5721cd71588d4c3c836ad11b8734e83f7aa6",
+   "size": 87060
+  },
+  "artifacts/i6shots/ui-smoke.png": {
+   "sha256": "d5c0e1a076abbacfddf5f72f6de46964975972615127beb38de13f54e3bcd615",
+   "size": 88895
+  },
+  "command.txt": {
+   "sha256": "2bd3d4c52dcc5229938e526c0c26637148d14b9a8a9aafa0c7c3e6b46435ea14",
+   "size": 89
+  },
+  "environment.md": {
+   "sha256": "96533e27c88c7896237ad3899b14ac52a224951122d1b14cfb514170ea2982c5",
+   "size": 191
+  },
+  "logs/output.log": {
+   "sha256": "14766345a1cabb7511a375efec6f5c8212bd07230a652e0e00177b40e8d8d6d4",
+   "size": 7012
+  },
+  "results/summary.txt": {
+   "sha256": "2c9a7a757897febc6ff03ee77f4e53f9a08990d0663dbee37ad589ecc7529c8e",
+   "size": 282
+  }
+ },
+ "previous": {
+  "manifest_sha256": "acb4d5882da7f417eb67ec00152ce93351636d560f0599d539079f0a87e5a673",
+  "run_id": "2026-11-21_173357Z_ovsx-cached_848b60e"
+ },
+ "run": {
+  "area": "ui",
+  "branch_or_pr": "claude/project-thread-8u4b8a",
+  "collected_utc": "",
+  "commit": "848b60eea05e6f9400485da287d314e214ef32dd",
+  "count_unit": "",
+  "date_utc": "2026-11-21T17:34:12Z",
+  "dirty": false,
+  "duration_s": 5.9,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-21_173412Z_ui_848b60e",
+  "kind": "e2e",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "Finish the TandemForge and IDE roadmaps",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "UI smoke test under the shipped CSP, with the new Extensions view checks",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

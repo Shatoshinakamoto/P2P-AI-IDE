@@ -18,6 +18,8 @@ The IDE's plan and its decisions (ADR-029) live in the P2P-AI repository: `docs/
 | [features/run-and-test.md](features/run-and-test.md) | Phase I5b: the Run and test view and the chat's runs with per-run approval, on the gateway sandbox; threat model and controls |
 | [features/local-sandbox.md](features/local-sandbox.md) | Phase I5c: the local OS sandbox on this computer (Linux: namespaces, Landlock, seccomp), ported from TandemForge; threat model and controls |
 | [features/container-runner.md](features/container-runner.md) | Phase I5d: the local container runner (Docker or Podman) with pinned Red Hat UBI images; threat model and controls |
+| [features/extensions.md](features/extensions.md) | Phase I6a: the Extensions view, Open VSX search and verified install of themes, grammars and snippets, colour themes; threat model and controls |
+| [files/jschardet-stub.md](files/jschardet-stub.md) | `app/stubs/jschardet`: the stand-in that keeps an unused LGPL library out of the installers |
 | [files/app-data.md](files/app-data.md) | The IDE's own data files: `gateways.json`, `directories.json`, `links.json` and chat history, every key |
 | [files/discovery-vectors.md](files/discovery-vectors.md) | The copy of the P2P-AI protocol's shared advert vectors used by the core tests, with provenance |
 | [commands/app-scripts.md](commands/app-scripts.md) | The npm scripts and cargo commands used to build and test the app |

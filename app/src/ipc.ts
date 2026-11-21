@@ -291,3 +291,23 @@ export const scmUnstage = (rel: string | null) => call<void>("scm_unstage", { re
 /** Commits what is staged (hooks off); resolves to the short commit id. */
 export const scmCommit = (message: string) => call<string>("scm_commit", { message });
 export const scmLog = () => call<ScmCommit[]>("scm_log");
+
+// ---- Phase I6a: extensions from Open VSX (src-tauri/src/ext.rs, docs/features/extensions.md)
+
+/** One Open VSX search result. Plain text only: render as text, never HTML. */
+export interface ExtSummary { namespace: string; name: string; version: string; display_name: string; description: string; downloads: number }
+/** An installed extension. `kind` is what it needs to run; I6a installs only "declarative" ones. */
+export interface ExtInstalled {
+  id: string; namespace: string; name: string; version: string; display_name: string; description: string;
+  kind: "declarative" | "web" | "node"; enabled: boolean; installed_at: number; sha256: string; verified_publisher: boolean; folder: string;
+}
+
+export const extSearch = (query: string, offset = 0) => call<ExtSummary[]>("ext_search", { query, offset });
+/** Downloads, verifies (SHA-256 and Open VSX signature) and installs; only call on the person's click. */
+export const extInstall = (namespace: string, name: string, version = "latest") => call<ExtInstalled>("ext_install", { namespace, name, version });
+export const extList = () => call<ExtInstalled[]>("ext_list");
+export const extSetEnabled = (id: string, enabled: boolean) => call<ExtInstalled>("ext_set_enabled", { id, enabled });
+export const extUninstall = (id: string) => call<void>("ext_uninstall", { id });
+export const extManifest = (id: string) => call<Record<string, unknown>>("ext_manifest", { id });
+/** One file of an enabled extension, as bytes. */
+export const extFile = (id: string, path: string) => call<ArrayBuffer>("ext_file", { id, path });

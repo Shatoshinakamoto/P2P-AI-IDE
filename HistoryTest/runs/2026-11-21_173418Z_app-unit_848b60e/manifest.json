@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "452ef243371aaea3a3b62391f8510237918c8e51414d78c3181bfef846584ce6",
+   "size": 1442
+  },
+  "command.txt": {
+   "sha256": "7597f46acbcfa009e3ff718a56a919ba9e774fd681099c655a37c4f6780d060b",
+   "size": 74
+  },
+  "environment.md": {
+   "sha256": "b1c9129ceb15a556025cf4de0b136e1a59677addf154d0dd6cc77f414d4de1c2",
+   "size": 197
+  },
+  "logs/output.log": {
+   "sha256": "e11787d3dbcc1d30c8c09a66bb6ee746dde8b70c9a04b8ac3dabcd64701ea541",
+   "size": 624
+  },
+  "results/summary.txt": {
+   "sha256": "28a72a198140a59502c08caa7624c39c221099cbe90a62aaacede01e434603dd",
+   "size": 251
+  }
+ },
+ "previous": {
+  "manifest_sha256": "d4a9eeba00b5628c9c7ea4e0bd2e20104570027b0be2a23983056f1cfef73a14",
+  "run_id": "2026-11-21_173412Z_ui_848b60e"
+ },
+ "run": {
+  "area": "app-unit",
+  "branch_or_pr": "claude/project-thread-8u4b8a",
+  "collected_utc": "",
+  "commit": "848b60eea05e6f9400485da287d314e214ef32dd",
+  "count_unit": "packages",
+  "date_utc": "2026-11-21T17:34:18Z",
+  "dirty": false,
+  "duration_s": 0.2,
+  "exit_code": 0,
+  "failed": 0,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-21_173418Z_app-unit_848b60e",
+  "kind": "unit",
+  "machine": "cloud",
+  "passed": 4,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "Finish the TandemForge and IDE roadmaps",
+  "shortened_logs": [],
+  "skipped": 0,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "App unit tests (paths, language ids)",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}
