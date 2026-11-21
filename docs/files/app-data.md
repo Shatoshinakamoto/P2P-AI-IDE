@@ -126,3 +126,34 @@ and `.p2pide-tmp`. Images are kept by the engine, not here.
 
 **Security:** both folders are writable by sandboxed and container runs, which run untrusted project code. Nothing in them is
 trusted by the IDE; it never runs or loads files from them. See [features/local-sandbox.md](../features/local-sandbox.md).
+
+## extensions/ (phase I6a)
+
+Extensions installed from Open VSX ([features/extensions.md](../features/extensions.md)).
+
+| Path | What it holds |
+|---|---|
+| `extensions/installed.json` | The installed list: one object per extension (below). Written by the core with an atomic replace |
+| `extensions/<id>-<version>/` | The unpacked `extension/` folder of the verified `.vsix` (for example `dracula-theme.theme-dracula-2.25.1/`) |
+| `extensions/.staging-<random>/` | A download being unpacked; renamed into place when every entry passed the checks, removed on failure |
+
+`installed.json` keys:
+
+| Key | Type | Description |
+|---|---|---|
+| `id` | string | `namespace.name`, lowercase; allow-listed characters only |
+| `namespace`, `name`, `version` | string | As published on Open VSX (allow-listed) |
+| `display_name`, `description` | string | From the manifest, size-capped, control characters removed. Shown as text only |
+| `kind` | `declarative`, `web` or `node` | What the extension needs to run. Phase I6a installs only `declarative` |
+| `enabled` | bool | Turned on in the Extensions view. A turned-off extension gives the editor nothing |
+| `installed_at` | integer | Unix seconds |
+| `sha256` | string | SHA-256 of the verified `.vsix`, hex |
+| `verified_publisher` | bool | Open VSX marks the namespace as verified |
+| `folder` | string | The folder name above; checked again before any read |
+
+Security: the files are third-party data that passed the hash and signature checks at install time; the editor reads
+them only through the core, only for enabled extensions, and only inside each extension's own folder (cap-std,
+CWE-22). Deleting the `extensions/` folder removes every extension; nothing else refers to it.
+
+The chosen colour theme is kept in the webview's local storage under `p2p-ide.colorTheme` (a theme id, no secrets).
+

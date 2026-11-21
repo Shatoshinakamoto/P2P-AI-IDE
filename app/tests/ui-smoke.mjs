@@ -89,6 +89,11 @@ const fake = () => {
     stdout: "collected 4 items\n<b>bold</b><script>window.__xss5=1</script>\n3 passed, 1 failed", stderr: "E assert 1 == 2",
     truncated: false, tests: { passed: 3, failed: 1, skipped: 0, total: 4, failures: ["tests/test_orders.py::test_<b>total</b>"] }, error: "",
   };
+  // Phase I6a: the fake Open VSX and extension store. One theme installs; one extension that runs code is refused.
+  const ext = { installed: [] };
+  const extTheme = { name: "night-theme", publisher: "smoke", displayName: "Night Theme", version: "1.0.0", engines: { vscode: "^1.80.0" },
+    contributes: { themes: [{ id: "Smoke Night", label: "Smoke Night", uiTheme: "vs-dark", path: "./themes/night.json" }] } };
+  const extThemeFile = JSON.stringify({ name: "Smoke Night", type: "dark", colors: { "editor.background": "#123456" }, tokenColors: [] });
   window.__TAURI_INTERNALS__ = {
     transformCallback: (cb) => { const id = cbId++; callbacks.set(id, cb); return id; },
     unregisterCallback: (id) => callbacks.delete(id),
@@ -252,6 +257,23 @@ const fake = () => {
           for (const [rel, t] of files) t.split("\n").forEach((l, i) => { if (l.toLowerCase().includes(q)) matches.push({ rel, line: i + 1, preview: l.trim() }); });
           return { matches, truncated: false };
         }
+        case "ext_search": return [
+          { namespace: "smoke", name: "night-theme", version: "1.0.0", display_name: "Night Theme", description: "<img src=x onerror=window.__xss6=1> a dark theme", downloads: 1234 },
+          { namespace: "smoke", name: "runs-code", version: "2.0.0", display_name: "Runs Code", description: "needs a host", downloads: 5 }];
+        case "ext_install": {
+          if (args.name === "runs-code") throw "this extension runs Node.js code; the Node extension host arrives in phase I6c";
+          const e = { id: "smoke.night-theme", namespace: "smoke", name: "night-theme", version: "1.0.0", display_name: "Night Theme", description: "", kind: "declarative", enabled: true, installed_at: 1, sha256: "b".repeat(64), verified_publisher: true, folder: "smoke.night-theme-1.0.0" };
+          ext.installed = [e]; return e;
+        }
+        case "ext_list": return ext.installed;
+        case "ext_set_enabled": ext.installed = ext.installed.map((e) => (e.id === args.id ? { ...e, enabled: args.enabled } : e)); return ext.installed.find((e) => e.id === args.id);
+        case "ext_uninstall": ext.installed = ext.installed.filter((e) => e.id !== args.id); return null;
+        case "ext_manifest": if (!ext.installed.some((e) => e.id === args.id && e.enabled)) throw "extension not found"; return extTheme;
+        case "ext_file": {
+          if (!ext.installed.some((e) => e.id === args.id && e.enabled)) throw "extension not found";
+          if (args.path !== "themes/night.json") throw "file not found";
+          return new TextEncoder().encode(extThemeFile).buffer;
+        }
         default: throw "unknown command";
       }
     },
@@ -370,10 +392,10 @@ try {
   await page.getByRole("region", { name: "Staged changes" }).getByText("Staged (0)").waitFor();
   check("after the commit the message box is empty and Staged is empty", (await page.getByLabel("Commit message").inputValue()) === "");
 
-  // Placeholders for later phases.
+  // The Extensions view (phase I6a) is tested in full near the end; here it only has to open with an empty list.
   await page.getByRole("button", { name: "Extensions", exact: true }).click();
-  await page.getByText(/Arrives in phase I6/).waitFor();
-  check("later-phase views say when they arrive", true);
+  await page.getByText("No extensions installed.").waitFor();
+  check("the Extensions view opens with nothing installed", true);
   await page.getByRole("button", { name: "Missions: Autopilot and Auto Improve", exact: true }).click();
   await page.getByText("Missions run on a gateway. Add one first.").waitFor();
   check("Missions without a gateway points to the Gateways view", true);
@@ -620,6 +642,31 @@ try {
   await page.getByRole("log", { name: "Messages" }).getByText("OK, not running it.").waitFor();
   check("Decline answers no and the card goes away", window_calls(await page.evaluate(() => window.__calls), "agent_decide")?.allow === false && (await card.count()) === 0);
   await page.screenshot({ path: process.env.SHOT_RUN ?? join(here, "..", "ui-smoke-run.png") });
+
+
+  // Phase I6a: Extensions view. Search results are text; Install installs a theme; code extensions are refused.
+  await page.getByRole("button", { name: "Extensions", exact: true }).click();
+  await page.getByLabel("Search Open VSX").fill("theme");
+  await page.getByLabel("Search Open VSX").press("Enter");
+  await page.getByRole("button", { name: "Install Night Theme" }).waitFor();
+  check("extension search results render as text (no markup from Open VSX)", (await page.evaluate(() => window.__xss6)) === undefined && /a dark theme/.test(await page.getByRole("region", { name: "Search results" }).innerText()));
+  await page.getByRole("button", { name: "Install Runs Code" }).click();
+  await page.getByText(/Node extension host arrives in phase I6c/).first().waitFor();
+  check("an extension that runs code is refused with the phase that adds its host", true);
+  await page.getByRole("button", { name: "Install Night Theme" }).click();
+  await page.getByRole("region", { name: "Installed extensions" }).getByText("Night Theme").waitFor();
+  check("Install puts the theme in the installed list with its verified badge", (await page.getByLabel("Verified publisher on Open VSX").count()) === 1);
+  await page.getByRole("option", { name: /Smoke Night/ }).waitFor({ state: "attached" });
+  await page.getByRole("combobox", { name: "Colour theme" }).selectOption("Smoke Night");
+  const bg = async () => page.evaluate(() => getComputedStyle(document.querySelector(".monaco-editor .monaco-editor-background") ?? document.body).backgroundColor);
+  await page.waitForFunction(() => getComputedStyle(document.querySelector(".monaco-editor .monaco-editor-background") ?? document.body).backgroundColor === "rgb(18, 52, 86)", null, { timeout: 8000 }).catch(() => {});
+  check("picking the installed theme recolours the editor", (await bg()) === "rgb(18, 52, 86)", await bg());
+  await page.screenshot({ path: process.env.SHOT_EXT ?? join(here, "..", "ui-smoke-ext.png") });
+  // Remove while its theme is in use: the view moves the editor back to Dark Modern first.
+  await page.getByRole("button", { name: "Remove Night Theme" }).click();
+  await page.getByText("No extensions installed.").waitFor();
+  check("Remove takes the extension off the list and out of the theme picker", (await page.getByRole("option", { name: /Smoke Night/ }).count()) === 0);
+  check("removing the theme in use goes back to Dark Modern", (await page.getByRole("combobox", { name: "Colour theme" }).inputValue()) === "Dark Modern" && (await bg()) !== "rgb(18, 52, 86)", await bg());
 
   await page.screenshot({ path: process.env.SHOT ?? join(here, "..", "ui-smoke.png") });
 } catch (e) {

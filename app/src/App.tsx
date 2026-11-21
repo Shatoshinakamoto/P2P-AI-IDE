@@ -6,7 +6,7 @@
  * gateway chip in the status bar) and phase I3 of docs/features/agent-tools.md (chat tools on the open folder and
  * the diff review of proposed changes over the editor area) and phase I4 of docs/features/missions.md (the Missions view:
  * Autopilot and Auto Improve on a gateway project, with the work brought back into the same diff review) and phase I5 of docs/features/source-control.md (the Source Control
- * view with a read-only diff against the last commit). Extensions are visible but arrive in a later phase.
+ * view with a read-only diff against the last commit). The Extensions view installs declarative Open VSX extensions (phase I6a).
  * Security: the webview never chooses the folder path (the Rust side shows the OS picker) and never touches files
  * itself; every call goes through ipc.ts to the checked core. All text is rendered by React or Monaco as text (CWE-79).
  */
@@ -21,7 +21,7 @@ import { Explorer } from "./components/Explorer.tsx";
 import { SearchView } from "./components/SearchView.tsx";
 import { Editor, type EditorHandle } from "./components/Editor.tsx";
 import { StatusBar } from "./components/StatusBar.tsx";
-import { Placeholder } from "./components/Placeholder.tsx";
+import { ExtensionsView } from "./components/ExtensionsView.tsx";
 import { NetworkView } from "./components/NetworkView.tsx";
 import { ChatView, type Review } from "./components/ChatView.tsx";
 import { DiffReview } from "./components/DiffReview.tsx";
@@ -123,7 +123,7 @@ export function App() {
       case "network":
         return <NetworkView onChanged={setGateways} onNotice={onNotice} />;
       case "extensions":
-        return <Placeholder title="Extensions" phase="phase I6">VS Code and VSCodium extensions from Open VSX, in folders you trust.</Placeholder>;
+        return <ExtensionsView onNotice={onNotice} />;
     }
   };
 

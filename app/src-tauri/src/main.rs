@@ -24,6 +24,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod agent;
+mod ext;
 mod missions;
 mod net;
 mod run;
@@ -62,6 +63,8 @@ struct AppState {
     /// The run the assistant is waiting on (phase I5b): its id and where the person's Allow or Decline goes. Only
     /// `agent_decide` with this id answers it.
     run_decision: Arc<Mutex<Option<WaitingRun>>>,
+    /// Phase I6a: one extension install at a time.
+    ext_busy: AtomicBool,
 }
 
 /// What the webview learns about the open workspace: its name only.
@@ -166,6 +169,7 @@ fn main() {
             sync_busy: Arc::new(AtomicBool::new(false)),
             run_decision: Arc::new(Mutex::new(None)),
             scm_busy: AtomicBool::new(false),
+            ext_busy: AtomicBool::new(false),
         })
         .invoke_handler(tauri::generate_handler![
             pick_folder,
@@ -225,7 +229,14 @@ fn main() {
             missions::approvals_list,
             missions::approval_decide,
             missions::proposals_list,
-            missions::proposal_act
+            missions::proposal_act,
+            ext::ext_search,
+            ext::ext_install,
+            ext::ext_list,
+            ext::ext_set_enabled,
+            ext::ext_uninstall,
+            ext::ext_manifest,
+            ext::ext_file
         ])
         .run(tauri::generate_context!())
         .expect("the IDE window could not start");
