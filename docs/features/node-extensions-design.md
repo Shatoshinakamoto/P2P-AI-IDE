@@ -54,7 +54,26 @@ flowchart LR
 * **I6c-2** UI: remote-agent service, reload with the remote authority in trusted folders, folder and editors through the server, trust prompt, download prompt, Extensions view texts; smoke test with a fake server.
 * **I6c-3** PC: pin the real VSCodium 1.140.x hashes for Windows, Linux and macOS, install a real Node extension from Open VSX, archive the run.
 
-## 7. Limitations and known risks
+## 7. Built so far (I6c-1, option A)
+
+* `core/src/node_host.rs`: `PINS` (empty until I6c-3, so nothing is ever downloaded), `pin_for`, `download` (hash check), `unpack_tgz`, `ensure_installed`, `TrustStore`, `scrubbed_env`, `start`.
+* `app/src-tauri/src/nodehost.rs`: `node_host_status`, `node_host_trust`, `node_host_start { allow_download }`, `node_host_stop`. The folder is always the one opened through the OS dialog.
+* Still assumed, checked in I6c-3: the server prints `Extension host agent listening on <port>` and accepts `--connection-token-file`, `--server-data-dir`, `--user-data-dir`, `--extensions-dir` and `--disable-telemetry`.
+
+## 8. Dependencies
+
+| Name | Version | Purpose | CVE check |
+|---|---|---|---|
+| `tar` | 0.4.46 | Read the server's `.tar.gz` (entries only; this module writes the files) | cargo audit 2026-11-21: no advisories |
+| `filetime` | 0.2.30 | Pulled in by `tar` | cargo audit 2026-11-21: no advisories |
+| VSCodium server (REH) | 1.140.x, pinned in I6c-3 | Runs Node extensions | To check against the VSCodium release notes when pinned |
+
+## 9. Test evidence
+
+* [Core unit tests, 93 passed](../../HistoryTest/runs/2026-11-21_232857Z_core_3e0d986/RUN.md)
+* [Static checks, failed on stale notices](../../HistoryTest/runs/2026-11-21_232914Z_security-scan_3e0d986/RUN.md), then [passed](../../HistoryTest/runs/2026-11-21_232948Z_security-scan_f363048/RUN.md)
+
+## 10. Limitations and known risks
 
 * Node extensions can't be stopped one by one without restarting the server.
 * The download needs github.com; offline machines stay on web extensions.

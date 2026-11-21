@@ -1,0 +1,11 @@
+id: 2026-11-21_232948Z_security-scan_f363048
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: 5
+failed: 0
+skipped: 0
+count_unit: packages
+exit_code: 0
+duration_s: 7.9
+commit: f363048a371c8d47ef6aa035014e02ead33064c5
+machine: cloud

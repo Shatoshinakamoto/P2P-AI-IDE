@@ -2,6 +2,17 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-21 - Phase I6c-1: Node extension host, core part
+
+### Added
+- Design page [features/node-extensions-design.md](features/node-extensions-design.md): Node extensions run in the MIT VSCodium server, downloaded on first need, as a local sidecar for trusted folders only (option A; Pheonix's pick is pending).
+- Core module `node_host`: pinned server download with SHA-256 check (no pins yet, so nothing downloads until I6c-3 pins the real files), safe `.tar.gz` unpack, folder trust store, and a sidecar start on `127.0.0.1` with a random connection token in a 0600 file and an allow-listed environment.
+- Shell commands `node_host_status`, `node_host_trust`, `node_host_start`, `node_host_stop`. The host stops when another folder opens, when trust is taken back, and when the app exits. The UI doesn't call them yet (I6c-2).
+- New dependency: `tar` 0.4.46 (read-only use), with `filetime` 0.2.30.
+
+### Tests
+- Core unit tests 93 passed [run](../HistoryTest/runs/2026-11-21_232857Z_core_3e0d986/RUN.md); static checks failed once on stale licence notices [run](../HistoryTest/runs/2026-11-21_232914Z_security-scan_3e0d986/RUN.md), then passed [run](../HistoryTest/runs/2026-11-21_232948Z_security-scan_f363048/RUN.md).
+
 ## 2026-11-21 - Phase I6b: internet for web extensions, asked once per extension
 
 ### Added

@@ -1,0 +1,2 @@
+# run in repository folder `.`, as an argument list (no shell)
+env NOTICES=/tmp/claude-0/p2p-notices/scripts/third_party_notices.py /tmp/claude-0/i6-static.sh
