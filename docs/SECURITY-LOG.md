@@ -2,6 +2,15 @@
 
 Every security patch, hardening change, CVE remediation and accepted risk, newest first.
 
+## 2026-11-21 — Phase I7 hardening: pairing with TandemForge on this computer
+- **Type:** hardening
+- **CVE / CWE / advisory:** none (new feature). CWE-20, CWE-209, CWE-400, CWE-522, CWE-532, CWE-918; NIST SC-7, SC-8, IA-2, AC-4
+- **Severity:** none (new feature built with these controls). KEV no.
+- **Affected:** `core/src/{tandemforge,gateways,client,lib}.rs`, `app/src-tauri/src/{net,main}.rs`, `app/src/ipc.ts`, `app/src/components/{NetworkView,TandemForgeConnect}.tsx`
+- **What changed:** the IDE reads only a port from TandemForge's `engine.json` (4 KiB cap, strict JSON, `api` 1, port 1024 to 65535) and talks only to `http://127.0.0.1:<port>`; a saved TandemForge entry with any other URL is refused when the list loads. The pairing code (`tfa_` + 40 to 100 base64url characters) is checked against TandemForge before it is saved, kept only in the OS keychain, and sent only as a bearer header to loopback. The HTTP client's https-only switch is now off only for loopback http URLs the URL check already allowed.
+- **Why it is secure now:** the code never leaves the computer or reaches the webview, logs or files (NIST SC-7, IA-5; CWE-522, CWE-532); TandemForge on its side limits the code to its `/v1` engine routes and local models (TandemForge SECURITY-LOG, same date).
+- **Verification:** HistoryTest runs 2026-11-21_205545Z_core_1e284ce, 2026-11-21_205557Z_ui_1e284ce (91/91), 2026-11-21_205630Z_tf-engine-e2e_1e284ce (wrong code 401, pairing code refused on `/api`, browser Origin 403, revoke closes access), 2026-11-21_205639Z_security-scan_1e284ce (no vulnerabilities; carried-over warnings only).
+
 ## 2026-11-21 — Phase I6a hardening: verified Open VSX extensions, editor services, CSP
 - **Type:** hardening; accepted risk
 - **CVE / CWE / advisory:** none (new feature). CWE-22, CWE-59, CWE-79, CWE-94, CWE-117, CWE-209, CWE-345, CWE-400, CWE-409, CWE-494, CWE-601, CWE-918; NIST SI-7, AU-2, AU-3, AC-3, CM-7; SSDF PS.2

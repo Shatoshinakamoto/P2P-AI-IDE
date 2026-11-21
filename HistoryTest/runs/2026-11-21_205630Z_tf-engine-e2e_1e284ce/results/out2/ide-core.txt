@@ -1,0 +1,16 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.07s
+     Running tests/tandemforge_engine.rs (target/debug/deps/tandemforge_engine-bbf29567d3708e80)
+
+running 1 test
+engine at http://127.0.0.1:8798
+PASS wrong pairing code refused (401)
+PASS models ["tiny-chat:1b"] in 47 ms
+PASS chat "Hello from tiny-chat <b>on this computer</b>." finish Some("stop")
+PASS slow reply after keep-alives
+PASS agent asked for read_file {"path": "README.md"}
+PASS agent answered with the tool result "The file says: # Shop API\nA tiny shop."
+PASS gateway model refused: Some("the gateway answered with an error (HTTP 400)")
+test ide_core_uses_tandemforge_as_its_engine ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.16s
+

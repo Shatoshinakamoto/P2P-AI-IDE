@@ -1,0 +1,82 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "03ab249b8311a406d6bc5c301692b39bfa54847c2c92fba6752747a1ecbac72e",
+   "size": 2708
+  },
+  "command.txt": {
+   "sha256": "749792b9c5f1f06ecf792a37bf4fbdead767846d36bab7289cfb5b978fe58b57",
+   "size": 117
+  },
+  "environment.md": {
+   "sha256": "3e0f931cf627365cadb7620cb979da137fb1dadb7945af2e9c0c828c86bc3632",
+   "size": 202
+  },
+  "logs/output.log": {
+   "sha256": "5f3cd8d836e026bb911877ac5a614ab868f2db691f402209681bea08193d23dd",
+   "size": 1063
+  },
+  "projects/input/fake_ollama.py": {
+   "sha256": "7e5e3bbc9a3806274feb9362b6bb7a9b1cb8c2f27a19a426b775ae86dac9cd15",
+   "size": 2490
+  },
+  "projects/input/run.sh": {
+   "sha256": "f1d4f57c6166a7fde4e622b60b6c1b5a9722c573589d4b5b33a2448c4300b50e",
+   "size": 4138
+  },
+  "results/out2/backend-excerpt.log": {
+   "sha256": "62161c3af172a2ff7ece0c6a8df1239a84998c28d8f2397ee691516041b9e6f4",
+   "size": 773
+  },
+  "results/out2/ide-core.txt": {
+   "sha256": "b3384b29e5710fd3e4792de6fa47ce542fbac423ecc5100c19ef77629535413f",
+   "size": 772
+  },
+  "results/out2/steps.txt": {
+   "sha256": "9b1343bf63e47be17c055e21fe12562cad595001d3ed9bf43ba06993b73b46f9",
+   "size": 563
+  },
+  "results/summary.txt": {
+   "sha256": "3ae8b9b1b00d0984dfe50674fec13881b48784b3ef3d65179f3d120e74029834",
+   "size": 293
+  }
+ },
+ "previous": {
+  "manifest_sha256": "846f1478e008ad55821fd7637b59a6f15c9abf64c9a24174e6261c5f10c22f18",
+  "run_id": "2026-11-21_205604Z_app-unit_1e284ce"
+ },
+ "run": {
+  "area": "tf-engine-e2e",
+  "branch_or_pr": "claude/project-thread-8u4b8a",
+  "collected_utc": "",
+  "commit": "1e284ce08423ed2b2a8ebe130b7e2497edeff82e",
+  "count_unit": "",
+  "date_utc": "2026-11-21T20:56:30Z",
+  "dirty": false,
+  "duration_s": 8.6,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-21_205630Z_tf-engine-e2e_1e284ce",
+  "kind": "e2e",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {
+   "projects/input/run.sh": {
+    "secret": 1
+   }
+  },
+  "requested_by": "Finish TandemForge and IDE roadmaps thread",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Phase I7 end to end: IDE core against a real TandemForge backend (fake Ollama)",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

@@ -1,0 +1,2 @@
+# run in repository folder `.`, as an argument list (no shell)
+/tmp/claude-0/i6-static.sh

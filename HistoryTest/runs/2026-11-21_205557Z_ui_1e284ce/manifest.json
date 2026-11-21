@@ -1,0 +1,62 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "b54e68a0d9ceb32a5e0e62245c74f49a2896f23517ef60b480f901ddeaf481b6",
+   "size": 1825
+  },
+  "artifacts/ui-smoke-tf.png": {
+   "sha256": "603cfdd5514db6d5a3593c2901bed07129bf3d7122a3600817256315b1235ed7",
+   "size": 103102
+  },
+  "command.txt": {
+   "sha256": "2bd3d4c52dcc5229938e526c0c26637148d14b9a8a9aafa0c7c3e6b46435ea14",
+   "size": 89
+  },
+  "environment.md": {
+   "sha256": "7767a4b4eddd65fed1c29e5eaa819dc22715147301c32f8aaef941f266fa0e62",
+   "size": 191
+  },
+  "logs/output.log": {
+   "sha256": "8772d59b0dcc8a9f99e7cbfa500dd48e8c8e8cebd8eeee3d3aeaf2cc93c7d385",
+   "size": 7526
+  },
+  "results/summary.txt": {
+   "sha256": "2b00a3bd56e42c0df55d482c7c320618698dc61fc666cff23d129047db6f1fda",
+   "size": 282
+  }
+ },
+ "previous": {
+  "manifest_sha256": "868ad0b5ccecfb32e5f33b35e6a2f521d4b57b6a135436a33837df554be3ab0e",
+  "run_id": "2026-11-21_205545Z_core_1e284ce"
+ },
+ "run": {
+  "area": "ui",
+  "branch_or_pr": "claude/project-thread-8u4b8a",
+  "collected_utc": "",
+  "commit": "1e284ce08423ed2b2a8ebe130b7e2497edeff82e",
+  "count_unit": "",
+  "date_utc": "2026-11-21T20:55:57Z",
+  "dirty": false,
+  "duration_s": 6.8,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-21_205557Z_ui_1e284ce",
+  "kind": "e2e",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "Finish TandemForge and IDE roadmaps thread",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Phase I7 UI smoke test with TandemForge pairing (headless Chromium, shipped CSP)",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

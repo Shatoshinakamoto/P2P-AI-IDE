@@ -92,6 +92,9 @@ or spoofed gateway, a hostile answer (prompt injection, markup), another local u
 Developer gateway without TLS: `http://127.0.0.1:8080` is accepted and marked INSECURE — DEV ONLY. Never use it for
 real keys.
 
+TandemForge on this computer (phase I7) is a third kind of entry, added with **Pair with TandemForge** instead of
+**Add gateway**; see [tandemforge-engine.md](tandemforge-engine.md).
+
 ## 5. Dependencies
 
 | Name | Version | Purpose | CVE check |

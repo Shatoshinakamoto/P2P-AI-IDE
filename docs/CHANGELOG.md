@@ -2,6 +2,22 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-21 - Phase I7: TandemForge on this computer as a model engine
+
+### Added
+- **TandemForge on this computer** ([features/tandemforge-engine.md](features/tandemforge-engine.md)): pair the IDE with a running TandemForge using the code it shows in Settings > Connected apps; chat and the agent then use TandemForge's local models (Ollama, LM Studio) through the same OpenAI-style API as a gateway. Nothing leaves the computer.
+- Core module `tandemforge` (finds TandemForge's `engine.json`, loopback URL only, pairing code check) and gateway kind `tandemforge` (one entry; its port follows TandemForge at each use).
+- Shell commands `tandemforge_status`, `tandemforge_connect`; Gateways view panel "TandemForge on this computer".
+- Core test `tests/tandemforge_engine.rs` (ignored by default) that runs against a real TandemForge backend.
+
+### Changed
+- The HTTP client allows plain http only for loopback URLs the gateway check already allowed (dev gateway, TandemForge); everything else stays https only.
+
+### Tests
+- Core unit tests 83 passed [run](../HistoryTest/runs/2026-11-21_205545Z_core_1e284ce/RUN.md); UI smoke test 91 of 91 with 4 new checks [run](../HistoryTest/runs/2026-11-21_205557Z_ui_1e284ce/RUN.md); app unit tests [run](../HistoryTest/runs/2026-11-21_205604Z_app-unit_1e284ce/RUN.md).
+- End to end against a real TandemForge backend with a fake Ollama [run](../HistoryTest/runs/2026-11-21_205630Z_tf-engine-e2e_1e284ce/RUN.md); static checks and scans [run](../HistoryTest/runs/2026-11-21_205639Z_security-scan_1e284ce/RUN.md).
+- Not run yet: the two desktop apps side by side on the PC with a real model.
+
 ## 2026-11-21 - Phase I6a: Extensions from Open VSX, VS Code editor services
 
 ### Added

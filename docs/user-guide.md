@@ -79,6 +79,9 @@ The agent's models run on a P2P-AI **gateway**. Open the **Gateways** view (the 
 3. **Public gateways**: add a directory address and press **Refresh list** to see gateways that welcome new users.
    Each one is checked against its signature, and the list shows its region, models, latency, how to sign up, and
    whether it keeps prompts. **Add** saves it.
+4. **TandemForge on this computer**: if you run TandemForge, it can lend the IDE its local models. In TandemForge
+   open Settings, Connected apps, and press **Connect**; copy the code it shows once. Here press **Pair with
+   TandemForge** and paste it. Nothing leaves your computer.
 
 ![Gateways and the public list](images/gateways.png)
 

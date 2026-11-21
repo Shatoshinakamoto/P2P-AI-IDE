@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "c4f7602daa9009ad6222c2ca711167ec999e6f37c5f1230208c28df455ce5963",
+   "size": 1673
+  },
+  "command.txt": {
+   "sha256": "4f5e53f9eaf4abf77fa104d8c75f92828e352a0c2645bbac3d49fb61e35d57d4",
+   "size": 83
+  },
+  "environment.md": {
+   "sha256": "dd4519420e6d1280ca19b2f4677a162e9f1e600b7012eab823299d2b0562a3e2",
+   "size": 193
+  },
+  "logs/output.log": {
+   "sha256": "c1fbc08dcb9306fe210018acdb643c1e67da90bb35959dc4fcc675204e535641",
+   "size": 5777
+  },
+  "results/summary.txt": {
+   "sha256": "bb67af31573a5156d70babf12d32c54a79dcd246e02734a1ab7601bf1a36e513",
+   "size": 285
+  }
+ },
+ "previous": {
+  "manifest_sha256": "ce0ef9fb835ab8abc967bdb08e018b859256334f7d17b15d335a052889744bf9",
+  "run_id": "2026-11-21_173522Z_security-scan_848b60e"
+ },
+ "run": {
+  "area": "core",
+  "branch_or_pr": "claude/project-thread-8u4b8a",
+  "collected_utc": "",
+  "commit": "1e284ce08423ed2b2a8ebe130b7e2497edeff82e",
+  "count_unit": "",
+  "date_utc": "2026-11-21T20:55:45Z",
+  "dirty": false,
+  "duration_s": 12.0,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-21_205545Z_core_1e284ce",
+  "kind": "unit",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "Finish TandemForge and IDE roadmaps thread",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Phase I7 core unit tests (tandemforge module, TandemForge gateway kind)",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

@@ -1,0 +1,10 @@
+/home/user/TandemForge/packages/python/server.py:1965: DeprecationWarning: 
+/home/user/TandemForge/packages/python/server.py:1972: DeprecationWarning: 
+/home/user/TandemForge/packages/python/server.py:1995: DeprecationWarning: 
+/home/user/TandemForge/packages/python/server.py:2002: DeprecationWarning: 
+/home/user/TandemForge/packages/python/server.py:2008: DeprecationWarning: 
+/home/user/TandemForge/packages/python/server.py:2134: DeprecationWarning: 
+/home/user/TandemForge/packages/python/server.py:2162: DeprecationWarning: 
+INFO:     127.0.0.1:34908 - "POST /api/connected-apps HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34912 - "GET /api/connected-apps HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:41516 - "DELETE /api/connected-apps/58458cabc052b136 HTTP/1.1" 200 OK
