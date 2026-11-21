@@ -52,7 +52,7 @@ Tests: `cd core && cargo test`, `cd app && npm test && npm run build && npm run 
 ## Status
 
 Built: the editor (phase I1), gateways and chat (I2), agent tools and diff review (I3), missions (I4), source control,
-run and test, the local OS sandbox and the container runner (I5). Next: extensions (I6). The plan and its decisions
+run and test, the local OS sandbox and the container runner (I5). Next: extensions (I6), then the TandemForge engine (I7); the checklist is [docs/ROADMAP.md](docs/ROADMAP.md). The plan and its decisions
 (ADR-029) are in the P2P-AI repository, `docs/restructure/agentic-ide-plan.md`; every change is in
 [docs/CHANGELOG.md](docs/CHANGELOG.md).
 

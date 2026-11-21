@@ -2,6 +2,14 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-21 - Roadmap checklist in this repository
+
+### Added
+- [ROADMAP.md](ROADMAP.md): every phase of the IDE plan (I0 to I7, side track X, accounts) with its status and the pull request that shipped it. I0 to I5 are done; I6 extensions and I7 are next. Documentation only.
+
+### Changed
+- README.md and features/missions.md point to the checklist instead of an out-of-date "next" line.
+
 ## 2026-11-17 - README and user guide with screenshots
 
 ### Added
