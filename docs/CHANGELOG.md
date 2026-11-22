@@ -10,6 +10,7 @@ All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepac
 - UI smoke test option `NODE_HOST_REAL`: forwards the editor's connection to such a real server and checks in the server's own logs that it got the workspace and started extensions.
 
 ### Fixed
+- Security: `url` 2.5.8 -> 2.5.9 in the desktop app (RUSTSEC-2026-0592, a crash on nested `blob:` URLs).
 - Extensions could not save their state (`globalState`): the editor now registers the extension storage service (in memory; state lasts until the window reloads). Found with the real host: Git's first write failed.
 
 ### Changed
