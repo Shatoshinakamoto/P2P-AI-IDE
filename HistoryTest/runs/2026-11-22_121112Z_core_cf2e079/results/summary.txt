@@ -1,0 +1,11 @@
+id: 2026-11-22_121112Z_core_cf2e079
+verdict: fail
+verdict_reason: The tests removed the temp folder while the Workspace still held a handle on it; Windows refuses that. Fixed in the next commit (drop the workspace first). The full log stays on the PC under the local-ci runs folder.
+passed: 97
+failed: 3
+skipped: not recorded
+count_unit: not recorded
+exit_code: not recorded
+duration_s: not recorded
+commit: cf2e079c728ec65cd116fe5cc4252d22adc899d9
+machine: pc
