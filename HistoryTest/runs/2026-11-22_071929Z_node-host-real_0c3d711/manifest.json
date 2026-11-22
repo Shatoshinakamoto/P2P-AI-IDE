@@ -1,0 +1,62 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "d67668dd06d2838781cec7a624ff69bc6dd03a198f7c8ab261bb27cc1556871e",
+   "size": 1880
+  },
+  "command.txt": {
+   "sha256": "16ab818730eb79632b199e41fb62a32045210c33feb9ea62c2d37338f8fe724a",
+   "size": 129
+  },
+  "environment.md": {
+   "sha256": "33b860654af79cbafc3866e4c0ae940d5f9bd8be867f8a3cac60cdd521b3920f",
+   "size": 205
+  },
+  "logs/output.log": {
+   "sha256": "f07456a84a67e1e492c9fb904f6de91e8d92ea868fa1440af73a6ac7dd38af3b",
+   "size": 727
+  },
+  "logs/real-log-win32.txt": {
+   "sha256": "f07456a84a67e1e492c9fb904f6de91e8d92ea868fa1440af73a6ac7dd38af3b",
+   "size": 727
+  },
+  "results/summary.txt": {
+   "sha256": "5a6d0054afe9080d87b447de67a3f50588953cf0f2de48fa5b84e65758c9f37b",
+   "size": 247
+  }
+ },
+ "previous": {
+  "manifest_sha256": "069fc1d1bb2309e50cdabb3efa80a011e61e9b3d5007f97ea1266a9f6a7de19e",
+  "run_id": "2026-11-22_071904Z_node-host-build_87b8c86"
+ },
+ "run": {
+  "area": "node-host-real",
+  "branch_or_pr": "",
+  "collected_utc": "",
+  "commit": "0c3d711",
+  "count_unit": "",
+  "date_utc": "2026-11-22T07:19:29Z",
+  "dirty": false,
+  "duration_s": 0.0,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_071929Z_node-host-real_0c3d711",
+  "kind": "integration",
+  "machine": "pc",
+  "passed": 1,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Core downloads the pinned Windows Node host from the public pre-release, checks it, starts it, token enforced",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

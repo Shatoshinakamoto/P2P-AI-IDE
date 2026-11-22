@@ -119,3 +119,5 @@ run_id,date_utc,area,commit,branch_or_pr,machine,verdict,passed,failed,skipped,s
 2026-11-22_061544Z_node-host-pin_dab272f,2026-11-22T06:15:44Z,node-host-pin,dab272f,,cloud container,pass,1,,,Pinned Linux x64 Node host downloads anonymously from the public pre-release with the pinned SHA-256
 2026-11-22_061550Z_core_dab272f,2026-11-22T06:15:50Z,core,dab272f,,cloud container,pass,,,,Core tests after pinning our own Node host build
 2026-11-22_061612Z_ui_dab272f,2026-11-22T06:16:12Z,ui,dab272f,,cloud container,pass,,,,UI smoke after pinning our own Node host build
+2026-11-22_071904Z_node-host-build_87b8c86,2026-11-22T07:19:04Z,node-host-build,87b8c86,,user PC (Windows),pass,1,,,Windows x64 Node host server build from VS Code 1.145.2 on the PC
+2026-11-22_071929Z_node-host-real_0c3d711,2026-11-22T07:19:29Z,node-host-real,0c3d711,,user PC (Windows),pass,1,,,"Core downloads the pinned Windows Node host from the public pre-release, checks it, starts it, token enforced"

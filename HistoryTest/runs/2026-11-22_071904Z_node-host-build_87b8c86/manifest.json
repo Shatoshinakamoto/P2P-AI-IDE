@@ -1,0 +1,70 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "00e3bf3b5aebc07167d3058e41f4990cd0e0e5d9eade47838c9b0305cb25b339",
+   "size": 2290
+  },
+  "command.txt": {
+   "sha256": "6fd61e4b7a75c8eed03c2d6c625b5270797483bcb58b7c39663c6b0adf3f4bf8",
+   "size": 130
+  },
+  "environment.md": {
+   "sha256": "2f1d2d68682100775d59aaec1563fbe6afc351bc36fd68c8a2c916a5f803fd31",
+   "size": 206
+  },
+  "logs/build-log-win32.txt": {
+   "sha256": "31a16a28a30698fbee38615a07b01b4ec9b9c6b9311c2fd4b0121e728152397a",
+   "size": 16921
+  },
+  "logs/output.log": {
+   "sha256": "31a16a28a30698fbee38615a07b01b4ec9b9c6b9311c2fd4b0121e728152397a",
+   "size": 16921
+  },
+  "results/summary.txt": {
+   "sha256": "af96dc1aad3fa7c54286693aefc4a7db08d99dae1b7a8e27dd243ba3528aef7d",
+   "size": 248
+  },
+  "results/winres/p2pide-node-host-win32-x64-1.145.2.json": {
+   "sha256": "894e8d26b3fabd7ed5dfba308e194a01986a5de5f117121e3bd0a1145dbd7fa0",
+   "size": 518
+  },
+  "results/winres/p2pide-node-host-win32-x64-1.145.2.tar.gz.sha256": {
+   "sha256": "91276f05b9cca62ee4eefe8e4a9e80ede6080e3680916d20c372185f9b67403a",
+   "size": 109
+  }
+ },
+ "previous": {
+  "manifest_sha256": "cf21428bbb575a9aee0883870b1be92fcd3f7c349a671e1d7517bba2943ef7c1",
+  "run_id": "2026-11-22_061612Z_ui_dab272f"
+ },
+ "run": {
+  "area": "node-host-build",
+  "branch_or_pr": "",
+  "collected_utc": "",
+  "commit": "87b8c86",
+  "count_unit": "",
+  "date_utc": "2026-11-22T07:19:04Z",
+  "dirty": false,
+  "duration_s": 0.0,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_071904Z_node-host-build_87b8c86",
+  "kind": "build",
+  "machine": "pc",
+  "passed": 1,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Windows x64 Node host server build from VS Code 1.145.2 on the PC",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

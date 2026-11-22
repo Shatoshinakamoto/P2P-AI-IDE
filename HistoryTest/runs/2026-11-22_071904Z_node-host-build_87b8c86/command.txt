@@ -1,0 +1,2 @@
+# run in repository folder `.`, as an argument list (no shell)
+cat /mnt/user-data/uploads/node-host-build/out/build-log-win32.txt
