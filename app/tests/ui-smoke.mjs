@@ -62,6 +62,27 @@ let hostBytes = Buffer.alloc(0);
 const realHost = process.env.NODE_HOST_REAL ? JSON.parse(await readFile(process.env.NODE_HOST_REAL, "utf8")) : null;
 const hostToken = realHost?.token ?? "c0ffee".repeat(8);
 const hostCommit = realHost?.commit ?? "0123456789abcdef0123456789abcdef01234567";
+/** The real server's extension host log folders (`<data>/node-host-state/user/logs/<run>/exthost<N>`). */
+async function hostLogDirs() {
+  const root = join(process.env.NODE_HOST_REAL_DATA ?? "", "node-host-state", "user", "logs");
+  const out = [];
+  for (const run of await readdir(root).catch(() => [])) {
+    for (const d of await readdir(join(root, run)).catch(() => [])) if (/^exthost\d+$/.test(d)) out.push(join(root, run, d));
+  }
+  return out;
+}
+const hostLogsBefore = new Set(realHost ? await hostLogDirs() : []);
+/** The text of the extension host logs started during this test, after waiting up to 20 s for activation. */
+async function newHostLogs() {
+  let text = "";
+  for (let i = 0; i < 40; i++) {
+    text = "";
+    for (const d of await hostLogDirs()) if (!hostLogsBefore.has(d)) text += await readFile(join(d, "remoteexthost.log"), "utf8").catch(() => "");
+    if (/Eager extensions activated/.test(text)) break;
+    await new Promise((r) => setTimeout(r, 500));
+  }
+  return text;
+}
 const hostSvc = createServer((_req, res) => res.writeHead(404).end());
 hostSvc.on("upgrade", (req, sock, head) => {
   if (realHost) {
@@ -959,18 +980,15 @@ try {
   check("the editor announces the server's pinned commit", sockets.some((u) => u.includes(hostCommit)), sockets.slice(0, 1).join(" "));
   check("the connection token reaches the host over the socket, not the URL or the page's own storage", hostBytes.includes(hostToken) && !sockets.some((u) => u.includes(hostToken)) && !(await page.evaluate((t) => JSON.stringify({ ...localStorage }).includes(t), hostToken)), `${hostBytes.length} bytes`);
   if (realHost && process.env.NODE_HOST_REAL_DATA) {
-    // The real server's own extension host log says whether the editor's messages arrived: it logs "Eager extensions
-    // activated" only after it got the workspace, and one line per extension it starts.
-    const logs = join(process.env.NODE_HOST_REAL_DATA, "node-host-state", "user", "logs");
-    let text = "";
-    for (let i = 0; i < 40 && !/Eager extensions activated/.test(text); i++) {
-      await page.waitForTimeout(500);
-      text = "";
-      for (const d of await readdir(logs).catch(() => [])) text += await readFile(join(logs, d, "exthost1", "remoteexthost.log"), "utf8").catch(() => "");
-    }
-    const activated = [...text.matchAll(/_doActivateExtension ([\w.-]+)/g)].map((m) => m[1]);
-    check("the real Node host gets the workspace from the editor and starts extensions", /Eager extensions activated/.test(text) && activated.length > 0, activated.join(", "));
+    // The real server's own extension host logs say whether the editor's messages arrived: a host logs "Eager
+    // extensions activated" only after it got the workspace, and one line per extension it starts. Each connection
+    // gets its own exthost<N> folder; only folders that are new since the test started count.
+    const fresh = await newHostLogs();
+    const activated = [...fresh.matchAll(/_doActivateExtension ([\w.-]+)/g)].map((m) => m[1]);
+    check("the real Node host gets the workspace from the editor and starts extensions", /Eager extensions activated/.test(fresh) && activated.length > 0, activated.join(", "));
+    check("the real Node host logs no errors from the editor's side", !/\[error\]/.test(fresh), fresh.split("\n").find((l) => /\[error\]/.test(l)) ?? "");
   }
+
   await page.getByRole("button", { name: "Extensions", exact: true }).click();
   const np2 = page.getByRole("region", { name: "Node extensions" });
   await np2.getByText(/Node extensions are running/).waitFor();
