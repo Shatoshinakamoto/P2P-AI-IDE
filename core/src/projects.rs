@@ -813,6 +813,11 @@ pub fn acceptance(checks: &[CheckInput]) -> Result<Value, &'static str> {
     Ok(Value::Array(out))
 }
 
+/// The shared mission cases (core/tests/vectors/missions.json), also run by the VS Code extension (side track X3).
+#[cfg(test)]
+#[path = "projects_vectors.rs"]
+mod vectors;
+
 #[cfg(test)]
 mod tests {
     use super::*;

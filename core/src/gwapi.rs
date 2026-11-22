@@ -73,7 +73,7 @@ pub fn code_message(code: &str) -> Option<&'static str> {
 }
 
 /// Turns a non-2xx answer into an error: a known code gives its fixed message, else the status mapping.
-fn answer_error(status: u16, body: &[u8]) -> NetError {
+pub(crate) fn answer_error(status: u16, body: &[u8]) -> NetError {
     let code = serde_json::from_slice::<Value>(body)
         .ok()
         .and_then(|v| v.get("error").and_then(|e| e.get("code")).and_then(Value::as_str).map(str::to_string));

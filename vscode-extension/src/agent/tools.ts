@@ -297,6 +297,26 @@ function propose(ws: Workspace, pending: Pending, rel: string, base: string | un
   pending.files.set(rel, { baseVersion: base, before, after });
 }
 
+/**
+ * Adds a file brought back from a gateway project (X3 pull) as a pending change, reviewed like the assistant's edits
+ * (same as the IDE's `propose_external`). `localVersion` is the local file's SHA-256 when the pull was planned, or
+ * undefined for a new file. Returns an error text or undefined.
+ * SECURITY: nothing is written; denied names are refused; a local file changed since the plan is refused, and the
+ * accept checks the version again (OWASP LLM06, CWE-367).
+ */
+export function proposeExternal(ws: Workspace, pending: Pending, rel: string, localVersion: string | undefined, text: string): string | undefined {
+  if (denied(rel)) return "that name is kept private";
+  try {
+    if (localVersion !== undefined && ws.readText(rel).version !== localVersion) return "the local file changed meanwhile; pull again";
+    const f = pending.files.get(rel);
+    if (f && f.baseVersion !== localVersion) return "this file already waits for review with another base; review it first";
+    propose(ws, pending, rel, localVersion, text);
+    return undefined;
+  } catch (e) {
+    return e instanceof ToolErr || e instanceof WsError ? e.message : "the file could not be added for review";
+  }
+}
+
 const wsMsg = (target: string, e: unknown): ToolErr => new ToolErr(target, e instanceof WsError ? e.message : "the file system refused the operation");
 
 /** Runs one tool call. Returns the target for the chat line, the result text for the model, and ok. */

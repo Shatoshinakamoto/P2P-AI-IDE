@@ -1,8 +1,8 @@
 {
   "name": "p2p-ai",
   "displayName": "P2P-AI",
-  "description": "Chat with the models on a P2P-AI gateway from VS Code or VSCodium, and let them propose changes to your folder for you to review.",
-  "version": "0.2.0",
+  "description": "Chat with the models on a P2P-AI gateway from VS Code or VSCodium, let them propose changes to your folder for you to review, and run Autopilot and Auto Improve missions.",
+  "version": "0.3.0",
   "publisher": "p2p-ai",
   "license": "Apache-2.0",
   "private": true,
@@ -35,6 +35,11 @@
           "type": "webview",
           "id": "p2pAi.chat",
           "name": "Chat"
+        },
+        {
+          "type": "webview",
+          "id": "p2pAi.missions",
+          "name": "Missions"
         }
       ]
     },
@@ -110,11 +115,11 @@
   "capabilities": {
     "untrustedWorkspaces": {
       "supported": "limited",
-      "description": "In Restricted Mode the chat works, but the assistant's tools are off: it can't read the folder or propose changes."
+      "description": "In Restricted Mode the chat works, but the assistant's tools and missions are off: nothing reads or sends the folder."
     },
     "virtualWorkspaces": {
       "supported": "limited",
-      "description": "The assistant's tools work on local folders only."
+      "description": "The assistant's tools and missions work on local folders only."
     }
   },
   "scripts": {

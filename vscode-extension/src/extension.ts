@@ -1,7 +1,7 @@
 /**
  * extension.ts -- entry point of the P2P-AI extension for VS Code and VSCodium (ADR-029 side track X, X1 and X2).
  *
- * Purpose: registers the chat view, the diff review of the agent's proposed changes and the commands:
+ * Purpose: registers the chat view, the Missions view (X3), the diff review of proposed changes and the commands:
  *   P2P-AI: Add Gateway, Pick Gateway, Pick Model, Set Gateway Key, Remove Gateway, New Chat,
  *   Accept Change, Reject Change (the last two also in the diff editor's title bar).
  * Inputs / trust boundary: what the person types into VS Code input boxes and the chat view; gateway answers.
@@ -11,15 +11,20 @@
  * Dependencies: the `vscode` API.
  */
 import * as vscode from "vscode";
+import { parseFromMissions } from "./viewMessages.ts";
 import { ChatViewProvider } from "./chatView.ts";
 import { GatewayStore, caLooksValid } from "./gateways.ts";
 import { ChangeReview } from "./review.ts";
+import { MissionsViewProvider } from "./missionsView.ts";
 
 /** Called by VS Code when the chat view or a P2P-AI command is first used. */
 export function activate(ctx: vscode.ExtensionContext): void {
   const store = new GatewayStore(ctx);
   const review = new ChangeReview(ctx);
   const chat = new ChatViewProvider(ctx, store, review);
+  // X3: audit lines (fixed words, VS Code adds the time) go to the "P2P-AI" output channel.
+  const log = vscode.window.createOutputChannel("P2P-AI", { log: true });
+  const missions = new MissionsViewProvider(ctx, store, review, log);
   // Accept or reject from the diff editor's title bar: the command gets the diff's URI, and only a URI of a pending
   // change is acted on (SECURITY: no other file can be named this way, CWE-22).
   const decide = (accept: boolean) => (uri?: vscode.Uri) => {
@@ -31,6 +36,8 @@ export function activate(ctx: vscode.ExtensionContext): void {
   };
   ctx.subscriptions.push(
     vscode.window.registerWebviewViewProvider(ChatViewProvider.viewId, chat, { webviewOptions: { retainContextWhenHidden: false } }),
+    vscode.window.registerWebviewViewProvider(MissionsViewProvider.viewId, missions, { webviewOptions: { retainContextWhenHidden: false } }),
+    log,
     vscode.commands.registerCommand("p2pAi.addGateway", () => addGateway(store)),
     vscode.commands.registerCommand("p2pAi.pickGateway", () => pickGateway(store)),
     vscode.commands.registerCommand("p2pAi.pickModel", () => chat.pickModel()),
@@ -55,6 +62,16 @@ export function activate(ctx: vscode.ExtensionContext): void {
       vscode.commands.registerCommand("p2pAi.test.setTools", (on: boolean) => chat.setTools(on === true)),
       vscode.commands.registerCommand("p2pAi.test.changes", () => review.views()),
       vscode.commands.registerCommand("p2pAi.test.review", (rel: string) => review.open(String(rel))),
+      // Missions: the same checked handler the view uses, with a message object shaped like the view's.
+      vscode.commands.registerCommand("p2pAi.test.missions", async (m: unknown) => {
+        const parsed = parseFromMissions(m);
+        if (!parsed) return { error: "refused by the message check" };
+        try {
+          return { ok: await missions.handle(parsed) };
+        } catch (e) {
+          return { error: e instanceof Error ? e.message : "failed" };
+        }
+      }),
       vscode.commands.registerCommand("p2pAi.test.accept", (rel: string) => review.accept(String(rel)) ?? "ok"),
     );
   }

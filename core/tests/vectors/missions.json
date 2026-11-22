@@ -1,0 +1,956 @@
+{
+  "about": "Shared test cases for missions (X3): the IDE's core/src/projects.rs and gwapi.rs, and the VS Code extension's vscode-extension/src/missions/projects.ts and gateway/{checks,client}.ts. Both must pass every case. Each case says why it is here.",
+  "gateway_paths": [
+    {
+      "path": "src/main.py",
+      "ok": true,
+      "why": "plain path"
+    },
+    {
+      "path": "docs/my notes (1).md",
+      "ok": true,
+      "why": "spaces and brackets inside a name"
+    },
+    {
+      "path": "a/b-c_d.e+f@g,h=i~j.txt",
+      "ok": true,
+      "why": "every allowed punctuation mark"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "ok": true,
+      "why": "a leading dot is fine"
+    },
+    {
+      "path": "",
+      "ok": false,
+      "why": "empty"
+    },
+    {
+      "path": "a/../b",
+      "ok": false,
+      "why": "parent folder"
+    },
+    {
+      "path": "/abs",
+      "ok": false,
+      "why": "absolute (empty first segment)"
+    },
+    {
+      "path": "a\\b",
+      "ok": false,
+      "why": "backslash"
+    },
+    {
+      "path": "docs/é.md",
+      "ok": false,
+      "why": "ASCII only, so no Unicode spelling question"
+    },
+    {
+      "path": "con.txt",
+      "ok": false,
+      "why": "Windows device name with an extension"
+    },
+    {
+      "path": "src/LPT1",
+      "ok": false,
+      "why": "device name, any case"
+    },
+    {
+      "path": "nul .txt",
+      "ok": false,
+      "why": "device name with a trailing space before the dot"
+    },
+    {
+      "path": "console.txt",
+      "ok": true,
+      "why": "only the exact device name is refused"
+    },
+    {
+      "path": "name.",
+      "ok": false,
+      "why": "trailing dot (Windows drops it)"
+    },
+    {
+      "path": "name ",
+      "ok": false,
+      "why": "trailing space"
+    },
+    {
+      "path": " lead",
+      "ok": false,
+      "why": "leading space"
+    },
+    {
+      "path": "a:b",
+      "ok": false,
+      "why": "colon"
+    },
+    {
+      "path": "d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d/d",
+      "ok": false,
+      "why": "more than 32 segments"
+    },
+    {
+      "path": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "ok": false,
+      "why": "longer than 512"
+    }
+  ],
+  "ids": [
+    {
+      "id": "prj_01H9-x",
+      "ok": true,
+      "why": "letters, digits, _ and -"
+    },
+    {
+      "id": "",
+      "ok": false,
+      "why": "empty"
+    },
+    {
+      "id": "a/b",
+      "ok": false,
+      "why": "a slash would change the URL path (CWE-74)"
+    },
+    {
+      "id": "a?b",
+      "ok": false,
+      "why": "a query mark"
+    },
+    {
+      "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "ok": false,
+      "why": "longer than 64"
+    }
+  ],
+  "encode_path": [
+    {
+      "rel": "src/a b#?.py",
+      "want": "src/a%20b%23%3F.py",
+      "why": "space, # and ? encoded"
+    },
+    {
+      "rel": "docs/é.md",
+      "want": "docs/%C3%A9.md",
+      "why": "UTF-8 bytes, upper-case hex"
+    },
+    {
+      "rel": "a-b_c.d~e/f",
+      "want": "a-b_c.d~e/f",
+      "why": "unreserved characters and / stay"
+    },
+    {
+      "rel": "100%",
+      "want": "100%25",
+      "why": "percent sign"
+    }
+  ],
+  "upload_names": [
+    {
+      "rel": "src/main.py",
+      "want": "main.py",
+      "why": "the last part"
+    },
+    {
+      "rel": "a/my notes (1).md",
+      "want": "my notes (1).md",
+      "why": "spaces and brackets"
+    },
+    {
+      "rel": "a/x\".py",
+      "want": null,
+      "why": "a quote would end the header value (CWE-93)"
+    },
+    {
+      "rel": "a/x\r\nInjected: 1",
+      "want": null,
+      "why": "CR LF header injection"
+    },
+    {
+      "rel": "a/",
+      "want": null,
+      "why": "no name"
+    },
+    {
+      "rel": " lead.txt",
+      "want": null,
+      "why": "leading space"
+    }
+  ],
+  "errors": [
+    {
+      "status": 409,
+      "body": "{\"error\":{\"message\":\"<img src=x> secret detail\",\"code\":\"version_conflict\"}}",
+      "kind": "gateway",
+      "message": "the gateway project changed meanwhile; try again",
+      "why": "known code: fixed text, the gateway's own message is never shown"
+    },
+    {
+      "status": 403,
+      "body": "{\"error\":{\"code\":\"forbidden\"}}",
+      "kind": "gateway",
+      "message": "your role in this project does not allow that",
+      "why": "role refusal has its own text"
+    },
+    {
+      "status": 401,
+      "body": "{\"error\":{\"code\":\"forbidden\"}}",
+      "kind": "auth",
+      "message": "the gateway refused the key",
+      "why": "401 always means the key"
+    },
+    {
+      "status": 500,
+      "body": "{\"error\":{\"code\":\"weird_new_code\"}}",
+      "kind": "status",
+      "message": "the gateway answered with an error (HTTP 500)",
+      "why": "unknown code falls back to the status"
+    },
+    {
+      "status": 404,
+      "body": "not json",
+      "kind": "not_offered",
+      "message": "this gateway does not offer that",
+      "why": "not JSON"
+    },
+    {
+      "status": 429,
+      "body": "",
+      "kind": "rate_limited",
+      "message": "the gateway is limiting requests; try again shortly",
+      "why": "empty body"
+    },
+    {
+      "status": 400,
+      "body": "{\"error\":{\"code\":\"__proto__\"}}",
+      "kind": "status",
+      "message": "the gateway answered with an error (HTTP 400)",
+      "why": "an odd code is not looked up in the object prototype"
+    }
+  ],
+  "eligible": [
+    {
+      "files": [
+        [
+          "a.py",
+          3
+        ],
+        [
+          ".env",
+          5
+        ],
+        [
+          "keys/x.pem",
+          1
+        ],
+        [
+          "docs/é.md",
+          2
+        ],
+        [
+          "big.bin",
+          5242881
+        ],
+        [
+          "A.PY",
+          3
+        ],
+        [
+          "ok.txt",
+          4
+        ]
+      ],
+      "ok": [
+        "a.py",
+        "ok.txt"
+      ],
+      "skipped": [
+        {
+          "rel": ".env",
+          "reason": "may hold secrets, kept on this computer"
+        },
+        {
+          "rel": "keys/x.pem",
+          "reason": "may hold secrets, kept on this computer"
+        },
+        {
+          "rel": "docs/é.md",
+          "reason": "name the gateway does not accept"
+        },
+        {
+          "rel": "big.bin",
+          "reason": "larger than 5 MiB"
+        },
+        {
+          "rel": "A.PY",
+          "reason": "differs from another name only by case"
+        }
+      ],
+      "why": "deny list, grammar, size and case collisions, in that order"
+    },
+    {
+      "files": [
+        [
+          "f0",
+          5242880
+        ],
+        [
+          "f1",
+          5242880
+        ],
+        [
+          "f2",
+          5242880
+        ],
+        [
+          "f3",
+          5242880
+        ],
+        [
+          "f4",
+          5242880
+        ],
+        [
+          "f5",
+          5242880
+        ],
+        [
+          "f6",
+          5242880
+        ],
+        [
+          "f7",
+          5242880
+        ],
+        [
+          "f8",
+          5242880
+        ],
+        [
+          "f9",
+          5242880
+        ],
+        [
+          "f10",
+          5242880
+        ],
+        [
+          "f11",
+          5242880
+        ],
+        [
+          "f12",
+          5242880
+        ],
+        [
+          "f13",
+          5242880
+        ],
+        [
+          "f14",
+          5242880
+        ],
+        [
+          "f15",
+          5242880
+        ],
+        [
+          "f16",
+          5242880
+        ],
+        [
+          "f17",
+          5242880
+        ],
+        [
+          "f18",
+          5242880
+        ],
+        [
+          "f19",
+          5242880
+        ],
+        [
+          "f20",
+          5242880
+        ]
+      ],
+      "ok": [
+        "f0",
+        "f1",
+        "f2",
+        "f3",
+        "f4",
+        "f5",
+        "f6",
+        "f7",
+        "f8",
+        "f9",
+        "f10",
+        "f11",
+        "f12",
+        "f13",
+        "f14",
+        "f15",
+        "f16",
+        "f17",
+        "f18",
+        "f19"
+      ],
+      "skipped": [
+        {
+          "rel": "f20",
+          "reason": "over the push limit (2000 files, 100 MiB)"
+        }
+      ],
+      "why": "100 MiB total"
+    }
+  ],
+  "plan_push": [
+    {
+      "local": [
+        [
+          "same.py",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        [
+          "changed.py",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        ],
+        [
+          "new.py",
+          "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        ]
+      ],
+      "remote": [
+        {
+          "path": "same.py",
+          "bytes": 1,
+          "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "path": "changed.py",
+          "bytes": 1,
+          "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "path": "gone.py",
+          "bytes": 1,
+          "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "path": ".env",
+          "bytes": 1,
+          "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      ],
+      "skipped_local": [
+        {
+          "rel": ".env",
+          "reason": "may hold secrets, kept on this computer"
+        }
+      ],
+      "upload": [
+        [
+          "changed.py",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        ],
+        [
+          "new.py",
+          "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        ]
+      ],
+      "delete": [
+        "gone.py"
+      ],
+      "unchanged": 1,
+      "why": "upload new and changed, delete gone, keep the gateway copy of a file skipped here"
+    }
+  ],
+  "plan_pull": [
+    {
+      "local": [
+        [
+          "same.py",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        [
+          "changed.py",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        ],
+        [
+          "only_here.py",
+          "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        ]
+      ],
+      "remote": [
+        {
+          "path": "same.py",
+          "bytes": 1,
+          "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "path": "changed.py",
+          "bytes": 1,
+          "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "path": "new.py",
+          "bytes": 1,
+          "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        },
+        {
+          "path": ".env",
+          "bytes": 1,
+          "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        },
+        {
+          "path": "big.bin",
+          "bytes": 5242881,
+          "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        }
+      ],
+      "fetch": [
+        {
+          "path": "changed.py",
+          "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "local_version": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        {
+          "path": "new.py",
+          "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "local_version": null
+        }
+      ],
+      "same": 1,
+      "only_local": 1,
+      "skipped": [
+        {
+          "rel": ".env",
+          "reason": "a name kept private; not brought back"
+        },
+        {
+          "rel": "big.bin",
+          "reason": "larger than 5 MiB"
+        }
+      ],
+      "why": "changed and new come back for review; secrets and big files never; local-only files are left alone"
+    }
+  ],
+  "remote_files": [
+    {
+      "answer": {
+        "data": [
+          {
+            "path": "a.py",
+            "bytes": 3,
+            "sha256": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+          },
+          {
+            "path": "../x",
+            "bytes": 1,
+            "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          {
+            "path": "b.py",
+            "sha256": "zz"
+          },
+          {
+            "path": "c.py",
+            "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          {
+            "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          "junk"
+        ]
+      },
+      "want": [
+        {
+          "path": "a.py",
+          "bytes": 3,
+          "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "path": "c.py",
+          "bytes": 0,
+          "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      ],
+      "why": "bad paths and digests dropped, digest lower-cased, missing size is 0"
+    }
+  ],
+  "views": {
+    "mission": [
+      {
+        "in": {
+          "id": "m1",
+          "kind": "autopilot",
+          "project_id": "p1",
+          "model": "qwen",
+          "goal": "fix\u0007 it\nnow",
+          "state": "running",
+          "run_id": "bad/run",
+          "cycle": 2,
+          "max_cycles": 5,
+          "waiting_approval": true,
+          "tasks": [
+            {
+              "title": "t1",
+              "state": "done"
+            }
+          ],
+          "checks": [
+            {
+              "id": "tests",
+              "passed": true,
+              "exit_code": 0
+            }
+          ]
+        },
+        "want": {
+          "id": "m1",
+          "kind": "autopilot",
+          "project_id": "p1",
+          "model": "qwen",
+          "goal": "fix it\nnow",
+          "state": "running",
+          "reason": "",
+          "cycle": 2,
+          "max_cycles": 5,
+          "tokens": 0,
+          "run_id": "",
+          "waiting_approval": true,
+          "checks_passed": 0,
+          "checks_total": 0,
+          "tasks_done": 0,
+          "tasks_total": 0,
+          "proposals_created": 0,
+          "updated_at": 0,
+          "tasks": [
+            {
+              "title": "t1",
+              "state": "done"
+            }
+          ],
+          "checks": [
+            {
+              "id": "tests",
+              "passed": true,
+              "exit_code": 0,
+              "error": ""
+            }
+          ]
+        },
+        "why": "control characters stripped (newline kept), a bad run id dropped, missing numbers are 0"
+      },
+      {
+        "in": {
+          "id": "bad id"
+        },
+        "want": null,
+        "why": "a bad id drops the whole row"
+      }
+    ],
+    "approval": [
+      {
+        "in": {
+          "id": "ap1",
+          "tool": "run_command",
+          "access": "exec",
+          "arguments": {
+            "z": 1,
+            "argv": [
+              "rm",
+              "-rf",
+              "/"
+            ]
+          },
+          "arguments_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "expires_at": 99
+        },
+        "want": {
+          "id": "ap1",
+          "tool": "run_command",
+          "access": "exec",
+          "arguments": "{\n  \"argv\": [\n    \"rm\",\n    \"-rf\",\n    \"/\"\n  ],\n  \"z\": 1\n}",
+          "arguments_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "expires_at": 99
+        },
+        "why": "arguments shown verbatim as pretty JSON with sorted keys, never run"
+      },
+      {
+        "in": {
+          "id": "ap1",
+          "arguments_sha256": "short"
+        },
+        "want": null,
+        "why": "the digest must be 64 hex, so the decision can't be replayed onto other arguments"
+      }
+    ],
+    "proposal": [
+      {
+        "in": {
+          "id": "pr1",
+          "title": "Add tests",
+          "kind": "tests",
+          "rationale": "r",
+          "effort": "small",
+          "steps": [
+            "a\u0000b",
+            5,
+            "c"
+          ],
+          "sources": [
+            "https://example.org"
+          ],
+          "state": "open"
+        },
+        "want": {
+          "id": "pr1",
+          "title": "Add tests",
+          "kind": "tests",
+          "rationale": "r",
+          "effort": "small",
+          "steps": [
+            "ab",
+            "c"
+          ],
+          "sources": [
+            "https://example.org"
+          ],
+          "state": "open"
+        },
+        "why": "strings only, control characters removed; sources stay plain text"
+      }
+    ],
+    "sync": [
+      {
+        "in": {
+          "state": "ready",
+          "version": 4,
+          "delta": {
+            "state": "committed",
+            "version": 5,
+            "added": 1,
+            "modified": 2,
+            "deleted": 0,
+            "conflicts": [
+              "a.py",
+              "../x",
+              7
+            ]
+          }
+        },
+        "want": {
+          "state": "ready",
+          "version": 4,
+          "delta_state": "committed",
+          "delta_version": 5,
+          "delta_added": 1,
+          "delta_modified": 2,
+          "delta_deleted": 0,
+          "delta_conflicts": [
+            "a.py"
+          ]
+        },
+        "why": "conflict paths must pass the path grammar"
+      },
+      {
+        "in": {
+          "state": "none"
+        },
+        "want": {
+          "state": "none",
+          "version": 0,
+          "delta_state": "",
+          "delta_version": 0,
+          "delta_added": 0,
+          "delta_modified": 0,
+          "delta_deleted": 0,
+          "delta_conflicts": []
+        },
+        "why": "no delta yet"
+      }
+    ],
+    "switches": [
+      {
+        "exp": {
+          "autopilot": {
+            "available": true
+          },
+          "auto_improve": {
+            "available": "yes"
+          },
+          "disabled": false
+        },
+        "flags": {
+          "autopilot": true,
+          "auto_improve": false,
+          "resource_scope": "project"
+        },
+        "want": {
+          "autopilot_available": true,
+          "improve_available": false,
+          "disabled": false,
+          "autopilot": true,
+          "auto_improve": false,
+          "resource_scope": "project"
+        },
+        "why": "only real booleans count"
+      }
+    ],
+    "project": [
+      {
+        "in": {
+          "id": "p1",
+          "name": "Shop",
+          "role": "owner",
+          "version": 3,
+          "file_count": 12
+        },
+        "want": {
+          "id": "p1",
+          "name": "Shop",
+          "role": "owner",
+          "version": 3,
+          "file_count": 12
+        },
+        "why": "a normal row"
+      },
+      {
+        "in": {
+          "id": "../p"
+        },
+        "want": null,
+        "why": "a bad id is dropped"
+      }
+    ]
+  },
+  "acceptance": [
+    {
+      "checks": [
+        {
+          "id": "tests",
+          "kind": "tests",
+          "framework": "pytest"
+        },
+        {
+          "id": "lint-1",
+          "kind": "command",
+          "argv": [
+            "ruff",
+            "check",
+            "."
+          ]
+        }
+      ],
+      "want": [
+        {
+          "id": "tests",
+          "kind": "tests",
+          "framework": "pytest"
+        },
+        {
+          "id": "lint-1",
+          "kind": "command",
+          "argv": [
+            "ruff",
+            "check",
+            "."
+          ]
+        }
+      ],
+      "why": "a test framework and a command split into words"
+    },
+    {
+      "checks": [],
+      "error": "Autopilot needs 1 to 8 checks that say when the work is done",
+      "why": "at least one check"
+    },
+    {
+      "checks": [
+        {
+          "id": "a",
+          "kind": "tests",
+          "framework": "pytest"
+        },
+        {
+          "id": "a",
+          "kind": "tests",
+          "framework": "go"
+        }
+      ],
+      "error": "check names must be unique: lower-case letters, digits, - and _",
+      "why": "duplicate names"
+    },
+    {
+      "checks": [
+        {
+          "id": "Tests",
+          "kind": "tests",
+          "framework": "pytest"
+        }
+      ],
+      "error": "check names must be unique: lower-case letters, digits, - and _",
+      "why": "upper case"
+    },
+    {
+      "checks": [
+        {
+          "id": "x",
+          "kind": "tests",
+          "framework": "bash"
+        }
+      ],
+      "error": "each check is a test framework from the list, or a command split into words",
+      "why": "unknown framework"
+    },
+    {
+      "checks": [
+        {
+          "id": "x",
+          "kind": "command",
+          "argv": [
+            "sh -c 'rm -rf /'"
+          ]
+        }
+      ],
+      "want": [
+        {
+          "id": "x",
+          "kind": "command",
+          "argv": [
+            "sh -c 'rm -rf /'"
+          ]
+        }
+      ],
+      "why": "one word is passed as one argument, never to a shell; the gateway's allow-list decides"
+    },
+    {
+      "checks": [
+        {
+          "id": "x",
+          "kind": "command",
+          "argv": [
+            "a\nb"
+          ]
+        }
+      ],
+      "error": "each check is a test framework from the list, or a command split into words",
+      "why": "control characters in an argument"
+    },
+    {
+      "checks": [
+        {
+          "id": "x",
+          "kind": "command",
+          "argv": []
+        }
+      ],
+      "error": "each check is a test framework from the list, or a command split into words",
+      "why": "empty argv"
+    }
+  ]
+}
