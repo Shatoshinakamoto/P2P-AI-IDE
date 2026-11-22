@@ -40,12 +40,12 @@ The archive is what the app downloads and unpacks after checking the SHA-256 pin
 | OS | Needs |
 |---|---|
 | Linux | Node of the tag's `.nvmrc` (1.145.2: 24.22.1), git, python3, gcc/g++, make, `libkrb5-dev`, `libx11-dev`, `libxkbfile-dev`, `libsecret-1-dev`, `pkg-config` |
-| Windows | Node as above, git, Python, Visual Studio (2022 or later) with the C++ workload **and "MSVC Spectre-mitigated libs"** (VS Code's native modules are built with Spectre mitigation; without them `kerberos` fails with MSB8040) |
+| Windows | Node as above, git, Python, Visual Studio (2022 or later) with the C++ workload **and "MSVC Spectre-mitigated libs"** (VS Code's native modules are built with Spectre mitigation; without them `kerberos` fails with MSB8040), and the Windows SDK (installed with the C++ workload). The script adds the newest SDK's `x64` folder from `C:\Program Files (x86)\Windows Kits\10\bin` to the end of `PATH` when `signtool.exe` isn't on it: VS Code's packaging step calls `signtool verify` and `signtool remove /s` to strip invalidated signatures from native modules (it never signs) |
 | macOS | Node as above, git, Xcode command line tools |
 
 ## Environment variables
 
-Read: `PATH` (to find git, node, npm). Set for the build: `NODE_OPTIONS=--max-old-space-size=8192`, `ELECTRON_SKIP_BINARY_DOWNLOAD=1`, `PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1`, `VSCODE_ARCH`, `npm_config_arch`.
+Read: `PATH` (to find git, node, npm, and on Windows signtool). Set for the build: `NODE_OPTIONS=--max-old-space-size=8192`, `ELECTRON_SKIP_BINARY_DOWNLOAD=1`, `PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1`, `VSCODE_ARCH`, `npm_config_arch`.
 
 ## Exit codes and output
 

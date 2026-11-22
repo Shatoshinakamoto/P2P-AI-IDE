@@ -26,7 +26,8 @@ Security controls:
 - The SHA-256 written here is what gets pinned in the app; the app refuses any other bytes (NIST SI-7).
 Dependencies: Python 3.10+ standard library, git, Node/npm of the tag's version, and the native build tools VS Code
 needs (Linux: gcc, make, python3, libkrb5-dev, libx11-dev, libxkbfile-dev, libsecret-1-dev; Windows: Visual Studio
-Build Tools with the C++ workload; macOS: Xcode command line tools).
+Build Tools with the C++ workload, its Spectre-mitigated libraries and the Windows SDK (signtool.exe, found
+automatically); macOS: Xcode command line tools).
 
 Usage: python3 scripts/build_node_host.py --tag 1.145.2 --commit c4453f8ea430795f941c1b2ff6c9321135a74a02 --out dist-node-host
 See docs/commands/build-node-host.md.
@@ -117,6 +118,31 @@ def sha256(path: Path) -> str:
     return h.hexdigest()
 
 
+def windows_sdk_tools() -> Path | None:
+    """Find the newest Windows SDK x64 tools folder (it holds `signtool.exe`), or None.
+
+    VS Code's Windows server build calls `signtool.exe verify` and `signtool remove /s` by bare name to strip
+    invalidated signatures before it stamps version info on native modules. The SDK is installed with Visual Studio's
+    C++ workload but isn't on PATH outside a developer prompt.
+
+    Security: only the fixed SDK location under Program Files (x86) is searched, which only an admin can write
+    (CWE-427, uncontrolled search path); signtool is used only to check and strip signatures, never to sign.
+    """
+    if os.name != "nt":
+        return None
+    # SECURITY: a fixed path, not read from the environment (CWE-427).
+    base = Path(r"C:\Program Files (x86)\Windows Kits\10\bin")
+
+    def ver(p: Path) -> tuple[int, ...]:
+        try:
+            return tuple(int(x) for x in p.parent.parent.name.split("."))
+        except ValueError:
+            return ()
+
+    found = sorted(base.glob("10.*/x64/signtool.exe"), key=ver)
+    return found[-1].parent if found else None
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("--tag", required=True, help="VS Code release tag, e.g. 1.145.2")
@@ -181,6 +207,12 @@ def main() -> None:
         "VSCODE_ARCH": arch,
         "npm_config_arch": arch,
     })
+    if plat == "win32" and not shutil.which("signtool.exe", path=env.get("PATH")):
+        sdk = windows_sdk_tools()
+        if sdk is None:
+            raise SystemExit("signtool.exe not found: install the Windows SDK (Visual Studio C++ workload)")
+        # Appended, not prepended, so nothing already on PATH is shadowed.
+        env["PATH"] = env.get("PATH", "") + os.pathsep + str(sdk)
     if not (src / "node_modules").exists():
         # SECURITY: npm ci installs exactly the lockfile, with its integrity hashes (SLSA, NIST SA-12).
         run(["npm", "ci"], src, env)
