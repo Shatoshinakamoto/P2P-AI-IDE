@@ -1,0 +1,6 @@
+60a61
+> MainThreadGitHub
+72a74
+> MainThreadChatArtifactIntegrations
+158a161
+> ExtHostChatArtifactIntegrations

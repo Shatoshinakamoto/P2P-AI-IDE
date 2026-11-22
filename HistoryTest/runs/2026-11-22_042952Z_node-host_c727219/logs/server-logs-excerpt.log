@@ -1,0 +1,18 @@
+# Excerpt of the VSCodium server's own logs on the PC (--log trace, debug build only), user name redacted,
+# File Watcher lines dropped. Two runs; both stop the same way.
+=== 20261121T230754 remoteagent.log (tail)
+2026-11-21 23:07:54.934 [info] Extension host agent started. (validation: true)
+2026-11-21 23:07:54.947 [trace] Scanned system extensions: 33
+2026-11-21 23:07:54.962 [info] Completed initializing default profile extensions in extensions installation folder. file:///c%3A/Users/<user>/AppData/Roaming/org.p2p-ai.ide/node-extensions
+2026-11-21 23:07:55.113 [info] [127.0.0.1][fc8629c9][ManagementConnection] New connection established.
+2026-11-21 23:07:55.114 [info] [127.0.0.1][e5fdf16b][ExtensionHostConnection] New connection established.
+2026-11-21 23:07:55.114 [info] [127.0.0.1][e5fdf16b][ExtensionHostConnection] Starting extension host process...
+2026-11-21 23:07:55.124 [info] [127.0.0.1][e5fdf16b][ExtensionHostConnection] <20508> Launched Extension Host Process.
+2026-11-21 23:07:55.144 [trace] Scanned system extensions: 33
+=== 20261121T230754 remoteexthost.log (whole file)
+2026-11-21 23:07:55.445 [info] Extension host with pid 20508 started
+2026-11-21 23:07:55.457 [info] Lock 'c:\Users\<user>\AppData\Roaming\org.p2p-ai.ide\node-host-state\server\data\User\workspaceStorage\-5d1b5b1c\vscode.lock': Lock acquired.
+=== 20261121T231746 remoteexthost.log (whole file, run with the debug hook)
+2026-11-21 23:17:46.665 [info] Extension host with pid 17308 started
+2026-11-21 23:17:46.683 [info] Lock 'c:\Users\<user>\AppData\Roaming\org.p2p-ai.ide\node-host-state\server\data\User\workspaceStorage\-1da4b0c8\vscode.lock': Lock acquired.
+# A working host logs "$startExtensionHost"/"Eager extensions activated" and activations after this; none appear.

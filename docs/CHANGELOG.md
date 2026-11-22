@@ -2,6 +2,21 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-22 - Phase I6c-3: Node host PC fixes and version check
+
+### Fixed
+- Node extensions were staged from the wrong folder, so the server listed none of them; the store's real layout is now copied.
+- On Windows the Node host's `node.exe` (and container engine calls) opened a visible console window; they now start without one.
+- Windows folder paths reached the editor as `\\?\D:\...`, which broke every file request of the Node host; the shell now sends the plain path.
+
+### Changed
+- Network folders (`\\server\share`) are refused for Node extensions with a clear message (`folder_not_local`).
+- The shell reports the pinned server's VS Code version; the editor offers and connects the Node host only when it matches its own VS Code minor version, and the panel says why otherwise. Found on the PC: the editor library is VS Code 1.145.2 and the pinned VSCodium server 1.140, whose messages are numbered differently, so no extension could start. Node extensions therefore show as unavailable until a matching server is pinned (choice pending).
+- The design page now says the editor library is built on VS Code 1.145.2 (it said 1.140); download size is about 85 MB.
+
+### Tests
+- PC click-through in the desktop app, partial (3 bugs fixed, version check verified, no Node extension ran) [run](../HistoryTest/runs/2026-11-22_042952Z_node-host_c727219/RUN.md); core unit tests 95 passed [run](../HistoryTest/runs/2026-11-22_042549Z_core_c727219/RUN.md); app unit tests 8 passed [run](../HistoryTest/runs/2026-11-22_042600Z_app-unit_c727219/RUN.md); UI smoke test 114 of 114 [run](../HistoryTest/runs/2026-11-22_042600Z_ui_c727219/RUN.md).
+
 ## 2026-11-22 - Phase I6c-3: the real Node extension host pinned
 
 ### Added

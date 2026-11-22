@@ -8,10 +8,10 @@ Most popular VS Code extensions (language servers, linters, debuggers, formatter
 
 ## 2. What we found
 
-* `@codingame/monaco-vscode-api` (39.0.5, VS Code 1.140.0) does **not** ship VS Code's Node extension host. Its only supported way to run Node extensions is a **VS Code server** ("remote extension host", REH) connected through `@codingame/monaco-vscode-remote-agent-service-override` (39.0.5 is on npm).
+* `@codingame/monaco-vscode-api` (39.0.5, built on VS Code **1.145.2**, commit `c4453f8e`; the earlier note here said 1.140, which was wrong, see section 7) does **not** ship VS Code's Node extension host. Its only supported way to run Node extensions is a **VS Code server** ("remote extension host", REH) connected through `@codingame/monaco-vscode-remote-agent-service-override` (39.0.5 is on npm).
 * The remote authority must be set when the editor services start (`initialize`); it can't be added later. So turning Node extensions on or off needs an editor reload.
 * Node extensions only see files of a workspace folder that belongs to the server (`vscode-remote://` URIs). The IDE's open folder is served by the Rust core today with its own URIs, so the editor's models and the folder would move to the server's file system when Node extensions are on.
-* Microsoft's VS Code server licence allows its use with Microsoft products only. **VSCodium** builds the same server from the MIT source (`vscodium-reh-<os>-<arch>-<version>.tar.gz` on its GitHub releases, about 70 MB, with Node inside). The release must match the workbench's VS Code version (1.140.x); the IDE then sets the server's commit in its product configuration.
+* Microsoft's VS Code server licence allows its use with Microsoft products only. **VSCodium** builds the same server from the MIT source (`vscodium-reh-<os>-<arch>-<version>.tar.gz` on its GitHub releases, about 85 MB, with Node inside). The release must match the workbench's VS Code minor version (1.145.x for 39.0.5); the IDE then sets the server's commit in its product configuration.
 * Pinned on the PC 2026-11-22 (section 7): VSCodium 1.140.06880, VS Code commit `807ba2d6075c29587f884698cd7370c81ab0724c`, files `vscodium-reh-<os>-<arch>-1.140.06880.tar.gz` (85 MB for Windows).
 
 ## 3. Options
@@ -33,7 +33,7 @@ flowchart LR
 ```
 
 1. Installing a Node extension is allowed again; the Extensions view says it needs the Node host and a trusted folder.
-2. The first time a trusted folder has an enabled Node extension, the IDE asks once: "Download the Node extension host (about 70 MB)?" The core downloads the pinned VSCodium server for this OS and CPU from GitHub releases, checks the pinned SHA-256 (fail closed), and unpacks it into the app data folder (no paths outside it, no links).
+2. The first time a trusted folder has an enabled Node extension, the IDE asks once: "Download the Node extension host (about 85 MB)?" The core downloads the pinned VSCodium server for this OS and CPU from GitHub releases, checks the pinned SHA-256 (fail closed), and unpacks it into the app data folder (no paths outside it, no links).
 3. The core starts the server with a scrubbed environment (no gateway keys, no tokens, a fixed `PATH`), `--host 127.0.0.1 --port 0`, a random connection token from the OS CSPRNG, extensions folder inside the app data, and telemetry off. The token goes to the window only.
 4. The window reloads with the remote authority `127.0.0.1:<port>` and the folder as a `vscode-remote://` workspace folder. Web extensions keep running in the worker.
 5. Closing the folder, losing trust, or quitting stops the server.
@@ -74,7 +74,13 @@ flowchart LR
 * **Pins** (`core/src/node_host.rs`, `PINS`): VSCodium 1.140.06880 for Linux x64 and arm64, macOS x64 and arm64, and Windows x64. Each file was downloaded from the GitHub release, hashed on the PC (certutil SHA-256), and compared with the `.sha256` file published next to it: all five matched. The commit comes from the server's `product.json`. Windows on ARM and 32-bit systems get no pin, so the panel says Node extensions can't run there.
 * **Real-server check** (`core/tests/node_host_real.rs`, ignored by default): through the core's own download, hash check, unpack, trust and start, the real Windows server reports the pinned commit at `/version`, answers 403 without the connection token and accepts it with the token, and closes its port when stopped.
 * **Server built-ins:** the server ships its own language features (TypeScript, JSON, CSS, HTML, Markdown, PHP, Emmet, Git, npm, js-debug) and no grammars or themes, so nothing duplicates the editor's grammar packages. While the host runs, these give the editor real language servers for those languages.
-* To move to a new VSCodium release: download every `vscodium-reh-*` file and its `.sha256`, hash each file yourself and compare, read `commit` from `product.json`, update `VSCODIUM`, `VSCODIUM_COMMIT` and `PINS` together, and run the real-server check.
+* **PC click-through in the desktop app (2026-11-22).** It found and fixed three bugs:
+  1. **Staging layout:** the extension store keeps the `.vsix`'s `extension/` contents directly in `<folder>/`, so `stage_extensions` now copies that folder itself; before, the server saw no `package.json` and listed nothing.
+  2. **Console window:** on Windows the windowed app gave the server's `node.exe` (and container engine calls) a visible console window; they now start with `CREATE_NO_WINDOW`, like the git calls.
+  3. **Folder path:** Windows folder paths came back as `\\?\D:\...`, which made the workspace URI path start with `//` and broke every file request. The shell now sends the plain path (`node_host::editor_folder`) and refuses network shares (`folder_not_local`).
+* **Version mismatch found (open).** With those fixed, the server starts, lists the extensions and the editor loads them, but **no extension ever activates**. Cause: the editor library is built on VS Code 1.145.2, the server on 1.140. VS Code numbers its editor-to-extension-host messages, and the numbering changed in 1.144 (three new message targets), so the editor's messages land on the wrong targets: the server never receives the workspace and waits forever. Checked by calling the host directly from the editor (`Unknown method $activateByEvent on actor ExtHostTerminalService`) and by comparing the identifier lists of VS Code 1.140.0, 1.143.x and 1.145.2 (1.140 to 1.143 identical; 1.144 and later differ). No VSCodium release matches 1.145 yet (newest 1.143.17232), and the two projects release different versions (editor library 1.138, 1.142, 1.145; VSCodium 1.135, 1.140, 1.143), so they rarely line up.
+* **Version check:** the shell reports the pinned server's VS Code version (`node_host::VSCODE_VERSION`) in `node_host_status` and `node_host_start`. The editor (`app/src/lib/vscodeVersion.ts`, `nodeHost.ts`) compares it with its own and, when the minor versions differ, neither offers the host (the panel says why, and nothing is downloaded) nor connects to a running one. Today that means Node extensions are shown as unavailable on every system until a matching server is pinned; Pheonix's choice of how to get one is pending.
+* To move to a new VSCodium release: download every `vscodium-reh-*` file and its `.sha256`, hash each file yourself and compare, read `commit` from `product.json`, update `VSCODIUM`, `VSCODIUM_COMMIT`, `VSCODE_VERSION` and `PINS` together, and run the real-server check. The server's VS Code minor version must equal the editor library's (`vscode/vs/platform/product/common/product.js` in `@codingame/monaco-vscode-api`).
 
 ## 8. Dependencies
 
@@ -92,7 +98,7 @@ flowchart LR
 
 * I6c-2: core unit tests 94 passed [2026-11-22_014615Z_core_10da8d4](../../HistoryTest/runs/2026-11-22_014615Z_core_10da8d4/RUN.md); UI smoke test 113 of 113 (web extensions still can't reach local ports, trust and download clicks, connection only to 127.0.0.1 with the pinned commit, token over the socket not the URL or storage, trust removal stops it) [2026-11-22_014626Z_ui_10da8d4](../../HistoryTest/runs/2026-11-22_014626Z_ui_10da8d4/RUN.md); app unit tests [2026-11-22_014647Z_app-unit_10da8d4](../../HistoryTest/runs/2026-11-22_014647Z_app-unit_10da8d4/RUN.md); static checks [2026-11-22_014648Z_security-scan_10da8d4](../../HistoryTest/runs/2026-11-22_014648Z_security-scan_10da8d4/RUN.md).
 * I6c-3: the real pinned server on the PC, 1 of 1 plus 6 node_host unit tests on Windows [2026-11-22_015908Z_node-host_506f165](../../HistoryTest/runs/2026-11-22_015908Z_node-host_506f165/RUN.md); core tests with the real pins, 94 passed [2026-11-22_015916Z_core_506f165](../../HistoryTest/runs/2026-11-22_015916Z_core_506f165/RUN.md).
-* Not run yet: a real Node extension inside the desktop app (needs the app window on the PC).
+* I6c-3 PC click-through in the desktop app (3 bugs fixed, version mismatch found, version check verified in the real app; partial, no Node extension ran) [2026-11-22_042952Z_node-host_c727219](../../HistoryTest/runs/2026-11-22_042952Z_node-host_c727219/RUN.md); core 95 passed [2026-11-22_042549Z_core_c727219](../../HistoryTest/runs/2026-11-22_042549Z_core_c727219/RUN.md); app unit 8 passed [2026-11-22_042600Z_app-unit_c727219](../../HistoryTest/runs/2026-11-22_042600Z_app-unit_c727219/RUN.md); UI smoke 114 of 114 incl. a mismatched host that is neither offered nor connected [2026-11-22_042600Z_ui_c727219](../../HistoryTest/runs/2026-11-22_042600Z_ui_c727219/RUN.md).
 
 ## 10. Limitations and known risks
 
@@ -101,4 +107,5 @@ flowchart LR
 
 * Node extensions can't be stopped one by one without restarting the server.
 * The download needs github.com; offline machines stay on web extensions.
-* VSCodium must keep publishing a server for 1.140.x; a newer workbench needs a matching newer pin.
+* **Node extensions don't run yet:** no published VSCodium server matches the editor's VS Code 1.145 (section 7). The editor says so instead of connecting. Every editor library upgrade needs a server of the same VS Code minor version.
+* Network folders (`\\server\share`) are refused for Node extensions for now.

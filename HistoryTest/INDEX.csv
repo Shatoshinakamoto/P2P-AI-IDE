@@ -109,3 +109,7 @@ run_id,date_utc,area,commit,branch_or_pr,machine,verdict,passed,failed,skipped,s
 2026-11-22_014648Z_security-scan_10da8d4,2026-11-22T01:46:48Z,security-scan,10da8d4,claude/project-thread-8u4b8a,cloud container,pass,5,0,0,"Phase I6c-2 static checks: tsc, rustfmt, clippy, cargo audit, npm audit gate, licence notices"
 2026-11-22_015908Z_node-host_506f165,2026-11-22T01:59:08Z,node-host,506f165,claude/project-thread-8u4b8a,user PC (Windows),pass,7,0,,"Phase I6c-3: the real pinned VSCodium 1.140.06880 server downloads, starts and needs its token (PC, Windows x64)"
 2026-11-22_015916Z_core_506f165,2026-11-22T01:59:16Z,core,506f165,claude/project-thread-8u4b8a,cloud container,pass,,,,Phase I6c-3 core unit tests with the real pins (plus clippy on all targets)
+2026-11-22_042549Z_core_c727219,2026-11-22T04:25:49Z,core,c727219,claude/project-thread-8u4b8a,cloud container,pass,,,,Core unit tests after the I6c-3 version check
+2026-11-22_042600Z_app-unit_c727219,2026-11-22T04:26:00Z,app-unit,c727219,claude/project-thread-8u4b8a,cloud container,pass,8,0,0,App unit tests incl. the VS Code version match rule
+2026-11-22_042600Z_ui_c727219,2026-11-22T04:26:00Z,ui,c727219,claude/project-thread-8u4b8a,cloud container,pass,,,,UI smoke with a mismatched Node host
+2026-11-22_042952Z_node-host_c727219,2026-11-22T04:29:52Z,node-host,c727219,claude/project-thread-8u4b8a,user PC (Windows),partial,4,1,,"Real Node extension in the desktop app on the PC: 3 bugs fixed, version mismatch found, version check verified"

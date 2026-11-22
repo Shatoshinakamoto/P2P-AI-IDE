@@ -1,0 +1,8 @@
+Debug-only edits on the PC clone (never committed; reset by i6c3-rebuild.cmd with `git checkout -- .`):
+- core/src/node_host.rs start(): .arg("--log").arg("trace")
+- app/src/monaco.ts: developmentOptions { logLevel: 1 } (had no effect: the standalone log service stays at Info)
+- app/src/monaco.ts: import { IWorkspaceContextService, IExtensionService, ILogService, ILifecycleService,
+  IRemoteAgentService, IWorkspaceTrustManagementService } from "@codingame/monaco-vscode-api/services" and
+  (window as any).__dbg = { StandaloneServices, ...those ids }
+App launched with WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS=--remote-debugging-port=9229 (127.0.0.1 only);
+probes sent with a small Node script doing Runtime.evaluate over CDP (i6c3-eval.mjs).

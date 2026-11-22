@@ -340,13 +340,15 @@ exports.activate = async (ctx) => {
           const log = JSON.parse(sessionStorage.getItem("smoke-node-calls") ?? "[]");
           log.push({ cmd, args }); sessionStorage.setItem("smoke-node-calls", JSON.stringify(log));
           const save = () => sessionStorage.setItem("smoke-node-host", JSON.stringify(nh));
-          if (cmd === "node_host_status") return { pinned: true, ...nh };
+          // The server's VS Code version: the editor's own unless a check sets another (window.__smokeEditorVsCode).
+          const vscode = sessionStorage.getItem("smoke-node-vscode") ?? window.__smokeEditorVsCode;
+          if (cmd === "node_host_status") return { pinned: true, ...nh, vscode };
           if (cmd === "node_host_trust") { nh.trusted = args.trusted; if (!args.trusted) nh.port = null; save(); return null; }
           if (cmd === "node_host_stop") { nh.port = null; save(); return null; }
           if (!nh.trusted) throw "Node extensions run only in a folder you trust";
           if (!nh.installed && !args.allowDownload) throw "the Node extension host is not downloaded yet";
           nh.installed = true; nh.port = Number(location.port) + 2; save();
-          return { port: nh.port, token: "c0ffee".repeat(8), folder: "/home/smoke/shop-api", commit: "0123456789abcdef0123456789abcdef01234567" };
+          return { port: nh.port, token: "c0ffee".repeat(8), folder: "/home/smoke/shop-api", commit: "0123456789abcdef0123456789abcdef01234567", vscode };
         }
         case "ext_set_enabled": ext.installed = ext.installed.map((e) => (e.id === args.id ? { ...e, enabled: args.enabled } : e)); return ext.installed.find((e) => e.id === args.id);
         case "ext_uninstall": ext.installed = ext.installed.filter((e) => e.id !== args.id); return null;
@@ -399,6 +401,9 @@ const page = await browser.newPage({ viewport: { width: 1400, height: 900 }, dev
 const errors = [];
 page.on("pageerror", (e) => errors.push(String(e)));
 page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); if (/I6BDBG/.test(m.text())) console.log(m.text()); });
+// The VS Code version the editor library is built on, for the Node host mock (it reports a matching server).
+const editorVsCode = /version:\s*'([^']+)'/.exec(await readFile(createRequire(import.meta.url).resolve("@codingame/monaco-vscode-api/vscode/vs/platform/product/common/product"), "utf8"))?.[1] ?? "";
+await page.addInitScript((v) => { window.__smokeEditorVsCode = v; }, editorVsCode);
 await page.addInitScript(fake);
 // The shipped window freezes Object.prototype when tauri.conf.json sets freezePrototype; do the same here so a
 // library that breaks under it fails this test instead of showing a blank window (phase I1 Windows finding).
@@ -908,7 +913,7 @@ try {
   check("Node extensions start only in a trusted folder, and the panel says what they can do", /read and change any of your files/.test(await np.innerText()) && !(await nodeCalls()).some((c) => c.cmd === "node_host_start"));
   await np.getByRole("button", { name: "Trust this folder for Node extensions" }).click();
   await np.getByRole("button", { name: "Download and start Node extensions" }).waitFor();
-  check("trusting is its own click, and the download is named before it happens", (await nodeCalls()).some((c) => c.cmd === "node_host_trust" && c.args.trusted === true) && /about 70 MB/.test(await np.innerText()));
+  check("trusting is its own click, and the download is named before it happens", (await nodeCalls()).some((c) => c.cmd === "node_host_trust" && c.args.trusted === true) && /about 85 MB/.test(await np.innerText()));
   const errBefore = errors.length;
   await Promise.all([page.waitForEvent("load"), np.getByRole("button", { name: "Download and start Node extensions" }).click()]);
   await page.getByRole("button", { name: "Extensions", exact: true }).waitFor();
@@ -930,6 +935,22 @@ try {
   await page.getByRole("button", { name: "Extensions", exact: true }).click();
   await page.getByRole("region", { name: "Node extensions" }).getByRole("button", { name: "Trust this folder for Node extensions" }).waitFor();
   check("taking trust back stops the host, and the reloaded editor connects to nothing", (await nodeCalls()).some((c) => c.cmd === "node_host_trust" && c.args.trusted === false) && sockets.length === socketsBefore);
+  // Phase I6c-3: a server built from another VS Code version is neither offered nor connected (its messages are
+  // numbered differently, so it would connect and silently never start an extension). A "running" host is faked
+  // here, so the only thing keeping the editor off it is the version check.
+  await page.evaluate(() => {
+    sessionStorage.setItem("smoke-node-vscode", "1.0.0");
+    sessionStorage.setItem("smoke-node-host", JSON.stringify({ trusted: true, installed: true, port: Number(location.port) + 2 }));
+  });
+  const startsBefore = (await nodeCalls()).filter((c) => c.cmd === "node_host_start").length;
+  const socketsBefore2 = sockets.length;
+  await page.reload();
+  await page.getByRole("button", { name: "Extensions", exact: true }).click();
+  const np3 = page.getByRole("region", { name: "Node extensions" });
+  await np3.getByText(/can't run with this version of the IDE/).waitFor();
+  await page.waitForTimeout(1500);
+  check("a Node host built from another VS Code version is not offered or connected", (await np3.getByRole("button").count()) === 0 && (await nodeCalls()).filter((c) => c.cmd === "node_host_start").length === startsBefore && sockets.length === socketsBefore2, await np3.innerText());
+  await page.evaluate(() => { sessionStorage.removeItem("smoke-node-vscode"); sessionStorage.removeItem("smoke-node-host"); });
   // The failed connections are expected (nothing listens on the host port in this test); keep any other error.
   const nodeErrs = errors.splice(errBefore);
   errors.push(...nodeErrs.filter((e) => !/WebSocket|127\.0\.0\.1:\d+|remote|reconnect|connection|ERR_CONNECTION_REFUSED/i.test(e)));

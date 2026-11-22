@@ -1,0 +1,11 @@
+id: 2026-11-22_042952Z_node-host_c727219
+verdict: partial
+verdict_reason: partial: the 3 bugs are fixed and the new version check works in the real app, but no Node extension ran.
+passed: 4
+failed: 1
+skipped: not recorded
+count_unit: not recorded
+exit_code: not recorded
+duration_s: not recorded
+commit: c727219
+machine: pc

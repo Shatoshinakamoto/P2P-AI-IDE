@@ -2,6 +2,15 @@
 
 Every security patch, hardening change, CVE remediation and accepted risk, newest first.
 
+## 2026-11-22 — Phase I6c-3: no console windows, local folders only, Node host version check
+- **Type:** hardening; patch
+- **CVE / CWE / advisory:** none. CWE-1188 (unsafe default), CWE-20, CWE-436 (interpretation conflict between editor and server); NIST SI-10, CM-7
+- **Severity:** none known to be exploitable (found in testing on the PC). KEV no.
+- **Affected:** `core/src/{node_host,container}.rs`, `app/src-tauri/src/nodehost.rs`, `app/src/{nodeHost,ipc}.ts`, `app/src/lib/vscodeVersion.ts`, `app/src/components/NodeHostPanel.tsx`
+- **What changed:** console programs started by the windowed app (the Node host's `node.exe`, container engine calls) use `CREATE_NO_WINDOW`, so no stray console window can be typed into or closed by mistake. The folder path sent to the editor drops the `\\?\` prefix and network shares are refused before anything is downloaded or started. The editor checks that the Node host is built from its own VS Code minor version before offering or connecting it; a value that doesn't parse never matches (fail closed).
+- **Why it is secure now:** a mismatched server no longer gets a half-working connection whose messages reach the wrong handlers (CWE-436); the check is a deny-by-default allow-list on a strict version format (CWE-20, CWE-1188, NIST SI-10). Node code still runs only in a trusted local folder (NIST AC-3).
+- **Verification:** HistoryTest runs 2026-11-22_042952Z_node-host_c727219 (PC, partial: version check verified in the real app, no Node extension ran), 2026-11-22_042549Z_core_c727219 (95 passed), 2026-11-22_042600Z_app-unit_c727219 (8 passed), 2026-11-22_042600Z_ui_c727219 (114/114).
+
 ## 2026-11-22 — Phase I6c-3: real VSCodium server pinned by SHA-256
 - **Type:** hardening
 - **CVE / CWE / advisory:** none. CWE-494, CWE-306; NIST SI-7, SA-12; SSDF PS.2

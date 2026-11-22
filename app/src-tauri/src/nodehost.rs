@@ -41,6 +41,9 @@ pub struct HostStatus {
     trusted: bool,
     /// The port on 127.0.0.1 while a server runs.
     port: Option<u16>,
+    /// The VS Code version the pinned server is built from (empty when nothing is pinned). The editor compares it
+    /// with its own and offers Node extensions only when they match (app/src/lib/vscodeVersion.ts).
+    vscode: &'static str,
 }
 
 /// Where the server connects: SECURITY: the token is for the webview only, never logged (CWE-532).
@@ -54,6 +57,8 @@ pub struct HostConnection {
     folder: String,
     /// The server's VS Code commit, which the editor announces so the server accepts it.
     commit: String,
+    /// The VS Code version the server is built from; the editor refuses to connect when it differs from its own.
+    vscode: &'static str,
 }
 
 fn pinned_commit() -> String {
@@ -79,6 +84,7 @@ fn word(e: &HostError) -> &'static str {
         HostError::StartFailed => "start_failed",
         HostError::BadInput => "bad_input",
         HostError::Io => "io",
+        HostError::FolderNotLocal => "folder_not_local",
     }
 }
 
@@ -101,7 +107,8 @@ pub fn node_host_status(app: AppHandle, state: State<AppState>) -> Result<HostSt
     let trusted = folder(&state)?.is_some_and(|f| TrustStore::new(&data).is_trusted(&f));
     let mut g = RUNNING.lock().map_err(|_| "internal error".to_string())?;
     let port = g.as_mut().and_then(|r| if r.alive() { Some(r.port) } else { None });
-    Ok(HostStatus { pinned: pin.is_some(), installed, trusted, port })
+    let vscode = if pin.is_some() { node_host::VSCODE_VERSION } else { "" };
+    Ok(HostStatus { pinned: pin.is_some(), installed, trusted, port, vscode })
 }
 
 /// Trusts or stops trusting the open folder. Only from the person's click in the trust prompt or the view.
@@ -135,8 +142,9 @@ pub async fn node_host_start(
                 return Ok(HostConnection {
                     port: r.port,
                     token: r.token.clone(),
-                    folder: r.folder.to_string_lossy().into_owned(),
+                    folder: node_host::editor_folder(&r.folder).map_err(|e| e.message().to_string())?,
                     commit: pinned_commit(),
+                    vscode: node_host::VSCODE_VERSION,
                 });
             }
         }
@@ -145,6 +153,8 @@ pub async fn node_host_start(
     let result = tauri::async_runtime::spawn_blocking(move || -> Result<Running, HostError> {
         let pin = node_host::pin_for(node_host::PINS, std::env::consts::OS, std::env::consts::ARCH)
             .ok_or(HostError::NotPinned)?;
+        // The editor must be able to name the folder for the server; refused before anything is downloaded.
+        node_host::editor_folder(&f)?;
         let trust = TrustStore::new(&data);
         // SECURITY: trust is checked before anything is downloaded, and again by start (CWE-829).
         if !trust.is_trusted(&f) {
@@ -167,11 +177,19 @@ pub async fn node_host_start(
     match result {
         Ok(r) => {
             audit("node_host", "started");
+            let folder = match node_host::editor_folder(&r.folder) {
+                Ok(f) => f,
+                Err(e) => {
+                    r.stop();
+                    return Err(e.message().to_string());
+                }
+            };
             let c = HostConnection {
                 port: r.port,
                 token: r.token.clone(),
-                folder: r.folder.to_string_lossy().into_owned(),
+                folder,
                 commit: pinned_commit(),
+                vscode: node_host::VSCODE_VERSION,
             };
             *RUNNING.lock().map_err(|_| "internal error".to_string())? = Some(r);
             Ok(c)

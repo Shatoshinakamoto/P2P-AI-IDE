@@ -245,6 +245,7 @@ host, in a folder you trusted (Extensions view > **Node extensions**, see
 | "Open VSX could not be reached or refused the request" | No internet, a firewall, or a proxy (the IDE does not use system proxies) | Check the connection; proxies are not supported yet |
 | "the extension has no valid Open VSX signature; nothing was installed" | Unsigned extension, or a changed file | Choose another extension; report it to Open VSX if it should be signed |
 | A Node extension does nothing | The Node extension host is not running for this folder | Extensions > **Node extensions**: trust the folder, then start |
+| The Node extensions panel says they can't run with this version of the IDE | The available Node extension host is built from another VS Code version than the editor; a mismatched pair would connect but never start an extension | Nothing to do on your side; web extensions still work. See [node-extensions-design.md](node-extensions-design.md) section 7 |
 | "this extension uses proposed VS Code APIs, which the IDE does not offer; nothing was installed" | `enabledApiProposals` in its manifest | Choose another extension |
 | A web extension does nothing | It needs a Node API, its activation event has not happened, or it uses `XMLHttpRequest`/`WebSocket` | Open a file of its language; allow internet if it asks; Node extensions need the Node extension host |
 | "internet is not allowed for this extension" | You chose Not now, or stopped its internet | Extensions > the extension > **Allow internet** |

@@ -1,0 +1,28 @@
+Debug-build probes in the running desktop app (Windows PC, WebView2 debug port on 127.0.0.1, debug build only,
+never committed). The editor services were exposed on window.__dbg for this check only.
+
+1) State probe (i6c3-ws-probe.js), host started for the trusted folder D:\p2p-ai-ci\i6c3-ws:
+   workspace: vscode-remote://127.0.0.1:<port>/d%3A/p2p-ai-ci/i6c3-ws   getCompleteWorkspace: resolved
+   lifecycle phase: 4 (Eventually)   workspace trusted: true
+   registered extensions: 61, including streetsidesoftware.code-spell-checker @ vscode-remote and the server's
+   built-ins (vscode.json-language-features @ vscode-remote, ...)
+   extension hosts: LocalWebWorker (kind 2) and Remote (kind 3), both with a proxy
+   status: vscode.json-language-features not activated; streetsidesoftware.code-spell-checker not activated
+
+2) RPC probe (i6c3-rpc-probe.js): Remote host: 34 extensions of its own, 34 messages sent, none pending, responsive.
+
+3) Activation probe (i6c3-act-probe.js): calling the Remote host's ExtHostExtensionService.$activateByEvent
+   ("onStartupFinished") directly from the editor returned:
+   error Error: Unknown method $activateByEvent on actor ExtHostTerminalService
+   => the editor's message numbering is shifted against the server's: it addresses actor numbers that the server
+   maps to other actors. The server's extension host therefore never gets $initializeWorkspace and waits in
+   ExtHostExtensionService.initialize() forever (its log stops after "Lock acquired", see logs/).
+
+4) Cause: editor library @codingame/monaco-vscode-api 39.0.5 is built on VS Code 1.145.2
+   (commit c4453f8ea430795f941c1b2ff6c9321135a74a02, from its product.js); the pinned server is VSCodium
+   1.140.06880 (VS Code 1.140). See proxy-identifier-diff.txt: three identifiers were added in 1.144.
+
+5) After the fix (commit c727219, release build, no debug edits): the Extensions view's Node extensions panel says
+   "Node extensions can't run with this version of the IDE yet: the editor is built on VS Code 1.145.2, but the
+   available Node extension host is built on VS Code 1.140.0. They must match. Web extensions still work." and
+   shows no start button (artifacts/node-panel-version-mismatch.jpg).
