@@ -20,6 +20,9 @@ import getExtensionServiceOverride from "@codingame/monaco-vscode-extensions-ser
 import getTextmateServiceOverride from "@codingame/monaco-vscode-textmate-service-override";
 import getThemeServiceOverride from "@codingame/monaco-vscode-theme-service-override";
 import getLanguagesServiceOverride from "@codingame/monaco-vscode-languages-service-override";
+import type { IWorkbenchConstructionOptions } from "@codingame/monaco-vscode-api/services";
+import type { NodeHostConnection } from "./ipc.ts";
+import { authorityOf, remotePath } from "./nodeHost.ts";
 import getConfigurationServiceOverride, {
   initUserConfiguration,
   updateUserConfiguration,
@@ -97,18 +100,52 @@ self.MonacoEnvironment = {
 let started: Promise<void> | null = null;
 
 
-/** Starts the services once; later calls return the same promise. */
-export function startEditor(): Promise<void> {
+/**
+ * Starts the services once; later calls return the same promise.
+ *
+ * `node` (phase I6c-2) is the running Node extension host for the open, trusted folder, or null. With it, the
+ * services connect to that server on 127.0.0.1 with its token, and the folder is the server's workspace, so Node
+ * extensions see it. Without it nothing is connected and only web and declarative extensions run (deny by default).
+ */
+export function startEditor(node: NodeHostConnection | null = null): Promise<void> {
   started ??= (async () => {
     // The theme is a workbench setting; it is set before the services start so the first paint is dark.
     await initUserConfiguration(JSON.stringify({ "workbench.colorTheme": DEFAULT_THEME }));
-    await initialize({
-      ...getConfigurationServiceOverride(),
-      ...getExtensionServiceOverride({ enableWorkerExtensionHost: true }),
-      ...getTextmateServiceOverride(),
-      ...getThemeServiceOverride(),
-      ...getLanguagesServiceOverride(),
-    });
+    let options: IWorkbenchConstructionOptions | undefined;
+    let remote = {};
+    if (node) {
+      // Loaded only when a host runs: importing it registers VS Code's remote contributions, which must not exist
+      // (and can't work) in a window without a server.
+      const { default: getRemoteAgentServiceOverride } = await import("@codingame/monaco-vscode-remote-agent-service-override");
+      // The server's own extensions (the person's Node extensions) are listed from the server.
+      remote = getRemoteAgentServiceOverride({ scanRemoteExtensions: true });
+      const authority = authorityOf(node);
+      options = {
+        remoteAuthority: authority,
+        // SECURITY: the token from the shell, kept in memory and sent only to the server on 127.0.0.1 (CWE-306).
+        connectionToken: node.token,
+        // The server checks that the editor's commit is its own; the pin says which one it is.
+        ...(/^[0-9a-f]{40}$/.test(node.commit) ? { productConfiguration: { commit: node.commit } } : {}),
+        workspaceProvider: {
+          trusted: true,
+          workspace: { folderUri: monaco.Uri.from({ scheme: "vscode-remote", authority, path: remotePath(node.folder) }) },
+          // SECURITY: extensions can't make the window open other folders on the server (CWE-610).
+          open: async () => false,
+        },
+      };
+    }
+    await initialize(
+      {
+        ...getConfigurationServiceOverride(),
+        ...getExtensionServiceOverride({ enableWorkerExtensionHost: true }),
+        ...getTextmateServiceOverride(),
+        ...getThemeServiceOverride(),
+        ...getLanguagesServiceOverride(),
+        ...remote,
+      },
+      undefined,
+      options,
+    );
   })();
   return started;
 }

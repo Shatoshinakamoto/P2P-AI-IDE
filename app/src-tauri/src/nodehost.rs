@@ -21,6 +21,7 @@
 //! Dependencies: tauri, p2p-ide-core.
 
 use crate::{audit, AppState};
+use p2p_ide_core::extensions::ExtStore;
 use p2p_ide_core::node_host::{self, HostError, Launcher, Running, TrustStore};
 use serde::Serialize;
 use std::sync::Mutex;
@@ -47,6 +48,18 @@ pub struct HostStatus {
 pub struct HostConnection {
     port: u16,
     token: String,
+    /// The open folder's absolute path, which the editor needs for the server's `vscode-remote://` workspace.
+    /// SECURITY-WARNING: elsewhere the webview only learns the folder's name; the full path is shared only here,
+    /// once the person trusted the folder for Node extensions, which see it anyway (CWE-200, accepted).
+    folder: String,
+    /// The server's VS Code commit, which the editor announces so the server accepts it.
+    commit: String,
+}
+
+fn pinned_commit() -> String {
+    node_host::pin_for(node_host::PINS, std::env::consts::OS, std::env::consts::ARCH)
+        .map(|p| p.commit.to_string())
+        .unwrap_or_default()
 }
 
 fn folder(state: &State<AppState>) -> Result<Option<std::path::PathBuf>, String> {
@@ -119,7 +132,12 @@ pub async fn node_host_start(
         let mut g = RUNNING.lock().map_err(|_| "internal error".to_string())?;
         if let Some(r) = g.as_mut() {
             if r.folder == f && r.alive() {
-                return Ok(HostConnection { port: r.port, token: r.token.clone() });
+                return Ok(HostConnection {
+                    port: r.port,
+                    token: r.token.clone(),
+                    folder: r.folder.to_string_lossy().into_owned(),
+                    commit: pinned_commit(),
+                });
             }
         }
     }
@@ -140,6 +158,8 @@ pub async fn node_host_start(
             }
             None => return Err(HostError::NotInstalled),
         };
+        // The server loads only the enabled Node extensions, copied fresh on every start.
+        node_host::stage_extensions(&ExtStore::new(data.join("extensions")), &data.join("node-extensions"))?;
         node_host::start(&Launcher::for_root(&root), &data, &trust, &f)
     })
     .await
@@ -147,7 +167,12 @@ pub async fn node_host_start(
     match result {
         Ok(r) => {
             audit("node_host", "started");
-            let c = HostConnection { port: r.port, token: r.token.clone() };
+            let c = HostConnection {
+                port: r.port,
+                token: r.token.clone(),
+                folder: r.folder.to_string_lossy().into_owned(),
+                commit: pinned_commit(),
+            };
             *RUNNING.lock().map_err(|_| "internal error".to_string())? = Some(r);
             Ok(c)
         }

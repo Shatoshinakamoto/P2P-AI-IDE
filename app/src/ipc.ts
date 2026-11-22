@@ -301,7 +301,7 @@ export const scmLog = () => call<ScmCommit[]>("scm_log");
 
 /** One Open VSX search result. Plain text only: render as text, never HTML. */
 export interface ExtSummary { namespace: string; name: string; version: string; display_name: string; description: string; downloads: number }
-/** An installed extension. `kind` is what it needs to run ("declarative" and "web" install; "node" waits for I6c).
+/** An installed extension. `kind` is what it needs to run: "declarative", "web" (worker host) or "node" (I6c Node host).
  * `network`: the person allowed this web extension to reach public https sites (phase I6b). */
 export interface ExtInstalled {
   id: string; namespace: string; name: string; version: string; display_name: string; description: string;
@@ -324,3 +324,29 @@ export const extSetNetwork = (id: string, allowed: boolean) => call<ExtInstalled
 export interface ExtNetCall { method: string; url: string; headers: [string, string][]; body_b64: string }
 export interface ExtNetAnswer { status: number; status_text: string; headers: [string, string][]; url: string; body_b64: string }
 export const extFetch = (id: string, request: ExtNetCall) => call<ExtNetAnswer>("ext_fetch", { id, request });
+
+/** Phase I6c: the Node extension host for the open folder (node_host_status). */
+export interface NodeHostStatus {
+  /** A server is pinned for this OS and CPU; otherwise Node extensions can't run on this computer yet. */
+  pinned: boolean;
+  /** The pinned server is already downloaded. */
+  installed: boolean;
+  /** The open folder is trusted for Node extensions (false with no folder open). */
+  trusted: boolean;
+  /** The port on 127.0.0.1 while the server runs. */
+  port: number | null;
+}
+/** Where the editor connects to the running server. SECURITY: the token stays in memory only (CWE-522). */
+export interface NodeHostConnection {
+  port: number;
+  token: string;
+  folder: string;
+  /** The server's VS Code commit; the editor announces it so the server accepts the connection. */
+  commit: string;
+}
+export const nodeHostStatus = () => call<NodeHostStatus>("node_host_status");
+/** Trusts or stops trusting the open folder. Only from the person's click. */
+export const nodeHostTrust = (trusted: boolean) => call<null>("node_host_trust", { trusted });
+/** Starts (or reuses) the server; `allowDownload` only after the person agreed to the download. */
+export const nodeHostStart = (allowDownload: boolean) => call<NodeHostConnection>("node_host_start", { allowDownload });
+export const nodeHostStop = () => call<null>("node_host_stop");

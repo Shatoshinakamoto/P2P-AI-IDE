@@ -77,6 +77,9 @@ pub struct Pin {
     pub url: &'static str,
     /// Lowercase hex SHA-256 of the file.
     pub sha256: &'static str,
+    /// The server's VS Code commit (40 lowercase hex, from its `product.json`). The editor must announce the same
+    /// commit, or the server refuses the connection as a version mismatch.
+    pub commit: &'static str,
 }
 
 /// The pinned servers.
@@ -139,9 +142,13 @@ impl From<StoreError> for HostError {
 pub fn pin_for(pins: &[Pin], os: &str, arch: &str) -> Option<Pin> {
     pins.iter()
         .find(|p| p.os == os && p.arch == arch)
-        .filter(|p| p.sha256.len() == 64 && p.sha256.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()))
+        .filter(|p| lower_hex(p.sha256, 64) && lower_hex(p.commit, 40))
         .filter(|p| allowed_url(p.url))
         .copied()
+}
+
+fn lower_hex(s: &str, len: usize) -> bool {
+    s.len() == len && s.bytes().all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))
 }
 
 fn host_of(url: &str) -> Option<&str> {
@@ -373,6 +380,59 @@ pub fn ensure_installed(get: Get, data: &Path, pin: &Pin) -> Result<PathBuf, Hos
         HostError::Io
     })?;
     server_root(&dest).ok_or(HostError::BadArchive)
+}
+
+/// Copies one folder tree from `src` to the new folder `dst`. Regular files and folders only: links and anything
+/// else are skipped, so a planted link in the source can't pull files from elsewhere (CWE-59).
+fn copy_tree(src: &Path, dst: &Path, depth: usize) -> Result<(), HostError> {
+    if depth > 48 {
+        return Err(HostError::BadArchive);
+    }
+    std::fs::create_dir(dst).map_err(|_| HostError::Io)?;
+    for e in std::fs::read_dir(src).map_err(|_| HostError::Io)? {
+        let e = e.map_err(|_| HostError::Io)?;
+        // SECURITY: file_type() does not follow links (CWE-59).
+        let t = e.file_type().map_err(|_| HostError::Io)?;
+        let to = dst.join(e.file_name());
+        if t.is_dir() {
+            copy_tree(&e.path(), &to, depth + 1)?;
+        } else if t.is_file() {
+            std::fs::copy(e.path(), &to).map_err(|_| HostError::Io)?;
+        }
+    }
+    Ok(())
+}
+
+/// Builds the server's extensions folder `dest` fresh from the enabled Node extensions in `store`, in the layout the
+/// server reads (`<id>-<version>/package.json`). Rebuilt on every start, so a turned-off or removed extension is
+/// never loaded, and nothing the server or an extension wrote there survives a restart.
+pub fn stage_extensions(store: &crate::extensions::ExtStore, dest: &Path) -> Result<usize, HostError> {
+    use crate::extensions::Kind;
+    let list = store.list().map_err(|_| HostError::Io)?;
+    let tmp = dest.with_file_name(format!(".node-extensions-{}", store::random_id()));
+    std::fs::create_dir_all(&tmp).map_err(|_| HostError::Io)?;
+    let mut n = 0;
+    let result = (|| {
+        for e in list.iter().filter(|e| e.enabled && e.kind == Kind::Node) {
+            // SECURITY: the folder name comes from our own saved list, built from allow-listed parts (CWE-22).
+            if e.folder.contains(['/', '\\']) || e.folder.starts_with('.') {
+                return Err(HostError::BadInput);
+            }
+            copy_tree(&store.dir().join(&e.folder).join("extension"), &tmp.join(&e.folder), 0)?;
+            n += 1;
+        }
+        Ok(())
+    })();
+    if let Err(e) = result {
+        let _ = std::fs::remove_dir_all(&tmp);
+        return Err(e);
+    }
+    let _ = std::fs::remove_dir_all(dest);
+    std::fs::rename(&tmp, dest).map_err(|_| {
+        let _ = std::fs::remove_dir_all(&tmp);
+        HostError::Io
+    })?;
+    Ok(n)
 }
 
 /// The folders the person trusts to run Node extensions, kept in `<data>/trusted-folders.json`.
@@ -650,6 +710,7 @@ mod tests {
             version: "1",
             url: "https://github.com/a/b",
             sha256: Box::leak("a".repeat(64).into_boxed_str()),
+            commit: Box::leak("b".repeat(40).into_boxed_str()),
         };
         assert!(pin_for(&[ok], "linux", "x86_64").is_some());
         for bad in [
@@ -658,6 +719,8 @@ mod tests {
             Pin { url: "http://github.com/a", ..ok },
             Pin { url: "https://github.com@evil.example/a", ..ok },
             Pin { url: "https://evil.example/a", ..ok },
+            Pin { commit: "", ..ok },
+            Pin { commit: Box::leak("g".repeat(40).into_boxed_str()), ..ok },
         ] {
             assert_eq!(pin_for(&[bad], "linux", "x86_64"), None, "{bad:?}");
         }
@@ -673,6 +736,7 @@ mod tests {
             version: "1.140.0.1",
             url: "https://github.com/x/y.tar.gz",
             sha256: sum,
+            commit: "0123456789abcdef0123456789abcdef01234567",
         };
         let b2 = body.clone();
         let get = move |_: &str, _: u64| Ok(b2.clone());
@@ -767,6 +831,52 @@ mod tests {
         for bad in ["listening on 80", "listening on 99999", "listening on 4a", "hello", "listening on "] {
             assert_eq!(parse_listen(bad), None, "{bad}");
         }
+    }
+
+    #[test]
+    fn stage_copies_only_enabled_node_extensions() {
+        use crate::extensions::{ExtStore, Installed, Kind};
+        let base = tmp("stage");
+        let ext_dir = base.join("extensions");
+        let entry = |id: &str, kind: Kind, enabled: bool| Installed {
+            id: id.into(),
+            namespace: "acme".into(),
+            name: id.into(),
+            version: "1.0.0".into(),
+            display_name: id.into(),
+            description: String::new(),
+            kind,
+            enabled,
+            installed_at: 0,
+            sha256: "0".repeat(64),
+            verified_publisher: false,
+            folder: format!("{id}-1.0.0"),
+            network: false,
+        };
+        let list = vec![
+            entry("acme.on", Kind::Node, true),
+            entry("acme.off", Kind::Node, false),
+            entry("acme.web", Kind::Web, true),
+        ];
+        for e in &list {
+            let d = ext_dir.join(&e.folder).join("extension").join("out");
+            std::fs::create_dir_all(&d).unwrap();
+            std::fs::write(d.join("ext.js"), "x").unwrap();
+            std::fs::write(ext_dir.join(&e.folder).join("extension").join("package.json"), "{}").unwrap();
+        }
+        #[cfg(unix)]
+        std::os::unix::fs::symlink("/etc/passwd", ext_dir.join("acme.on-1.0.0/extension/out/link")).unwrap();
+        std::fs::write(ext_dir.join("installed.json"), serde_json::to_vec(&list).unwrap()).unwrap();
+        let store = ExtStore::new(ext_dir);
+        let dest = base.join("node-extensions");
+        std::fs::create_dir_all(dest.join("stale-1.0.0")).unwrap();
+        assert_eq!(stage_extensions(&store, &dest).unwrap(), 1);
+        assert!(dest.join("acme.on-1.0.0/package.json").is_file());
+        assert!(dest.join("acme.on-1.0.0/out/ext.js").is_file());
+        assert!(!dest.join("acme.on-1.0.0/out/link").exists(), "links are never copied");
+        assert!(!dest.join("acme.off-1.0.0").exists() && !dest.join("acme.web-1.0.0").exists());
+        assert!(!dest.join("stale-1.0.0").exists(), "rebuilt fresh on every start");
+        let _ = std::fs::remove_dir_all(&base);
     }
 
     #[cfg(unix)]
