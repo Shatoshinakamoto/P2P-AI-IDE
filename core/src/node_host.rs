@@ -734,7 +734,9 @@ mod tests {
         let folder = tmp("folder");
         let t = TrustStore::new(&data);
         assert!(!t.is_trusted(&folder));
-        t.set(&folder.join("sub").join(".."), true).unwrap_err(); // missing sub folder: refused
+        // A folder that does not exist is refused. (Windows resolves `missing\..` by name, so the missing folder
+        // itself is used here, not a path through it.)
+        t.set(&folder.join("missing"), true).unwrap_err();
         std::fs::create_dir(folder.join("sub")).unwrap();
         t.set(&folder.join("sub").join(".."), true).unwrap();
         assert!(t.is_trusted(&folder));
