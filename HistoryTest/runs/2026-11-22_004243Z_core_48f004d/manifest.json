@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "a7ec73fcc51dc09904d5868f24692db8ca4fb8e648a6bd4a3c19a0d6ddcc48fe",
+   "size": 1810
+  },
+  "command.txt": {
+   "sha256": "4f5e53f9eaf4abf77fa104d8c75f92828e352a0c2645bbac3d49fb61e35d57d4",
+   "size": 83
+  },
+  "environment.md": {
+   "sha256": "4b6e7e616cf5688b1f34d15add4f668d3c6c3278688147c13ce4c5515cab062e",
+   "size": 193
+  },
+  "logs/output.log": {
+   "sha256": "24181bb104e9ecf2b94c9787faf66b7a849af4d07a37be14272c2f79614a2c24",
+   "size": 6327
+  },
+  "results/summary.txt": {
+   "sha256": "af26b5af31d814cfc0ca09b332ea33bdfeca922dcb56a1aa1728574352ce9be9",
+   "size": 285
+  }
+ },
+ "previous": {
+  "manifest_sha256": "9dd46f6213dd508b7dfe8655ced8ec8e0c2c75c4f226bafbfb6977c79ea929de",
+  "run_id": "2026-11-21_232948Z_security-scan_f363048"
+ },
+ "run": {
+  "area": "core",
+  "branch_or_pr": "PR 20",
+  "collected_utc": "",
+  "commit": "48f004db2b54533d434654fa21843d4da1ab865a",
+  "count_unit": "",
+  "date_utc": "2026-11-22T00:42:43Z",
+  "dirty": false,
+  "duration_s": 10.9,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_004243Z_core_48f004d",
+  "kind": "unit",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "Finish TandemForge and IDE roadmaps thread",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Phase I6c-1 core unit tests after the Windows trust-test fix",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}
