@@ -1,0 +1,11 @@
+id: 2026-11-22_121624Z_node-host-electron_01bc30e
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: 0
+failed: 2
+skipped: 0
+count_unit: packages
+exit_code: 0
+duration_s: 29.0
+commit: 01bc30e9ade3bdbbaa441d05b69ddde81f2f77df
+machine: cloud

@@ -1,0 +1,62 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "6d2d32280c7df6a02826de7e000ed53258864208ad8aa44014d665f4f116ab9b",
+   "size": 1802
+  },
+  "artifacts/missions-x3.png": {
+   "sha256": "926343b921a749bef37bb1fe53d3fb42ffb87f96e33b17305405d63262667f20",
+   "size": 109733
+  },
+  "command.txt": {
+   "sha256": "a72aa84f1c3580f285c38f5da9e14d62402157b4146d2c8ab16ffcd2fa6b4f5a",
+   "size": 203
+  },
+  "environment.md": {
+   "sha256": "cfa8275fe30e27b11db08d0180541f256c9181a48adb8008907b4171a7dde669",
+   "size": 202
+  },
+  "logs/output.log": {
+   "sha256": "56b0b1bf5b55d9bd8b7b405a1191d29728d191f4339962cb8a734f4e031fac5c",
+   "size": 113
+  },
+  "results/summary.txt": {
+   "sha256": "604634ff2a152c959b94c2e1b6a32ee9d6bf976d413423ab9c6011caa29d5b1b",
+   "size": 293
+  }
+ },
+ "previous": {
+  "manifest_sha256": "1a21b6888c39f058007990c085fac73081fa4f6b75f5f6fce6abfa6cd415cee5",
+  "run_id": "2026-11-22_114502Z_vscode-ext-integration_ae1f4aa"
+ },
+ "run": {
+  "area": "vscode-ext-ui",
+  "branch_or_pr": "claude/project-thread-8u4b8a",
+  "collected_utc": "",
+  "commit": "ae1f4aac034cb832c093dba02f90c81042afab72",
+  "count_unit": "",
+  "date_utc": "2026-11-22T11:45:05Z",
+  "dirty": false,
+  "duration_s": 0.4,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_114505Z_vscode-ext-ui_ae1f4aa",
+  "kind": "e2e",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "tf-ide-roadmap-finish/X3",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Missions view webview (X3)",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

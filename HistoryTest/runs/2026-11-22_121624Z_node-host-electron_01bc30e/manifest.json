@@ -1,0 +1,62 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "e5c4ad02bc28c7385c5e7a5b44b3af9627b5dc8ca1ffd8abd2f168b3a4db043c",
+   "size": 1920
+  },
+  "command.txt": {
+   "sha256": "9ba98caf9fdc1eebd5c981a50e1143a8738e10cbfdbf4b7eeb07f1bde9e3996b",
+   "size": 99
+  },
+  "environment.md": {
+   "sha256": "46a36320bfa521227dae4906328c480335da45ab241b0f67f60f3867f42d175e",
+   "size": 207
+  },
+  "logs/output.log": {
+   "sha256": "851575d72314fb26317089ac3f69c4f6277c121c17dc49f593d662ad877b3912",
+   "size": 12283
+  },
+  "results/summary.txt": {
+   "sha256": "76606a36822c99cb46b6952d98083c46b8adfefbe18e92b55fa64b0ffb471255",
+   "size": 262
+  }
+ },
+ "previous": {
+  "manifest_sha256": "bcc011d25442e4814deccf2a4660f9dc3baecc1219b6fa003ff42840e5a50ecf",
+  "run_id": "2026-11-22_121549Z_node-host-electron_01bc30e"
+ },
+ "run": {
+  "area": "node-host-electron",
+  "branch_or_pr": "claude/project-thread-8u4b8a",
+  "collected_utc": "",
+  "commit": "01bc30e9ade3bdbbaa441d05b69ddde81f2f77df",
+  "count_unit": "packages",
+  "date_utc": "2026-11-22T12:16:24Z",
+  "dirty": true,
+  "duration_s": 29.0,
+  "exit_code": 0,
+  "failed": 2,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_121624Z_node-host-electron_01bc30e",
+  "kind": "e2e",
+  "machine": "cloud",
+  "passed": 0,
+  "record": "captured",
+  "redactions": {
+   "logs/output.log": {
+    "secret": 3
+   }
+  },
+  "requested_by": "Finish TandemForge and IDE roadmaps thread",
+  "shortened_logs": [],
+  "skipped": 0,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Phase I6d control: the same extension fails on the plain Node host (expected)",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

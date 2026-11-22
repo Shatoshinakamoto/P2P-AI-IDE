@@ -10,11 +10,13 @@
  * sends only booleans from the person's clicks.
  * Security: trusting is a separate, explained click before any Node code can run (CWE-829, NIST AC-3); the download
  * needs its own click and names its size (no silent downloads, CWE-494 context); taking trust back stops the host
- * at once in the shell.
+ * at once in the shell. Phase I6d: the Electron compatibility switch is off by default and is the person's own click;
+ * the extra download is named (version and size) before the click that allows it. Extension names in the hint are
+ * drawn as React text (CWE-79).
  * Dependencies: React.
  */
 import { useEffect, useState } from "react";
-import { nodeHostStart, nodeHostStatus, nodeHostStop, nodeHostTrust, type NodeHostStatus } from "../ipc.ts";
+import { nodeHostElectron, nodeHostStart, nodeHostStatus, nodeHostStop, nodeHostTrust, type NodeHostStatus } from "../ipc.ts";
 import { editorVsCode, hostMatchesEditor, nodeHost, reloadForNodeHost } from "../nodeHost.ts";
 
 interface Props {
@@ -50,6 +52,15 @@ export function NodeHostPanel({ nodeCount, onNotice }: Props) {
   };
 
   const connected = nodeHost() !== null;
+  // Phase I6d: what a start would still have to download, named before the click that allows it.
+  const needElectron = !!st && st.electron.enabled && !st.electron.installed;
+  const needDownload = !!st && (!st.installed || needElectron);
+  const downloads = st
+    ? [
+        st.installed ? "" : "the Node extension host (about 90 MB)",
+        needElectron ? `Electron ${st.electron.version} (about 150 MB)` : "",
+      ].filter(Boolean)
+    : [];
   const btn = "mt-1 mr-1 rounded border border-ide-line px-1.5 text-xs hover:bg-ide-hover disabled:opacity-50";
   let body: React.ReactNode;
   if (!st) body = <p>Open a folder to use Node extensions.</p>;
@@ -77,9 +88,9 @@ export function NodeHostPanel({ nodeCount, onNotice }: Props) {
   else if (!connected)
     body = (
       <>
-        <p>This folder is trusted.{st.installed ? "" : " Starting downloads the Node extension host once (about 90 MB), checked against its pinned SHA-256."} The window reloads to connect it.</p>
-        <button type="button" className={btn} disabled={busy} onClick={() => void run(() => nodeHostStart(!st.installed), true)}>
-          {st.installed ? "Start Node extensions" : "Download and start Node extensions"}
+        <p>This folder is trusted.{needDownload ? ` Starting downloads ${downloads.join(" and ")} once, each checked against its pinned SHA-256.` : ""} The window reloads to connect it.</p>
+        <button type="button" className={btn} disabled={busy} onClick={() => void run(() => nodeHostStart(needDownload), true)}>
+          {needDownload ? "Download and start Node extensions" : "Start Node extensions"}
         </button>
         <button type="button" className={btn} disabled={busy} onClick={() => void run(() => nodeHostTrust(false), false)}>
           Stop trusting this folder
@@ -89,7 +100,7 @@ export function NodeHostPanel({ nodeCount, onNotice }: Props) {
   else
     body = (
       <>
-        <p>Node extensions are running for this folder. Changes to them take effect after a restart.</p>
+        <p>Node extensions are running for this folder{st.electron.running ? ` with Electron ${st.electron.version} (compatibility)` : ""}. Changes to them take effect after a restart.</p>
         <button type="button" className={btn} disabled={busy} onClick={() => void run(async () => { await nodeHostStop(); await nodeHostStart(false); }, true)}>
           Restart Node extensions
         </button>
@@ -102,10 +113,41 @@ export function NodeHostPanel({ nodeCount, onNotice }: Props) {
       </>
     );
 
+  // Phase I6d: the compatibility switch, once Node extensions can run here at all.
+  const compat =
+    st && st.pinned && st.electron.available && hostMatchesEditor(st.vscode) ? (
+      <div aria-label="Electron compatibility" role="group" className="mt-1 border-t border-ide-line pt-1">
+        {st.electron.needed_by.length > 0 && !st.electron.enabled && (
+          <p>
+            These extensions have native modules built for one runtime, usually VS Code's Electron, and may not start
+            without compatibility: {st.electron.needed_by.join(", ")}.
+          </p>
+        )}
+        <label className="flex items-center gap-1">
+          <input
+            type="checkbox"
+            checked={st.electron.enabled}
+            disabled={busy}
+            onChange={(e) => {
+              const on = e.currentTarget.checked;
+              // A running host is stopped by the shell; reload so the editor drops its connection.
+              void run(() => nodeHostElectron(on), connected);
+            }}
+          />
+          Run Node extensions with Electron {st.electron.version} (compatibility)
+        </label>
+        <p className="text-ide-dim">
+          For extensions whose native modules only load in VS Code's own Electron. Off by default.
+          {st.electron.installed ? "" : ` Downloads Electron ${st.electron.version} from Electron's GitHub releases once (about 150 MB), checked against its pinned SHA-256.`}
+        </p>
+      </div>
+    ) : null;
+
   return (
     <section aria-label="Node extensions" className="flex flex-col gap-1 rounded border border-ide-line p-2 text-xs text-ide-text">
       <h2 className="text-xs uppercase tracking-wide text-ide-dim">Node extensions ({nodeCount})</h2>
       {body}
+      {compat}
     </section>
   );
 }

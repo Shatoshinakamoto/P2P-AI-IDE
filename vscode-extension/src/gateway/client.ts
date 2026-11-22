@@ -37,6 +37,7 @@ import {
   checkUrl,
   parseModels,
   addPieces,
+  answerError,
   parseSseLine,
   type Msg,
   type ToolCall,
@@ -59,6 +60,40 @@ export interface GatewayTarget {
 }
 
 const MODELS_TIMEOUT_MS = 15_000;
+/** X3 caps (same as the IDE's gwapi.rs): JSON answers 2 MiB, JSON bodies 1 MiB, file transfers 5 MiB. */
+export const MAX_JSON_ANSWER = 2 << 20;
+export const MAX_JSON_BODY = 1 << 20;
+export const MAX_TRANSFER_BYTES = 5 << 20;
+
+/** SECURITY: only `/v1/` paths built by this extension; no `..`, `#` or control characters (CWE-918, CWE-74). */
+function checkApiPath(path: string): void {
+  if (!path.startsWith("/v1/") || path.includes("..") || /[#\x00-\x1f\x7f-\x9f]/.test(path)) {
+    throw new NetError("bad_request", "internal: bad gateway path");
+  }
+}
+
+/**
+ * Percent-encodes a workspace path for a URL: unreserved characters and `/` stay, every other byte is `%XX`
+ * (same as the IDE's `encode_path`). SECURITY: keeps `?`, `#`, `%` and spaces from changing the request (CWE-74).
+ */
+export function encodePath(rel: string): string {
+  let out = "";
+  for (const b of Buffer.from(rel, "utf8")) {
+    const c = String.fromCharCode(b);
+    out += /[A-Za-z0-9\-_.~/]/.test(c) ? c : "%" + b.toString(16).toUpperCase().padStart(2, "0");
+  }
+  return out;
+}
+
+/**
+ * A file name that is safe inside a multipart header: the last path part, 1-200 bytes of letters, digits and
+ * `-_.()+@,=~ `, not starting with a space (same as the IDE's `upload_name`). Undefined otherwise (CWE-93).
+ */
+export function uploadName(rel: string): string | undefined {
+  const name = rel.split("/").pop() ?? "";
+  const ok = name !== "" && Buffer.byteLength(name) <= 200 && /^[\p{L}\p{N} \-_.()+@,=~]+$/u.test(name) && !name.startsWith(" ");
+  return ok ? name : undefined;
+}
 const CHAT_TIMEOUT_MS = 600_000;
 const CONNECT_TIMEOUT_MS = 10_000;
 
@@ -139,17 +174,79 @@ export class GatewayClient {
     return { end, calls };
   }
 
-  /** Makes one request to a fixed path on the gateway and checks its status. */
+  /**
+   * One JSON request to a `/v1/` path built by this extension (X3 missions; same as the IDE's `Client::api`).
+   * Returns the parsed answer, or null for an empty body.
+   * SECURITY: the path must start with `/v1/` and hold no `..`, `#` or control characters, so a value can't add a
+   * host or change the request (CWE-918, CWE-74); request bodies at most 1 MiB, answers 2 MiB (CWE-400); a refusal
+   * becomes a fixed message by the gateway's error code (CWE-209).
+   */
+  async api(method: "GET" | "POST" | "PUT" | "DELETE", path: string, body?: unknown, slow = false): Promise<unknown> {
+    checkApiPath(path);
+    let text: string | undefined;
+    if (method === "POST" || method === "PUT") {
+      text = JSON.stringify(body ?? {});
+      if (Buffer.byteLength(text) > MAX_JSON_BODY) throw new NetError("bad_request", "the request is too large");
+    } else if (body !== undefined) throw new NetError("bad_request", "internal: bad method");
+    const res = await this.request(method, path, text, "application/json", slow ? CHAT_TIMEOUT_MS : MODELS_TIMEOUT_MS, undefined, { codes: true });
+    const bytes = await readCapped(res, MAX_JSON_ANSWER);
+    if (bytes.length === 0) return null;
+    try {
+      return JSON.parse(bytes.toString("utf8"));
+    } catch {
+      throw new NetError("bad_answer");
+    }
+  }
+
+  /**
+   * Uploads one file to `POST /v1/files` (purpose `workspace`) and returns the gateway's file object.
+   * SECURITY: `name` must pass `uploadName`; the multipart boundary is 32 random hex characters from the CSPRNG,
+   * checked not to occur in the bytes (CWE-93, CWE-113); at most 5 MiB (CWE-400).
+   */
+  async uploadFile(name: string, bytes: Uint8Array): Promise<unknown> {
+    if (uploadName(name) !== name) throw new NetError("bad_request", "this file name cannot be sent to the gateway");
+    if (bytes.length > MAX_TRANSFER_BYTES) throw new NetError("bad_request", "files over 5 MiB are not sent");
+    const data = Buffer.from(bytes);
+    let boundary: string;
+    do boundary = "p2pide" + Buffer.from(crypto.getRandomValues(new Uint8Array(16))).toString("hex");
+    while (data.includes(boundary));
+    const body = Buffer.concat([
+      Buffer.from(`--${boundary}\r\nContent-Disposition: form-data; name="purpose"\r\n\r\nworkspace\r\n`),
+      Buffer.from(`--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="${name}"\r\nContent-Type: application/octet-stream\r\n\r\n`),
+      data,
+      Buffer.from(`\r\n--${boundary}--\r\n`),
+    ]);
+    const res = await this.request("POST", "/v1/files", body, "application/json", CHAT_TIMEOUT_MS, undefined, {
+      codes: true,
+      contentType: `multipart/form-data; boundary=${boundary}`,
+    });
+    try {
+      return JSON.parse((await readCapped(res, MAX_JSON_ANSWER)).toString("utf8"));
+    } catch (e) {
+      throw e instanceof NetError ? e : new NetError("bad_answer");
+    }
+  }
+
+  /** Downloads bytes from a `/v1/` path (a workspace file with `?download=1`), at most 5 MiB. */
+  async download(path: string): Promise<Buffer> {
+    checkApiPath(path);
+    const res = await this.request("GET", path, undefined, "*/*", CHAT_TIMEOUT_MS, undefined, { codes: true });
+    return readCapped(res, MAX_TRANSFER_BYTES);
+  }
+
+  /** Makes one request to a path on the gateway and checks its status. */
   private request(
-    method: "GET" | "POST",
-    path: "/v1/models" | "/v1/chat/completions",
-    body: string | undefined,
+    method: "GET" | "POST" | "PUT" | "DELETE",
+    path: string,
+    body: string | Buffer | undefined,
     accept: string,
     totalMs: number,
     signal?: AbortSignal,
+    extra: { codes?: boolean; contentType?: string } = {},
   ): Promise<http.IncomingMessage> {
     return new Promise((resolve, reject) => {
       if (signal?.aborted) return reject(new NetError("stopped"));
+      checkApiPath(path);
       const secure = this.base.protocol === "https:";
       const headers: Record<string, string | number> = {
         // SECURITY: the key goes only in this header, to this host (CWE-522).
@@ -158,7 +255,7 @@ export class GatewayClient {
         "User-Agent": "p2p-ai-vscode/0.1",
       };
       if (body !== undefined) {
-        headers["Content-Type"] = "application/json";
+        headers["Content-Type"] = extra.contentType ?? "application/json";
         headers["Content-Length"] = Buffer.byteLength(body);
       }
       const opts: https.RequestOptions = {
@@ -174,8 +271,17 @@ export class GatewayClient {
       };
       const req = (secure ? https : http).request(opts, (res) => {
         clearTimeout(total);
+        const code = res.statusCode ?? 0;
+        if (extra.codes && (code < 200 || code > 299)) {
+          // X3: read a small error body for the gateway's error code (never shown as is).
+          readCapped(res, 64 << 10).then(
+            (b) => reject(answerError(code, b.toString("utf8"))),
+            () => reject(answerError(code, "")),
+          );
+          return;
+        }
         try {
-          checkStatus(res.statusCode ?? 0);
+          checkStatus(code);
         } catch (e) {
           res.resume();
           return reject(e);

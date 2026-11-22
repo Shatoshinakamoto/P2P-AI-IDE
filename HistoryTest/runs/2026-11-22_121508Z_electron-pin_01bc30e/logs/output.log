@@ -1,0 +1,7 @@
+73d7d6fe120c998db75834c23c8ce7ce8390607c198b2e167a28acd7937bef22  electron-v43.8.3-linux-x64.zip
+98efbd2d1c7bd44150c0aa800cd9ac5fefcefd2d44fd94958a95d6744d86c6de  electron-v43.8.3-win32-x64.zip
+73d7d6fe120c998db75834c23c8ce7ce8390607c198b2e167a28acd7937bef22 *electron-v43.8.3-linux-x64.zip
+98efbd2d1c7bd44150c0aa800cd9ac5fefcefd2d44fd94958a95d6744d86c6de *electron-v43.8.3-win32-x64.zip
+2
+/tmp/claude-0/rehb/vscode/.npmrc:target="43.8.3"
+/tmp/claude-0/rehb/vscode/remote/.npmrc:target="24.22.1"

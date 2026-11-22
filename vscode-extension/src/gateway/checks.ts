@@ -32,7 +32,9 @@ export type NetErrorKind =
   | "upstream"
   | "bad_answer"
   | "too_large"
-  | "stopped";
+  | "stopped"
+  /** A known gateway refusal (X3 missions); `detail` is the fixed message chosen by `codeMessage`. */
+  | "gateway";
 
 /** An error safe to show: its message never holds a URL, key or answer text (CWE-209). */
 export class NetError extends Error {
@@ -75,6 +77,8 @@ export function netErrorMessage(kind: NetErrorKind, detail: string | number = ""
       return "the gateway's answer was too large";
     case "stopped":
       return "stopped";
+    case "gateway":
+      return String(detail);
   }
 }
 
@@ -305,4 +309,65 @@ export function checkKey(key: string): string | null {
 export function checkName(name: string): string | null {
   const n = name.trim();
   return n.length >= 1 && [...n].length <= 64 && !/[\x00-\x1f\x7f-\x9f]/.test(n) ? n : null;
+}
+
+/**
+ * Maps a gateway error `code` (from `{"error": {"code": ...}}`) to a fixed message (X3; same table as the IDE's
+ * core/src/gwapi.rs `code_message`, checked by the shared cases). Unknown codes give undefined.
+ * SECURITY: the gateway's own message text is never shown (CWE-209, CWE-117).
+ */
+export function codeMessage(code: string): string | undefined {
+  return CODE_MESSAGES[code];
+}
+
+const CODE_MESSAGES: Record<string, string> = Object.assign(Object.create(null), {
+  version_conflict: "the gateway project changed meanwhile; try again",
+  project_toggle_off: "the project owner has not switched this on for the project",
+  experimental_disabled: "the gateway's administrator has switched missions off",
+  not_available: "this gateway does not offer that feature",
+  exec_not_allowed: "this gateway does not run code for your key, so Autopilot is not available",
+  mission_exists: "this project already has a mission of this kind; stop it first",
+  mission_limit: "the most missions allowed are already running; try later",
+  invalid_state: "the mission cannot do that in its current state",
+  attachment_not_ready: "a file is still being scanned on the gateway; try again shortly",
+  quota_exceeded: "the project owner's storage quota on the gateway is used up",
+  unsupported_media_type: "the gateway does not accept this file type",
+  too_large: "too large for the gateway",
+  sync_in_progress: "a copy of the project to a node is still running",
+  delta_in_progress: "the node's changes are already being collected",
+  no_copy: "no node holds a copy of this project yet; send the folder first",
+  copy_stale: "the node that held the copy left; send the folder again",
+  delta_unsupported: "the node that holds the copy cannot send changes back",
+  no_capacity: "no node can take a copy of this project right now",
+  busy: "the gateway is busy; try again shortly",
+  service_unavailable: "this gateway has that feature switched off",
+  approval_not_pending: "that approval was already decided or has expired",
+  arguments_mismatch: "the approval changed; open it again",
+  auto_approve_not_allowed: "this gateway does not allow auto-approve",
+  assist_model_not_allowed: "this gateway does not allow that assist model",
+  limit_reached: "your key has reached the gateway's project limit",
+  forbidden: "your role in this project does not allow that",
+  not_found: "not found on the gateway (it may have been deleted)",
+  invalid_request: "the gateway refused the request as invalid",
+});
+
+/**
+ * Turns a non-2xx answer into an error: a known code gives its fixed message (except 401, which stays "refused the
+ * key"), else the status mapping (same as the IDE's `answer_error`).
+ */
+export function answerError(status: number, body: string): NetError {
+  let code: unknown;
+  try {
+    code = (JSON.parse(body) as { error?: { code?: unknown } })?.error?.code;
+  } catch {
+    code = undefined;
+  }
+  const m = typeof code === "string" ? codeMessage(code) : undefined;
+  if (m !== undefined && status !== 401) return new NetError("gateway", m);
+  try {
+    checkStatus(status);
+  } catch (e) {
+    return e as NetError;
+  }
+  return new NetError("status", status);
 }

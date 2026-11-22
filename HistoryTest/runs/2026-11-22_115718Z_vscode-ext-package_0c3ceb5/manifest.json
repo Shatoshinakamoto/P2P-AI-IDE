@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "55b195b27a0193eafe1454476f278ba17c68eef571bd81005b8187f7c096971c",
+   "size": 1528
+  },
+  "command.txt": {
+   "sha256": "af9bbfd47149987f2b94672f0fd8112cf185aca7cb7e099cddebf6ff8511cb39",
+   "size": 152
+  },
+  "environment.md": {
+   "sha256": "f4404e28e95fe23dbf4ddb5bbbc910dcb1b80588d78cc6f0240aa6d4090b2141",
+   "size": 207
+  },
+  "logs/output.log": {
+   "sha256": "6baabe2d7ab7adde55aa751edfccb8464938fbc3b823c164ee06ab497e8516ae",
+   "size": 2483
+  },
+  "results/summary.txt": {
+   "sha256": "7f265adf8622016d9b2d4d902da4db52c3fbca7c001a9fbd99964141c8877489",
+   "size": 298
+  }
+ },
+ "previous": {
+  "manifest_sha256": "a8320b9484fb9ddfe043c359725e80ce3da562402d737dcec5f9202c78755e6d",
+  "run_id": "2026-11-22_115718Z_vscode-ext-audit_0c3ceb5"
+ },
+ "run": {
+  "area": "vscode-ext-package",
+  "branch_or_pr": "claude/project-thread-8u4b8a",
+  "collected_utc": "",
+  "commit": "0c3ceb549336daf705ee72a006c011fc890ae8c0",
+  "count_unit": "",
+  "date_utc": "2026-11-22T11:57:18Z",
+  "dirty": false,
+  "duration_s": 0.9,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_115718Z_vscode-ext-package_0c3ceb5",
+  "kind": "build",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "tf-ide-roadmap-finish/X3",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Extension .vsix package 0.3.0 (X3)",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

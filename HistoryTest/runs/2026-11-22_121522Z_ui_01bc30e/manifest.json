@@ -1,0 +1,66 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "c063a86dd42a56b88f4acce0f7cef4d9d4b56cf3c800c334543aec4a97ea47a1",
+   "size": 1861
+  },
+  "artifacts/ui-smoke-node.png": {
+   "sha256": "791e9de16d02676d4a367cc6443a0a9a8b9e7d3ea36deb2a23b2a641aa755d5c",
+   "size": 117010
+  },
+  "command.txt": {
+   "sha256": "fe6a8b6a904b07017814b07efc824ba71ffa941011915731b4cd1bea536788e7",
+   "size": 167
+  },
+  "environment.md": {
+   "sha256": "26ae9a9ec63805b97cb86a83f46ea42c42285c73942ffb274924722fcda77ee9",
+   "size": 191
+  },
+  "logs/output.log": {
+   "sha256": "f204bb29f56366d2f629771adb57cbe9ad4581407e1bc141d5b2fc3c24d9b22e",
+   "size": 11839
+  },
+  "results/summary.txt": {
+   "sha256": "c1376eacf1fe21b87bb02b481a561f581f15bed39c2524202ce2acefd76f22cf",
+   "size": 283
+  }
+ },
+ "previous": {
+  "manifest_sha256": "03a31b498fc21a1e52d654f2b88a650d5f679946a714e51280ecb54f1ea7c213",
+  "run_id": "2026-11-22_121508Z_electron-pin_01bc30e"
+ },
+ "run": {
+  "area": "ui",
+  "branch_or_pr": "claude/project-thread-8u4b8a",
+  "collected_utc": "",
+  "commit": "01bc30e9ade3bdbbaa441d05b69ddde81f2f77df",
+  "count_unit": "",
+  "date_utc": "2026-11-22T12:15:22Z",
+  "dirty": true,
+  "duration_s": 26.6,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_121522Z_ui_01bc30e",
+  "kind": "e2e",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {
+   "logs/output.log": {
+    "secret": 3
+   }
+  },
+  "requested_by": "Finish TandemForge and IDE roadmaps thread",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Phase I6d: UI smoke test with the Electron compatibility switch",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

@@ -1,0 +1,11 @@
+id: 2026-11-22_115718Z_vscode-ext-audit_0c3ceb5
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: not recorded
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: 0
+duration_s: 0.4
+commit: 0c3ceb549336daf705ee72a006c011fc890ae8c0
+machine: cloud

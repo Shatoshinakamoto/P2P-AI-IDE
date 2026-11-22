@@ -1,0 +1,11 @@
+id: 2026-11-22_114442Z_core_ae1f4aa
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: not recorded
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: 0
+duration_s: 13.5
+commit: ae1f4aac034cb832c093dba02f90c81042afab72
+machine: cloud

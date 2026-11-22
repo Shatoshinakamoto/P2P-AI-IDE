@@ -1,0 +1,212 @@
+
+> p2p-ai@0.3.0 test
+> node --test tests/*.test.ts
+
+TAP version 13
+# Subtest: shared: tool definitions and system prompt
+ok 1 - shared: tool definitions and system prompt
+  ---
+  duration_ms: 1.186518
+  type: 'test'
+  ...
+# Subtest: shared: path rules
+ok 2 - shared: path rules
+  ---
+  duration_ms: 0.362947
+  type: 'test'
+  ...
+# Subtest: shared: deny list and path normalising
+ok 3 - shared: deny list and path normalising
+  ---
+  duration_ms: 0.321248
+  type: 'test'
+  ...
+# Subtest: shared: edits, line ranges and line counts
+ok 4 - shared: edits, line ranges and line counts
+  ---
+  duration_ms: 8.847654
+  type: 'test'
+  ...
+# Subtest: shared: argument checks
+ok 5 - shared: argument checks
+  ---
+  duration_ms: 0.549606
+  type: 'test'
+  ...
+# Subtest: workspace refuses links, drive roots and escapes
+ok 6 - workspace refuses links, drive roots and escapes
+  ---
+  duration_ms: 8.00696
+  type: 'test'
+  ...
+# Subtest: workspace caps, binary files and the lost-update check
+ok 7 - workspace caps, binary files and the lost-update check
+  ---
+  duration_ms: 6.084851
+  type: 'test'
+  ...
+# Subtest: edits stay pending until accepted; secrets stay hidden
+ok 8 - edits stay pending until accepted; secrets stay hidden
+  ---
+  duration_ms: 10.657383
+  type: 'test'
+  ...
+# Subtest: a turn runs tools, keeps budgets and stops
+ok 9 - a turn runs tools, keeps budgets and stops
+  ---
+  duration_ms: 3.314798
+  type: 'test'
+  ...
+# Subtest: a turn caps tool results at 1 MiB in total
+ok 10 - a turn caps tool results at 1 MiB in total
+  ---
+  duration_ms: 11.715949
+  type: 'test'
+  ...
+# Subtest: streamed tool calls are assembled by index with caps
+ok 11 - streamed tool calls are assembled by index with caps
+  ---
+  duration_ms: 1.751741
+  type: 'test'
+  ...
+# Subtest: models: key only in Authorization, sorted ids
+ok 12 - models: key only in Authorization, sorted ids
+  ---
+  duration_ms: 21.760768
+  type: 'test'
+  ...
+# Subtest: chat streams text and sends only checked fields
+ok 13 - chat streams text and sends only checked fields
+  ---
+  duration_ms: 11.077239
+  type: 'test'
+  ...
+# Subtest: stop aborts a turn
+ok 14 - stop aborts a turn
+  ---
+  duration_ms: 6.495315
+  type: 'test'
+  ...
+# Subtest: a redirect is not followed and the key goes nowhere else
+ok 15 - a redirect is not followed and the key goes nowhere else
+  ---
+  duration_ms: 3.054343
+  type: 'test'
+  ...
+# Subtest: status codes map to fixed errors without the key or address
+ok 16 - status codes map to fixed errors without the key or address
+  ---
+  duration_ms: 5.057342
+  type: 'test'
+  ...
+# Subtest: caps: a huge model list and an endless stream are cut off
+ok 17 - caps: a huge model list and an endless stream are cut off
+  ---
+  duration_ms: 69.461742
+  type: 'test'
+  ...
+# Subtest: bad inputs are refused before any request
+ok 18 - bad inputs are refused before any request
+  ---
+  duration_ms: 0.440878
+  type: 'test'
+  ...
+# Subtest: an unreachable gateway is a fixed connect error
+ok 19 - an unreachable gateway is a fixed connect error
+  ---
+  duration_ms: 2.302057
+  type: 'test'
+  ...
+# Subtest: webview messages are allow-listed and capped
+ok 20 - webview messages are allow-listed and capped
+  ---
+  duration_ms: 1.000074
+  type: 'test'
+  ...
+# Subtest: shared: path grammar, ids, encoding and upload names
+ok 21 - shared: path grammar, ids, encoding and upload names
+  ---
+  duration_ms: 1.556362
+  type: 'test'
+  ...
+# Subtest: shared: gateway error codes
+ok 22 - shared: gateway error codes
+  ---
+  duration_ms: 0.799081
+  type: 'test'
+  ...
+# Subtest: shared: push and pull plans
+ok 23 - shared: push and pull plans
+  ---
+  duration_ms: 0.902184
+  type: 'test'
+  ...
+# Subtest: shared: view shapes
+ok 24 - shared: view shapes
+  ---
+  duration_ms: 0.770006
+  type: 'test'
+  ...
+# Subtest: shared: acceptance checks
+ok 25 - shared: acceptance checks
+  ---
+  duration_ms: 0.288999
+  type: 'test'
+  ...
+# Subtest: push sends changes, keeps secrets home and commits with the base version
+ok 26 - push sends changes, keeps secrets home and commits with the base version
+  ---
+  duration_ms: 9.614086
+  type: 'test'
+  ...
+# Subtest: pull brings changes back for review only, checking digests
+ok 27 - pull brings changes back for review only, checking digests
+  ---
+  duration_ms: 3.704181
+  type: 'test'
+  ...
+# Subtest: client: JSON calls, multipart upload and download against a fake gateway
+ok 28 - client: JSON calls, multipart upload and download against a fake gateway
+  ---
+  duration_ms: 22.641256
+  type: 'test'
+  ...
+# Subtest: a pinned CA is trusted; no pin or another CA is refused
+ok 29 - a pinned CA is trusted; no pin or another CA is refused
+  ---
+  duration_ms: 99.417732
+  type: 'test'
+  ...
+# Subtest: SSE lines
+ok 30 - SSE lines
+  ---
+  duration_ms: 1.603565
+  type: 'test'
+  ...
+# Subtest: model lists and ids
+ok 31 - model lists and ids
+  ---
+  duration_ms: 0.259716
+  type: 'test'
+  ...
+# Subtest: HTTP status
+ok 32 - HTTP status
+  ---
+  duration_ms: 0.17031
+  type: 'test'
+  ...
+# Subtest: URLs, names and keys
+ok 33 - URLs, names and keys
+  ---
+  duration_ms: 0.391865
+  type: 'test'
+  ...
+1..33
+# tests 33
+# suites 0
+# pass 33
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 387.066629

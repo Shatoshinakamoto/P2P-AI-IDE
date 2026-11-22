@@ -1,0 +1,10 @@
+{
+  "name": "abi-probe",
+  "displayName": "ABI probe (test only)",
+  "publisher": "p2p-ai-test",
+  "version": "0.0.1",
+  "license": "MIT",
+  "engines": { "vscode": "^1.90.0" },
+  "main": "./extension.js",
+  "activationEvents": ["*"]
+}

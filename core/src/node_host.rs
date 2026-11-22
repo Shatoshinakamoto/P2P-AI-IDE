@@ -263,7 +263,7 @@ fn hex(b: &[u8]) -> String {
 }
 
 /// Splits an archive path into safe parts; `None` for the archive root itself.
-fn safe_parts(name: &str) -> Result<Option<Vec<String>>, HostError> {
+pub(crate) fn safe_parts(name: &str) -> Result<Option<Vec<String>>, HostError> {
     let name = name.strip_prefix("./").unwrap_or(name).trim_end_matches('/');
     if name.is_empty() || name == "." {
         return Ok(None);
@@ -639,6 +639,9 @@ pub struct Launcher {
     pub program: PathBuf,
     /// The server script and any arguments before ours.
     pub args: Vec<String>,
+    /// Fixed variables added after the scrubbed environment (phase I6d: `ELECTRON_RUN_AS_NODE=1` for the Electron
+    /// compatibility host, `crate::electron_host::launcher`). Empty for the server's own Node.
+    pub env: Vec<(String, String)>,
 }
 
 impl Launcher {
@@ -648,6 +651,7 @@ impl Launcher {
         Launcher {
             program: root.join(node),
             args: vec![root.join("out").join("server-main.js").to_string_lossy().into_owned()],
+            env: vec![],
         }
     }
 }
@@ -684,6 +688,8 @@ pub fn start(launcher: &Launcher, data: &Path, trust: &TrustStore, folder: &Path
         // SECURITY: a fresh environment from the allow-list only, so no keys or tokens reach extensions (CWE-522).
         .env_clear()
         .envs(scrubbed_env(std::env::vars()))
+        // SECURITY: only the launcher's own fixed values (never from the app's environment) are added (CWE-94).
+        .envs(launcher.env.iter().map(|(k, v)| (k.as_str(), v.as_str())))
         .env("VSCODE_SERVER_NO_UPDATE", "1")
         .stdin(Stdio::null())
         .stdout(Stdio::piped())
@@ -982,7 +988,7 @@ mod tests {
         );
         std::fs::write(&fake, script).unwrap();
         std::fs::set_permissions(&fake, std::fs::Permissions::from_mode(0o700)).unwrap();
-        let launcher = Launcher { program: fake, args: vec!["server-main.js".into()] };
+        let launcher = Launcher { program: fake, args: vec!["server-main.js".into()], env: vec![] };
         let trust = TrustStore::new(&data);
         assert!(matches!(start(&launcher, &data, &trust, &folder), Err(HostError::NotTrusted)));
         trust.set(&folder, true).unwrap();

@@ -1,0 +1,11 @@
+id: 2026-11-22_121745Z_security-scan_882c782
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: 5
+failed: 0
+skipped: 0
+count_unit: packages
+exit_code: 0
+duration_s: 7.2
+commit: 882c7826d65cc4a2973a045240598dde4b37b31e
+machine: cloud

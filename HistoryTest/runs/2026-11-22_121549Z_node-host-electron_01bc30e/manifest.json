@@ -1,0 +1,62 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "e5888fd6df2e1330e825d547bd43c33ee576cf5c6f59150d703f15500862312e",
+   "size": 2179
+  },
+  "command.txt": {
+   "sha256": "dc8614d2d79428b266a74f10a2dfc8fbba9b3ee28f721e54991789dce487dd37",
+   "size": 103
+  },
+  "environment.md": {
+   "sha256": "e250e877968dfb6dc0760f980d49611ef4b2f1678016d68875ab5e3dcb6661c9",
+   "size": 207
+  },
+  "logs/output.log": {
+   "sha256": "7b1bb215de890bcbbc37af90c18b4692e9eded0981befaba6bb1982857e204eb",
+   "size": 11976
+  },
+  "results/summary.txt": {
+   "sha256": "010b5950c3984d5d34e6d58025cba2bb16056201d11d5a5524d486d8c98ca9cb",
+   "size": 299
+  }
+ },
+ "previous": {
+  "manifest_sha256": "2019240b59e807de173903250c8f03c37ea2647c8bcdaad499ac7d7aa474df75",
+  "run_id": "2026-11-22_121522Z_ui_01bc30e"
+ },
+ "run": {
+  "area": "node-host-electron",
+  "branch_or_pr": "claude/project-thread-8u4b8a",
+  "collected_utc": "",
+  "commit": "01bc30e9ade3bdbbaa441d05b69ddde81f2f77df",
+  "count_unit": "",
+  "date_utc": "2026-11-22T12:15:49Z",
+  "dirty": true,
+  "duration_s": 35.6,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_121549Z_node-host-electron_01bc30e",
+  "kind": "e2e",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {
+   "logs/output.log": {
+    "secret": 3
+   }
+  },
+  "requested_by": "Finish TandemForge and IDE roadmaps thread",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Phase I6d: real server under Electron 43.8.3 runs an extension with an Electron-only native module",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}
