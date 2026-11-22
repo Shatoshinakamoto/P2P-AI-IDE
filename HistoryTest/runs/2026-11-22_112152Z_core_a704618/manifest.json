@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "ab867efd2a2a0ebc99198e12eb70c906bec241335a213d8e7be2287b20feef31",
+   "size": 1447
+  },
+  "command.txt": {
+   "sha256": "3e081600b6528f9477013af52a9a2969b3c417e7d65f163a758d688f8a4e8e07",
+   "size": 77
+  },
+  "environment.md": {
+   "sha256": "7566a52be6f108b3443db69149acf6326ecd1157424dd9b1079802054f3e2881",
+   "size": 193
+  },
+  "logs/output.log": {
+   "sha256": "7f93a8c91019d709fe1deb9a271af1b0b079ebdf8b7f91f0bd6e464418d6f93f",
+   "size": 8322
+  },
+  "results/summary.txt": {
+   "sha256": "3767f2793ef5cbd089f18778264df231b6749dcec12429dbfe0044ade38ce35b",
+   "size": 285
+  }
+ },
+ "previous": {
+  "manifest_sha256": "71188b7833c556c2576cf55e342d13bca3ac5e91f9f7e1c2cb379128051e4fa9",
+  "run_id": "2026-11-22_101242Z_security-scan_9ebb059"
+ },
+ "run": {
+  "area": "core",
+  "branch_or_pr": "",
+  "collected_utc": "",
+  "commit": "a704618f4d39d4acf7e18f5c64eeeea02da9d658",
+  "count_unit": "",
+  "date_utc": "2026-11-22T11:21:52Z",
+  "dirty": false,
+  "duration_s": 21.9,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_112152Z_core_a704618",
+  "kind": "unit",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Core tests with the shared gateway-client cases (X1)",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

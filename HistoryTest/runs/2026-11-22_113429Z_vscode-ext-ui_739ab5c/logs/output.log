@@ -1,0 +1,2 @@
+[{"type":"ready"},{"type":"accept","rel":"orders.py"}]
+view-smoke: pass

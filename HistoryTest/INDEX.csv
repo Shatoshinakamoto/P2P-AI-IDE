@@ -123,3 +123,18 @@ run_id,date_utc,area,commit,branch_or_pr,machine,verdict,passed,failed,skipped,s
 2026-11-22_071929Z_node-host-real_0c3d711,2026-11-22T07:19:29Z,node-host-real,0c3d711,,user PC (Windows),pass,1,,,"Core downloads the pinned Windows Node host from the public pre-release, checks it, starts it, token enforced"
 2026-11-22_100316Z_desktop-node-ext_311cb8d,2026-11-22T10:03:16Z,desktop-node-ext,311cb8d,,user PC (Windows),pass,1,,,Real Node extension (Code Spell Checker) in the Windows desktop app with our pinned 1.145.2 server
 2026-11-22_101242Z_security-scan_9ebb059,2026-11-22T10:12:42Z,security-scan,9ebb059,,cloud container,pass,1,,,cargo audit of the desktop app after url 2.5.9
+2026-11-22_112152Z_core_a704618,2026-11-22T11:21:52Z,core,a704618,,cloud container,pass,,,,Core tests with the shared gateway-client cases (X1)
+2026-11-22_112214Z_vscode-ext-integration_a704618,2026-11-22T11:22:14Z,vscode-ext-integration,a704618,,cloud container,pass,,,,Extension in real VS Code 1.147.0 (stable) against a fake gateway
+2026-11-22_112214Z_vscode-ext-unit_a704618,2026-11-22T11:22:14Z,vscode-ext-unit,a704618,,cloud container,pass,14,0,0,"VS Code extension unit tests: shared cases, client vs fake gateway, pinned-CA TLS, webview messages"
+2026-11-22_112220Z_vscode-ext-integration_a704618,2026-11-22T11:22:20Z,vscode-ext-integration,a704618,,cloud container,pass,,,,Extension in real VS Code 1.95.0 (oldest supported) against a fake gateway
+2026-11-22_112222Z_vscode-ext-audit_a704618,2026-11-22T11:22:22Z,vscode-ext-audit,a704618,,cloud container,pass,,,,npm audit of the extension's dev dependencies
+2026-11-22_112223Z_vscode-ext-package_a704618,2026-11-22T11:22:23Z,vscode-ext-package,a704618,,cloud container,pass,,,,Package the extension as a .vsix
+2026-11-22_113321Z_core_67b1744,2026-11-22T11:33:21Z,core,67b1744,claude/project-thread-8u4b8a,cloud container,pass,,,,Core tests with the shared agent-tool cases (X2)
+2026-11-22_113334Z_vscode-ext-unit_67b1744,2026-11-22T11:33:34Z,vscode-ext-unit,67b1744,claude/project-thread-8u4b8a,cloud container,pass,25,0,0,Extension unit tests with agent tools (X2)
+2026-11-22_113346Z_vscode-ext-integration_67b1744,2026-11-22T11:33:46Z,vscode-ext-integration,67b1744,claude/project-thread-8u4b8a,cloud container,pass,,,,"Extension in real VS Code (stable), with an agent turn (X2)"
+2026-11-22_113352Z_vscode-ext-integration_67b1744,2026-11-22T11:33:52Z,vscode-ext-integration,67b1744,claude/project-thread-8u4b8a,cloud container,pass,,,,"Extension in VS Code 1.95.0 (oldest supported), with an agent turn (X2)"
+2026-11-22_113405Z_vscode-ext-audit_67b1744,2026-11-22T11:34:05Z,vscode-ext-audit,67b1744,claude/project-thread-8u4b8a,cloud container,pass,,,,npm audit of the extension (X2)
+2026-11-22_113405Z_vscode-ext-package_67b1744,2026-11-22T11:34:05Z,vscode-ext-package,67b1744,claude/project-thread-8u4b8a,cloud container,pass,,,,Extension .vsix package 0.2.0 (X2)
+2026-11-22_113429Z_vscode-ext-ui_739ab5c,2026-11-22T11:34:29Z,vscode-ext-ui,739ab5c,claude/project-thread-8u4b8a,cloud container,pass,,,,Chat view webview with tool steps and change list (X2)
+2026-11-22_121112Z_core_cf2e079,2026-11-22T12:11:12Z,core,cf2e079,24,user PC (Windows),fail,97,3,,PC local CI core check on PR 24: 3 agent vector tests fail on Windows
+2026-11-22_121951Z_core_cf2e079,2026-11-22T12:19:51Z,core,cf2e079,24,cloud container,pass,,,,Core tests after the Windows temp-folder fix in agent_vectors.rs

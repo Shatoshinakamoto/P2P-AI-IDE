@@ -30,3 +30,7 @@ pub mod testparse;
 pub mod workspace;
 
 pub use workspace::{Entry, EntryKind, FileText, Listing, Match, SearchResult, Workspace, WsError};
+
+/// Shared test cases with the VS Code extension's TypeScript client (core/tests/vectors/gateway_client.json).
+#[cfg(test)]
+mod gateway_vectors;

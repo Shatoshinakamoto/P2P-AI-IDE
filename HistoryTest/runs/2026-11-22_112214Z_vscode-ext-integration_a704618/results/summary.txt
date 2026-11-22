@@ -1,0 +1,11 @@
+id: 2026-11-22_112214Z_vscode-ext-integration_a704618
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: not recorded
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: 0
+duration_s: 5.4
+commit: a704618f4d39d4acf7e18f5c64eeeea02da9d658
+machine: cloud

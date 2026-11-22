@@ -2,6 +2,26 @@
 
 Every security patch, hardening change, CVE remediation and accepted risk, newest first.
 
+## 2026-11-22 — Side track X2: agent tools in the VS Code extension
+- **Type:** hardening (new component); accepted risk
+- **CVE / CWE / advisory:** none. CWE-20, CWE-22, CWE-59, CWE-73, CWE-79, CWE-200, CWE-367, CWE-400, CWE-538, CWE-770; OWASP LLM01, LLM06
+- **Severity:** none (new feature). KEV: no.
+- **Affected:** `vscode-extension/src/agent/{workspace,tools}.ts`, `src/review.ts`, `src/chatView.ts`, `src/extension.ts`, `src/viewMessages.ts`, `src/gateway/{checks,client}.ts`, `media/chat.js`, `package.json`; `core/src/agent_vectors.rs` (tests only)
+- **What changed:** the extension's chat can give the model the IDE's five folder tools. They are read-only on disk: edits and new files only become pending changes. A change is written only when the person accepts it, through an atomic write with a SHA-256 version check, so a file changed meanwhile is refused and a new file never replaces one that appeared. The tools run only in a trusted workspace on a local folder. The same deny list as the IDE keeps likely secrets out of reads, listings and search. Paths pass the IDE's allow-list, and links are never followed. Tool arguments are strict JSON, and every budget from the IDE applies. The diff is VS Code's read-only text diff of in-memory documents, and the view can only name a pending change.
+- **Why it is secure now:** human approval for every write (OWASP LLM06, NIST AC-6), least data to the gateway (CWE-200), confinement (CWE-22, CWE-59), and lost-update protection (CWE-367). The shared cases make the IDE and the extension apply the same rules (NIST SI-10).
+- **Accepted risk:** Node has no handle-based file access, so the link check and the open are two steps (TOCTOU, CWE-367). Only a program already running as the person could use the gap, and it can change the files directly. TODO(security) in `workspace.ts`.
+- **Verification:** HistoryTest `2026-11-22_113321Z_core_67b1744` (core 104 + 7 passed), `2026-11-22_113334Z_vscode-ext-unit_67b1744` (25 of 25, including links refused, conflicts and budgets), `2026-11-22_113346Z_vscode-ext-integration_67b1744` and `2026-11-22_113352Z_vscode-ext-integration_67b1744` (real VS Code 1.147.0 and 1.95.0: `.env` refused and never sent, nothing written before Accept, a hand edit not overwritten), `2026-11-22_113405Z_vscode-ext-audit_67b1744` (npm audit: 0).
+
+## 2026-11-22 — Side track X1: VS Code extension; IPv6 gateway URL check
+- **Type:** hardening (new component); patch (URL check)
+- **CVE / CWE / advisory:** none. CWE-20, CWE-79, CWE-113, CWE-209, CWE-295, CWE-319, CWE-400, CWE-522, CWE-601, CWE-668; GHSA-g3hv-75wg-m249 (minimatch, dev tool only, overridden)
+- **Severity:** URL check: low (only loopback IPv6 addresses could be affected, and the extra text was dropped, not used). KEV: no.
+- **Affected:** `vscode-extension/` (new), `core/src/gateways.rs` (`split_host_port`)
+- **What changed:** the extension keeps keys only in VS Code's SecretStorage and sends them only as `Authorization` to a strictly checked https address (plain http only to loopback, marked INSECURE — DEV ONLY). It never follows redirects, supports an optional pinned CA, and uses a webview with `default-src 'none'`, nonce scripts and text-only rendering. Every answer and webview message has size caps, errors are fixed messages, and nothing is exported to other extensions. Its test hooks exist only in VS Code's test mode. The Rust URL check now refuses text after an IPv6 `]`.
+- **Why it is secure now:** the same allow-list checks hold in both clients, enforced by the shared test cases (NIST SI-10, SC-8, SC-13; ASVS V5, V6.4, V9).
+- **Accepted risk:** VS Code may send extension requests through its configured proxy and add OS certificates to the trust list, so a pinned CA may not be the only root inside VS Code (TODO(security) in `client.ts`). `minimatch` is overridden to 11.0.9 in the dev-only packager `@vscode/vsce` 4.1.1, which asks for ^10.2.6. Packaging works with it.
+- **Verification:** HistoryTest `2026-11-22_112152Z_core_a704618` (core 99 + 5 passed, with the shared cases), `2026-11-22_112214Z_vscode-ext-unit_a704618` (extension 14 of 14), `2026-11-22_112214Z_vscode-ext-integration_a704618` (real VS Code 1.147.0: pass), `2026-11-22_112220Z_vscode-ext-integration_a704618` (real VS Code 1.95.0: pass), `2026-11-22_112222Z_vscode-ext-audit_a704618` (npm audit: 0), `2026-11-22_112223Z_vscode-ext-package_a704618` (.vsix built).
+
 ## 2026-11-22 — url 2.5.9 (RUSTSEC-2026-0592)
 - **Type:** CVE remediation (dependency patch)
 - **CVE / CWE / advisory:** RUSTSEC-2026-0592, stack overflow in `Url::origin()` on nested `blob:` URLs (CWE-674, uncontrolled recursion). No CVE ID was listed in the advisory output we saw.

@@ -1,0 +1,54 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "c64e1848062eebe5122e69fab34dfb542928d6d2b00269cc3708b504d7e59cff",
+   "size": 1917
+  },
+  "command.txt": {
+   "sha256": "61d7160c56c40cbbfab196802a3b34c5d4b8ab4dd384860319de8ad59041a722",
+   "size": 43
+  },
+  "environment.md": {
+   "sha256": "874f77275c3a039eb35aa20c516df27e027194bd2c235f45be78d6d7670a09bf",
+   "size": 125
+  },
+  "results/summary.txt": {
+   "sha256": "9fbf011990833ccae93d55de16942cf564faec4076867d66ae28afd3e4d7fcea",
+   "size": 461
+  }
+ },
+ "previous": {
+  "manifest_sha256": "ac21b87b7448e9b7260b3e3641d1ae7d588dce09e3ad56e73c25c4ea40adafd6",
+  "run_id": "2026-11-22_121951Z_core_cf2e079"
+ },
+ "run": {
+  "area": "core",
+  "branch_or_pr": "24",
+  "collected_utc": "2026-11-22T12:20:17Z",
+  "commit": "cf2e079c728ec65cd116fe5cc4252d22adc899d9",
+  "count_unit": "",
+  "date_utc": "2026-11-22T12:11:12Z",
+  "dirty": false,
+  "duration_s": null,
+  "exit_code": null,
+  "failed": 3,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_121112Z_core_cf2e079",
+  "kind": "unit",
+  "machine": "pc",
+  "passed": 97,
+  "record": "reported",
+  "redactions": {},
+  "requested_by": "Finish TandemForge and IDE roadmaps thread",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "PC local CI core check on PR 24: 3 agent vector tests fail on Windows",
+  "verdict": "fail",
+  "verdict_reason": "The tests removed the temp folder while the Workspace still held a handle on it; Windows refuses that. Fixed in the next commit (drop the workspace first). The full log stays on the PC under the local-ci runs folder."
+ },
+ "schema": 1
+}

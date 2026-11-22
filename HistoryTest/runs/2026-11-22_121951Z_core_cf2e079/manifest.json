@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "b648a9aa4089d2c12df21756a1c5846108ae53fb4585330fbdcfe7dafc6da634",
+   "size": 1729
+  },
+  "command.txt": {
+   "sha256": "1159d1787e887b0a382f74dd2ad6699611612085214a57e0e61ebce0f40bcdd9",
+   "size": 86
+  },
+  "environment.md": {
+   "sha256": "e3f2da2be59d836c8e648fed9e0784866260c3840b576cede06af772008ca2ac",
+   "size": 193
+  },
+  "logs/output.log": {
+   "sha256": "b358d65e4d977693acb93e9da2ba90034996a00317d57eaf53edb00c0e6e1bd9",
+   "size": 8568
+  },
+  "results/summary.txt": {
+   "sha256": "169d23a3dcacbe446bdcb6490b9d016cbd4bca4c1836e5d904bde610fc12a9ce",
+   "size": 285
+  }
+ },
+ "previous": {
+  "manifest_sha256": "4c3941b0b94c76d674c340270022e687ad44945f7b7f381aa39d3b46b9d2b4ad",
+  "run_id": "2026-11-22_113429Z_vscode-ext-ui_739ab5c"
+ },
+ "run": {
+  "area": "core",
+  "branch_or_pr": "24",
+  "collected_utc": "",
+  "commit": "cf2e079c728ec65cd116fe5cc4252d22adc899d9",
+  "count_unit": "",
+  "date_utc": "2026-11-22T12:19:51Z",
+  "dirty": true,
+  "duration_s": 16.6,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_121951Z_core_cf2e079",
+  "kind": "unit",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "Finish TandemForge and IDE roadmaps thread",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Core tests after the Windows temp-folder fix in agent_vectors.rs",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

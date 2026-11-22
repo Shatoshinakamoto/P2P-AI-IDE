@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "07774a09ec435a51737d002b6eb1c1de092a2b63d38f9211597e078ba5f494ac",
+   "size": 1481
+  },
+  "command.txt": {
+   "sha256": "95d061bc1e748e091bda46059ad5fe5a4dc2e7ff8cc77d65b51f7be93b47dfe1",
+   "size": 87
+  },
+  "environment.md": {
+   "sha256": "e4977ccb5f2a836013f98fdaa6fbda3542235f7bab8c76d45825020c5fa69b27",
+   "size": 204
+  },
+  "logs/output.log": {
+   "sha256": "16f90028088654636cfd4842bbc174ff18ad3e3cb20c5a206578d175c7ca0e72",
+   "size": 2232
+  },
+  "results/summary.txt": {
+   "sha256": "8648ca4f92ff3ba4426e21184283ef08db536e95494a9aaab70cca9ab3597027",
+   "size": 259
+  }
+ },
+ "previous": {
+  "manifest_sha256": "56c1741a3629fbb559a07f9ca23b1e8a12e55365c58c901b042230a48d86da05",
+  "run_id": "2026-11-22_112152Z_core_a704618"
+ },
+ "run": {
+  "area": "vscode-ext-unit",
+  "branch_or_pr": "",
+  "collected_utc": "",
+  "commit": "a704618f4d39d4acf7e18f5c64eeeea02da9d658",
+  "count_unit": "packages",
+  "date_utc": "2026-11-22T11:22:14Z",
+  "dirty": false,
+  "duration_s": 0.4,
+  "exit_code": 0,
+  "failed": 0,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_112214Z_vscode-ext-unit_a704618",
+  "kind": "unit",
+  "machine": "cloud",
+  "passed": 14,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "",
+  "shortened_logs": [],
+  "skipped": 0,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "VS Code extension unit tests: shared cases, client vs fake gateway, pinned-CA TLS, webview messages",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

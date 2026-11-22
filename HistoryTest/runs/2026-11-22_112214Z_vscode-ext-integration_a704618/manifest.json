@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "30ac57507b3583b8e278c1c3200bbe5f1bf3e2ca4af83842ad0c581466b5fa5c",
+   "size": 1559
+  },
+  "command.txt": {
+   "sha256": "07b1366ea2757b112d624f6c2295edc618b2350e78b66fe03b9e3bb08d2fd3e9",
+   "size": 121
+  },
+  "environment.md": {
+   "sha256": "64a33fb61b6ea8617fec3c29459566f18b106a7e46f3e61c1a5b9ba05e28f787",
+   "size": 211
+  },
+  "logs/output.log": {
+   "sha256": "259bc334bd5b99842ff9b3c26664f59e54bfa08a169642f1a52dd8c792efc416",
+   "size": 27832
+  },
+  "results/summary.txt": {
+   "sha256": "f73844cd434918dd8afbbf1a4545f8d9b26bc854497c5ac29a5e4325956d6d09",
+   "size": 302
+  }
+ },
+ "previous": {
+  "manifest_sha256": "3711a3b8486e2d43e106e51f431efb07adae1d5056b8368da3241acc6f406eaf",
+  "run_id": "2026-11-22_112214Z_vscode-ext-unit_a704618"
+ },
+ "run": {
+  "area": "vscode-ext-integration",
+  "branch_or_pr": "",
+  "collected_utc": "",
+  "commit": "a704618f4d39d4acf7e18f5c64eeeea02da9d658",
+  "count_unit": "",
+  "date_utc": "2026-11-22T11:22:14Z",
+  "dirty": false,
+  "duration_s": 5.4,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_112214Z_vscode-ext-integration_a704618",
+  "kind": "e2e",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Extension in real VS Code 1.147.0 (stable) against a fake gateway",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

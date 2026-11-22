@@ -1,0 +1,9 @@
+# .vscodeignore -- files left out of the .vsix package: sources, tests, dev tools and caches. Only out/, media/,
+# package.json, README.md and LICENSE ship.
+src/**
+tests/**
+node_modules/**
+.vscode-test/**
+tsconfig.json
+*.vsix
+.gitignore

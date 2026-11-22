@@ -1,0 +1,80 @@
+{
+  "_about": "Shared test cases for the IDE's Rust gateway client (core/src/client.rs, core/src/gateways.rs) and the VS Code extension's TypeScript client (vscode-extension/src/gateway). Both test suites read this file, so the two clients parse gateway answers and check input the same way (ADR-029 side track X). Edit only together with both clients; the JSON format has no comments, so each case carries a 'why'.",
+  "sse": [
+    { "why": "answer text", "line": "data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"Hel\"},\"finish_reason\":null}]}", "want": { "kind": "delta", "text": "Hel" } },
+    { "why": "finish reason", "line": "data: {\"choices\":[{\"index\":0,\"delta\":{},\"finish_reason\":\"stop\"}]}", "want": { "kind": "finish", "text": "stop" } },
+    { "why": "finish reason is cut to 32 characters", "line": "data: {\"choices\":[{\"delta\":{},\"finish_reason\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}]}", "want": { "kind": "finish", "text": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" } },
+    { "why": "end of stream", "line": "data: [DONE]\n", "want": { "kind": "done" } },
+    { "why": "end of stream with CRLF", "line": "data: [DONE]\r\n", "want": { "kind": "done" } },
+    { "why": "no space after data:", "line": "data:[DONE]", "want": { "kind": "done" } },
+    { "why": "keep-alive comment", "line": ": keep-alive", "want": { "kind": "skip" } },
+    { "why": "blank line", "line": "", "want": { "kind": "skip" } },
+    { "why": "event line", "line": "event: message", "want": { "kind": "skip" } },
+    { "why": "no choices", "line": "data: {\"choices\":[]}", "want": { "kind": "skip" } },
+    { "why": "role-only delta", "line": "data: {\"choices\":[{\"delta\":{\"role\":\"assistant\"}}]}", "want": { "kind": "skip" } },
+    { "why": "empty content", "line": "data: {\"choices\":[{\"delta\":{\"content\":\"\"}}]}", "want": { "kind": "skip" } },
+    { "why": "usage chunk", "line": "data: {\"choices\":[],\"usage\":{\"total_tokens\":3}}", "want": { "kind": "skip" } },
+    { "why": "gateway error object", "line": "data: {\"error\":{\"message\":\"x\"}}", "want": { "kind": "error" } },
+    { "why": "markup stays text", "line": "data: {\"choices\":[{\"delta\":{\"content\":\"<img src=x onerror=alert(1)>\"}}]}", "want": { "kind": "delta", "text": "<img src=x onerror=alert(1)>" } },
+    { "why": "not JSON", "line": "data: {not json", "want": { "kind": "bad_answer" } },
+    { "why": "OpenAI tool call: arguments as a string", "line": "data: {\"choices\":[{\"delta\":{\"tool_calls\":[{\"index\":0,\"id\":\"c1\",\"function\":{\"name\":\"read_file\",\"arguments\":\"{\\\"pa\"}}]}}]}", "want": { "kind": "tools", "pieces": [{ "index": 0, "id": "c1", "name": "read_file", "args": "{\"pa" }] } },
+    { "why": "Ollama tool call: arguments as an object", "line": "data: {\"choices\":[{\"delta\":{\"tool_calls\":[{\"function\":{\"name\":\"list_dir\",\"arguments\":{\"path\":\".\"}}}]}}]}", "want": { "kind": "tools", "pieces": [{ "index": 0, "id": "", "name": "list_dir", "args": "{\"path\":\".\"}" }] } }
+  ],
+  "models": [
+    { "why": "sorted, unique", "body": "{\"data\":[{\"id\":\"b\"},{\"id\":\"a\"},{\"id\":\"b\"}]}", "want": ["a", "b"] },
+    { "why": "bad ids dropped", "body": "{\"data\":[{\"id\":\"ok:1b\"},{\"id\":\"has space\"},{\"id\":\"\"},{\"x\":1},{\"id\":7}]}", "want": ["ok:1b"] },
+    { "why": "no data list", "body": "{\"models\":[]}", "want": "bad_answer" },
+    { "why": "not JSON", "body": "nope", "want": "bad_answer" }
+  ],
+  "status": [
+    { "why": "ok", "code": 200, "want": "ok" },
+    { "why": "ok range", "code": 204, "want": "ok" },
+    { "why": "unauthorized", "code": 401, "want": "auth" },
+    { "why": "forbidden", "code": 403, "want": "auth" },
+    { "why": "missing", "code": 404, "want": "not_offered" },
+    { "why": "rate limit", "code": 429, "want": "rate_limited" },
+    { "why": "redirect is not followed and is an error", "code": 302, "want": "status" },
+    { "why": "server error", "code": 500, "want": "status" }
+  ],
+  "model_ids": [
+    { "why": "typical", "id": "llama3.1:8b", "ok": true },
+    { "why": "empty", "id": "", "ok": false },
+    { "why": "space", "id": "a b", "ok": false },
+    { "why": "control character", "id": "a\nb", "ok": false },
+    { "why": "non-ASCII", "id": "modèle", "ok": false }
+  ],
+  "names": [
+    { "why": "typical, trimmed", "name": "  Home gateway ", "want": "Home gateway" },
+    { "why": "empty", "name": "   ", "want": null },
+    { "why": "newline", "name": "a\nb", "want": null },
+    { "why": "C1 control character", "name": "a\u0085b", "want": null },
+    { "why": "64 characters is the limit", "name": "ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé", "want": null }
+  ],
+  "keys": [
+    { "why": "typical, trimmed", "key": "  sk-abcdefgh1234  ", "want": "sk-abcdefgh1234" },
+    { "why": "too short", "key": "short", "want": null },
+    { "why": "space inside (would break the header)", "key": "abcd efgh ijkl", "want": null },
+    { "why": "newline inside (header injection, CWE-113)", "key": "abcdefgh\r\nX-Evil: 1", "want": null },
+    { "why": "non-ASCII", "key": "abcdefghé", "want": null }
+  ],
+  "urls": [
+    { "why": "https host", "url": "https://gw.example.org", "want": "https://gw.example.org" },
+    { "why": "one trailing slash, case folded", "url": " https://GW.Example.org:8443/ ", "want": "https://gw.example.org:8443" },
+    { "why": "loopback http allowed (dev)", "url": "http://127.0.0.1:8080", "want": "http://127.0.0.1:8080" },
+    { "why": "localhost http allowed (dev)", "url": "http://localhost:3000", "want": "http://localhost:3000" },
+    { "why": "IPv6 loopback http allowed (dev)", "url": "http://[::1]:8080", "want": "http://[::1]:8080" },
+    { "why": "text after the IPv6 bracket refused, not dropped", "url": "http://[::1]x", "want": null },
+    { "why": "port with a leading zero is normalised", "url": "https://gw.example.org:08443", "want": "https://gw.example.org:8443" },
+    { "why": "plain http to another host refused", "url": "http://gw.example.org", "want": null },
+    { "why": "path refused", "url": "https://gw.example.org/v1", "want": null },
+    { "why": "user info refused", "url": "https://user@gw.example.org", "want": null },
+    { "why": "query refused", "url": "https://gw.example.org?a=1", "want": null },
+    { "why": "other scheme refused", "url": "ftp://gw.example.org", "want": null },
+    { "why": "bad port", "url": "https://gw.example.org:99999", "want": null },
+    { "why": "port 0", "url": "https://gw.example.org:0", "want": null },
+    { "why": "empty port", "url": "https://gw.example.org:", "want": null },
+    { "why": "leading dot", "url": "https://.example.org", "want": null },
+    { "why": "percent encoding refused", "url": "https://gw%2eexample.org", "want": null },
+    { "why": "host name longer than 253 characters", "url": "https://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.org", "want": null }
+  ]
+}

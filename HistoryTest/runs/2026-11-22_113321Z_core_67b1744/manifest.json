@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "8f65471fedb800128fc526ac91be7dbea741dbc1ad00841be834d7d380984b89",
+   "size": 1724
+  },
+  "command.txt": {
+   "sha256": "3e081600b6528f9477013af52a9a2969b3c417e7d65f163a758d688f8a4e8e07",
+   "size": 77
+  },
+  "environment.md": {
+   "sha256": "3a42e3448efb5e7d50623e207ec91791dc26af033a185feb9e6038590f81debc",
+   "size": 193
+  },
+  "logs/output.log": {
+   "sha256": "94bfa85074c1425274989eb280f08e16bb70971cc8c3e84e00224fffa67460df",
+   "size": 8566
+  },
+  "results/summary.txt": {
+   "sha256": "d9cdddf636a1023b8d36a59877fc2e2b719985e11d092e23637bc2deb4e32a85",
+   "size": 285
+  }
+ },
+ "previous": {
+  "manifest_sha256": "5c94b8cc6a22f971f2f4d815c588ca6c41100ac0eb6674e1222dd23bcca39416",
+  "run_id": "2026-11-22_112223Z_vscode-ext-package_a704618"
+ },
+ "run": {
+  "area": "core",
+  "branch_or_pr": "claude/project-thread-8u4b8a",
+  "collected_utc": "",
+  "commit": "67b174490e053089e4799308c3954953b31bdbbb",
+  "count_unit": "",
+  "date_utc": "2026-11-22T11:33:21Z",
+  "dirty": false,
+  "duration_s": 13.0,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_113321Z_core_67b1744",
+  "kind": "unit",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "tf-ide-roadmap-finish/X2",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Core tests with the shared agent-tool cases (X2)",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

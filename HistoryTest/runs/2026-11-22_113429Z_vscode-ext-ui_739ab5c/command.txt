@@ -1,0 +1,2 @@
+# run in repository folder `vscode-extension`, as an argument list (no shell)
+node tests/ui/view-smoke.cjs /tmp/claude-0/-home-user/7381e9a9-41fa-55e7-9bd9-3e5b8ccb0681/scratchpad/ui/chat-view-x2.png

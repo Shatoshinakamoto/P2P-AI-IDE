@@ -1,0 +1,30 @@
+- Resolving version...
+√ Validated version: 1.95.0
+√ Found existing install in /tmp/claude-0/ide-i6/vscode-extension/.vscode-test/vscode-linux-x64-1.95.0
+[4703:1122/112220.429502:ERROR:bus.cc(407)] Failed to connect to the bus: Failed to connect to socket /run/dbus/system_bus_socket: No such file or directory
+[4703:1122/112220.437969:ERROR:node_bindings.cc(378)] Most NODE_OPTIONs are not supported in packaged apps. See documentation for more details.
+[4703:1122/112220.438001:ERROR:node_bindings.cc(378)] Most NODE_OPTIONs are not supported in packaged apps. See documentation for more details.
+[4703:1122/112220.680385:ERROR:bus.cc(407)] Failed to connect to the bus: Failed to connect to socket /run/dbus/system_bus_socket: No such file or directory
+[4703:1122/112220.680431:ERROR:bus.cc(407)] Failed to connect to the bus: Failed to connect to socket /run/dbus/system_bus_socket: No such file or directory
+[4703:1122/112220.681388:ERROR:bus.cc(407)] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+[4703:1122/112220.681405:ERROR:bus.cc(407)] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+[4703:1122/112220.681415:ERROR:bus.cc(407)] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+[4703:1122/112220.681422:ERROR:bus.cc(407)] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+[4703:1122/112220.681427:ERROR:bus.cc(407)] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+Warning: 'cached-data' is not in the list of known options, but still passed to Electron/Chromium.
+[4737:1122/112220.769671:ERROR:viz_main_impl.cc(166)] Exiting GPU process due to errors during initialization
+[4703:1122/112220.820749:ERROR:bus.cc(407)] Failed to connect to the bus: Failed to connect to socket /run/dbus/system_bus_socket: No such file or directory
+[4703:1122/112220.820783:ERROR:bus.cc(407)] Failed to connect to the bus: Failed to connect to socket /run/dbus/system_bus_socket: No such file or directory
+[4703:1122/112220.820790:ERROR:bus.cc(407)] Failed to connect to the bus: Failed to connect to socket /run/dbus/system_bus_socket: No such file or directory
+[90m[main 2026-11-22T11:22:20.875Z][0m update#setState disabled
+[90m[main 2026-11-22T11:22:20.875Z][0m update#ctor - updates are disabled by the environment
+[4703:1122/112220.876353:ERROR:bus.cc(407)] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+[4703:1122/112221.599439:ERROR:bus.cc(407)] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+Started local extension host with pid 4829.
+Started initializing default profile extensions in extensions installation folder. file:///tmp/p2pai-vscode-RSE0lY/ext
+Completed initializing default profile extensions in extensions installation folder. file:///tmp/p2pai-vscode-RSE0lY/ext
+Loading development extension at /tmp/claude-0/ide-i6/vscode-extension
+[4703:1122/112222.531674:ERROR:bus.cc(407)] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+[90m[main 2026-11-22T11:22:22.673Z][0m Extension host with pid 4829 exited with code: 0, signal: unknown.
+Exit code:   0
+integration: pass

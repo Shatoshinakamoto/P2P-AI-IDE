@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "a762bb509a98bc86b7a5cd0a707f1b534526e00689eac38b61e7b84bdc8556b8",
+   "size": 1379
+  },
+  "command.txt": {
+   "sha256": "d2d44ec685c582747d3cef4621173917cf5c214469b03300944b09467c574b0a",
+   "size": 88
+  },
+  "environment.md": {
+   "sha256": "9776e7f5467b0dca507067ea8b6f6194b95f936289e9a80f6c605c22891a2a58",
+   "size": 205
+  },
+  "logs/output.log": {
+   "sha256": "6d8c5c8f3d7684adb070417bd608d01ae90aa3dc26a65af03ffda4955f38d9a3",
+   "size": 24
+  },
+  "results/summary.txt": {
+   "sha256": "7993dd0b1cb5d7350f27941c6e6c4581e5186130d4c35d65b5640d73fcf3d34d",
+   "size": 296
+  }
+ },
+ "previous": {
+  "manifest_sha256": "f32e3ef87542803203655e88004a1d2cbb193061d919bd8bfc454bfb2380e698",
+  "run_id": "2026-11-22_112220Z_vscode-ext-integration_a704618"
+ },
+ "run": {
+  "area": "vscode-ext-audit",
+  "branch_or_pr": "",
+  "collected_utc": "",
+  "commit": "a704618f4d39d4acf7e18f5c64eeeea02da9d658",
+  "count_unit": "",
+  "date_utc": "2026-11-22T11:22:22Z",
+  "dirty": false,
+  "duration_s": 0.4,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_112222Z_vscode-ext-audit_a704618",
+  "kind": "scan",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "npm audit of the extension's dev dependencies",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

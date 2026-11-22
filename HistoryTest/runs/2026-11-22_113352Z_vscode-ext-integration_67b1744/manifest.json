@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "4fe2933bec86a0ab9d3b4642e676e3ae59d649b21dfa33255688072c5cad27d7",
+   "size": 1667
+  },
+  "command.txt": {
+   "sha256": "affcfc7a8b8c3ce5919d9c95c565563226203ac524ecd0f23345ed9f89e442c0",
+   "size": 128
+  },
+  "environment.md": {
+   "sha256": "cd96eaf2eb9f431417e0fca79c291e2c9c4f691c306a7bb3e2e83346cac9e1aa",
+   "size": 211
+  },
+  "logs/output.log": {
+   "sha256": "7a0d38285eb12f6fee10ad3f76585dd5e81909b9d45eff1d535c6e7f630a8705",
+   "size": 3710
+  },
+  "results/summary.txt": {
+   "sha256": "1b6a9ec987d7bec69cc32fb13568e56ff6000eb0647ec38baeebc605424d107d",
+   "size": 302
+  }
+ },
+ "previous": {
+  "manifest_sha256": "1993c96ca754df25213909155c2bf7d5f833ee6c0258b1ad95a140611579e8d0",
+  "run_id": "2026-11-22_113346Z_vscode-ext-integration_67b1744"
+ },
+ "run": {
+  "area": "vscode-ext-integration",
+  "branch_or_pr": "claude/project-thread-8u4b8a",
+  "collected_utc": "",
+  "commit": "67b174490e053089e4799308c3954953b31bdbbb",
+  "count_unit": "",
+  "date_utc": "2026-11-22T11:33:52Z",
+  "dirty": false,
+  "duration_s": 2.8,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_113352Z_vscode-ext-integration_67b1744",
+  "kind": "integration",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "tf-ide-roadmap-finish/X2",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Extension in VS Code 1.95.0 (oldest supported), with an agent turn (X2)",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}
