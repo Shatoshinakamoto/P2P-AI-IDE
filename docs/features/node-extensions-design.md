@@ -1,6 +1,6 @@
 # Node extensions (phase I6c): design
 
-Status: **proposed, 2026-11-21**. Nothing in this page is built yet. The person picked "Download on first need" for where Node.js comes from; the choice below (what runs the Node extensions) is open.
+Status: **accepted 2026-11-22**: Pheonix picked "VSCodium server, on first need" (option A). I6c-1 (core) and I6c-2 (editor) are built; I6c-3 (real pins and a real extension on the PC) is next.
 
 ## 1. Overview
 
@@ -60,12 +60,22 @@ flowchart LR
 * `app/src-tauri/src/nodehost.rs`: `node_host_status`, `node_host_trust`, `node_host_start { allow_download }`, `node_host_stop`. The folder is always the one opened through the OS dialog.
 * Still assumed, checked in I6c-3: the server prints `Extension host agent listening on <port>` and accepts `--connection-token-file`, `--server-data-dir`, `--user-data-dir`, `--extensions-dir` and `--disable-telemetry`.
 
+### I6c-2 (editor)
+
+* **Install:** Node extensions (a `main` entry) install from Open VSX with the same hash and signature checks; extensions asking for proposed APIs are still refused. They never get the web worker's internet grant.
+* **Staging:** each start copies only the enabled Node extensions into `<app data>/node-extensions/` (`node_host::stage_extensions`), rebuilt fresh, links never copied. Turning one off or removing it takes effect at the next start.
+* **Panel:** Extensions view > "Node extensions" (`app/src/components/NodeHostPanel.tsx`): explains that Node extensions run with the person's rights; **Trust this folder for Node extensions** is its own click; **Download and start** names the size and the hash check; **Restart**, **Stop**, **Stop trusting this folder**. Starting or stopping reloads the window.
+* **Connection:** before the editor services start, `app/src/nodeHost.ts` asks the shell whether a host already runs for the open, trusted folder (it never starts one by itself). If so, `startEditor` loads `@codingame/monaco-vscode-remote-agent-service-override` (only then, so its remote contributions don't exist in a window without a server) and passes `remoteAuthority 127.0.0.1:<port>`, the token, the pinned commit (`productConfiguration.commit`) and the folder as a `vscode-remote://` workspace. Open files get `vscode-remote://` URIs so Node extensions see real file paths; text still loads and saves through the Rust core.
+* **CSP:** the header CSP's `connect-src` adds `ws://127.0.0.1:*` and `http://127.0.0.1:*` for the page. VS Code's extension host iframe ships a meta CSP that also allows localhost; `app/vite.config.ts` (`iframeCsp`) removes every localhost and 127.0.0.1 source from it at build time and fails the build if any is left, so web extensions still can't reach this computer (tested with a counting local server: 0 hits).
+* **Folder path:** the shell gives the webview the folder's full path only in `node_host_start`, once the folder is trusted (elsewhere it gets the name only).
+
 ## 8. Dependencies
 
 | Name | Version | Purpose | CVE check |
 |---|---|---|---|
 | `tar` | 0.4.46 | Read the server's `.tar.gz` (entries only; this module writes the files) | cargo audit 2026-11-21: no advisories |
 | `filetime` | 0.2.30 | Pulled in by `tar` | cargo audit 2026-11-21: no advisories |
+| `@codingame/monaco-vscode-remote-agent-service-override` | 39.0.5 (exact, MIT) | Connects the editor services to the server | npm audit gate 2026-11-22: passed |
 | VSCodium server (REH) | 1.140.x, pinned in I6c-3 | Runs Node extensions | To check against the VSCodium release notes when pinned |
 
 ## 9. Test evidence
@@ -73,7 +83,13 @@ flowchart LR
 * [Core unit tests, 93 passed](../../HistoryTest/runs/2026-11-21_232857Z_core_3e0d986/RUN.md)
 * [Static checks, failed on stale notices](../../HistoryTest/runs/2026-11-21_232914Z_security-scan_3e0d986/RUN.md), then [passed](../../HistoryTest/runs/2026-11-21_232948Z_security-scan_f363048/RUN.md)
 
+* I6c-2: core unit tests 94 passed [2026-11-22_014615Z_core_10da8d4](../../HistoryTest/runs/2026-11-22_014615Z_core_10da8d4/RUN.md); UI smoke test 113 of 113 (web extensions still can't reach local ports, trust and download clicks, connection only to 127.0.0.1 with the pinned commit, token over the socket not the URL or storage, trust removal stops it) [2026-11-22_014626Z_ui_10da8d4](../../HistoryTest/runs/2026-11-22_014626Z_ui_10da8d4/RUN.md); app unit tests [2026-11-22_014647Z_app-unit_10da8d4](../../HistoryTest/runs/2026-11-22_014647Z_app-unit_10da8d4/RUN.md); static checks [2026-11-22_014648Z_security-scan_10da8d4](../../HistoryTest/runs/2026-11-22_014648Z_security-scan_10da8d4/RUN.md).
+* Not run yet: a real VSCodium server and a real Node extension (I6c-3 on the PC).
+
 ## 10. Limitations and known risks
+
+* **Accepted risk (I6c-2):** while the Node host runs, the editor can read files through the server (`vscode-remote://`), and so can web extensions through the VS Code file API, including files outside the folder. This only happens in a folder the person trusted, where Node extensions already have the same access. Turn off internet for web extensions you don't fully trust while Node extensions are on.
+* The VSCodium server's own built-in extensions are listed too (`scanRemoteExtensions`); whether any clash with the editor's built-in grammars is checked in I6c-3.
 
 * Node extensions can't be stopped one by one without restarting the server.
 * The download needs github.com; offline machines stay on web extensions.

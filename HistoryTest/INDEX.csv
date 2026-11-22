@@ -103,3 +103,7 @@ run_id,date_utc,area,commit,branch_or_pr,machine,verdict,passed,failed,skipped,s
 2026-11-21_232914Z_security-scan_3e0d986,2026-11-21T23:29:14Z,security-scan,3e0d986,claude/project-thread-8u4b8a,cloud container,fail,5,0,0,"Phase I6c-1 static checks: tsc, rustfmt, clippy, cargo audit, npm audit gate, licence notices"
 2026-11-21_232948Z_security-scan_f363048,2026-11-21T23:29:48Z,security-scan,f363048,claude/project-thread-8u4b8a,cloud container,pass,5,0,0,Phase I6c-1 static checks (re-run after notices update)
 2026-11-22_004243Z_core_48f004d,2026-11-22T00:42:43Z,core,48f004d,PR 20,cloud container,pass,,,,Phase I6c-1 core unit tests after the Windows trust-test fix
+2026-11-22_014615Z_core_10da8d4,2026-11-22T01:46:15Z,core,10da8d4,claude/project-thread-8u4b8a,cloud container,pass,,,,"Phase I6c-2 core unit tests (Node extensions install, staged for the host, pinned commit)"
+2026-11-22_014626Z_ui_10da8d4,2026-11-22T01:46:26Z,ui,10da8d4,claude/project-thread-8u4b8a,cloud container,pass,,,,"Phase I6c-2 UI smoke test: Node extensions panel, trust, download, connection to the host (headless Chromium, shipped CS"
+2026-11-22_014647Z_app-unit_10da8d4,2026-11-22T01:46:47Z,app-unit,10da8d4,claude/project-thread-8u4b8a,cloud container,pass,4,0,0,Phase I6c-2 app unit tests
+2026-11-22_014648Z_security-scan_10da8d4,2026-11-22T01:46:48Z,security-scan,10da8d4,claude/project-thread-8u4b8a,cloud container,pass,5,0,0,"Phase I6c-2 static checks: tsc, rustfmt, clippy, cargo audit, npm audit gate, licence notices"

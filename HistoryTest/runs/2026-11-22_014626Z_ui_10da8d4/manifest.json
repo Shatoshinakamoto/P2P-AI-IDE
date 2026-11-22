@@ -1,0 +1,66 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "c5f4a360b8cd493610600978a7a8cec2a0df53347979191d936e9da9b75f1180",
+   "size": 2345
+  },
+  "artifacts/ui-smoke-node.png": {
+   "sha256": "457c3f35a674d252926815ce6dcf34bbc552c66704f4f555588f642535a99fe3",
+   "size": 101809
+  },
+  "command.txt": {
+   "sha256": "2bd3d4c52dcc5229938e526c0c26637148d14b9a8a9aafa0c7c3e6b46435ea14",
+   "size": 89
+  },
+  "environment.md": {
+   "sha256": "3a8403163a241aba221969a01be8d0bb60861a36adc3dea77342019edb7b168b",
+   "size": 191
+  },
+  "logs/output.log": {
+   "sha256": "b960458c35f742563b300e2e0b083dd0901e8693fec6979f544c42427edcef8a",
+   "size": 11125
+  },
+  "results/summary.txt": {
+   "sha256": "d35c6d9702d91154cbfbfd02785cb659d6cf4badcce6d043bdbfdebc333b4528",
+   "size": 283
+  }
+ },
+ "previous": {
+  "manifest_sha256": "af8c971fa92882b45e649348a033b9aebee81a8186fb4bb761d1f1ccd168d179",
+  "run_id": "2026-11-22_014615Z_core_10da8d4"
+ },
+ "run": {
+  "area": "ui",
+  "branch_or_pr": "claude/project-thread-8u4b8a",
+  "collected_utc": "",
+  "commit": "10da8d496c863f405e81f62d1a6193b5358d3bed",
+  "count_unit": "",
+  "date_utc": "2026-11-22T01:46:26Z",
+  "dirty": true,
+  "duration_s": 21.2,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_014626Z_ui_10da8d4",
+  "kind": "e2e",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {
+   "logs/output.log": {
+    "secret": 3
+   }
+  },
+  "requested_by": "Finish TandemForge and IDE roadmaps thread",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Phase I6c-2 UI smoke test: Node extensions panel, trust, download, connection to the host (headless Chromium, shipped CS",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

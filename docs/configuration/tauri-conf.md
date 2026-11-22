@@ -35,12 +35,14 @@ CSP directives:
 | `style-src` | `'self' 'unsafe-inline'` | Monaco creates `<style>` elements at run time. Accepted risk, SECURITY-LOG 2026-11-17 |
 | `img-src`, `font-src` | `'self' data: blob:` | Monaco's icon font and small inline images; `blob:` (phase I6a) for icons and fonts an installed icon theme contributes, which the page turns into `blob:` URLs from bytes the Rust core read |
 | `worker-src` | `'self' blob:` | Monaco's language workers (bundled files; `blob:` for Monaco's fallback) |
-| `connect-src` | `'self' data: blob: ipc: http://ipc.localhost` | Tauri's own IPC, the app's bundled files, and `data:`/`blob:` URLs made in the page (phase I6a: the editor services load built-in and installed extension files this way). No remote host: Open VSX and gateways are reached only by the Rust core |
+| `connect-src` | `'self' data: blob: ipc: http://ipc.localhost ws://127.0.0.1:* http://127.0.0.1:*` | Tauri's own IPC, the app's bundled files, and `data:`/`blob:` URLs made in the page (phase I6a: the editor services load built-in and installed extension files this way). Phase I6c: `ws://` and `http://` on 127.0.0.1 let the page reach the local Node extension host (its port is chosen by the OS, hence `:*`). Web extensions don't get these: `app/vite.config.ts` removes local sources from the extension host iframe's own CSP, and browsers apply both policies. No remote host: Open VSX and gateways are reached only by the Rust core |
 | `object-src`, `base-uri`, `form-action` | `'none'` | no plugins, base tag tricks or form posts |
 | `frame-src` | `'self'` (phase I6b) | only the app's own extension host iframe page |
 | `frame-ancestors` | `'self'` (phase I6b; was `'none'`) | the app may frame its own pages (the extension host iframe); no other site can frame the IDE. Header only: the meta CSP leaves it out, as browsers ignore it there |
 
 Secure values: never add a remote host to `script-src` or `connect-src`; network access belongs in the Rust core.
+Never remove the `iframeCsp` plugin from `vite.config.ts` while `connect-src` names 127.0.0.1: it keeps web extensions
+away from local services, and the build fails if the iframe page still names a local source.
 Never remove the page CSP plugin from `vite.config.ts` while `'unsafe-eval'` is here; the build refuses a page CSP
 that contains it. See [features/extensions.md](../features/extensions.md#web-extensions-i6b).
 

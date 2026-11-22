@@ -22,8 +22,9 @@ no Tauri commands**. On 2026-11-21 Pheonix chose **"Plus internet, asked per ext
 public https sites after the person allows it once (see [Internet for web extensions](#internet-for-web-extensions)).
 
 Extensions with only Node code (a `main` entry and no `browser` entry: most language servers, linters, Git tools)
-are refused with a message naming phase I6c (Node host). Web extensions that ask for proposed VS Code APIs
-(`enabledApiProposals`) are refused, because those APIs are unstable and not offered.
+install as **Node extensions** (phase I6c). They run only in the local VSCodium server the IDE starts for a folder
+the person trusts; see [node-extensions-design.md](node-extensions-design.md). Extensions that ask for proposed VS Code
+APIs (`enabledApiProposals`) are refused, because those APIs are unstable and not offered.
 
 To make this possible the editor moved from plain `monaco-editor` to `@codingame/monaco-vscode-api`, which is VS Code's
 own editor services packaged for the web. The IDE now:

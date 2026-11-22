@@ -1,0 +1,11 @@
+id: 2026-11-22_014615Z_core_10da8d4
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: not recorded
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: 0
+duration_s: 10.9
+commit: 10da8d496c863f405e81f62d1a6193b5358d3bed
+machine: cloud
