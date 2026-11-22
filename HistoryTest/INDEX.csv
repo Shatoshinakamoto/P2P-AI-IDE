@@ -157,3 +157,4 @@ run_id,date_utc,area,commit,branch_or_pr,machine,verdict,passed,failed,skipped,s
 2026-11-22_121653Z_security-scan_01bc30e,2026-11-22T12:16:53Z,security-scan,01bc30e,claude/project-thread-8u4b8a,cloud container,fail,5,0,0,"Phase I6d static checks: tsc, rustfmt, clippy, cargo audit, npm audit gate, licence notices"
 2026-11-22_121745Z_security-scan_882c782,2026-11-22T12:17:45Z,security-scan,882c782,claude/project-thread-8u4b8a,cloud container,pass,5,0,0,Phase I6d static checks after regenerating the notices
 2026-11-22_121951Z_core_cf2e079,2026-11-22T12:19:51Z,core,cf2e079,24,cloud container,pass,,,,Core tests after the Windows temp-folder fix in agent_vectors.rs
+2026-11-22_200619Z_desktop-node-ext-electron_cc16e75,2026-11-22T20:06:19Z,desktop-node-ext-electron,cc16e75,#25,user PC (Windows),pass,4,0,,I6d Electron compatibility host in the Windows desktop app

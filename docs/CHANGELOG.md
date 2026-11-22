@@ -2,6 +2,11 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-22 - I6d checked in the Windows desktop app
+
+### Changed
+- Docs and roadmap: I6d is now checked in the Windows desktop app on the PC. The switch is off by default, the first start downloads the pinned Electron 43.8.3, `electron.exe` runs the server and extension host, and Code Spell Checker works ([run](../HistoryTest/runs/2026-11-22_200619Z_desktop-node-ext-electron_cc16e75/RUN.md)). No code changes.
+
 ## 2026-11-22 - Phase I6d: Electron compatibility host for Node extensions
 
 ### Added

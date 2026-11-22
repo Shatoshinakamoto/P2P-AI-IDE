@@ -1,0 +1,294 @@
+== date Sun 11/22/2026 14:50:48.80
+cc16e75 X3 missions in the VS Code extension + I6d optional Electron compatibility host (#25)
+   Compiling p2p-ide-core v0.1.0 (D:\p2p-ai-ci\i6c3\core)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 19.26s
+     Running unittests src\lib.rs (D:\p2p-ai-ci\i6c3\target\debug\deps\p2p_ide_core-c00d719b8c6e47de.exe)
+
+running 7 tests
+test electron_host::tests::pins_are_well_formed_and_cover_the_server_platforms ... ok
+test electron_host::tests::launcher_adds_only_run_as_node ... ok
+test electron_host::tests::download_checks_the_hash ... ok
+test electron_host::tests::switch_is_off_by_default_and_only_on_means_on ... ok
+test electron_host::tests::unpack_keeps_files_skips_the_setuid_helper_and_refuses_bad_entries ... ok
+test electron_host::tests::ensure_installed_downloads_once_and_needs_the_program ... ok
+test electron_host::tests::classify_and_scan_native_modules ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 106 filtered out; finished in 0.04s
+
+core-electron-host-exit 0
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.26s
+     Running unittests src\lib.rs (D:\p2p-ai-ci\i6c3\target\debug\deps\p2p_ide_core-c00d719b8c6e47de.exe)
+
+running 7 tests
+test node_host::tests::editor_folder_drops_the_verbatim_prefix_and_refuses_shares ... ok
+test node_host::tests::pins_fail_closed_and_check_shape ... ok
+test node_host::tests::env_and_port_parsing ... ok
+test node_host::tests::download_needs_the_pinned_hash ... ok
+test node_host::tests::trust_is_per_canonical_folder ... ok
+test node_host::tests::unpack_refuses_unsafe_entries ... ok
+test node_host::tests::stage_copies_only_enabled_node_extensions ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 106 filtered out; finished in 0.09s
+
+core-node-host-exit 0
+
+added 117 packages, and audited 125 packages in 2m
+
+12 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+npm-ci-exit 0
+
+> p2p-ai-ide@0.1.0 release
+> tauri build --no-bundle
+
+        Info Looking up installed tauri packages to check mismatched versions...
+     Running beforeBuildCommand `npm run build`
+
+> p2p-ai-ide@0.1.0 build
+> tsc --noEmit && vite build
+
+[36mvite v8.3.8 [32mbuilding client environment for production...[36m[39m
+transforming...
+[33m[plugin rolldown:vite-resolve] Module "node:fs/promises" has been externalized for browser compatibility, imported by "D:/p2p-ai-ci/i6c3/app/node_modules/@vscode/diff/dist/wire.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[33m[plugin rolldown:vite-resolve] Module "node:fs/promises" has been externalized for browser compatibility, imported by "D:/p2p-ai-ci/i6c3/app/node_modules/@vscode/diff/dist/wire.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[33m[plugin rolldown:vite-resolve] Module "node:fs/promises" has been externalized for browser compatibility, imported by "D:/p2p-ai-ci/i6c3/app/node_modules/@vscode/diff/dist/wire.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[33m[plugin rolldown:vite-resolve] Module "node:fs/promises" has been externalized for browser compatibility, imported by "D:/p2p-ai-ci/i6c3/app/node_modules/@vscode/diff/dist/wire.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+✓ 4501 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/assets/__vite-browser-external-BTL7rvht.js                           0.10 kB
+dist/assets/__vite-browser-external-UYcPPjIt.js                           0.10 kB
+dist/assets/jschardet-Cm2z8TWA.js                                         0.20 kB
+dist/index.html                                                           1.56 kB │ gzip:     0.74 kB
+dist/assets/webWorkerExtensionHostIframe-Cln55oZg.html                    3.77 kB │ gzip:     1.49 kB
+dist/assets/javascript-CQTOjwzq.code-snippets                             4.11 kB
+dist/assets/JSONC.tmLanguage-DGdrviQG.json                                4.19 kB │ gzip:     1.22 kB
+dist/assets/dark_modern-DjNuLzCv.json                                     4.90 kB │ gzip:     1.20 kB
+dist/assets/typescript-BgDXb0oW.code-snippets                             5.04 kB
+dist/assets/xml.tmLanguage-D5DjnjsA.json                                  5.61 kB │ gzip:     1.36 kB
+dist/assets/light_modern-C1KegOb-.json                                    5.86 kB │ gzip:     1.39 kB
+dist/assets/Regular_Expressions_(JavaScript)-CTzfUj5i.tmLanguage          5.86 kB
+dist/assets/sassdoc.tmLanguage-DP-P7vDa.json                              6.60 kB │ gzip:     1.75 kB
+dist/assets/php-Cx7DJLWi.code-snippets                                    6.69 kB
+dist/assets/dark_vs-HiVtBCT7.json                                         6.71 kB │ gzip:     1.74 kB
+dist/assets/hc_black-DVuf3XgW.json                                        7.19 kB │ gzip:     1.77 kB
+dist/assets/light_vs-CVY2fmuV.json                                        7.64 kB │ gzip:     1.96 kB
+dist/assets/MagicRegExp.tmLanguage-XKSD9R-M.json                          8.37 kB │ gzip:     1.64 kB
+dist/assets/hc_light-vGZ7P-MS.json                                        8.88 kB │ gzip:     1.82 kB
+dist/assets/yaml-embedded.tmLanguage-BH_-t3A6.json                        9.45 kB │ gzip:     2.32 kB
+dist/assets/batchfile.tmLanguage-Cr0jobHw.json                           13.08 kB │ gzip:     3.45 kB
+dist/assets/lua.tmLanguage-CiPPwmTA.json                                 15.46 kB │ gzip:     3.36 kB
+dist/assets/2026-light-BCxctWqn.json                                     16.44 kB │ gzip:     3.30 kB
+dist/assets/2026-dark-CPx3nGrS.json                                      16.52 kB │ gzip:     3.41 kB
+dist/assets/rust.tmLanguage-DTyCCW7C.json                                17.83 kB │ gzip:     3.59 kB
+dist/assets/yaml-1.0.tmLanguage-CD_pQ-0c.json                            21.00 kB │ gzip:     3.62 kB
+dist/assets/powershell.tmLanguage-CjsUwbrl.json                          22.02 kB │ gzip:     4.84 kB
+dist/assets/sql.tmLanguage-DfXeY0NU.json                                 24.51 kB │ gzip:     8.01 kB
+dist/assets/java.tmLanguage-C3lOwSRs.json                                27.44 kB │ gzip:     4.74 kB
+dist/assets/yaml-1.2.tmLanguage-wtZJkEWj.json                            30.02 kB │ gzip:     4.86 kB
+dist/assets/scss.tmLanguage-XDR0qDuI.json                                30.41 kB │ gzip:     4.71 kB
+dist/assets/yaml-1.1.tmLanguage-B4SOQ8XS.json                            31.62 kB │ gzip:     4.74 kB
+dist/assets/worker-BQocTGt8.js                                           34.54 kB
+dist/assets/shell-unix-bash.tmLanguage-DVSAOcrv.json                     41.43 kB │ gzip:     6.47 kB
+dist/assets/dist-CCcH9WeK.js                                             41.59 kB
+dist/assets/ruby.tmLanguage-BrD9Tc5B.json                                50.17 kB │ gzip:     7.25 kB
+dist/assets/go.tmLanguage-B4WmyOob.json                                  51.82 kB │ gzip:     6.55 kB
+dist/assets/html.tmLanguage-DqURBG9A.json                                60.40 kB │ gzip:    12.17 kB
+dist/assets/markdown.tmLanguage-Di6u7FjP.json                            60.46 kB │ gzip:     5.97 kB
+dist/assets/main-BFTn1-MB.js                                             60.85 kB
+dist/assets/css.tmLanguage-CTvkaWsh.json                                 65.56 kB │ gzip:    16.10 kB
+dist/assets/c.tmLanguage-BcaaOJ5Z.json                                   72.13 kB │ gzip:    11.15 kB
+dist/assets/MagicPython.tmLanguage-DSrfAYO2.json                         78.24 kB │ gzip:    11.27 kB
+dist/assets/less.tmLanguage-nKZ-UilS.json                               101.40 kB │ gzip:    15.67 kB
+dist/assets/csharp.tmLanguage-CUdO_Lb2.json                             101.76 kB │ gzip:    11.73 kB
+dist/assets/swift.tmLanguage-CayRaeEm.json                              103.68 kB │ gzip:    18.58 kB
+dist/assets/php.tmLanguage-k_C0Npjy.json                                115.28 kB │ gzip:    29.95 kB
+dist/assets/diff_wasm_bg-c6YkaZRL-c6YkaZRL.wasm                         118.88 kB │ gzip:    53.32 kB
+dist/assets/codicon-DsB5k-Si.ttf                                        154.32 kB
+dist/assets/JavaScript.tmLanguage-mfGXB9Lg.json                         188.34 kB │ gzip:    17.68 kB
+dist/assets/TypeScriptReact.tmLanguage-Ii5i6L-Z.json                    189.08 kB │ gzip:    17.67 kB
+dist/assets/JavaScriptReact.tmLanguage-yXjQJDfq.json                    191.35 kB │ gzip:    17.81 kB
+dist/assets/TypeScript.tmLanguage-B8aV4xMT.json                         193.97 kB │ gzip:    17.75 kB
+dist/assets/snippets.tmLanguage-Bt1Bw9n-.json                           252.44 kB │ gzip:    11.91 kB
+dist/assets/worker-CRcBW2e-.js                                          267.72 kB
+dist/assets/cpp.embedded.macro.tmLanguage-Xer0BwxK.json                 294.17 kB │ gzip:    23.69 kB
+dist/assets/iconv-lite-umd-DSFtfLsK.js                                  297.03 kB
+dist/assets/editor.worker-B4yTDktF.js                                   380.64 kB
+dist/assets/onig-Du5pRr7Y.wasm                                          466.61 kB │ gzip:   159.69 kB
+dist/assets/cuda-cpp.tmLanguage-CLki45UZ.json                           484.20 kB │ gzip:    37.78 kB
+dist/assets/cpp.tmLanguage-BVhtIoT9.json                                516.78 kB │ gzip:    38.47 kB
+dist/assets/platform.tmLanguage-BtxvkeXe.json                           561.56 kB │ gzip:   197.32 kB
+dist/assets/extHostWorker-SaJBdeds.js                                 2,033.22 kB
+dist/assets/monaco-vscode-remote-agent-service-override-izd5lpUj.css      3.36 kB │ gzip:     0.77 kB
+dist/assets/configuration-CIdG7wL6.css                                   58.55 kB │ gzip:     9.02 kB
+dist/assets/index-DkwZaJ1o.css                                          213.20 kB │ gzip:    30.83 kB
+dist/assets/__vite-browser-external-BDfy7Drd.js                           0.10 kB │ gzip:     0.11 kB
+dist/assets/_commonjsHelpers-DMmVv2OA.js                                  0.11 kB │ gzip:     0.12 kB
+dist/assets/jschardet-BGQVn0dm.js                                         0.19 kB │ gzip:     0.16 kB
+dist/assets/rolldown-runtime-XKyaHtl9.js                                  0.72 kB │ gzip:     0.42 kB
+dist/assets/preload-helper-7y9sWmk5.js                                    1.61 kB │ gzip:     0.82 kB
+dist/assets/main2-CmH8rwDf.js                                            11.28 kB │ gzip:     4.23 kB
+dist/assets/dist-Cv5Gc7RY.js                                             41.14 kB │ gzip:    12.21 kB
+dist/assets/main-dz8xoVG6.js                                             60.69 kB │ gzip:    17.19 kB
+dist/assets/monaco-vscode-remote-agent-service-override-DEF609UQ.js     143.18 kB │ gzip:    39.47 kB
+dist/assets/iconv-lite-umd-O0nqJ1jJ.js                                  296.89 kB │ gzip:   179.84 kB
+dist/assets/configuration.service-DbKjdji1.js                         2,401.57 kB │ gzip:   633.70 kB
+dist/assets/index-Dmonz3Pm.js                                         5,677.68 kB │ gzip: 1,453.76 kB
+
+[33m[33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "node_modules/@radix-ui/react-tooltip/dist/index.mjs" may not be preserved when bundling.
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/@radix-ui/react-tooltip/dist/index.mjs:1:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m1 │[0m "use client";
+ [38;5;240m  │[0m ──────┬──────  
+ [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+[38;5;246m───╯[0m
+[39m
+[33m[33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "node_modules/lucide-react/dist/esm/context.mjs" may not be preserved when bundling.
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/lucide-react/dist/esm/context.mjs:2:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m2 │[0m "use client";
+ [38;5;240m  │[0m ──────┬──────  
+ [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+[38;5;246m───╯[0m
+[39m
+[33m[33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "node_modules/lucide-react/dist/esm/Icon.mjs" may not be preserved when bundling.
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/lucide-react/dist/esm/Icon.mjs:2:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m2 │[0m "use client";
+ [38;5;240m  │[0m ──────┬──────  
+ [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+[38;5;246m───╯[0m
+[39m
+[33m[33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "node_modules/@radix-ui/react-visually-hidden/dist/index.mjs" may not be preserved when bundling.
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/@radix-ui/react-visually-hidden/dist/index.mjs:1:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m1 │[0m "use client";
+ [38;5;240m  │[0m ──────┬──────  
+ [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+[38;5;246m───╯[0m
+[39m
+[33m[33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "node_modules/@radix-ui/react-portal/dist/index.mjs" may not be preserved when bundling.
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/@radix-ui/react-portal/dist/index.mjs:1:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m1 │[0m "use client";
+ [38;5;240m  │[0m ──────┬──────  
+ [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+[38;5;246m───╯[0m
+[39m
+[33m[33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "node_modules/@radix-ui/react-presence/dist/index.mjs" may not be preserved when bundling.
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/@radix-ui/react-presence/dist/index.mjs:1:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m1 │[0m "use client";
+ [38;5;240m  │[0m ──────┬──────  
+ [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+[38;5;246m───╯[0m
+[39m
+[33m[33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "node_modules/@radix-ui/react-primitive/dist/index.mjs" may not be preserved when bundling.
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/@radix-ui/react-primitive/dist/index.mjs:1:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m1 │[0m "use client";
+ [38;5;240m  │[0m ──────┬──────  
+ [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+[38;5;246m───╯[0m
+[39m
+[33m[33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "node_modules/@radix-ui/react-focus-scope/dist/index.mjs" may not be preserved when bundling.
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/@radix-ui/react-focus-scope/dist/index.mjs:1:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m1 │[0m "use client";
+ [38;5;240m  │[0m ──────┬──────  
+ [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+[38;5;246m───╯[0m
+[39m
+[33m[33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "node_modules/@radix-ui/react-dismissable-layer/dist/index.mjs" may not be preserved when bundling.
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/@radix-ui/react-dismissable-layer/dist/index.mjs:1:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m1 │[0m "use client";
+ [38;5;240m  │[0m ──────┬──────  
+ [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+[38;5;246m───╯[0m
+[39m
+[33m[33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "node_modules/@radix-ui/react-popper/dist/index.mjs" may not be preserved when bundling.
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/@radix-ui/react-popper/dist/index.mjs:1:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m1 │[0m "use client";
+ [38;5;240m  │[0m ──────┬──────  
+ [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+[38;5;246m───╯[0m
+[39m
+[33m[33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "node_modules/@radix-ui/react-arrow/dist/index.mjs" may not be preserved when bundling.
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/@radix-ui/react-arrow/dist/index.mjs:1:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m1 │[0m "use client";
+ [38;5;240m  │[0m ──────┬──────  
+ [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+[38;5;246m───╯[0m
+[39m
+[32m✓ built in 14.24s[39m
+[33m[33m[PLUGIN_TIMINGS] [0mJavaScript callbacks ran for 12.6s of this 14.2s build (89%).
+The slowest callbacks, timed inside each callback (the wait before a callback starts is excluded, the time it awaits is included):
+  - plugin vite:worker load (36%, 5.1s, 1 call)
+  - plugin @tailwindcss/vite:generate:build transform (31%, 4.4s, 119 calls)
+Additional callback time came from the callbacks below and from callbacks under 1s.
+3 callbacks are listed without a time. Their calls overlapped, so the time inside one call includes work from other calls. To find their cost, profile the build with `node --cpu-prof`:
+  - plugin vite:asset-import-meta-url transform (32 calls)
+  - plugin vite:css transform (119 calls)
+  - plugin vite:worker-import-meta-url transform (2 calls)
+See https://rolldown.rs/reference/InputOptions.checks#bundlertimings for more details.
+[39m
+   Compiling form_urlencoded v1.2.3
+   Compiling cssparser-macros v0.7.1
+   Compiling cssparser v0.37.0
+   Compiling url v2.5.9
+   Compiling selectors v0.38.0
+   Compiling p2p-ide-core v0.1.0 (D:\p2p-ai-ci\i6c3\core)
+   Compiling dom_query v0.28.0
+   Compiling urlpattern v0.6.0
+   Compiling schemars v0.8.22
+   Compiling tao v0.37.2
+   Compiling tauri-utils v2.10.3
+   Compiling tauri-runtime v2.12.3
+   Compiling tauri-runtime-wry v2.12.4
+   Compiling tauri-plugin v2.7.3
+   Compiling tauri-codegen v2.7.5
+   Compiling tauri-build v2.7.5
+   Compiling tauri v2.12.6
+   Compiling tauri-plugin-fs v2.7.1
+   Compiling tauri-plugin-dialog v2.8.4
+   Compiling p2p-ide v0.1.0 (D:\p2p-ai-ci\i6c3\app\src-tauri)
+   Compiling tauri-macros v2.7.5
+    Finished `release` profile [optimized] target(s) in 4m 04s
+       Built application at: D:\p2p-ai-ci\i6c3\target\release\p2p-ide.exe
+release-exit 0
+ Volume in drive D is JohnathanEdwardBrownSteamGames
+ Volume Serial Number is 8A33-0DDB
+
+ Directory of D:\p2p-ai-ci\i6c3\target\release
+
+11/22/2026  02:57 PM        13,082,624 p2p-ide.exe
+               1 File(s)     13,082,624 bytes
+               0 Dir(s)  750,685,839,360 bytes free
+i6d-build-done
