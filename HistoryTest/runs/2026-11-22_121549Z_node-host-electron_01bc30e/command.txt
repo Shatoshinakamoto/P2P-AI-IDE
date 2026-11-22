@@ -1,0 +1,2 @@
+# run in repository folder `.`, as an argument list (no shell)
+app/tests/electron-host-e2e.sh electron

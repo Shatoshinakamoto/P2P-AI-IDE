@@ -2,6 +2,8 @@
 
 Status: **accepted 2026-11-22, done for Windows x64 and Linux x64**. Pheonix first picked "VSCodium server, on first need" (option A). Because no VSCodium release matched the editor's VS Code version, Pheonix then chose to build our own server (I6c-4, section 7). I6c-1 (core), I6c-2 (editor), I6c-3 (PC fixes and version check) and I6c-4 (our 1.145.2 builds, pinned) are done. On 2026-11-22 a real Open VSX extension (Code Spell Checker) ran in the Windows desktop app. macOS and Linux arm64 wait for a builder.
 
+Phase **I6d** (2026-11-22, section 11) adds the optional Electron compatibility host, off by default.
+
 ## 1. Overview
 
 Most popular VS Code extensions (language servers, linters, debuggers, formatters) are Node extensions: their `package.json` has a `main` entry and they call Node APIs (`fs`, `child_process`, `net`). The IDE refuses them today (I6b only runs `browser` entries in a sandboxed worker). ADR-029 D1 says Node extensions run in a separate sidecar process, with workspace trust, and with no gateway keys.
@@ -99,6 +101,7 @@ flowchart LR
 | `tar` | 0.4.46 | Read the server's `.tar.gz` (entries only; this module writes the files) | cargo audit 2026-11-21: no advisories |
 | `filetime` | 0.2.30 | Pulled in by `tar` | cargo audit 2026-11-21: no advisories |
 | `@codingame/monaco-vscode-remote-agent-service-override` | 39.0.5 (exact, MIT) | Connects the editor services to the server | npm audit gate 2026-11-22: passed |
+| Electron (I6d, optional) | 43.8.3 (pinned 2026-11-22, SHA-256 per file; Linux x64 and Windows x64 only) | Runs our server in Node mode when Electron compatibility is on | The Electron version VS Code 1.145.2 ships. No advisory known to us for 43.8.3 on 2026-11-22; a live NVD/GitHub advisory lookup was not done from the cloud. Only its Node runtime is used (no windows, no web content), so Chromium renderer flaws don't apply the same way. Re-check on every editor library upgrade |
 | Our VS Code server build (REH) | 1.145.2, commit c4453f8e… (pinned 2026-11-22, SHA-256 per file) | Runs Node extensions; ships its own Node 24.22.1 | Built from VS Code 1.145.2 (MIT) with `scripts/build_node_host.py`. No advisory known to us for 1.145.2 on 2026-11-22; a live NVD/GitHub advisory lookup was not possible from the cloud. Re-check VS Code security fixes on every editor library upgrade |
 
 ## 9. Test evidence
@@ -121,3 +124,93 @@ flowchart LR
 * The download needs github.com; offline machines stay on web extensions.
 * **Node extensions run only on Linux x64 and Windows x64:** those are the pinned builds (section 7). macOS and Linux arm64 have no builder. Every editor library upgrade needs a new server build of the same VS Code minor version.
 * Network folders (`\\server\share`) are refused for Node extensions for now.
+
+## 11. Electron compatibility host (I6d)
+
+### Overview
+
+Some VS Code extensions ship native modules (`.node` files) built with Node's classic C++ interface for VS Code's
+desktop Electron. A classic module loads only in the runtime it was built for: VS Code 1.145.2 ships Electron 43.8.3,
+whose Node has module version 148, while our server's own Node 24.22.1 has 137. Such an extension installs but fails
+to start with "compiled against a different Node.js version". Modules built on Node-API (N-API) are ABI-stable and
+work everywhere. Most extensions use N-API or no native code, so this is an opt-in for the few that don't.
+
+### How it works
+
+The I6d experiment (2026-11-22) showed that **no second server build is needed**: all of our server's own native
+modules (`@parcel/watcher`, `@vscode/spdlog`, `node-pty`, `@vscode/sqlite3`, `kerberos`, `@vscode/native-watchdog`)
+are N-API, so the same pinned server runs unchanged when started by Electron in Node mode (`ELECTRON_RUN_AS_NODE=1`),
+which is how desktop VS Code runs its own extension host. The server forks its extension host with the same program,
+so extensions then run on Electron's ABI.
+
+```mermaid
+flowchart LR
+  P[Node extensions panel<br/>switch, off by default] -- node_host_electron --> S[Shell nodehost.rs]
+  S -- download on start, allow_download --> E[core electron_host.rs<br/>pinned zip, SHA-256, safe unzip]
+  S -- launcher --> H[node_host::start<br/>scrubbed env + ELECTRON_RUN_AS_NODE=1]
+  H --> R[Electron 43.8.3 in Node mode<br/>our pinned 1.145.2 server]
+  R --> X[Extension host on ABI 148<br/>classic native modules load]
+```
+
+* `core/src/electron_host.rs`: `PINS` (Electron's own GitHub release v43.8.3, Linux x64 and Windows x64), `download`
+  (hash check), `unpack_zip`, `ensure_installed`, the switch (`enabled`, `set_enabled`), `launcher`, and the
+  native-module scan (`classify`, `has_classic_native`).
+* `app/src-tauri/src/nodehost.rs`: `node_host_status` reports `electron {available, installed, enabled, running,
+  version, needed_by}`; `node_host_electron {enabled}` sets the switch and stops a running host; `node_host_start`
+  uses the Electron launcher when the switch is on, downloading Electron under the same `allow_download` consent.
+* `app/src/components/NodeHostPanel.tsx`: the **Run Node extensions with Electron 43.8.3 (compatibility)** box, the
+  download text, and a hint naming enabled Node extensions with classic native modules.
+
+The scan looks inside each enabled Node extension's `.node` files for the names they link to: `napi_*` means
+Node-API, `node_module_register` means classic. It reads at most 20,000 entries and 64 MiB per file, and never
+follows links. It only drives the hint; the person decides.
+
+### How it is secure
+
+| Threat | Control | Reference |
+|---|---|---|
+| Tampered or swapped Electron | Exact version per OS and CPU with SHA-256 pinned in the code, taken from our own download and equal to Electron's `SHASUMS256.txt`; no pin, no offer (fail closed); https to GitHub's release hosts only, public addresses, redirects checked by hand | NIST SI-7, CWE-494, CWE-918, CWE-601 |
+| Hostile zip entries | Allow-listed path parts, links refused, at most 2000 entries, 300 MiB per file, 800 MiB in all, counted on bytes read; `create_new` through a cap-std handle; fresh folder renamed into place only when complete | CWE-22, CWE-59, CWE-409, CWE-362 |
+| Set-uid helper | Electron's `chrome-sandbox` is never unpacked; every file is owner-only (0700 programs, 0600 data) | CWE-250, CWE-276, CWE-732 |
+| Code loaded through the environment | The server's environment stays the scrubbed allow-list plus one fixed `ELECTRON_RUN_AS_NODE=1`; `NODE_OPTIONS` and `ELECTRON_*` from the app's environment never pass | CWE-94, CWE-522 |
+| Silent downloads or switches | Off by default; only the person's click changes it (audited `electron_on` / `electron_off`); the extra download is named with version and size before the click that allows it | NIST CM-7, AU-2 |
+| Names in the hint as markup | Extension names come from our own saved list and are drawn as React text | CWE-79 |
+| Native modules do what they want | Accepted, as for Node extensions: they run with the person's rights, only in a trusted folder | (accepted risk, section 5) |
+
+### How to use it
+
+1. In the **Extensions** view, trust the folder in the **Node extensions** panel as usual.
+2. If an extension doesn't start (the panel may list it under "native modules built for one runtime"), tick **Run
+   Node extensions with Electron 43.8.3 (compatibility)**.
+3. Click **Download and start Node extensions** (Electron is downloaded once, about 150 MB, then checked), or
+   **Start Node extensions** if it is already there. The panel then says "running for this folder with Electron".
+4. Untick the box to go back to the server's own Node; a running host is stopped and the window reloads.
+
+### Limitations and known risks
+
+* Linux x64 and Windows x64 only, like the server. macOS has no server pin yet, so nothing is offered there.
+* The switch applies to all Node extensions of the host (the editor connects to one server), not per extension.
+* About 150 MB more download and about 350 MB more disk.
+* On Linux, Electron needs the usual desktop libraries (GTK, NSS) even in Node mode; without them the host does not
+  start and the panel shows "the Node extension host did not start". Untick the box to use plain Node.
+* A classic module built for another Electron (another VS Code version) still won't load.
+* The scan is a hint: a module packed inside an archive or loaded from elsewhere isn't seen.
+* Windows: checked in the cloud only so far (pin and hash); the Windows desktop app run on the PC is still to do.
+
+### Troubleshooting
+
+| Message or sign | Fix |
+|---|---|
+| Extension host log: `was compiled against a different Node.js version using NODE_MODULE_VERSION 148` | Turn on Electron compatibility. |
+| `... NODE_MODULE_VERSION 137 ...` with compatibility on | The module was built for plain Node; turn compatibility off. |
+| `the Node extension host download failed its check and was not used` | The Electron download didn't match its pin; try again later, and report it if it keeps failing. |
+| `the Node extension host did not start` with compatibility on | Missing desktop libraries on Linux; turn compatibility off. |
+
+### Test evidence (I6d)
+
+* [Pins equal our downloads and SHASUMS256.txt](../../HistoryTest/runs/2026-11-22_121508Z_electron-pin_01bc30e/RUN.md)
+* [Core, 116 passed (7 new)](../../HistoryTest/runs/2026-11-22_121508Z_core_01bc30e/RUN.md)
+* [UI smoke, 118 of 118 (4 new)](../../HistoryTest/runs/2026-11-22_121522Z_ui_01bc30e/RUN.md)
+* [Real server under Electron through the core: the abi-probe extension activates, 120 of 120](../../HistoryTest/runs/2026-11-22_121549Z_node-host-electron_01bc30e/RUN.md),
+  and the [control on plain Node, where it fails as expected](../../HistoryTest/runs/2026-11-22_121624Z_node-host-electron_01bc30e/RUN.md)
+* Static checks [failed on stale notices from the url bump](../../HistoryTest/runs/2026-11-22_121653Z_security-scan_01bc30e/RUN.md), then [passed](../../HistoryTest/runs/2026-11-22_121745Z_security-scan_882c782/RUN.md)

@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "6f741c9438548644199604889a3e189b96a40b4855ba8669c567f9c1e2277310",
+   "size": 1959
+  },
+  "command.txt": {
+   "sha256": "3e081600b6528f9477013af52a9a2969b3c417e7d65f163a758d688f8a4e8e07",
+   "size": 77
+  },
+  "environment.md": {
+   "sha256": "9af51ce76b24c672a6df52f74c3472a424709c122924c768712801e971d30ba8",
+   "size": 193
+  },
+  "logs/output.log": {
+   "sha256": "a08e92ba8e759cda3c5afcfac1a860ca09b04d692497332779ee0ec43079104f",
+   "size": 9360
+  },
+  "results/summary.txt": {
+   "sha256": "3c7046cceddafb2eacbb6ab22331f8d619fd1d081c0b53c69992ae1c1acdebab",
+   "size": 285
+  }
+ },
+ "previous": {
+  "manifest_sha256": "03a31b498fc21a1e52d654f2b88a650d5f679946a714e51280ecb54f1ea7c213",
+  "run_id": "2026-11-22_121508Z_electron-pin_01bc30e"
+ },
+ "run": {
+  "area": "core",
+  "branch_or_pr": "claude/project-thread-8u4b8a",
+  "collected_utc": "",
+  "commit": "01bc30e9ade3bdbbaa441d05b69ddde81f2f77df",
+  "count_unit": "",
+  "date_utc": "2026-11-22T12:15:08Z",
+  "dirty": false,
+  "duration_s": 13.5,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_121508Z_core_01bc30e",
+  "kind": "unit",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "Finish TandemForge and IDE roadmaps thread",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Phase I6d core: unit tests with the Electron compatibility host",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

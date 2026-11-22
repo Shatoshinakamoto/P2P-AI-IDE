@@ -90,7 +90,8 @@ sequenceDiagram
 ```
 
 **One client contract, two languages.** The ADR planned one TypeScript client shared with the IDE. The IDE's client
-is in Rust on purpose (the webview never holds a key), so instead both clients run the same test cases from
+is in Rust on purpose (the webview never holds a key), so the extension has its own TypeScript client (Pheonix chose
+this on 2026-11-22) and both clients run the same test cases from
 `core/tests/vectors/gateway_client.json` (Rust: `core/src/gateway_vectors.rs`; TypeScript:
 `vscode-extension/tests/vectors.test.ts`). A change to one that the other doesn't match fails a test. Writing
 those cases found one real difference: the Rust URL check dropped text after an IPv6 `]` instead of refusing it.

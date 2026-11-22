@@ -19,7 +19,7 @@ The IDE's plan and its decisions (ADR-029) live in the P2P-AI repository: `docs/
 | [features/local-sandbox.md](features/local-sandbox.md) | Phase I5c: the local OS sandbox on this computer (Linux: namespaces, Landlock, seccomp), ported from TandemForge; threat model and controls |
 | [features/container-runner.md](features/container-runner.md) | Phase I5d: the local container runner (Docker or Podman) with pinned Red Hat UBI images; threat model and controls |
 | [features/extensions.md](features/extensions.md) | Phases I6a and I6b: the Extensions view, Open VSX search and verified install, themes, grammars and snippets, web extensions in a sandboxed worker; threat model and controls |
-| [features/node-extensions-design.md](features/node-extensions-design.md) | Phase I6c: design for Node extensions (our own VS Code server build downloaded on first need, folder trust, local sidecar); done for Windows x64 and Linux x64 (Code Spell Checker runs in the desktop app); macOS waits for a builder |
+| [features/node-extensions-design.md](features/node-extensions-design.md) | Phase I6c: design for Node extensions (our own VS Code server build downloaded on first need, folder trust, local sidecar); done for Windows x64 and Linux x64 (Code Spell Checker runs in the desktop app); macOS waits for a builder; I6d optional Electron compatibility host |
 | [files/jschardet-stub.md](files/jschardet-stub.md) | `app/stubs/jschardet`: the stand-in that keeps an unused LGPL library out of the installers |
 | [files/app-data.md](files/app-data.md) | The IDE's own data files: `gateways.json`, `directories.json`, `links.json` and chat history, every key |
 | [files/discovery-vectors.md](files/discovery-vectors.md) | The copy of the P2P-AI protocol's shared advert vectors used by the core tests, with provenance |
@@ -27,6 +27,7 @@ The IDE's plan and its decisions (ADR-029) live in the P2P-AI repository: `docs/
 | [commands/live-gateway-e2e.md](commands/live-gateway-e2e.md) | The live check of missions and runs against a real P2P-AI gateway, node and sandbox (development only) |
 | [commands/local-toolchains.md](commands/local-toolchains.md) | The live check of real toolchains (cargo, go, npm, make, unittest) inside the local sandbox (development only) |
 | [commands/local-containers.md](commands/local-containers.md) | The live check of the container runner with a real engine, and every engine command and flag the IDE uses (development only) |
+| [commands/electron-host-e2e.md](commands/electron-host-e2e.md) | `app/tests/electron-host-e2e.sh`: real server with and without the Electron compatibility host (I6d) |
 | [commands/build-node-host.md](commands/build-node-host.md) | `scripts/build_node_host.py`: builds the Node extension host server from the editor's VS Code version |
 | [commands/history-test.md](commands/history-test.md) | The test history recorder `scripts/history_test.py` (copied from the P2P-AI repository) |
 | [files/third-party-notices.md](files/third-party-notices.md) | `app/src-tauri/THIRD-PARTY-NOTICES.txt`: the licence texts shipped in the installers, how it is generated and checked |

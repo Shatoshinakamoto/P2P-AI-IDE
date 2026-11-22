@@ -2,6 +2,17 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-22 - Phase I6d: Electron compatibility host for Node extensions
+
+### Added
+- An optional **Electron compatibility host**, off by default. When it is on, the Node extension host runs our pinned server with Electron 43.8.3 (the one VS Code 1.145.2 ships) in Node mode, so extensions with native modules built for VS Code's Electron load. Electron is downloaded once from its GitHub release on the first start after the person agrees, and checked against a pinned SHA-256. The Node extensions panel has the switch and lists enabled extensions whose native modules are built for one runtime. New core module `core/src/electron_host.rs`, shell command `node_host_electron`. Page: [features/node-extensions-design.md](features/node-extensions-design.md#11-electron-compatibility-host-i6d).
+- `app/tests/electron-host-e2e.sh` and the `abi-probe` test fixture ([commands/electron-host-e2e.md](commands/electron-host-e2e.md)). `core/examples/node_host_serve` takes `--electron-zip` and `--electron-sha256`.
+
+### Fixed
+- `THIRD-PARTY-NOTICES.txt` still listed url 2.5.8 and form_urlencoded 1.2.2 after the RUSTSEC-2026-0592 bump; regenerated.
+
+Test evidence: HistoryTest `2026-11-22_121508Z_electron-pin_01bc30e` (pins match), `2026-11-22_121508Z_core_01bc30e` (core 116 passed), `2026-11-22_121522Z_ui_01bc30e` (UI smoke 118 of 118), `2026-11-22_121549Z_node-host-electron_01bc30e` (real server under Electron: the probe activates), `2026-11-22_121624Z_node-host-electron_01bc30e` (plain Node control: fails as expected), `2026-11-22_121653Z_security-scan_01bc30e` (fail: stale notices) and `2026-11-22_121745Z_security-scan_882c782` (pass).
+
 ## 2026-11-22 - Side track X3: missions in the VS Code extension
 
 ### Added

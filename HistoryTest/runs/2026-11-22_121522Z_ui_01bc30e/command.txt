@@ -1,0 +1,2 @@
+# run in repository folder `app`, as an argument list (no shell)
+sh -c npm run build >/dev/null 2>&1 && SHOT_NODE=/tmp/claude-0/i6d/ui-smoke-node.png npm run ui-smoke

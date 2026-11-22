@@ -1,0 +1,11 @@
+id: 2026-11-22_121653Z_security-scan_01bc30e
+verdict: fail
+verdict_reason: The command ended with exit code 1.
+passed: 5
+failed: 0
+skipped: 0
+count_unit: packages
+exit_code: 1
+duration_s: 16.2
+commit: 01bc30e9ade3bdbbaa441d05b69ddde81f2f77df
+machine: cloud

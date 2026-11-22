@@ -1,0 +1,11 @@
+id: 2026-11-22_121508Z_electron-pin_01bc30e
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: not recorded
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: 0
+duration_s: 0.2
+commit: 01bc30e9ade3bdbbaa441d05b69ddde81f2f77df
+machine: cloud

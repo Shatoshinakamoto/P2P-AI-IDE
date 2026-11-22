@@ -2,6 +2,16 @@
 
 Every security patch, hardening change, CVE remediation and accepted risk, newest first.
 
+## 2026-11-22 — Phase I6d: Electron compatibility host
+- **Type:** hardening (new component, supply chain); accepted risk
+- **CVE / CWE / advisory:** none. CWE-22, CWE-59, CWE-79, CWE-94, CWE-250, CWE-276, CWE-362, CWE-409, CWE-494, CWE-522, CWE-601, CWE-732, CWE-918
+- **Severity:** none (new feature, off by default). KEV: no.
+- **Affected:** `core/src/electron_host.rs` (new), `core/src/node_host.rs` (`Launcher.env`, `safe_parts` shared), `core/examples/node_host_serve.rs`, `app/src-tauri/src/{nodehost,main}.rs`, `app/src/components/NodeHostPanel.tsx`, `app/src/ipc.ts`
+- **What changed:** an opt-in switch runs the Node extension host's pinned server with Electron 43.8.3 in Node mode. Electron comes from Electron's own GitHub release, pinned per OS and CPU by SHA-256 (taken from our download, equal to the release's `SHASUMS256.txt`), and is downloaded only after the person agrees. The unzip allow-lists paths, refuses links, caps entries and bytes, and never unpacks the set-uid `chrome-sandbox`. Files are owner-only. The only addition to the scrubbed environment is the fixed `ELECTRON_RUN_AS_NODE=1`. Switch changes are audited. The native-module scan only reads, with caps and without following links.
+- **Why it is secure now:** integrity of the new binary (NIST SI-7, SA-12, SSDF PS.2), least function by default (NIST CM-7), safe archive handling (CWE-22, CWE-59, CWE-409), no privilege-raising helper (CWE-250).
+- **Accepted risk:** Electron 43.8.3 is the version VS Code 1.145.2 ships. A live advisory lookup was not done from the cloud; re-check it on every editor library upgrade. Only its Node runtime is used. Native modules run with the person's rights, as Node extensions already do, and only in a trusted folder.
+- **Verification:** HistoryTest `2026-11-22_121508Z_electron-pin_01bc30e`, `2026-11-22_121508Z_core_01bc30e` (116 passed), `2026-11-22_121522Z_ui_01bc30e` (118 of 118), `2026-11-22_121549Z_node-host-electron_01bc30e` and `2026-11-22_121624Z_node-host-electron_01bc30e` (real server: activates under Electron, expected failure on plain Node), `2026-11-22_121745Z_security-scan_882c782` (cargo audit, npm audit gate, licence gate: pass).
+
 ## 2026-11-22 — Side track X3: missions in the VS Code extension; settings file
 - **Type:** hardening (new component); patch (settings race)
 - **CVE / CWE / advisory:** none. CWE-20, CWE-22, CWE-59, CWE-74, CWE-79, CWE-150, CWE-178, CWE-200, CWE-276, CWE-312, CWE-345, CWE-362, CWE-367, CWE-400, CWE-918; OWASP LLM06
