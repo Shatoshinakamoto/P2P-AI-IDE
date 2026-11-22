@@ -63,7 +63,10 @@ export const DEFAULT_THEME = "Dark Modern";
 // Phase I6b: the web extension host. VS Code runs it in a Worker started from a hidden iframe; both files are bundled
 // by Vite (`?worker&url` builds the worker with its imports; the package itself emits the iframe page) and served
 // from 'self'.
-import extHostWorkerUrl from "@codingame/monaco-vscode-api/workers/extensionHost.worker?worker&url";
+// The entry module loads extNetShim.ts first (internet only through the IDE for allowed extensions), then VS Code's
+// worker; extNet.ts is the page's side and must listen before the host starts.
+import extHostWorkerUrl from "./extHostWorker.ts?worker&url";
+import "./extNet.ts";
 
 const workerUrls: Record<string, string> = {
   extensionHostWorkerMain: extHostWorkerUrl,

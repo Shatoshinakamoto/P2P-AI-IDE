@@ -95,3 +95,7 @@ run_id,date_utc,area,commit,branch_or_pr,machine,verdict,passed,failed,skipped,s
 2026-11-21_215016Z_ui_fd65ba7,2026-11-21T21:50:16Z,ui,fd65ba7,claude/project-thread-8u4b8a,cloud container,pass,,,,"Phase I6b UI smoke test with a web extension in the worker host (headless Chromium, shipped CSP)"
 2026-11-21_215028Z_app-unit_fd65ba7,2026-11-21T21:50:28Z,app-unit,fd65ba7,claude/project-thread-8u4b8a,cloud container,pass,4,0,0,Phase I6b app unit tests
 2026-11-21_215028Z_security-scan_fd65ba7,2026-11-21T21:50:28Z,security-scan,fd65ba7,claude/project-thread-8u4b8a,cloud container,pass,5,0,0,"Phase I6b static checks: tsc, rustfmt, clippy, cargo audit, npm audit gate, licence notices"
+2026-11-21_231802Z_core_caf40d4,2026-11-21T23:18:02Z,core,caf40d4,claude/project-thread-8u4b8a,cloud container,pass,,,,"Phase I6b internet consent: core unit tests (ext_net request checks, network grant)"
+2026-11-21_231813Z_ui_caf40d4,2026-11-21T23:18:13Z,ui,caf40d4,claude/project-thread-8u4b8a,cloud container,pass,,,,"Phase I6b UI smoke test: internet for web extensions asked once per extension (headless Chromium, shipped CSP)"
+2026-11-21_231829Z_app-unit_caf40d4,2026-11-21T23:18:29Z,app-unit,caf40d4,claude/project-thread-8u4b8a,cloud container,pass,4,0,0,Phase I6b internet consent: app unit tests
+2026-11-21_231829Z_security-scan_caf40d4,2026-11-21T23:18:29Z,security-scan,caf40d4,claude/project-thread-8u4b8a,cloud container,pass,5,0,0,"Phase I6b internet consent static checks: tsc, rustfmt, clippy, cargo audit, npm audit gate, licence notices"

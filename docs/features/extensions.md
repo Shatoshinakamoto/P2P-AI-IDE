@@ -18,8 +18,8 @@ Phase I6b adds **web extensions**: extensions with a `browser` entry (VS Code fo
 many formatters, snippets with logic, hover and completion providers, and language support written for vscode.dev.
 Their code runs in VS Code's **web worker extension host**, a Web Worker inside a hidden, sandboxed iframe, where it
 can use the VS Code API for the files open in the editor but has **no network, no Node, no access to other files and
-no Tauri commands** (decision card on I6b permissions: "Editor only, no network" was the recommended option and is
-what is built; it can be changed if Pheonix picks otherwise).
+no Tauri commands**. On 2026-11-21 Pheonix chose **"Plus internet, asked per extension"**: an extension may reach
+public https sites after the person allows it once (see [Internet for web extensions](#internet-for-web-extensions)).
 
 Extensions with only Node code (a `main` entry and no `browser` entry: most language servers, linters, Git tools)
 are refused with a message naming phase I6c (Node host). Web extensions that ask for proposed VS Code APIs
@@ -92,6 +92,54 @@ flowchart LR
   removing it stops the extension hosts, unregisters it and starts them again: its code, providers and timers go away
   with the old worker.
 
+### Internet for web extensions
+
+```mermaid
+sequenceDiagram
+  participant E as Extension code (worker)
+  participant SH as extNetShim.ts (worker, loaded first)
+  participant P as extNet.ts (IDE page)
+  participant K as Consent card
+  participant C as Rust core (ext_fetch, ext_net.rs)
+  SH->>P: hello on the public channel: private channel name (before any extension loads)
+  E->>SH: fetch("https://api.example.org/x")
+  SH->>SH: which extensions' code is on the stack? none = refused
+  SH->>P: request on the private channel (ids, method, URL, headers, body)
+  P->>K: first time: "Allow internet for X?" (names the site)
+  K->>C: Allow = ext_set_network(id, true)
+  P->>C: ext_fetch(id, request)
+  C->>C: enabled web extension with internet? public https? headers, sizes
+  C-->>P: status, headers (no Set-Cookie), body
+  P-->>SH: answer
+  SH-->>E: Response
+```
+
+* The worker's CSP is unchanged: it still allows no network. `extHostWorker.ts` loads `extNetShim.ts` before VS
+  Code's worker, so `fetch` is replaced before any extension code runs. `data:` URLs and the app's own files go to
+  the real `fetch` (VS Code loads extension code that way); `http://` is refused; `https://` goes to the page.
+* The shim announces a random private channel name once, at worker start, on a public `BroadcastChannel`. The page
+  accepts only the first announcement after it (re)starts the host. Extension code loads later, so it can't know the
+  private name, forge requests on it or read answers.
+* Every extension whose code is on the call stack (VS Code marks extension code with `extension-file://<id>/`) must be
+  allowed. A call with no extension code on the stack, such as `Promise.resolve(url).then(fetch)` with nothing
+  awaiting it, is refused.
+* The first request of an extension without internet shows the card **"Allow internet for X?"**, naming the site.
+  **Allow internet** saves the grant in the Rust core (`installed.json`, `network: true`); **Not now** refuses until
+  the IDE restarts. The Extensions view shows "internet allowed" or "no internet", with **Allow internet** and
+  **Stop internet** buttons. A new or reinstalled copy starts without internet.
+* The core (`core/src/ext_net.rs`) checks and makes each request:
+
+| Check | Rule |
+|---|---|
+| Who | an enabled web extension whose saved entry says internet allowed; otherwise nothing is made |
+| URL | `https://` only, at most 4 KiB, no user info, no IPv6 literals; not `localhost`, `.local`, `.internal`, `.lan`, `.home.arpa`, bare names, private or special IPv4, or numeric IPv4 tricks; names that resolve to a private address are refused at connect time |
+| Method | GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS |
+| Headers | at most 64, names are HTTP tokens, values at most 8 KiB with no CR, LF or NUL; `Cookie`, `Host`, `Proxy-*`, `Sec-*` and hop-by-hop headers are dropped; no cookie jar |
+| Redirects | followed by the core, at most 3, each one checked again; `http://` and `//host` redirects refused |
+| Sizes and time | request body 4 MiB, answer 16 MiB, 30 s, at most 8 requests at once |
+| Answer | status, headers without `Set-Cookie`, final URL, body |
+| Log | `extension network request id <id> host <host>`: never the path or query |
+
 ## 3. How it is secure
 
 Threat model (STRIDE): the registry, the CDN and every extension author are untrusted. A hostile or compromised
@@ -103,7 +151,12 @@ markup into the page. A network attacker could swap the download.
 | Swapped or corrupted download | SHA-256 must equal the value Open VSX publishes, **and** the Ed25519 signature in the `.sigzip` must verify with the public key Open VSX publishes for that version; unsigned extensions are refused | NIST SI-7, SSDF PS.2, CWE-494 |
 | Wrong package under a trusted name | `publisher` and `name` in the manifest must equal what was asked for | CWE-345 |
 | Node code from an extension runs | Node-only extensions (`main`, no `browser`) are refused at install; the webview checks again and never registers one, and never uses the Node (LocalProcess) host | CWE-94, NIST CM-7 |
-| A web extension reaches the network or the computer (I6b) | Its code runs only in a Web Worker in a sandboxed iframe; the policies of the app CSP and the iframe's own CSP both apply, so `connect-src` is only `'self' data:`: https, `ipc:` and `http://ipc.localhost` are blocked; a worker has no DOM and no Tauri bridge. The UI test proves each from inside a running extension | NIST SC-7, AC-4, CWE-918 |
+| A web extension reaches the network or the computer (I6b) | Its code runs only in a Web Worker in a sandboxed iframe; the policies of the app CSP and the iframe's own CSP both apply, so `connect-src` is only `'self' data:`: https (also by XMLHttpRequest), `ipc:` and `http://ipc.localhost` are blocked; a worker has no DOM and no Tauri bridge. The UI test proves each from inside a running extension | NIST SC-7, AC-4, CWE-918 |
+| Internet without the person's say | Only `fetch` to https is carried, through the page and the core, and only for extensions the person allowed (asked once, shown and revocable in Extensions); calls with no extension code on the stack refused | NIST AC-3, CWE-862 |
+| An allowed extension reaches the local network, the gateway, TandemForge or cloud metadata | The core accepts public https hosts only and checks the resolved address at connect time; redirects checked again | CWE-918, CWE-601 |
+| Header injection, cookies | Header allow-list, CR/LF refused, `Cookie`/`Host`/proxy headers dropped, no cookie jar, `Set-Cookie` never returned | CWE-113, CWE-565 |
+| Forged requests on the channel | Private channel name announced once before extension code exists; later announcements ignored (UI test forges one) | CWE-345 |
+| Secrets in logs | Only the extension id and host are logged | CWE-532 |
 | A web extension opens a link to leak data | `vscode.env.openExternal` is refused and no window opens (UI test) | CWE-201 |
 | Eval in the IDE page | `'unsafe-eval'` is in the header CSP only for the iframe's sake; the page's own meta CSP (built from the same string without it) takes it away again. The UI test checks a string timer does not run in the page | CWE-95, ASVS V14.4 |
 | Unstable proposed APIs | Web extensions with `enabledApiProposals` are refused at install | CWE-693 |
@@ -166,7 +219,13 @@ arrives in phase I6c".
   how formatters work). It has no network to send them anywhere, but a hostile one could change an open file's
   text; the person still saves and reviews changes. Only install extensions you trust.
 * A web extension can fetch the IDE's own bundled files (`'self'`); they are public and read-only.
-* A web extension that needs the network (for example one that calls an online service) will fail its requests.
+* **Extensions share one sandbox.** The per-extension grant shows who goes online and stops well-meaning extensions
+  from reaching out unasked, but it is not a wall between extensions: a hostile extension installed next to one you
+  allowed could borrow its access (for example by having it make the call, or by forging stack traces through
+  `Error.prepareStackTrace`, which VS Code lets extensions set). While any extension has internet, install only
+  extensions you trust. An allowed extension can send what it sees in the editor to the sites it reaches.
+* Only `fetch` is carried. `XMLHttpRequest`, `WebSocket` and `EventSource` stay blocked by the CSP, so extensions that
+  use them fail their requests.
 * The iframe hash pins monaco-vscode-api 39.0.5: an upgrade that changes the iframe page needs the new hash (the UI
   smoke test fails with a CSP report if it is missing).
 * Checked in headless Chromium with the shipped CSP. Still to check on the PC: WebView2 (Windows) and WebKitGTK
@@ -184,7 +243,10 @@ arrives in phase I6c".
 | "the extension has no valid Open VSX signature; nothing was installed" | Unsigned extension, or a changed file | Choose another extension; report it to Open VSX if it should be signed |
 | "... runs Node.js code ..." | A Node-only extension | Waits for I6c |
 | "this extension uses proposed VS Code APIs, which the IDE does not offer; nothing was installed" | `enabledApiProposals` in its manifest | Choose another extension |
-| A web extension does nothing | It needs the network or a Node API, or its activation event has not happened | Open a file of its language; extensions that need the network can't work here |
+| A web extension does nothing | It needs a Node API, its activation event has not happened, or it uses `XMLHttpRequest`/`WebSocket` | Open a file of its language; allow internet if it asks; Node extensions wait for I6c |
+| "internet is not allowed for this extension" | You chose Not now, or stopped its internet | Extensions > the extension > **Allow internet** |
+| "extensions may reach public https sites only" | It tried http, a local address or a private network | Nothing to fix: those stay closed |
+| "network requests must come from an extension" | The call had no extension code on the stack | Report it to the extension's author |
 | "another extension is being installed; wait for it to finish" | One install at a time | Wait for the first one |
 | Theme does not change | The extension was turned off | Turn it on again |
 
@@ -202,3 +264,8 @@ arrives in phase I6c".
   extension checks (runs in the worker, hover shows; https, `ipc:`, Tauri bridge, DOM and links blocked; page
   can't eval; removal stops its code) [2026-11-21_215016Z_ui_fd65ba7](../HistoryTest/runs/2026-11-21_215016Z_ui_fd65ba7/RUN.md); app unit tests
   [2026-11-21_215028Z_app-unit_fd65ba7](../HistoryTest/runs/2026-11-21_215028Z_app-unit_fd65ba7/RUN.md); static checks and scans [2026-11-21_215028Z_security-scan_fd65ba7](../HistoryTest/runs/2026-11-21_215028Z_security-scan_fd65ba7/RUN.md).
+* Internet for web extensions: core unit tests 87 passed, with 4 new request-check tests
+  [2026-11-21_231802Z_core_caf40d4](../HistoryTest/runs/2026-11-21_231802Z_core_caf40d4/RUN.md); UI smoke test 105 of 105 (consent card names the site, nothing made before
+  the answer, Not now, Allow and Stop internet, request carried with its headers, no-extension-frame call refused,
+  forged channel ignored) [2026-11-21_231813Z_ui_caf40d4](../HistoryTest/runs/2026-11-21_231813Z_ui_caf40d4/RUN.md); app unit tests
+  [2026-11-21_231829Z_app-unit_caf40d4](../HistoryTest/runs/2026-11-21_231829Z_app-unit_caf40d4/RUN.md); static checks [2026-11-21_231829Z_security-scan_caf40d4](../HistoryTest/runs/2026-11-21_231829Z_security-scan_caf40d4/RUN.md).

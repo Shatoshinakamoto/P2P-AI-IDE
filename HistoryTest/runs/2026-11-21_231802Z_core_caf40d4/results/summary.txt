@@ -1,0 +1,11 @@
+id: 2026-11-21_231802Z_core_caf40d4
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: not recorded
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: 0
+duration_s: 10.9
+commit: caf40d480c68b85817313924b88668170b48cb76
+machine: cloud

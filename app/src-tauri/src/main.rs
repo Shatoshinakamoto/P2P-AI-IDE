@@ -238,7 +238,9 @@ fn main() {
             ext::ext_set_enabled,
             ext::ext_uninstall,
             ext::ext_manifest,
-            ext::ext_file
+            ext::ext_file,
+            ext::ext_set_network,
+            ext::ext_fetch
         ])
         .run(tauri::generate_context!())
         .expect("the IDE window could not start");

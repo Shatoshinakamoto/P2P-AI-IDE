@@ -1,0 +1,38 @@
+
+> p2p-ai-ide@0.1.0 test
+> node --test tests/*.test.ts
+
+TAP version 13
+# Subtest: baseName and dirName split on /
+ok 1 - baseName and dirName split on /
+  ---
+  duration_ms: 0.93514
+  type: 'test'
+  ...
+# Subtest: crumbs
+ok 2 - crumbs
+  ---
+  duration_ms: 0.78125
+  type: 'test'
+  ...
+# Subtest: languageFor maps extensions and names
+ok 3 - languageFor maps extensions and names
+  ---
+  duration_ms: 0.172182
+  type: 'test'
+  ...
+# Subtest: sizeLabel
+ok 4 - sizeLabel
+  ---
+  duration_ms: 0.196083
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 113.80532

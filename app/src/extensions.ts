@@ -18,6 +18,7 @@
 import { ExtensionHostKind, registerExtension, type IExtensionManifest, type RegisterLocalExtensionResult } from "@codingame/monaco-vscode-api/extensions";
 import { getService, IExtensionService } from "@codingame/monaco-vscode-api/services";
 import { extFile, extList, extManifest } from "./ipc.ts";
+import { armExtensionNet } from "./extNet.ts";
 
 type Registered = { dispose(): Promise<void>; urls: string[]; web: boolean };
 const active = new Map<string, Registered>();
@@ -107,7 +108,11 @@ async function unregisterOne(id: string): Promise<void> {
   const svc = r.web ? await getService(IExtensionService) : null;
   const stopped = svc ? await svc.stopExtensionHosts("an extension was removed or turned off", true) : false;
   await r.dispose();
-  if (svc && stopped) await svc.startExtensionHosts();
+  if (svc && stopped) {
+    // The new worker announces a new private channel for internet requests; accept it (extNet.ts).
+    armExtensionNet();
+    await svc.startExtensionHosts();
+  }
   for (const u of r.urls) URL.revokeObjectURL(u);
 }
 

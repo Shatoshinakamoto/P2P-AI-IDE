@@ -14,7 +14,7 @@
  */
 import { useEffect, useState } from "react";
 import { BadgeCheck, Download, Trash2 } from "lucide-react";
-import { extInstall, extList, extManifest, extSearch, extSetEnabled, extUninstall, type ExtInstalled, type ExtSummary } from "../ipc.ts";
+import { extInstall, extList, extManifest, extSearch, extSetEnabled, extSetNetwork, extUninstall, type ExtInstalled, type ExtSummary } from "../ipc.ts";
 import { syncExtensions } from "../extensions.ts";
 import { DEFAULT_THEME, setColorTheme } from "../monaco.ts";
 import { saveTheme, savedTheme } from "../lib/theme.ts";
@@ -64,6 +64,12 @@ export function ExtensionsView({ onNotice }: Props) {
     }
   };
   useEffect(() => { void refresh(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  // The consent card (extNet.ts) changes grants; show them at once.
+  useEffect(() => {
+    const on = () => void refresh();
+    window.addEventListener("ide-extensions-changed", on);
+    return () => window.removeEventListener("ide-extensions-changed", on);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const runSearch = async () => {
     if (!query.trim()) return;
@@ -118,7 +124,7 @@ export function ExtensionsView({ onNotice }: Props) {
       <p className="text-xs text-ide-dim">
         Installs themes, icon themes, language grammars, snippets and web extensions. Each download is checked against
         its SHA-256 and Open VSX signature first. Web extensions run in a sandbox inside the editor: they see the files
-        open in the editor, with no network and no other access to your computer. Extensions that need Node.js come with the Node extension host in a later phase.
+        open in the editor and have no other access to your computer. One that wants the internet asks you first. Extensions that need Node.js come with the Node extension host in a later phase.
       </p>
 
       {results && (
@@ -162,8 +168,18 @@ export function ExtensionsView({ onNotice }: Props) {
                   {e.verified_publisher && <BadgeCheck size={13} aria-label="Verified publisher on Open VSX" />}
                 </div>
                 <div className="truncate text-xs text-ide-dim">
-                  {e.namespace} · v{e.version}{e.kind === "web" ? " · web extension (runs in the editor sandbox, no network)" : ""}
+                  {e.namespace} · v{e.version}{e.kind === "web" ? (e.network ? " · web extension (runs in the editor sandbox, internet allowed)" : " · web extension (runs in the editor sandbox, no internet)") : ""}
                 </div>
+                {e.kind === "web" && !e.network && (
+                  <button type="button" disabled={busy !== null || !e.enabled} onClick={() => void act(e.id, () => extSetNetwork(e.id, true), `Allowed internet for ${e.name}`)} className="mt-1 rounded border border-ide-line px-1.5 text-xs hover:bg-ide-hover disabled:opacity-50">
+                    Allow internet<span className="sr-only"> for {e.display_name || e.name}</span>
+                  </button>
+                )}
+                {e.kind === "web" && e.network && (
+                  <button type="button" disabled={busy !== null} onClick={() => void act(e.id, () => extSetNetwork(e.id, false), `Stopped internet for ${e.name}`)} className="mt-1 rounded border border-ide-line px-1.5 text-xs hover:bg-ide-hover disabled:opacity-50">
+                    Stop internet<span className="sr-only"> for {e.display_name || e.name}</span>
+                  </button>
+                )}
               </div>
               <label className="flex items-center gap-1 text-xs">
                 <input type="checkbox" checked={e.enabled} disabled={busy !== null} onChange={(ev) => { const on = ev.target.checked; void act(e.id, async () => { if (!on) await leaveThemeOf(e.id); return extSetEnabled(e.id, on); }, on ? `Turned on ${e.name}` : `Turned off ${e.name}`); }} />

@@ -15,6 +15,7 @@ pub mod chats;
 pub mod client;
 pub mod container;
 pub mod discovery;
+pub mod ext_net;
 pub mod extensions;
 pub mod gateways;
 pub mod gwapi;
