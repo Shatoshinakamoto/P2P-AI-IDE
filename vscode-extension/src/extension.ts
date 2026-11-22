@@ -15,11 +15,14 @@ import { parseFromMissions } from "./viewMessages.ts";
 import { ChatViewProvider } from "./chatView.ts";
 import { GatewayStore, caLooksValid } from "./gateways.ts";
 import { ChangeReview } from "./review.ts";
+import { FileState } from "./fileState.ts";
 import { MissionsViewProvider } from "./missionsView.ts";
 
 /** Called by VS Code when the chat view or a P2P-AI command is first used. */
 export function activate(ctx: vscode.ExtensionContext): void {
-  const store = new GatewayStore(ctx);
+  // Non-secret settings live in the extension's own state file (see fileState.ts for why not globalState).
+  const state = new FileState(ctx, ["p2pAi.gateways", "p2pAi.activeGateway", "p2pAi.tools", "p2pAi.model."]);
+  const store = new GatewayStore(ctx, state);
   const review = new ChangeReview(ctx);
   const chat = new ChatViewProvider(ctx, store, review);
   // X3: audit lines (fixed words, VS Code adds the time) go to the "P2P-AI" output channel.

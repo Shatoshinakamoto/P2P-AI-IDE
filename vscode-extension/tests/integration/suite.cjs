@@ -198,16 +198,21 @@ exports.run = async function run() {
 
     // X3: missions. The view is opened so its handler runs exactly as it does for clicks.
     await vscode.commands.executeCommand("p2pAi.missions.focus");
-    const ms = (m) => vscode.commands.executeCommand("p2pAi.test.missions", m);
+    const ms = async (m) => {
+      const r = await vscode.commands.executeCommand("p2pAi.test.missions", m);
+      if (r && r.error) console.log(`missions ${m.type}: ${r.error}`);
+      return r;
+    };
     assert.deepEqual(await ms({ type: "push" }), { error: "pick a gateway project first" });
     assert.deepEqual(await ms({ type: "link", id: "../p1", name: "x" }), { error: "refused by the message check" }, "ids are checked before use");
     await ms({ type: "create", name: "Shop" });
-    const pushed = (await ms({ type: "push" })).ok;
-    assert.equal(pushed.uploaded, 1);
+    const pushRes = await ms({ type: "push" });
+    const pushed = pushRes.ok;
+    assert.equal(pushed?.uploaded, 1, JSON.stringify(pushRes));
     assert.deepEqual(pushed.skipped, [{ rel: ".env", reason: "may hold secrets, kept on this computer" }]);
     assert.deepEqual(Object.keys(proj.files), ["hello.py"], ".env stays home");
-    await ms({ type: "switches", autopilot: true, autoImprove: false });
-    assert.equal(proj.flags.autopilot, true);
+    const swRes = await ms({ type: "switches", autopilot: true, autoImprove: false });
+    assert.equal(proj.flags.autopilot, true, JSON.stringify(swRes));
     assert.deepEqual(await ms({ type: "start", kind: "autopilot", goal: "fix the sign", model: "fake-model", checks: [] }), { error: "Autopilot needs 1 to 8 checks that say when the work is done" });
     const started = (await ms({ type: "start", kind: "autopilot", goal: "fix the sign", model: "fake-model", checks: [{ id: "check-1", kind: "tests", framework: "pytest" }] })).ok;
     assert.equal(started.id, "m1");

@@ -46,7 +46,7 @@ import { parseFromMissions, type FromMissions } from "./viewMessages.ts";
 const LINKS_KEY = "p2pAi.links";
 const MAX_LINKS = 200;
 
-/** Which gateway project belongs to a folder (stored in VS Code's global state; the folder path itself is not stored). */
+/** Which gateway project belongs to a folder (in the extension's state file; the folder path itself is not stored). */
 interface Link {
   folder: string;
   gateway_id: string;
@@ -112,7 +112,7 @@ export class MissionsViewProvider implements vscode.WebviewViewProvider {
   // ---- links
 
   private links(): Link[] {
-    const raw = this.ctx.globalState.get<unknown>(LINKS_KEY);
+    const raw = this.store.state.get<unknown>(LINKS_KEY);
     if (!Array.isArray(raw)) return [];
     // SECURITY: stored values are re-checked like everything else (CWE-20).
     return raw.filter(
@@ -126,7 +126,7 @@ export class MissionsViewProvider implements vscode.WebviewViewProvider {
     if (project) {
       links.push({ folder, gateway_id: gid, project_id: project.id, project_name: [...project.name].filter((c) => !/[\x00-\x1f\x7f-\x9f]/.test(c)).slice(0, 128).join("") });
     }
-    await this.ctx.globalState.update(LINKS_KEY, links.slice(-MAX_LINKS));
+    await this.store.state.update(LINKS_KEY, links.slice(-MAX_LINKS));
   }
 
   /** The gateway, a client for it, the folder and its link (any may be missing). */
