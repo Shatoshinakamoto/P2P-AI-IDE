@@ -2,7 +2,7 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
-## 2026-11-22 - Phase I6c-4: our own Node extension host server (in progress)
+## 2026-11-22 - Phase I6c-4: our own Node extension host server
 
 ### Added
 - Pheonix chose "Build our own server": `scripts/build_node_host.py` builds the Node extension host server from VS Code's MIT source at the editor library's exact version (1.145.2), with the Copilot extension and runtime and the marketplace debugger extensions left out. Linux x64 build: 93 MB. Page: [commands/build-node-host.md](commands/build-node-host.md).
@@ -18,7 +18,7 @@ All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepac
 - Windows x64 is pinned too (built on the PC, 86.6 MB). `scripts/build_node_host.py` now finds the Windows SDK's `signtool.exe`, which VS Code's Windows packaging step needs.
 
 ### Not done yet
-- macOS and Linux arm64 have no builder, so they show Node extensions as not available. A real Node extension in the desktop app on the PC is still to be checked.
+- macOS and Linux arm64 have no builder, so they show Node extensions as not available. Checked on the PC: Code Spell Checker runs in the Windows desktop app with our server.
 
 ### Tests
 - Linux x64 server build [run](../HistoryTest/runs/2026-11-22_053759Z_node-host-build_4096b2e/RUN.md); the real editor with that server, 116 of 116 [run](../HistoryTest/runs/2026-11-22_053720Z_ui-node-host-real_832a0a7/RUN.md) (an earlier run [is corrected by a note](../HistoryTest/runs/2026-11-22_053624Z_ui-node-host-real_4096b2e/NOTES.md)).

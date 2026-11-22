@@ -1,0 +1,70 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "17674037525f506c2700a0868c57fb5d9fdf2b8866e433713f3347bc98c45589",
+   "size": 2554
+  },
+  "artifacts/cspell-hover.jpg": {
+   "sha256": "2f2de4ead3ac41faf463f10317661ccde9adacced621015f5bc2942c93e92c97",
+   "size": 7260
+  },
+  "artifacts/spell-squiggles.jpg": {
+   "sha256": "c3e1570c1390bee9f7fdbb9759f97ee870d2527b286677db3bdd5d2c7986e534",
+   "size": 8836
+  },
+  "command.txt": {
+   "sha256": "ac6b6603e1399d7ac57cd2c712071bae24af32dae36597d7d22dee39a219ea6d",
+   "size": 163
+  },
+  "environment.md": {
+   "sha256": "6ad3e347c2e7423b66c5f7be53080d4048cf36a36b11c84409ae89f7cfcc05b1",
+   "size": 207
+  },
+  "logs/output.log": {
+   "sha256": "dc953c322916ec01864424f9d0e44bcd8ac1a870332bf5fd4919ba16301ada22",
+   "size": 1947
+  },
+  "logs/remoteexthost.log": {
+   "sha256": "dc953c322916ec01864424f9d0e44bcd8ac1a870332bf5fd4919ba16301ada22",
+   "size": 1947
+  },
+  "results/summary.txt": {
+   "sha256": "040e4e2679d4d51bfa264fe863fbc9f75048e7f784542f7dcb3b46b77e7e30bc",
+   "size": 249
+  }
+ },
+ "previous": {
+  "manifest_sha256": "fcbe7581160e2d08309a8b1644f59c5fc1093c6cd0c0bbec36c91c37207fbbe7",
+  "run_id": "2026-11-22_071929Z_node-host-real_0c3d711"
+ },
+ "run": {
+  "area": "desktop-node-ext",
+  "branch_or_pr": "",
+  "collected_utc": "",
+  "commit": "311cb8d",
+  "count_unit": "",
+  "date_utc": "2026-11-22T10:03:16Z",
+  "dirty": false,
+  "duration_s": 0.0,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_100316Z_desktop-node-ext_311cb8d",
+  "kind": "manual",
+  "machine": "pc",
+  "passed": 1,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Real Node extension (Code Spell Checker) in the Windows desktop app with our pinned 1.145.2 server",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}
