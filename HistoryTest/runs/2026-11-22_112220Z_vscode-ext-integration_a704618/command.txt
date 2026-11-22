@@ -1,0 +1,2 @@
+# run in repository folder `vscode-extension`, as an argument list (no shell)
+xvfb-run -a node tests/integration/run.mjs 1.95.0

@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "57ac16602e35cd3dc6dfe412e13b18168ac4081d558d2f14d922928e7b736160",
+   "size": 1373
+  },
+  "command.txt": {
+   "sha256": "af9bbfd47149987f2b94672f0fd8112cf185aca7cb7e099cddebf6ff8511cb39",
+   "size": 152
+  },
+  "environment.md": {
+   "sha256": "fbe32b5632e3175ae3db7e7cebf01f2ebfe290986d1bae428320b891f587cbe4",
+   "size": 207
+  },
+  "logs/output.log": {
+   "sha256": "566b851bf977dbccb86da215717976076ece66adaf8adb2060287d52f38ffc58",
+   "size": 1655
+  },
+  "results/summary.txt": {
+   "sha256": "8db40c2fdbe5166d251e38195474aa5d9304065ce091da99ae7b494842ae7453",
+   "size": 298
+  }
+ },
+ "previous": {
+  "manifest_sha256": "d2adbdb283c08183ca506f6b2fe8659bfa7bd11d17e990f7eed47aad7f8d92f3",
+  "run_id": "2026-11-22_112222Z_vscode-ext-audit_a704618"
+ },
+ "run": {
+  "area": "vscode-ext-package",
+  "branch_or_pr": "",
+  "collected_utc": "",
+  "commit": "a704618f4d39d4acf7e18f5c64eeeea02da9d658",
+  "count_unit": "",
+  "date_utc": "2026-11-22T11:22:23Z",
+  "dirty": false,
+  "duration_s": 0.8,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_112223Z_vscode-ext-package_a704618",
+  "kind": "build",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Package the extension as a .vsix",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

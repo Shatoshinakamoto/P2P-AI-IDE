@@ -2,6 +2,17 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-22 - Side track X1: P2P-AI extension for VS Code and VSCodium
+
+### Added
+- `vscode-extension/`: a P2P-AI view with a streamed chat (Stop, New), plus the commands Add, Pick and Remove Gateway, Pick Model and Set Gateway Key. Keys are kept in VS Code's secret storage, and each gateway can have its own CA. It is built as `p2p-ai.vsix` with no run-time dependencies. Pages: [features/vscode-extension.md](features/vscode-extension.md), [commands/vscode-extension.md](commands/vscode-extension.md).
+- `core/tests/vectors/gateway_client.json`: shared test cases that the IDE's Rust gateway client and the extension's TypeScript client both run, covering SSE lines, model lists, HTTP status, model ids, URLs, names and keys.
+
+### Fixed
+- The gateway URL check dropped text after an IPv6 `]` (for example `http://[::1]x`) instead of refusing it. The shared test cases found it.
+
+Test evidence: HistoryTest `2026-11-22_112152Z_core_a704618` (core 99 + 5 passed, with the shared cases), `2026-11-22_112214Z_vscode-ext-unit_a704618` (extension 14 of 14), `2026-11-22_112214Z_vscode-ext-integration_a704618` (real VS Code 1.147.0: pass), `2026-11-22_112220Z_vscode-ext-integration_a704618` (real VS Code 1.95.0: pass), `2026-11-22_112222Z_vscode-ext-audit_a704618` (npm audit: 0), `2026-11-22_112223Z_vscode-ext-package_a704618` (.vsix built).
+
 ## 2026-11-22 - Phase I6c-4: our own Node extension host server
 
 ### Added

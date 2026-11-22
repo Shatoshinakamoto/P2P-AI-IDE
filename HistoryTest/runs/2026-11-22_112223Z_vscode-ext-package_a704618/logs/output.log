@@ -1,0 +1,42 @@
+ INFO  Files included in the VSIX:
+p2p-ai.vsix
+├─ [Content_Types].xml 
+├─ extension.vsixmanifest 
+└─ extension/
+   ├─ LICENSE.txt [11.3 KB]
+   ├─ package.json [2.23 KB]
+   ├─ readme.md 
+   ├─ media/
+   │  ├─ chat.css [1.6 KB]
+   │  ├─ chat.js [3.22 KB]
+   │  └─ icon.svg [0.31 KB]
+   └─ out/
+      ├─ chatView.js [9.9 KB]
+      ├─ extension.js [7.68 KB]
+      ├─ gateways.js [6.94 KB]
+      ├─ viewMessages.js [1.32 KB]
+      └─ gateway/
+         ├─ checks.js [11.04 KB]
+         └─ client.js [11.78 KB]
+
+ DONE  Packaged: p2p-ai.vsix (14 files, 26.99 KB)
+Archive:  p2p-ai.vsix
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+     2519  2026-11-22 11:22   extension.vsixmanifest
+      516  2026-11-22 11:22   [Content_Types].xml
+    11574  2026-11-22 11:20   extension/LICENSE.txt
+      506  2026-11-22 11:22   extension/readme.md
+     2282  2026-11-22 11:20   extension/package.json
+     1642  2026-11-22 11:16   extension/media/chat.css
+     3295  2026-11-22 11:16   extension/media/chat.js
+      316  2026-11-22 11:16   extension/media/icon.svg
+    10135  2026-11-22 11:22   extension/out/chatView.js
+     7869  2026-11-22 11:22   extension/out/extension.js
+     7110  2026-11-22 11:22   extension/out/gateways.js
+     1350  2026-11-22 11:22   extension/out/viewMessages.js
+    11300  2026-11-22 11:22   extension/out/gateway/checks.js
+    12058  2026-11-22 11:22   extension/out/gateway/client.js
+---------                     -------
+    72472                     14 files
+4231b5edd841d8d1434d9f6eed3a47bb272faf0e57c4cc59d4f6171dc0e6c026  p2p-ai.vsix
