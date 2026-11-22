@@ -80,14 +80,15 @@ flowchart LR
   3. **Folder path:** Windows folder paths came back as `\\?\D:\...`, which made the workspace URI path start with `//` and broke every file request. The shell now sends the plain path (`node_host::editor_folder`) and refuses network shares (`folder_not_local`).
 * **Version mismatch found (open).** With those fixed, the server starts, lists the extensions and the editor loads them, but **no extension ever activates**. Cause: the editor library is built on VS Code 1.145.2, the server on 1.140. VS Code numbers its editor-to-extension-host messages, and the numbering changed in 1.144 (three new message targets), so the editor's messages land on the wrong targets: the server never receives the workspace and waits forever. Checked by calling the host directly from the editor (`Unknown method $activateByEvent on actor ExtHostTerminalService`) and by comparing the identifier lists of VS Code 1.140.0, 1.143.x and 1.145.2 (1.140 to 1.143 identical; 1.144 and later differ). No VSCodium release matches 1.145 yet (newest 1.143.17232), and the two projects release different versions (editor library 1.138, 1.142, 1.145; VSCodium 1.135, 1.140, 1.143), so they rarely line up.
 * **Version check:** the shell reports the pinned server's VS Code version (`node_host::VSCODE_VERSION`) in `node_host_status` and `node_host_start`. The editor (`app/src/lib/vscodeVersion.ts`, `nodeHost.ts`) compares it with its own and, when the minor versions differ, neither offers the host (the panel says why, and nothing is downloaded) nor connects to a running one. Today that means Node extensions are shown as unavailable on every system until a matching server is pinned; Pheonix's choice of how to get one is pending.
-### I6c-4 (our own server, in progress)
+### I6c-4 (our own server, in progress: Linux pinned)
 
 * **Decision (2026-11-22, Pheonix):** build our own server from VS Code's MIT source at the editor library's exact version, instead of VSCodium's releases. Tool: [`scripts/build_node_host.py`](../commands/build-node-host.md). The server is the same VS Code server VSCodium ships, minus Copilot (extension and runtime) and the marketplace debugger extensions.
 * **Linux x64, VS Code 1.145.2:** built in the cloud (93 MB archive). Installed and started through the core (`core/examples/node_host_serve.rs`), it works with the real editor: the server got the workspace and started Git, GitHub and merge-conflict, with no error (UI smoke test with `NODE_HOST_REAL`, 116 of 116).
 * **Found with the real host:** extensions couldn't save their state; the editor now registers the extension storage service (in memory).
-* **Still to do:** publish the builds and pin them (where: Pheonix's choice pending), the Windows x64 build on the PC (needs Visual Studio's Spectre-mitigated libraries), then a real Open VSX extension in the desktop app on the PC. No macOS or Linux arm64 builder while GitHub Actions is billing-locked.
+* **Published and pinned (2026-11-22):** Pheonix chose a GitHub pre-release on the IDE repo, then made the repo public so the app can download without signing in. Pre-release `node-host-1.145.2` holds the Linux x64 archive (SHA-256 `75deb573a1841099c9b17bffe5680a6f32e244439480ab3c25579aa4de38d80e`), downloaded back anonymously and hashed again before pinning. `PINS` now has only our builds: `SERVER_BUILD` 1.145.2, `SERVER_COMMIT` c4453f8e…, `VSCODE_VERSION` 1.145.2. The VSCodium 1.140 pins are gone, because the editor refuses them anyway.
+* **Still to do:** the Windows x64 build is running on the PC now that Visual Studio's Spectre-mitigated libraries are installed; then pin it and run a real Open VSX extension in the desktop app on the PC. Until then, Windows and macOS have no pin and show Node extensions as not available (fail closed). No macOS or Linux arm64 builder while GitHub Actions is billing-locked.
 
-* To move to a new VSCodium release: download every `vscodium-reh-*` file and its `.sha256`, hash each file yourself and compare, read `commit` from `product.json`, update `VSCODIUM`, `VSCODIUM_COMMIT`, `VSCODE_VERSION` and `PINS` together, and run the real-server check. The server's VS Code minor version must equal the editor library's (`vscode/vs/platform/product/common/product.js` in `@codingame/monaco-vscode-api`).
+* To move to a new server build: build it with `scripts/build_node_host.py` for each platform, publish each archive and its `.sha256` on a `node-host-<version>` pre-release, download each one back and hash it yourself, update `SERVER_BUILD`, `SERVER_COMMIT`, `VSCODE_VERSION` and `PINS` together, and run the real-server check. The server's VS Code minor version must equal the editor library's (`vscode/vs/platform/product/common/product.js` in `@codingame/monaco-vscode-api`).
 
 ## 8. Dependencies
 
@@ -96,7 +97,7 @@ flowchart LR
 | `tar` | 0.4.46 | Read the server's `.tar.gz` (entries only; this module writes the files) | cargo audit 2026-11-21: no advisories |
 | `filetime` | 0.2.30 | Pulled in by `tar` | cargo audit 2026-11-21: no advisories |
 | `@codingame/monaco-vscode-remote-agent-service-override` | 39.0.5 (exact, MIT) | Connects the editor services to the server | npm audit gate 2026-11-22: passed |
-| VSCodium server (REH) | 1.140.06880 (pinned 2026-11-22, SHA-256 per file) | Runs Node extensions; ships its own Node | Built from VS Code 1.140 (MIT). No VSCodium-specific advisory known to us on 2026-11-22; a live NVD/GitHub advisory lookup was not possible from the cloud. Re-check VS Code 1.140 security fixes when moving to a newer release |
+| Our VS Code server build (REH) | 1.145.2, commit c4453f8e… (pinned 2026-11-22, SHA-256 per file) | Runs Node extensions; ships its own Node 24.22.1 | Built from VS Code 1.145.2 (MIT) with `scripts/build_node_host.py`. No advisory known to us for 1.145.2 on 2026-11-22; a live NVD/GitHub advisory lookup was not possible from the cloud. Re-check VS Code security fixes on every editor library upgrade |
 
 ## 9. Test evidence
 
@@ -114,5 +115,5 @@ flowchart LR
 
 * Node extensions can't be stopped one by one without restarting the server.
 * The download needs github.com; offline machines stay on web extensions.
-* **Node extensions don't run yet:** no published VSCodium server matches the editor's VS Code 1.145 (section 7). The editor says so instead of connecting. Every editor library upgrade needs a server of the same VS Code minor version.
+* **Node extensions run only on Linux x64 so far:** that is the only pinned build (section 7). Windows x64 follows; macOS and Linux arm64 have no builder. Every editor library upgrade needs a new server build of the same VS Code minor version.
 * Network folders (`\\server\share`) are refused for Node extensions for now.

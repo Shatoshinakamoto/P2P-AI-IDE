@@ -38,7 +38,7 @@ fn get(url: &str) -> (u16, String) {
 }
 
 #[test]
-#[ignore = "downloads the real VSCodium server (about 85 MB); run on the PC"]
+#[ignore = "downloads the real pinned server (about 90 MB); run on the PC"]
 fn the_pinned_server_downloads_starts_and_needs_its_token() {
     let pin = node_host::pin_for(node_host::PINS, std::env::consts::OS, std::env::consts::ARCH)
         .expect("a pin for this computer");
@@ -62,7 +62,7 @@ fn the_pinned_server_downloads_starts_and_needs_its_token() {
     let (st, body) = get(&format!("{base}/version"));
     println!("/version -> {st} {body}");
     assert_eq!(st, 200);
-    assert_eq!(body.trim(), node_host::VSCODIUM_COMMIT, "the server's commit is the pinned one");
+    assert_eq!(body.trim(), node_host::SERVER_COMMIT, "the server's commit is the pinned one");
 
     let (no_token, _) = get(&format!("{base}/"));
     let (with_token, _) = get(&format!("{base}/?tkn={}", run.token));

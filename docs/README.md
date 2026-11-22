@@ -19,7 +19,7 @@ The IDE's plan and its decisions (ADR-029) live in the P2P-AI repository: `docs/
 | [features/local-sandbox.md](features/local-sandbox.md) | Phase I5c: the local OS sandbox on this computer (Linux: namespaces, Landlock, seccomp), ported from TandemForge; threat model and controls |
 | [features/container-runner.md](features/container-runner.md) | Phase I5d: the local container runner (Docker or Podman) with pinned Red Hat UBI images; threat model and controls |
 | [features/extensions.md](features/extensions.md) | Phases I6a and I6b: the Extensions view, Open VSX search and verified install, themes, grammars and snippets, web extensions in a sandboxed worker; threat model and controls |
-| [features/node-extensions-design.md](features/node-extensions-design.md) | Phase I6c: design for Node extensions (VSCodium server downloaded on first need, folder trust, local sidecar); core, editor and real pins built and checked on the PC; a real Node extension in the desktop app is next |
+| [features/node-extensions-design.md](features/node-extensions-design.md) | Phase I6c: design for Node extensions (our own VS Code server build downloaded on first need, folder trust, local sidecar); Linux x64 build pinned, Windows x64 next, then a real Node extension in the desktop app |
 | [files/jschardet-stub.md](files/jschardet-stub.md) | `app/stubs/jschardet`: the stand-in that keeps an unused LGPL library out of the installers |
 | [files/app-data.md](files/app-data.md) | The IDE's own data files: `gateways.json`, `directories.json`, `links.json` and chat history, every key |
 | [files/discovery-vectors.md](files/discovery-vectors.md) | The copy of the P2P-AI protocol's shared advert vectors used by the core tests, with provenance |

@@ -968,7 +968,7 @@ try {
   check("Node extensions start only in a trusted folder, and the panel says what they can do", /read and change any of your files/.test(await np.innerText()) && !(await nodeCalls()).some((c) => c.cmd === "node_host_start"));
   await np.getByRole("button", { name: "Trust this folder for Node extensions" }).click();
   await np.getByRole("button", { name: "Download and start Node extensions" }).waitFor();
-  check("trusting is its own click, and the download is named before it happens", (await nodeCalls()).some((c) => c.cmd === "node_host_trust" && c.args.trusted === true) && /about 85 MB/.test(await np.innerText()));
+  check("trusting is its own click, and the download is named before it happens", (await nodeCalls()).some((c) => c.cmd === "node_host_trust" && c.args.trusted === true) && /about 90 MB/.test(await np.innerText()));
   const errBefore = errors.length;
   await Promise.all([page.waitForEvent("load"), np.getByRole("button", { name: "Download and start Node extensions" }).click()]);
   await page.getByRole("button", { name: "Extensions", exact: true }).waitFor();

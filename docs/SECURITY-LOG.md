@@ -2,6 +2,16 @@
 
 Every security patch, hardening change, CVE remediation and accepted risk, newest first.
 
+## 2026-11-22 — Phase I6c-4: Node host pins moved to our own build
+- **Type:** hardening (supply chain)
+- **CVE / CWE / advisory:** none. CWE-494; NIST SI-7, SA-12
+- **Severity:** none. KEV no.
+- **Affected:** `core/src/node_host.rs` (`PINS`, `SERVER_BUILD`, `SERVER_COMMIT`, `VSCODE_VERSION`), `core/tests/node_host_real.rs`
+- **What changed:** the only pin is our Linux x64 build of VS Code 1.145.2's server, on the IDE repo's pre-release `node-host-1.145.2` (github.com, already an allowed host). The VSCodium 1.140 pins were removed. Windows, macOS and Linux arm64 have no pin, so they get nothing (fail closed). The repo was made public on Pheonix's choice; before that, its full history was scanned for secret patterns (tokens, keys, private keys) and only test fixtures matched. Commit author emails become public, which Pheonix accepted.
+- **Why it is secure now:** the app accepts only the exact published bytes. The pin was taken by downloading the file back anonymously from the release and hashing it, and it equals the build record's hash (NIST SI-7, CWE-494).
+- **Accepted risk:** the publisher's GitHub account can replace a release file, but the app would refuse it because of the pinned hash. gitleaks itself was not run (not installed in the cloud); the regex scan is weaker.
+- **Verification:** core tests 95 + 5 + 2 passed. The real download test (`node_host_real`, ignored by default) can't run in the cloud because the app uses no proxy and the cloud has no direct internet; it runs on the PC once the Windows pin is in. Download hash check: see the CHANGELOG entry.
+
 ## 2026-11-22 — Phase I6c-4: Node extension host server built from pinned VS Code source
 - **Type:** hardening (supply chain)
 - **CVE / CWE / advisory:** none. CWE-494, CWE-20, CWE-78; NIST SA-12, CM-7, SI-7; SSDF PS.2, PW.4; SLSA build L1
