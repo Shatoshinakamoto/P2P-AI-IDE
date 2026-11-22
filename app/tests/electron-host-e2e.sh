@@ -4,7 +4,8 @@
 # Purpose: installs a Node extension host server archive and (in "electron" mode) an Electron zip through the core's
 # own checks (core/examples/node_host_serve: SHA-256, safe unpack, scrubbed start), stages the abi-probe test
 # extension (native module built for Electron's ABI only), runs the editor's UI smoke test against that real server
-# and reports whether the extension activated. Expected: "activated" with electron, "FAILED" with node.
+# and reports whether the extension activated. Expected: "activated" with electron, "FAILED" with node (the
+# control). Exit code: 0 when the outcome is the expected one for the mode, 1 otherwise.
 #
 # Usage: electron-host-e2e.sh <node|electron>
 # Environment (all required): SERVER_TGZ (our server .tar.gz, with SERVER_TGZ.sha256 beside it), ELECTRON_ZIP and
@@ -37,10 +38,16 @@ NODE_HOST_REAL="$base/serve.json" NODE_HOST_REAL_DATA="$data" SHOT_NODE="$base/s
 rc=${PIPESTATUS[0]}
 set -e
 log="$(cat "$data"/node-host-state/user/logs/*/exthost*/remoteexthost.log 2>/dev/null || true)"
+outcome=none
 if grep -q "Activating extension p2p-ai-test.abi-probe failed" <<<"$log"; then
-  echo "abi-probe: FAILED to activate"
+  outcome=failed; echo "abi-probe: FAILED to activate"
   grep -m1 -o "NODE_MODULE_VERSION [0-9]*. This version of Node.js requires NODE_MODULE_VERSION [0-9]*" <<<"$log" || true
-elif grep -q "_doActivateExtension p2p-ai-test.abi-probe" <<<"$log"; then echo "abi-probe: activated with no error"
+elif grep -q "_doActivateExtension p2p-ai-test.abi-probe" <<<"$log"; then outcome=activated; echo "abi-probe: activated with no error"
 else echo "abi-probe: not started"; fi
 echo "ui-smoke exit $rc"
 exec 9>&-; wait || true
+# Exit 0 only for the expected outcome: activated with a clean UI smoke run under Electron; the ABI failure under
+# plain Node (the control).
+if [ "$mode" = electron ] && [ "$outcome" = activated ] && [ "$rc" = 0 ]; then echo "e2e: pass (electron)"; exit 0; fi
+if [ "$mode" = node ] && [ "$outcome" = failed ]; then echo "e2e: pass (expected failure on plain Node)"; exit 0; fi
+echo "e2e: fail"; exit 1
