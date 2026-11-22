@@ -1,0 +1,11 @@
+id: 2026-11-22_053759Z_node-host-build_4096b2e
+verdict: pass
+verdict_reason: pass: the build finished, the commit and archive checks held, and the server runs real extensions with the editor.
+passed: 1
+failed: 0
+skipped: not recorded
+count_unit: not recorded
+exit_code: not recorded
+duration_s: not recorded
+commit: 4096b2e
+machine: cloud

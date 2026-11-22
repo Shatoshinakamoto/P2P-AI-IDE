@@ -1,0 +1,11 @@
+id: 2026-11-22_053720Z_ui-node-host-real_832a0a7
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: not recorded
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: 0
+duration_s: 27.4
+commit: 832a0a77f17200af72f63a087de48876d0085e3c
+machine: cloud

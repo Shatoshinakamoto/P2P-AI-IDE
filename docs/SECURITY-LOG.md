@@ -2,6 +2,17 @@
 
 Every security patch, hardening change, CVE remediation and accepted risk, newest first.
 
+## 2026-11-22 — Phase I6c-4: Node extension host server built from pinned VS Code source
+- **Type:** hardening (supply chain)
+- **CVE / CWE / advisory:** none. CWE-494, CWE-20, CWE-78; NIST SA-12, CM-7, SI-7; SSDF PS.2, PW.4; SLSA build L1
+- **Severity:** none (new build tooling). KEV no.
+- **Affected:** `scripts/build_node_host.py`, `core/examples/node_host_serve.rs`, `app/src/monaco.ts`, `app/tests/ui-smoke.mjs`
+- **What changed:** the server for Node extensions can be built from VS Code's MIT source at an exact tag and commit (checked twice: the clone and the built `product.json`), with Node checked against the tag's `.nvmrc` and dependencies from the lockfile (`npm ci`). The GitHub Copilot extension and runtime and the marketplace debugger extensions are removed from the server (least functionality, NIST CM-7: no third-party AI client in the IDE's server). Only two files in the clone are changed, and the build stops on any other change. The archive gets a SHA-256 and a build record for pinning.
+- **Why it is secure now:** the bytes the app will pin come from a known source commit, not from a third party's binary release; the app keeps refusing any other bytes (NIST SI-7).
+- **Accepted risk:** builds aren't bit-for-bit reproducible across machines yet (VS Code's bundler); the pin is of the published file. The cloud build filled `@vscode/ripgrep`'s cache by hand from the same github.com release file because the cloud proxy blocks `api.github.com` (that package checks no hash itself, upstream behaviour).
+- **Dependency:** VS Code 1.145.2 (MIT), commit c4453f8ea430795f941c1b2ff6c9321135a74a02; Node 24.22.1 (SHA-256 checked against nodejs.org SHASUMS256.txt). A live advisory lookup for VS Code 1.145.2 was not done from the cloud; none known to us on 2026-11-22.
+- **Verification:** HistoryTest runs 2026-11-22_053759Z_node-host-build_4096b2e (build, pass) and 2026-11-22_053720Z_ui-node-host-real_832a0a7 (real editor with this server, 116/116).
+
 ## 2026-11-22 — Phase I6c-3: no console windows, local folders only, Node host version check
 - **Type:** hardening; patch
 - **CVE / CWE / advisory:** none. CWE-1188 (unsafe default), CWE-20, CWE-436 (interpretation conflict between editor and server); NIST SI-10, CM-7

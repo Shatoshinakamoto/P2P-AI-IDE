@@ -1,0 +1,66 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "6242f0ac41f5fc987845ddcbdb4f0e325a5d6d636c7fecca8ee92c0a2bd1ef7f",
+   "size": 2905
+  },
+  "command.txt": {
+   "sha256": "1badc5085d381f421fa2d19e453fb89fac7909799bce8288e71a9607c3d3fa3b",
+   "size": 49
+  },
+  "environment.md": {
+   "sha256": "8beb5f5b4dbf7578e3995a4e2351c9f1e0384b9df0c513f94808f8f0e3199942",
+   "size": 178
+  },
+  "logs/build4.log": {
+   "sha256": "44065006607a03bfa044aecdc9b8e247206a6b5519c1fc0ea413b6348114b84a",
+   "size": 14657
+  },
+  "results/ev/p2pide-node-host-linux-x64-1.145.2.json": {
+   "sha256": "3ab7e0cad63886df4752f520b9bff9d3989e52440239157e7afff920beb46233",
+   "size": 515
+  },
+  "results/ev/p2pide-node-host-linux-x64-1.145.2.tar.gz.sha256": {
+   "sha256": "9ce77be922b3ada47fd59cdc58aba2f44561dcb52d908d506bdd66d15954c692",
+   "size": 108
+  },
+  "results/summary.txt": {
+   "sha256": "a63d0e9fb5a5b5b68982bec6dc64f83cc26cf9ae1a4cb1c7b79bb2265069a88f",
+   "size": 339
+  }
+ },
+ "previous": {
+  "manifest_sha256": "2b880871b54bedafae9e35b90702ce1e8fbb9b0a99784396ea08f9e663a80f52",
+  "run_id": "2026-11-22_053720Z_ui-node-host-real_832a0a7"
+ },
+ "run": {
+  "area": "node-host-build",
+  "branch_or_pr": "claude/project-thread-8u4b8a",
+  "collected_utc": "2026-11-22T05:37:59Z",
+  "commit": "4096b2e",
+  "count_unit": "",
+  "date_utc": "2026-11-22T05:37:59Z",
+  "dirty": false,
+  "duration_s": null,
+  "exit_code": null,
+  "failed": 0,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_053759Z_node-host-build_4096b2e",
+  "kind": "build",
+  "machine": "cloud",
+  "passed": 1,
+  "record": "imported",
+  "redactions": {},
+  "requested_by": "tf-ide-roadmap-thread",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Node extension host server built from VS Code 1.145.2, Linux x64",
+  "verdict": "pass",
+  "verdict_reason": "pass: the build finished, the commit and archive checks held, and the server runs real extensions with the editor."
+ },
+ "schema": 1
+}

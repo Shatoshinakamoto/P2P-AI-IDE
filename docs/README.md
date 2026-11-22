@@ -27,6 +27,7 @@ The IDE's plan and its decisions (ADR-029) live in the P2P-AI repository: `docs/
 | [commands/live-gateway-e2e.md](commands/live-gateway-e2e.md) | The live check of missions and runs against a real P2P-AI gateway, node and sandbox (development only) |
 | [commands/local-toolchains.md](commands/local-toolchains.md) | The live check of real toolchains (cargo, go, npm, make, unittest) inside the local sandbox (development only) |
 | [commands/local-containers.md](commands/local-containers.md) | The live check of the container runner with a real engine, and every engine command and flag the IDE uses (development only) |
+| [commands/build-node-host.md](commands/build-node-host.md) | `scripts/build_node_host.py`: builds the Node extension host server from the editor's VS Code version |
 | [commands/history-test.md](commands/history-test.md) | The test history recorder `scripts/history_test.py` (copied from the P2P-AI repository) |
 | [files/third-party-notices.md](files/third-party-notices.md) | `app/src-tauri/THIRD-PARTY-NOTICES.txt`: the licence texts shipped in the installers, how it is generated and checked |
 | [features/tandemforge-engine.md](features/tandemforge-engine.md) | Phase I7: use TandemForge on this computer as a model engine (pairing code, loopback only); threat model and controls |
