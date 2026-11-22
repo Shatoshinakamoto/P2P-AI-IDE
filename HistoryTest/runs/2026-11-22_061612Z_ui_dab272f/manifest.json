@@ -1,0 +1,62 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "d3bc056fc5f0527de783d480bc1ffbd36fd2f4633bd5ea3704cd0d64f2de3389",
+   "size": 1493
+  },
+  "command.txt": {
+   "sha256": "fcf3005c7660c21603564ee5d745fc960c9ca11bfa0f8b243e1ddbe86af79024",
+   "size": 85
+  },
+  "environment.md": {
+   "sha256": "e5d7522ac91f8d673b2b5fd9c32a6701d97038dc36163efcfd0cfd671c839a67",
+   "size": 191
+  },
+  "logs/output.log": {
+   "sha256": "5933afd5497f6ef2ea3adf61e6e6a9f02116b51261e5e77d1833c1f11f0a4148",
+   "size": 11438
+  },
+  "results/summary.txt": {
+   "sha256": "24c200c55ab32fdc1f70d0c77ce544251b1ea0d18e79c6f7f6ea44113ecec7ec",
+   "size": 283
+  }
+ },
+ "previous": {
+  "manifest_sha256": "96b4cab6ff514a49d4564a7fbe04fd03b453319a5f8ebb476e5f2a5dc7c4af00",
+  "run_id": "2026-11-22_061550Z_core_dab272f"
+ },
+ "run": {
+  "area": "ui",
+  "branch_or_pr": "",
+  "collected_utc": "",
+  "commit": "dab272feb5a7eb4cd71eebafeccd52c514b44b59",
+  "count_unit": "",
+  "date_utc": "2026-11-22T06:16:12Z",
+  "dirty": true,
+  "duration_s": 24.2,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_061612Z_ui_dab272f",
+  "kind": "e2e",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {
+   "logs/output.log": {
+    "secret": 3
+   }
+  },
+  "requested_by": "",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "UI smoke after pinning our own Node host build",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "e8fd40c29bfb1750badfb46696f46f597be2a42d719903fe8bc326a5e735a3aa",
+   "size": 1624
+  },
+  "command.txt": {
+   "sha256": "753eb36054164331cdf5f24552e29b4993452ba78e4d774cbf4e9bee61b82abd",
+   "size": 153
+  },
+  "environment.md": {
+   "sha256": "f46ef17cbc8c3c0c157b057f2d755c56ca6d551c986d561728d5ab0410ff1747",
+   "size": 202
+  },
+  "logs/output.log": {
+   "sha256": "6c7567a64457a5b6194f1adfe9ed4d3d006061a6e5844dc7524a19a73d96b942",
+   "size": 290
+  },
+  "results/summary.txt": {
+   "sha256": "f95fad2702aa5f012f8aefcb855e05f33d860a0cc4aa4ff3b94979ab329f0761",
+   "size": 282
+  }
+ },
+ "previous": {
+  "manifest_sha256": "b835852a148ca534f5f577979311c6bfb9792b703f73c2df4eeb634a5f8153bc",
+  "run_id": "2026-11-22_053759Z_node-host-build_4096b2e"
+ },
+ "run": {
+  "area": "node-host-pin",
+  "branch_or_pr": "",
+  "collected_utc": "",
+  "commit": "dab272feb5a7eb4cd71eebafeccd52c514b44b59",
+  "count_unit": "",
+  "date_utc": "2026-11-22T06:15:44Z",
+  "dirty": false,
+  "duration_s": 1.0,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_061544Z_node-host-pin_dab272f",
+  "kind": "integration",
+  "machine": "cloud",
+  "passed": 1,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Pinned Linux x64 Node host downloads anonymously from the public pre-release with the pinned SHA-256",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

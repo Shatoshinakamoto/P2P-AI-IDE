@@ -116,3 +116,6 @@ run_id,date_utc,area,commit,branch_or_pr,machine,verdict,passed,failed,skipped,s
 2026-11-22_053624Z_ui-node-host-real_4096b2e,2026-11-22T05:36:24Z,ui-node-host-real,4096b2e,claude/project-thread-8u4b8a,cloud container,pass,,,,Editor with a real Node host built from VS Code 1.145.2 (Linux x64)
 2026-11-22_053720Z_ui-node-host-real_832a0a7,2026-11-22T05:37:20Z,ui-node-host-real,832a0a7,claude/project-thread-8u4b8a,cloud container,pass,,,,"Editor with a real Node host built from VS Code 1.145.2 (Linux x64), fresh logs only"
 2026-11-22_053759Z_node-host-build_4096b2e,2026-11-22T05:37:59Z,node-host-build,4096b2e,claude/project-thread-8u4b8a,cloud container,pass,1,0,,"Node extension host server built from VS Code 1.145.2, Linux x64"
+2026-11-22_061544Z_node-host-pin_dab272f,2026-11-22T06:15:44Z,node-host-pin,dab272f,,cloud container,pass,1,,,Pinned Linux x64 Node host downloads anonymously from the public pre-release with the pinned SHA-256
+2026-11-22_061550Z_core_dab272f,2026-11-22T06:15:50Z,core,dab272f,,cloud container,pass,,,,Core tests after pinning our own Node host build
+2026-11-22_061612Z_ui_dab272f,2026-11-22T06:16:12Z,ui,dab272f,,cloud container,pass,,,,UI smoke after pinning our own Node host build

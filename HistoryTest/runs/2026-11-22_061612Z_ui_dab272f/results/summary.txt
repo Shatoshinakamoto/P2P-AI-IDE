@@ -1,0 +1,11 @@
+id: 2026-11-22_061612Z_ui_dab272f
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: not recorded
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: 0
+duration_s: 24.2
+commit: dab272feb5a7eb4cd71eebafeccd52c514b44b59
+machine: cloud
