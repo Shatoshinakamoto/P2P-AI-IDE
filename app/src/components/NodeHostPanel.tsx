@@ -69,7 +69,7 @@ export function NodeHostPanel({ nodeCount, onNotice }: Props) {
   else if (!connected)
     body = (
       <>
-        <p>This folder is trusted.{st.installed ? "" : " Starting downloads the Node extension host once (about 70 MB), checked against its pinned SHA-256."} The window reloads to connect it.</p>
+        <p>This folder is trusted.{st.installed ? "" : " Starting downloads the Node extension host once (about 85 MB), checked against its pinned SHA-256."} The window reloads to connect it.</p>
         <button type="button" className={btn} disabled={busy} onClick={() => void run(() => nodeHostStart(!st.installed), true)}>
           {st.installed ? "Start Node extensions" : "Download and start Node extensions"}
         </button>

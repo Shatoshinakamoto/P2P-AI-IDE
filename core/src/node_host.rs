@@ -50,7 +50,7 @@ use std::time::{Duration, Instant};
 pub const ALLOWED_HOSTS: [&str; 3] =
     ["github.com", "objects.githubusercontent.com", "release-assets.githubusercontent.com"];
 
-/// Largest download accepted (the servers are about 70 MB packed).
+/// Largest download accepted (the servers are about 85 MB packed).
 pub const MAX_DOWNLOAD: u64 = 200 << 20;
 /// Largest unpacked size, counted on bytes read (CWE-409).
 pub const MAX_TOTAL: u64 = 600 << 20;
@@ -159,6 +159,8 @@ pub enum HostError {
     BadInput,
     /// A file-system failure.
     Io,
+    /// The folder is not on a local drive (a network share), which the editor can't name for the server yet.
+    FolderNotLocal,
 }
 
 impl HostError {
@@ -175,6 +177,9 @@ impl HostError {
             HostError::StartFailed => "the Node extension host did not start",
             HostError::BadInput => "bad request",
             HostError::Io => "could not read or write the app's data folder",
+            HostError::FolderNotLocal => {
+                "Node extensions need a folder on a local drive; network folders are not supported yet"
+            }
         }
     }
 }
@@ -465,7 +470,9 @@ pub fn stage_extensions(store: &crate::extensions::ExtStore, dest: &Path) -> Res
             if e.folder.contains(['/', '\\']) || e.folder.starts_with('.') {
                 return Err(HostError::BadInput);
             }
-            copy_tree(&store.dir().join(&e.folder).join("extension"), &tmp.join(&e.folder), 0)?;
+            // The store keeps the contents of the `.vsix`'s `extension/` folder directly in `<folder>/`
+            // (extensions::install strips that prefix), which is the layout the server reads.
+            copy_tree(&store.dir().join(&e.folder), &tmp.join(&e.folder), 0)?;
             n += 1;
         }
         Ok(())
@@ -580,6 +587,27 @@ pub fn scrubbed_env(vars: impl Iterator<Item = (String, String)>) -> Vec<(String
     vars.filter(|(k, _)| ENV_ALLOW.iter().any(|a| a.eq_ignore_ascii_case(k))).collect()
 }
 
+/// The folder's path as the editor sends it to the server (inside `vscode-remote://<authority>/<path>` URIs).
+///
+/// `canonicalize` gives Windows paths the verbatim prefix (`\\?\D:\proj`); the editor turns the path into a URI
+/// path, and one starting with `//` is not a valid URI without an authority, so the server refused every file
+/// (found on the PC in phase I6c-3). This removes the prefix from drive paths and refuses network shares
+/// (`\\?\UNC\...`, `\\server\...`), which would need the share as the URI's authority. Unix paths pass unchanged.
+///
+/// Security: only changes how the trusted folder is written; the server still gets the same folder (CWE-22: no
+/// `..` handling here, the path is the canonical one the person opened).
+pub fn editor_folder(folder: &Path) -> Result<String, HostError> {
+    editor_folder_str(&folder.to_string_lossy())
+}
+
+fn editor_folder_str(s: &str) -> Result<String, HostError> {
+    let s = s.strip_prefix(r"\\?\").unwrap_or(s);
+    if s.starts_with(r"\\") || s.starts_with("//") || s.starts_with(r"UNC\") || s.starts_with("UNC/") {
+        return Err(HostError::FolderNotLocal);
+    }
+    Ok(s.to_string())
+}
+
 /// Reads the port from a server output line: `Extension host agent listening on 40123`.
 pub fn parse_listen(line: &str) -> Option<u16> {
     let rest = line.trim().rsplit_once("listening on ")?.1.trim();
@@ -677,6 +705,13 @@ pub fn start(launcher: &Launcher, data: &Path, trust: &TrustStore, folder: &Path
         .stdin(Stdio::null())
         .stdout(Stdio::piped())
         .stderr(Stdio::null());
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        // CREATE_NO_WINDOW: the server's node.exe is a console program; without this flag the windowed app gives
+        // it a visible console window that stays open while the host runs (found on the PC in phase I6c-3).
+        cmd.creation_flags(0x0800_0000);
+    }
     let mut child = cmd.spawn().map_err(|_| HostError::StartFailed)?;
     let out = child.stdout.take().ok_or(HostError::StartFailed)?;
     let (tx, rx) = std::sync::mpsc::channel();
@@ -746,6 +781,16 @@ mod tests {
             ("out/server-main.js", tar::EntryType::Regular, b"// server", 0o644),
             ("node_modules/.bin/x", tar::EntryType::Symlink, b"", 0o777),
         ])
+    }
+
+    #[test]
+    fn editor_folder_drops_the_verbatim_prefix_and_refuses_shares() {
+        assert_eq!(editor_folder_str(r"\\?\D:\p2p\ws").unwrap(), r"D:\p2p\ws");
+        assert_eq!(editor_folder_str(r"C:\work").unwrap(), r"C:\work");
+        assert_eq!(editor_folder_str("/home/me/proj").unwrap(), "/home/me/proj");
+        for share in [r"\\?\UNC\server\share\x", r"\\server\share", "//server/share"] {
+            assert_eq!(editor_folder_str(share), Err(HostError::FolderNotLocal), "{share}");
+        }
     }
 
     #[test]
@@ -912,14 +957,16 @@ mod tests {
             entry("acme.off", Kind::Node, false),
             entry("acme.web", Kind::Web, true),
         ];
+        // The store's own layout: the `.vsix`'s `extension/` contents directly in `<folder>/` (found on the PC:
+        // an earlier fixture used `<folder>/extension/`, so the real install failed to stage).
         for e in &list {
-            let d = ext_dir.join(&e.folder).join("extension").join("out");
+            let d = ext_dir.join(&e.folder).join("out");
             std::fs::create_dir_all(&d).unwrap();
             std::fs::write(d.join("ext.js"), "x").unwrap();
-            std::fs::write(ext_dir.join(&e.folder).join("extension").join("package.json"), "{}").unwrap();
+            std::fs::write(ext_dir.join(&e.folder).join("package.json"), "{}").unwrap();
         }
         #[cfg(unix)]
-        std::os::unix::fs::symlink("/etc/passwd", ext_dir.join("acme.on-1.0.0/extension/out/link")).unwrap();
+        std::os::unix::fs::symlink("/etc/passwd", ext_dir.join("acme.on-1.0.0/out/link")).unwrap();
         std::fs::write(ext_dir.join("installed.json"), serde_json::to_vec(&list).unwrap()).unwrap();
         let store = ExtStore::new(ext_dir);
         let dest = base.join("node-extensions");

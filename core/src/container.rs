@@ -142,11 +142,24 @@ pub fn engine() -> Option<Engine> {
     None
 }
 
+/// On Windows, starts the engine's console program without a console window (CREATE_NO_WINDOW), so no window
+/// flashes up from the windowed app; elsewhere does nothing.
+fn no_window(cmd: &mut Command) {
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        cmd.creation_flags(0x0800_0000);
+    }
+    #[cfg(not(windows))]
+    let _ = cmd;
+}
+
 /// Runs the engine with `args`, no input, output discarded; true on exit code 0 within `limit`.
 fn quiet(e: &Engine, args: &[&str], limit: Duration) -> bool {
-    let Ok(mut c) =
-        Command::new(&e.program).args(args).stdin(Stdio::null()).stdout(Stdio::null()).stderr(Stdio::null()).spawn()
-    else {
+    let mut cmd = Command::new(&e.program);
+    cmd.args(args).stdin(Stdio::null()).stdout(Stdio::null()).stderr(Stdio::null());
+    no_window(&mut cmd);
+    let Ok(mut c) = cmd.spawn() else {
         return false;
     };
     let t = Instant::now();
@@ -412,13 +425,10 @@ pub fn run(
 
     stage("running");
     let t = Instant::now();
-    let mut child = Command::new(&e.program)
-        .args(&args)
-        .stdin(Stdio::null())
-        .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .spawn()
-        .map_err(|_| "the container engine could not be started")?;
+    let mut cmd = Command::new(&e.program);
+    cmd.args(&args).stdin(Stdio::null()).stdout(Stdio::piped()).stderr(Stdio::piped());
+    no_window(&mut cmd);
+    let mut child = cmd.spawn().map_err(|_| "the container engine could not be started")?;
     let out = child.stdout.take().map(|o| std::thread::spawn(move || read_capped(o)));
     let err = child.stderr.take().map(|o| std::thread::spawn(move || read_capped(o)));
     let limit = Duration::from_secs(u64::from(req.timeout_s));
