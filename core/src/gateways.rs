@@ -189,6 +189,11 @@ fn split_host_port(hp: &str) -> Result<(&str, Option<u16>), GwError> {
         if inner.is_empty() || !inner.bytes().all(|b| b.is_ascii_hexdigit() || b == b':' || b == b'.') {
             return Err(GwError::BadUrl);
         }
+        // SECURITY: after `]` only `:port` may follow; anything else is refused, not dropped (CWE-20). Found by the
+        // shared test cases with the VS Code extension's client.
+        if !rest.is_empty() && !rest.starts_with(':') {
+            return Err(GwError::BadUrl);
+        }
         (h, rest.strip_prefix(':'))
     } else {
         match hp.rsplit_once(':') {

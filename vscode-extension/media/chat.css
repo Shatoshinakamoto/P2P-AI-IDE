@@ -1,0 +1,14 @@
+/* chat.css -- styles for the P2P-AI chat view; uses VS Code's theme variables so it follows light and dark themes. */
+body { margin: 0; padding: 8px; font-family: var(--vscode-font-family); font-size: var(--vscode-font-size); color: var(--vscode-foreground); display: flex; flex-direction: column; height: calc(100vh - 16px); box-sizing: border-box; }
+header { display: flex; gap: 4px; flex-wrap: wrap; }
+button { background: var(--vscode-button-secondaryBackground); color: var(--vscode-button-secondaryForeground); border: none; padding: 3px 8px; cursor: pointer; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+button:hover { background: var(--vscode-button-secondaryHoverBackground); }
+#send { background: var(--vscode-button-background); color: var(--vscode-button-foreground); }
+#dev { color: var(--vscode-errorForeground); font-weight: bold; margin: 6px 0 0; }
+#log { flex: 1; overflow-y: auto; margin: 8px 0; display: flex; flex-direction: column; gap: 6px; }
+.msg { white-space: pre-wrap; word-wrap: break-word; padding: 6px 8px; border-radius: 4px; }
+.user { background: var(--vscode-input-background); align-self: flex-end; max-width: 90%; }
+.assistant { background: var(--vscode-editor-inactiveSelectionBackground); }
+#error { color: var(--vscode-errorForeground); margin: 0 0 6px; }
+textarea { width: 100%; box-sizing: border-box; resize: vertical; background: var(--vscode-input-background); color: var(--vscode-input-foreground); border: 1px solid var(--vscode-input-border, transparent); font-family: inherit; }
+.row { display: flex; justify-content: flex-end; gap: 4px; margin-top: 4px; }
