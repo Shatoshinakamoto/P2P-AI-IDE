@@ -337,6 +337,23 @@ export interface NodeHostStatus {
   port: number | null;
   /** The VS Code version the pinned server is built from ("" when nothing is pinned); see lib/vscodeVersion.ts. */
   vscode: string;
+  /** Phase I6d: the optional Electron compatibility host (off by default). */
+  electron: NodeHostElectron;
+}
+/** Phase I6d: the Electron compatibility host's state (node_host_status). */
+export interface NodeHostElectron {
+  /** Electron is pinned for this computer. */
+  available: boolean;
+  /** The pinned Electron is downloaded. */
+  installed: boolean;
+  /** The person turned compatibility on. */
+  enabled: boolean;
+  /** The running host uses Electron. */
+  running: boolean;
+  /** The pinned Electron version. */
+  version: string;
+  /** Enabled Node extensions with native modules built for one runtime (shown as text only). */
+  needed_by: string[];
 }
 /** Where the editor connects to the running server. SECURITY: the token stays in memory only (CWE-522). */
 export interface NodeHostConnection {
@@ -354,3 +371,5 @@ export const nodeHostTrust = (trusted: boolean) => call<null>("node_host_trust",
 /** Starts (or reuses) the server; `allowDownload` only after the person agreed to the download. */
 export const nodeHostStart = (allowDownload: boolean) => call<NodeHostConnection>("node_host_start", { allowDownload });
 export const nodeHostStop = () => call<null>("node_host_stop");
+/** Phase I6d: turns the Electron compatibility host on or off (stops a running host). Only from the person's click. */
+export const nodeHostElectron = (enabled: boolean) => call<null>("node_host_electron", { enabled });

@@ -2,6 +2,25 @@
 
 Every security patch, hardening change, CVE remediation and accepted risk, newest first.
 
+## 2026-11-22 — Phase I6d: Electron compatibility host
+- **Type:** hardening (new component, supply chain); accepted risk
+- **CVE / CWE / advisory:** none. CWE-22, CWE-59, CWE-79, CWE-94, CWE-250, CWE-276, CWE-362, CWE-409, CWE-494, CWE-522, CWE-601, CWE-732, CWE-918
+- **Severity:** none (new feature, off by default). KEV: no.
+- **Affected:** `core/src/electron_host.rs` (new), `core/src/node_host.rs` (`Launcher.env`, `safe_parts` shared), `core/examples/node_host_serve.rs`, `app/src-tauri/src/{nodehost,main}.rs`, `app/src/components/NodeHostPanel.tsx`, `app/src/ipc.ts`
+- **What changed:** an opt-in switch runs the Node extension host's pinned server with Electron 43.8.3 in Node mode. Electron comes from Electron's own GitHub release, pinned per OS and CPU by SHA-256 (taken from our download, equal to the release's `SHASUMS256.txt`), and is downloaded only after the person agrees. The unzip allow-lists paths, refuses links, caps entries and bytes, and never unpacks the set-uid `chrome-sandbox`. Files are owner-only. The only addition to the scrubbed environment is the fixed `ELECTRON_RUN_AS_NODE=1`. Switch changes are audited. The native-module scan only reads, with caps and without following links.
+- **Why it is secure now:** integrity of the new binary (NIST SI-7, SA-12, SSDF PS.2), least function by default (NIST CM-7), safe archive handling (CWE-22, CWE-59, CWE-409), no privilege-raising helper (CWE-250).
+- **Accepted risk:** Electron 43.8.3 is the version VS Code 1.145.2 ships. A live advisory lookup was not done from the cloud; re-check it on every editor library upgrade. Only its Node runtime is used. Native modules run with the person's rights, as Node extensions already do, and only in a trusted folder.
+- **Verification:** HistoryTest `2026-11-22_121508Z_electron-pin_01bc30e`, `2026-11-22_121508Z_core_01bc30e` (116 passed), `2026-11-22_121522Z_ui_01bc30e` (118 of 118), `2026-11-22_121549Z_node-host-electron_01bc30e` and `2026-11-22_121624Z_node-host-electron_01bc30e` (real server: activates under Electron, expected failure on plain Node), `2026-11-22_121745Z_security-scan_882c782` (cargo audit, npm audit gate, licence gate: pass).
+
+## 2026-11-22 — Side track X3: missions in the VS Code extension; settings file
+- **Type:** hardening (new component); patch (settings race)
+- **CVE / CWE / advisory:** none. CWE-20, CWE-22, CWE-59, CWE-74, CWE-79, CWE-150, CWE-178, CWE-200, CWE-276, CWE-312, CWE-345, CWE-362, CWE-367, CWE-400, CWE-918; OWASP LLM06
+- **Severity:** settings race: low (a setting could come back or vanish, for example a removed gateway reappearing; no key was ever involved, keys are in SecretStorage). KEV: no.
+- **Affected:** `vscode-extension/src/missions/projects.ts`, `src/missionsView.ts`, `src/fileState.ts` (new), `src/gateways.ts`, `src/chatView.ts`, `src/extension.ts`, `src/viewMessages.ts`, `src/gateway/{checks,client}.ts`, `src/agent/{tools,workspace}.ts`, `media/missions.js`, `package.json`; `core/src/projects_vectors.rs` (tests only)
+- **What changed:** missions run only on a trusted local folder. Push applies the agent deny list and the gateway's path grammar, re-hashes each file before upload and commits with `base_version`. Pull checks each download against the listed SHA-256, takes only UTF-8 text and only makes pending changes the person accepts per file. Ids are checked before they go into a URL. Every gateway field is cleaned and drawn as text. An approval carries the digest of the arguments the extension fetched, not one from the webview. Audit lines use fixed words only. Settings moved from `globalState` to `state.json` (atomic `wx` temp file and rename, mode 0600, folder 0700, read capped at 1 MiB, values re-checked on read).
+- **Why it is secure now:** human approval bound to what was shown (OWASP LLM06, CWE-345), integrity of transfers (NIST SI-7), least data to the gateway (CWE-200), input validation at the boundary (NIST SI-10), and settings that can't be undone by another process's stale copy (CWE-362).
+- **Verification:** HistoryTest `2026-11-22_114442Z_core_ae1f4aa`, `2026-11-22_115617Z_vscode-ext-unit_0c3ceb5` (35 of 35), `2026-11-22_115617Z_vscode-ext-integration_0c3ceb5` (1.147.0, stable over 10 repeats; 20 earlier repeats with 0 failures), `2026-11-22_115715Z_vscode-ext-integration_0c3ceb5` (1.95.0), `2026-11-22_114505Z_vscode-ext-ui_ae1f4aa`, `2026-11-22_115718Z_vscode-ext-audit_0c3ceb5` (npm audit: 0). The failing run `2026-11-22_114456Z_vscode-ext-integration_ae1f4aa` is kept with a note.
+
 ## 2026-11-22 — Side track X2: agent tools in the VS Code extension
 - **Type:** hardening (new component); accepted risk
 - **CVE / CWE / advisory:** none. CWE-20, CWE-22, CWE-59, CWE-73, CWE-79, CWE-200, CWE-367, CWE-400, CWE-538, CWE-770; OWASP LLM01, LLM06

@@ -342,6 +342,33 @@ export class Workspace {
   }
 
   /**
+   * Every file under the folder as `[rel, size]`, sorted, skipping build and dependency folders and links (X3 push;
+   * same as the IDE's `all_files`). Returns `truncated` when more than `maxFiles` exist (CWE-400).
+   */
+  allFiles(maxFiles: number): { files: [string, number][]; truncated: boolean } {
+    const out: [string, number][] = [];
+    const stack = [""];
+    while (stack.length > 0) {
+      const dirRel = stack.pop() as string;
+      let listing: Entry[];
+      try {
+        listing = this.listDir(dirRel).entries;
+      } catch {
+        continue;
+      }
+      for (const e of listing) {
+        if (e.kind === "dir" && !SEARCH_SKIP_DIRS.includes(e.name)) stack.push(e.rel);
+        else if (e.kind === "file") {
+          if (out.length >= maxFiles) return { files: out, truncated: true };
+          out.push([e.rel, e.size]);
+        }
+      }
+    }
+    out.sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0));
+    return { files: out, truncated: false };
+  }
+
+  /**
    * Searches text files for a plain substring, case-insensitive. Skips build folders, links, files over 1 MiB and
    * non-UTF-8 files; stops at 200 matches or 20 000 files (CWE-400, CWE-1333).
    */

@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "68c3d797e59fb66efbd4588b8c2ae8b4d9c422fc432a0e45380707fe5834fdce",
+   "size": 1699
+  },
+  "command.txt": {
+   "sha256": "3e081600b6528f9477013af52a9a2969b3c417e7d65f163a758d688f8a4e8e07",
+   "size": 77
+  },
+  "environment.md": {
+   "sha256": "959b5bc33314f0c89ce174078a08855ae41fe24247de7f0e62f9b4173e584fad",
+   "size": 193
+  },
+  "logs/output.log": {
+   "sha256": "ddfb9e6c1e8ad48148be3d102285d8a3678c4c3fa35adc3e35af5c1617781f9c",
+   "size": 8814
+  },
+  "results/summary.txt": {
+   "sha256": "7a22409b65066b31fe4feaebd6a44499fd7a0e655e3081788b80d306ee80011b",
+   "size": 285
+  }
+ },
+ "previous": {
+  "manifest_sha256": "4c3941b0b94c76d674c340270022e687ad44945f7b7f381aa39d3b46b9d2b4ad",
+  "run_id": "2026-11-22_113429Z_vscode-ext-ui_739ab5c"
+ },
+ "run": {
+  "area": "core",
+  "branch_or_pr": "claude/project-thread-8u4b8a",
+  "collected_utc": "",
+  "commit": "ae1f4aac034cb832c093dba02f90c81042afab72",
+  "count_unit": "",
+  "date_utc": "2026-11-22T11:44:42Z",
+  "dirty": false,
+  "duration_s": 13.5,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_114442Z_core_ae1f4aa",
+  "kind": "unit",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "tf-ide-roadmap-finish/X3",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Core tests with the shared mission cases (X3)",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

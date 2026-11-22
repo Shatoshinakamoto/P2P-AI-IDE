@@ -1,0 +1,2 @@
+[{"type":"ready"},{"type":"decide","runId":"run1","approvalId":"ap1","decision":"approve"}]
+missions-smoke: pass

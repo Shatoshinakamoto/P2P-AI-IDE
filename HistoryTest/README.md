@@ -152,7 +152,26 @@ This repository started on 2026-11-17; every run since then is here.
 | Date (UTC) | Area | Commit | Verdict | Run |
 |---|---|---|---|---|
 | 2026-11-22 12:19:51 | core | `cf2e079` | pass | [Core tests after the Windows temp-folder fix in agent_vectors.rs](runs/2026-11-22_121951Z_core_cf2e079/RUN.md) |
+| 2026-11-22 12:17:45 | security-scan | `882c782` | pass | [Phase I6d static checks after regenerating the notices](runs/2026-11-22_121745Z_security-scan_882c782/RUN.md) |
+| 2026-11-22 12:16:53 | security-scan | `01bc30e` | fail | [Phase I6d static checks: tsc, rustfmt, clippy, cargo audit, npm audit gate, licence notices](runs/2026-11-22_121653Z_security-scan_01bc30e/RUN.md) |
+| 2026-11-22 12:16:24 | node-host-electron | `01bc30e` | pass | [Phase I6d control: the same extension fails on the plain Node host (expected)](runs/2026-11-22_121624Z_node-host-electron_01bc30e/RUN.md) |
+| 2026-11-22 12:15:49 | node-host-electron | `01bc30e` | pass | [Phase I6d: real server under Electron 43.8.3 runs an extension with an Electron-only native module](runs/2026-11-22_121549Z_node-host-electron_01bc30e/RUN.md) |
+| 2026-11-22 12:15:22 | ui | `01bc30e` | pass | [Phase I6d: UI smoke test with the Electron compatibility switch](runs/2026-11-22_121522Z_ui_01bc30e/RUN.md) |
+| 2026-11-22 12:15:08 | electron-pin | `01bc30e` | pass | [Phase I6d: Electron 43.8.3 pins equal our own downloads and Electron's SHASUMS256.txt](runs/2026-11-22_121508Z_electron-pin_01bc30e/RUN.md) |
+| 2026-11-22 12:15:08 | core | `01bc30e` | pass | [Phase I6d core: unit tests with the Electron compatibility host](runs/2026-11-22_121508Z_core_01bc30e/RUN.md) |
 | 2026-11-22 12:11:12 | core | `cf2e079` | fail | [PC local CI core check on PR 24: 3 agent vector tests fail on Windows](runs/2026-11-22_121112Z_core_cf2e079/RUN.md) |
+| 2026-11-22 11:57:18 | vscode-ext-package | `0c3ceb5` | pass | [Extension .vsix package 0.3.0 (X3)](runs/2026-11-22_115718Z_vscode-ext-package_0c3ceb5/RUN.md) |
+| 2026-11-22 11:57:18 | vscode-ext-audit | `0c3ceb5` | pass | [npm audit of the extension (X3)](runs/2026-11-22_115718Z_vscode-ext-audit_0c3ceb5/RUN.md) |
+| 2026-11-22 11:57:15 | vscode-ext-integration | `0c3ceb5` | pass | [Extension in VS Code 1.95.0 with missions (X3)](runs/2026-11-22_115715Z_vscode-ext-integration_0c3ceb5/RUN.md) |
+| 2026-11-22 11:56:17 | vscode-ext-unit | `0c3ceb5` | pass | [Extension unit tests with the state file (X3)](runs/2026-11-22_115617Z_vscode-ext-unit_0c3ceb5/RUN.md) |
+| 2026-11-22 11:56:17 | vscode-ext-integration | `0c3ceb5` | pass | [Extension in real VS Code (stable) x10 with missions (X3)](runs/2026-11-22_115617Z_vscode-ext-integration_0c3ceb5/RUN.md) |
+| 2026-11-22 11:45:06 | vscode-ext-package | `ae1f4aa` | pass | [Extension .vsix package 0.3.0 (X3)](runs/2026-11-22_114506Z_vscode-ext-package_ae1f4aa/RUN.md) |
+| 2026-11-22 11:45:06 | vscode-ext-audit | `ae1f4aa` | pass | [npm audit of the extension (X3)](runs/2026-11-22_114506Z_vscode-ext-audit_ae1f4aa/RUN.md) |
+| 2026-11-22 11:45:05 | vscode-ext-ui | `ae1f4aa` | pass | [Missions view webview (X3)](runs/2026-11-22_114505Z_vscode-ext-ui_ae1f4aa/RUN.md) |
+| 2026-11-22 11:45:02 | vscode-ext-integration | `ae1f4aa` | pass | [Extension in VS Code 1.95.0 with missions (X3)](runs/2026-11-22_114502Z_vscode-ext-integration_ae1f4aa/RUN.md) |
+| 2026-11-22 11:44:56 | vscode-ext-unit | `ae1f4aa` | pass | [Extension unit tests with missions (X3)](runs/2026-11-22_114456Z_vscode-ext-unit_ae1f4aa/RUN.md) |
+| 2026-11-22 11:44:56 | vscode-ext-integration | `ae1f4aa` | fail | [Extension in real VS Code (stable) with missions (X3)](runs/2026-11-22_114456Z_vscode-ext-integration_ae1f4aa/RUN.md) |
+| 2026-11-22 11:44:42 | core | `ae1f4aa` | pass | [Core tests with the shared mission cases (X3)](runs/2026-11-22_114442Z_core_ae1f4aa/RUN.md) |
 | 2026-11-22 11:34:29 | vscode-ext-ui | `739ab5c` | pass | [Chat view webview with tool steps and change list (X2)](runs/2026-11-22_113429Z_vscode-ext-ui_739ab5c/RUN.md) |
 | 2026-11-22 11:34:05 | vscode-ext-package | `67b1744` | pass | [Extension .vsix package 0.2.0 (X2)](runs/2026-11-22_113405Z_vscode-ext-package_67b1744/RUN.md) |
 | 2026-11-22 11:34:05 | vscode-ext-audit | `67b1744` | pass | [npm audit of the extension (X2)](runs/2026-11-22_113405Z_vscode-ext-audit_67b1744/RUN.md) |

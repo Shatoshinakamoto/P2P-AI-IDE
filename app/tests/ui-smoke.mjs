@@ -388,19 +388,24 @@ exports.activate = async (ctx) => {
         case "ext_list": return ext.installed;
         // Phase I6c: the Node extension host. Its state lives in sessionStorage because starting it reloads the page
         // (in the app the shell keeps it); every call is logged there too.
-        case "node_host_status": case "node_host_trust": case "node_host_start": case "node_host_stop": {
+        case "node_host_status": case "node_host_trust": case "node_host_start": case "node_host_stop": case "node_host_electron": {
           const nh = JSON.parse(sessionStorage.getItem("smoke-node-host") ?? '{"trusted":false,"installed":false,"port":null}');
           const log = JSON.parse(sessionStorage.getItem("smoke-node-calls") ?? "[]");
           log.push({ cmd, args }); sessionStorage.setItem("smoke-node-calls", JSON.stringify(log));
           const save = () => sessionStorage.setItem("smoke-node-host", JSON.stringify(nh));
           // The server's VS Code version: the editor's own unless a check sets another (window.__smokeEditorVsCode).
           const vscode = sessionStorage.getItem("smoke-node-vscode") ?? window.__smokeEditorVsCode;
-          if (cmd === "node_host_status") return { pinned: true, ...nh, vscode };
+          // Phase I6d: the Electron compatibility host (off by default); one enabled Node extension has a classic
+          // native module, and its name carries markup that must show as text.
+          const el = { available: true, installed: !!nh.elInstalled, enabled: !!nh.elOn, running: nh.port !== null && !!nh.elRunning, version: "43.8.3", needed_by: ["Native <b>Probe</b>"] };
+          if (cmd === "node_host_status") return { pinned: true, trusted: nh.trusted, installed: nh.installed, port: nh.port, vscode, electron: el };
+          if (cmd === "node_host_electron") { nh.elOn = args.enabled; nh.port = null; save(); return null; }
           if (cmd === "node_host_trust") { nh.trusted = args.trusted; if (!args.trusted) nh.port = null; save(); return null; }
           if (cmd === "node_host_stop") { nh.port = null; save(); return null; }
           if (!nh.trusted) throw "Node extensions run only in a folder you trust";
           if (!nh.installed && !args.allowDownload) throw "the Node extension host is not downloaded yet";
-          nh.installed = true; nh.port = Number(location.port) + 2; save();
+          if (nh.elOn && !nh.elInstalled && !args.allowDownload) throw "the Node extension host is not downloaded yet";
+          nh.installed = true; nh.port = Number(location.port) + 2; nh.elRunning = !!nh.elOn; if (nh.elOn) nh.elInstalled = true; save();
           return { port: nh.port, token: window.__smokeHost.token, folder: window.__smokeHost.folder, commit: window.__smokeHost.commit, vscode };
         }
         case "ext_set_enabled": ext.installed = ext.installed.map((e) => (e.id === args.id ? { ...e, enabled: args.enabled } : e)); return ext.installed.find((e) => e.id === args.id);
@@ -969,6 +974,15 @@ try {
   await np.getByRole("button", { name: "Trust this folder for Node extensions" }).click();
   await np.getByRole("button", { name: "Download and start Node extensions" }).waitFor();
   check("trusting is its own click, and the download is named before it happens", (await nodeCalls()).some((c) => c.cmd === "node_host_trust" && c.args.trusted === true) && /about 90 MB/.test(await np.innerText()));
+  // Phase I6d: Electron compatibility is off by default, its hint names the extensions as text, and turning it on is
+  // the person's click, after which the start names the extra download.
+  const compat = np.getByRole("group", { name: "Electron compatibility" });
+  const compatBox = compat.getByRole("checkbox", { name: /Run Node extensions with Electron 43\.8\.3/ });
+  check("Electron compatibility is off by default and nothing about it was called", !(await compatBox.isChecked()) && !(await nodeCalls()).some((c) => c.cmd === "node_host_electron"));
+  check("the compatibility hint names the extension as text, never markup", (await compat.innerText()).includes("Native <b>Probe</b>") && (await compat.locator("b").count()) === 0);
+  await compatBox.check();
+  await np.getByText(/Electron 43\.8\.3 \(about 150 MB\) once/).waitFor();
+  check("turning compatibility on is one call from the click, and the start names both downloads", (await nodeCalls()).filter((c) => c.cmd === "node_host_electron").map((c) => c.args.enabled).join() === "true" && /about 90 MB\) and Electron 43\.8\.3/.test(await np.innerText()));
   const errBefore = errors.length;
   await Promise.all([page.waitForEvent("load"), np.getByRole("button", { name: "Download and start Node extensions" }).click()]);
   await page.getByRole("button", { name: "Extensions", exact: true }).waitFor();
@@ -992,6 +1006,7 @@ try {
   await page.getByRole("button", { name: "Extensions", exact: true }).click();
   const np2 = page.getByRole("region", { name: "Node extensions" });
   await np2.getByText(/Node extensions are running/).waitFor();
+  check("the running host says it uses Electron, and the Electron download came with the same allowed start", /running for this folder with Electron 43\.8\.3/.test(await np2.innerText()));
   await page.screenshot({ path: process.env.SHOT_NODE ?? join(here, "..", "ui-smoke-node.png") });
   await Promise.all([page.waitForEvent("load"), np2.getByRole("button", { name: "Stop trusting this folder" }).click()]);
   await page.getByRole("button", { name: "Extensions", exact: true }).waitFor();

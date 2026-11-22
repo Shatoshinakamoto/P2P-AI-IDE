@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "7878b89541ff12175ed23a6457536eb7074fa1a6506d2670b14bbbda89ff4740",
+   "size": 1724
+  },
+  "command.txt": {
+   "sha256": "da0c086718d7daa6b46fe08ada03e5d680e16634ba379c42c558f92d85b27293",
+   "size": 215
+  },
+  "environment.md": {
+   "sha256": "fc3b41cf68f0aee0ac9216c633e9fc570ba84f0c364a5a11446c4416fdd9c3b0",
+   "size": 211
+  },
+  "logs/output.log": {
+   "sha256": "5f263cc490a23f47b7c33ecd2d2b5a0327f63398a983a07478f7a67a7010cfab",
+   "size": 300543
+  },
+  "results/summary.txt": {
+   "sha256": "f95577f5d3620cd7207ff6cd06e1dcefe6cc5db710a34df291060688eab9f758",
+   "size": 303
+  }
+ },
+ "previous": {
+  "manifest_sha256": "2ef7d80a4612a5a0a1f4519bdc596766a72f43113ef6e32b1a55d69e1fe27ad1",
+  "run_id": "2026-11-22_115617Z_vscode-ext-unit_0c3ceb5"
+ },
+ "run": {
+  "area": "vscode-ext-integration",
+  "branch_or_pr": "claude/project-thread-8u4b8a",
+  "collected_utc": "",
+  "commit": "0c3ceb549336daf705ee72a006c011fc890ae8c0",
+  "count_unit": "",
+  "date_utc": "2026-11-22T11:56:17Z",
+  "dirty": false,
+  "duration_s": 57.0,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_115617Z_vscode-ext-integration_0c3ceb5",
+  "kind": "integration",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "tf-ide-roadmap-finish/X3",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Extension in real VS Code (stable) x10 with missions (X3)",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

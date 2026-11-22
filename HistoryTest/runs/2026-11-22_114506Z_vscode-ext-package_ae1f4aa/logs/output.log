@@ -1,0 +1,58 @@
+ INFO  Files included in the VSIX:
+p2p-ai.vsix
+├─ [Content_Types].xml 
+├─ extension.vsixmanifest 
+└─ extension/
+   ├─ LICENSE.txt [11.3 KB]
+   ├─ package.json [3.52 KB]
+   ├─ readme.md 
+   ├─ media/
+   │  ├─ chat.css [2.3 KB]
+   │  ├─ chat.js [5.29 KB]
+   │  ├─ icon.svg [0.31 KB]
+   │  ├─ missions.css [1.57 KB]
+   │  └─ missions.js [11.26 KB]
+   └─ out/
+      ├─ chatView.js [13.74 KB]
+      ├─ extension.js [10.27 KB]
+      ├─ gateways.js [6.94 KB]
+      ├─ missionsView.js [19.55 KB]
+      ├─ review.js [8.09 KB]
+      ├─ viewMessages.js [5.03 KB]
+      ├─ agent/
+      │  ├─ tools.js [22.14 KB]
+      │  └─ workspace.js [19.24 KB]
+      ├─ gateway/
+      │  ├─ checks.js [15.38 KB]
+      │  └─ client.js [18.61 KB]
+      └─ missions/
+         └─ projects.js [21.3 KB]
+
+ DONE  Packaged: p2p-ai.vsix (21 files, 68.14 KB)
+Archive:  p2p-ai.vsix
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+     2623  2026-11-22 11:45   extension.vsixmanifest
+      516  2026-11-22 11:45   [Content_Types].xml
+    11574  2026-11-22 11:20   extension/LICENSE.txt
+      786  2026-11-22 11:45   extension/readme.md
+     3606  2026-11-22 11:42   extension/package.json
+     2351  2026-11-22 11:31   extension/media/chat.css
+     5415  2026-11-22 11:31   extension/media/chat.js
+      316  2026-11-22 11:16   extension/media/icon.svg
+     1609  2026-11-22 11:42   extension/media/missions.css
+    11530  2026-11-22 11:42   extension/media/missions.js
+    14072  2026-11-22 11:45   extension/out/chatView.js
+    10520  2026-11-22 11:45   extension/out/extension.js
+     7110  2026-11-22 11:45   extension/out/gateways.js
+    20020  2026-11-22 11:45   extension/out/missionsView.js
+     8284  2026-11-22 11:45   extension/out/review.js
+     5152  2026-11-22 11:45   extension/out/viewMessages.js
+    22675  2026-11-22 11:45   extension/out/agent/tools.js
+    19698  2026-11-22 11:45   extension/out/agent/workspace.js
+    15753  2026-11-22 11:45   extension/out/gateway/checks.js
+    19055  2026-11-22 11:45   extension/out/gateway/client.js
+    21807  2026-11-22 11:45   extension/out/missions/projects.js
+---------                     -------
+   204472                     21 files
+6d7c96cc0ab8301a1775c69b850a24630f7a162b94230aa7da5679eb2b53111f  p2p-ai.vsix

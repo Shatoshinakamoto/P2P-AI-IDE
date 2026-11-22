@@ -62,11 +62,11 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
 
   /** The person's Tools switch (on by default). */
   toolsOn(): boolean {
-    return this.ctx.globalState.get<boolean>(TOOLS_KEY) !== false;
+    return this.store.state.get<boolean>(TOOLS_KEY) !== false;
   }
 
   async setTools(on: boolean): Promise<void> {
-    await this.ctx.globalState.update(TOOLS_KEY, on);
+    await this.store.state.update(TOOLS_KEY, on);
     this.postState();
   }
 
@@ -101,7 +101,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
       if (ids.length === 0) return void vscode.window.showWarningMessage("This gateway lists no models.");
       const pick = await vscode.window.showQuickPick(ids, { title: `Models on ${gw.name} (${ms} ms)`, placeHolder: "Pick a model" });
       if (pick && modelOk(pick)) {
-        await this.ctx.globalState.update(MODEL_KEY(gw.id), pick);
+        await this.store.state.update(MODEL_KEY(gw.id), pick);
         this.postState();
       }
     } catch (e) {
@@ -111,7 +111,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
 
   private model(gw: SavedGateway | undefined): string | undefined {
     if (!gw) return undefined;
-    const m = this.ctx.globalState.get<string>(MODEL_KEY(gw.id));
+    const m = this.store.state.get<string>(MODEL_KEY(gw.id));
     return typeof m === "string" && modelOk(m) ? m : undefined;
   }
 
@@ -148,7 +148,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
   async setModel(model: string): Promise<boolean> {
     const gw = this.store.active();
     if (!gw || !modelOk(model)) return false;
-    await this.ctx.globalState.update(MODEL_KEY(gw.id), model);
+    await this.store.state.update(MODEL_KEY(gw.id), model);
     this.postState();
     return true;
   }

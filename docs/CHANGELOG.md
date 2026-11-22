@@ -2,6 +2,32 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-22 - Phase I6d: Electron compatibility host for Node extensions
+
+### Added
+- An optional **Electron compatibility host**, off by default. When it is on, the Node extension host runs our pinned server with Electron 43.8.3 (the one VS Code 1.145.2 ships) in Node mode, so extensions with native modules built for VS Code's Electron load. Electron is downloaded once from its GitHub release on the first start after the person agrees, and checked against a pinned SHA-256. The Node extensions panel has the switch and lists enabled extensions whose native modules are built for one runtime. New core module `core/src/electron_host.rs`, shell command `node_host_electron`. Page: [features/node-extensions-design.md](features/node-extensions-design.md#11-electron-compatibility-host-i6d).
+- `app/tests/electron-host-e2e.sh` and the `abi-probe` test fixture ([commands/electron-host-e2e.md](commands/electron-host-e2e.md)). `core/examples/node_host_serve` takes `--electron-zip` and `--electron-sha256`.
+
+### Fixed
+- `THIRD-PARTY-NOTICES.txt` still listed url 2.5.8 and form_urlencoded 1.2.2 after the RUSTSEC-2026-0592 bump; regenerated.
+
+Test evidence: HistoryTest `2026-11-22_121508Z_electron-pin_01bc30e` (pins match), `2026-11-22_121508Z_core_01bc30e` (core 116 passed), `2026-11-22_121522Z_ui_01bc30e` (UI smoke 118 of 118), `2026-11-22_121549Z_node-host-electron_01bc30e` (real server under Electron: the probe activates), `2026-11-22_121624Z_node-host-electron_01bc30e` (plain Node control: fails as expected), `2026-11-22_121653Z_security-scan_01bc30e` (fail: stale notices) and `2026-11-22_121745Z_security-scan_882c782` (pass).
+
+## 2026-11-22 - Side track X3: missions in the VS Code extension
+
+### Added
+- A **Missions** view in the extension: link the open folder to a project on the gateway, send the folder, switch Autopilot and Auto Improve, start, pause, resume and stop missions, approve or deny their commands, triage Auto Improve proposals, and collect the work into the chat's **Changes to review** list (accepted per file). Same rules as the IDE's phase I4. Extension version 0.3.0. Page: [features/vscode-extension.md](features/vscode-extension.md).
+- `core/tests/vectors/missions.json`: shared mission test cases (path grammar, ids, encoding, upload names, error messages, push and pull plans, view shapes, acceptance checks), run by `core/src/projects_vectors.rs` and the extension's `tests/missions.test.ts`.
+- `vscode-extension/tests/ui/missions-smoke.cjs`: draws the Missions view in Chromium and checks what it posts.
+
+### Changed
+- The extension keeps its settings (gateways without keys, active gateway, models, Tools switch, links) in `state.json` in its global storage folder. Old values move over once.
+
+### Fixed
+- On VS Code 1.147 a saved setting (a removed gateway, a new link) sometimes came back or vanished a moment later, because `globalState` writes were undone. The settings file fixes it.
+
+Test evidence: HistoryTest `2026-11-22_114442Z_core_ae1f4aa` (core with the shared mission cases: pass), `2026-11-22_115617Z_vscode-ext-unit_0c3ceb5` (35 of 35), `2026-11-22_115617Z_vscode-ext-integration_0c3ceb5` (real VS Code 1.147.0: pass), `2026-11-22_115715Z_vscode-ext-integration_0c3ceb5` (1.95.0: pass), `2026-11-22_114505Z_vscode-ext-ui_ae1f4aa` (Missions view: pass), `2026-11-22_115718Z_vscode-ext-audit_0c3ceb5` (npm audit: 0), `2026-11-22_115718Z_vscode-ext-package_0c3ceb5` (.vsix 0.3.0). The failed run `2026-11-22_114456Z_vscode-ext-integration_ae1f4aa` found the settings race.
+
 ## 2026-11-22 - Side track X2: agent tools with diff review in the VS Code extension
 
 ### Added

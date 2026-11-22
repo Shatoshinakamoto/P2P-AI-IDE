@@ -1,7 +1,9 @@
 // suite.cjs -- runs inside VS Code's extension host (loaded by run.mjs). Checks the built extension end to end
 // against a fake gateway on 127.0.0.1: activation, commands, the chat view, a streamed answer, the key kept out of
 // what the extension returns, a refused key and a refused address; then (X2) an agent turn that edits a file, with
-// the edit kept pending until it is accepted from the diff review, and .env never sent. Throws on the first failure.
+// the edit kept pending until it is accepted from the diff review, and .env never sent; then (X3) missions against
+// an in-memory gateway project: create and link, send the folder, switches, start, approve, bring back, review,
+// triage a proposal. Throws on the first failure.
 const vscode = require("vscode");
 const http = require("node:http");
 const fs = require("node:fs");
@@ -10,6 +12,72 @@ const assert = require("node:assert/strict");
 
 const KEY = "integration-key-0123456789";
 const seen = []; // request bodies the fake gateway received
+const crypto = require("node:crypto");
+const sha = (b) => crypto.createHash("sha256").update(b).digest("hex");
+
+/** An in-memory gateway project API (X3). Returns true when it handled the request. */
+const proj = { files: {}, blobs: {}, version: 1, flags: { autopilot: false, auto_improve: false }, missions: [], decided: [], proposals: [{ id: "pr1", title: "Add a test", state: "open" }] };
+const ARGS = { argv: ["python", "-m", "pytest"] };
+const ARGS_SHA = sha(JSON.stringify(ARGS));
+async function projectApi(req, res, raw) {
+  const u = req.url;
+  const json = (v, code = 200) => {
+    res.statusCode = code;
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify(v));
+    return true;
+  };
+  const body = () => (raw.length ? JSON.parse(raw.toString()) : {});
+  if (u === "/v1/projects" && req.method === "GET") return json({ data: [{ id: "p1", name: "Shop", role: "owner" }] });
+  if (u === "/v1/projects" && req.method === "POST") return json({ id: "p1", name: body().name, role: "owner" });
+  if (u === "/v1/experimental") return json({ autopilot: { available: true }, auto_improve: { available: true }, disabled: false });
+  if (u === "/v1/projects/p1/experimental") {
+    if (req.method === "PUT") Object.assign(proj.flags, body());
+    return json(proj.flags);
+  }
+  if (u === "/v1/projects/p1/workspace") return json({ version: proj.version });
+  if (u === "/v1/projects/p1/workspace/files") return json({ data: Object.entries(proj.files).map(([path, t]) => ({ path, bytes: Buffer.byteLength(t), sha256: sha(t) })) });
+  if (u.startsWith("/v1/projects/p1/workspace/files/") && u.endsWith("?download=1")) {
+    res.end(proj.files[decodeURIComponent(u.slice(32, -11))] ?? "");
+    return true;
+  }
+  if (u === "/v1/files") {
+    const text = raw.toString("latin1");
+    const m = /filename="([^"]+)"\r\nContent-Type: application\/octet-stream\r\n\r\n([\s\S]*)\r\n--p2pide[0-9a-f]{32}--\r\n$/.exec(text);
+    const id = "file_" + Object.keys(proj.blobs).length;
+    proj.blobs[id] = Buffer.from(m[2], "latin1").toString("utf8");
+    return json({ id, state: "ready" });
+  }
+  if (u === "/v1/projects/p1/workspace/commit") {
+    const b = body();
+    if (proj.forceConflict || b.base_version !== proj.version) return json({ error: { code: "version_conflict", message: "secret detail" } }, 409);
+    for (const c of b.changes) {
+      if (c.delete) delete proj.files[c.path];
+      else proj.files[c.path] = proj.blobs[c.file_id];
+    }
+    return json({ version: ++proj.version });
+  }
+  if (u === "/v1/projects/p1/workspace/sync" && req.method === "POST") return json({ state: "ready" });
+  if (u === "/v1/projects/p1/workspace/sync") return json({ state: "ready", version: proj.version });
+  if (u === "/v1/projects/p1/workspace/sync/delta") return json({ state: "pending" });
+  if (u === "/v1/missions" && req.method === "POST") {
+    const b = body();
+    proj.missions.push({ id: "m1", project_id: b.project_id, kind: b.kind, goal: b.goal, model: b.model, state: "running", run_id: "run1", waiting_approval: true, acceptance: b.acceptance });
+    return json(proj.missions.at(-1));
+  }
+  if (u === "/v1/missions") return json({ data: proj.missions });
+  if (u === "/v1/agents/runs/run1/approvals" && req.method === "GET") return json({ data: [{ id: "ap1", tool: "run_command", access: "exec", arguments: ARGS, arguments_sha256: ARGS_SHA }] });
+  if (u === "/v1/agents/runs/run1/approvals") {
+    proj.decided.push(body());
+    return json({});
+  }
+  if (u === "/v1/projects/p1/proposals") return json({ data: proj.proposals });
+  if (u.startsWith("/v1/projects/p1/proposals/pr1/")) {
+    proj.proposals = [];
+    return json({});
+  }
+  return false;
+}
 
 function fakeGateway() {
   return new Promise((resolve) => {
@@ -19,8 +87,17 @@ function fakeGateway() {
         return res.end("{}");
       }
       if (req.url === "/v1/models") return res.end(JSON.stringify({ data: [{ id: "fake-model" }] }));
-      let body = "";
-      for await (const c of req) body += c;
+      const chunks = [];
+      for await (const c of req) chunks.push(c);
+      const raw = Buffer.concat(chunks);
+      if (req.url !== "/v1/chat/completions") {
+        if (!(await projectApi(req, res, raw))) {
+          res.statusCode = 404;
+          res.end("{}");
+        }
+        return;
+      }
+      const body = raw.toString("utf8");
       seen.push(body);
       const parsed = JSON.parse(body);
       const last = parsed.messages.at(-1);
@@ -118,6 +195,49 @@ exports.run = async function run() {
     assert.equal(fs.readFileSync(file, "utf8"), "# edited by hand\ndef add(a, b):\n    return a - b\n", "the hand edit is kept");
     await vscode.commands.executeCommand("p2pAi.rejectChange", vscode.Uri.from({ scheme: "p2p-ai-review", path: "/after/hello.py" }));
     assert.deepEqual(await vscode.commands.executeCommand("p2pAi.test.changes"), []);
+
+    // X3: missions. The view is opened so its handler runs exactly as it does for clicks.
+    await vscode.commands.executeCommand("p2pAi.missions.focus");
+    const ms = async (m) => {
+      const r = await vscode.commands.executeCommand("p2pAi.test.missions", m);
+      if (r && r.error) console.log(`missions ${m.type}: ${r.error}`);
+      return r;
+    };
+    assert.deepEqual(await ms({ type: "push" }), { error: "pick a gateway project first" });
+    assert.deepEqual(await ms({ type: "link", id: "../p1", name: "x" }), { error: "refused by the message check" }, "ids are checked before use");
+    await ms({ type: "create", name: "Shop" });
+    const pushRes = await ms({ type: "push" });
+    const pushed = pushRes.ok;
+    assert.equal(pushed?.uploaded, 1, JSON.stringify(pushRes));
+    assert.deepEqual(pushed.skipped, [{ rel: ".env", reason: "may hold secrets, kept on this computer" }]);
+    assert.deepEqual(Object.keys(proj.files), ["hello.py"], ".env stays home");
+    const swRes = await ms({ type: "switches", autopilot: true, autoImprove: false });
+    assert.equal(proj.flags.autopilot, true, JSON.stringify(swRes));
+    assert.deepEqual(await ms({ type: "start", kind: "autopilot", goal: "fix the sign", model: "fake-model", checks: [] }), { error: "Autopilot needs 1 to 8 checks that say when the work is done" });
+    const started = (await ms({ type: "start", kind: "autopilot", goal: "fix the sign", model: "fake-model", checks: [{ id: "check-1", kind: "tests", framework: "pytest" }] })).ok;
+    assert.equal(started.id, "m1");
+    assert.deepEqual(proj.missions[0].acceptance, [{ id: "check-1", kind: "tests", framework: "pytest" }]);
+    assert.deepEqual(await ms({ type: "decide", runId: "run1", approvalId: "ap1", decision: "approve" }), { error: "open the approval again" }, "only an approval that was shown can be decided");
+    const shown = (await ms({ type: "approvals", runId: "run1" })).ok;
+    assert.equal(shown[0].arguments, JSON.stringify(ARGS, null, 2));
+    await ms({ type: "decide", runId: "run1", approvalId: "ap1", decision: "approve", argumentsSha256: "0".repeat(64) });
+    assert.deepEqual(proj.decided, [{ approval_id: "ap1", decision: "approve", arguments_sha256: ARGS_SHA }], "the fetched digest is sent, not one from the view");
+    // The node's work lands in the project; bring it back for review.
+    proj.files["hello.py"] = "def add(a, b):\n    return a + b  # by autopilot\n";
+    proj.files[".env"] = "STOLEN=1\n";
+    await ms({ type: "collect" });
+    const pulled = (await ms({ type: "pull" })).ok;
+    assert.equal(pulled.proposed, 1);
+    assert.equal(fs.readFileSync(file, "utf8"), "# edited by hand\ndef add(a, b):\n    return a - b\n", "a pull writes nothing");
+    assert.equal(fs.readFileSync(path.join(project, ".env"), "utf8"), "API_KEY=do-not-send\n", ".env is never brought back");
+    assert.equal(await vscode.commands.executeCommand("p2pAi.test.accept", "hello.py"), "ok");
+    assert.equal(fs.readFileSync(file, "utf8"), "def add(a, b):\n    return a + b  # by autopilot\n");
+    await ms({ type: "proposal", id: "pr1", action: "dismiss" });
+    assert.deepEqual(proj.proposals, []);
+    // A conflicting commit shows the fixed message, never the gateway's text.
+    proj.forceConflict = true;
+    fs.writeFileSync(file, "changed again\n");
+    assert.deepEqual(await ms({ type: "push" }), { error: "the gateway project changed meanwhile; try again" }, "fixed text, never the gateway's own message");
   } finally {
     srv.close();
   }

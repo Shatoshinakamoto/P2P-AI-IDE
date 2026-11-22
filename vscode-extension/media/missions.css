@@ -1,0 +1,18 @@
+/* missions.css -- styles for the P2P-AI Missions view; VS Code theme variables, so it follows light and dark themes. */
+body { margin: 0; padding: 8px; font-family: var(--vscode-font-family); font-size: var(--vscode-font-size); color: var(--vscode-foreground); }
+h2 { font-size: 1em; margin: 12px 0 4px; }
+button { background: var(--vscode-button-secondaryBackground); color: var(--vscode-button-secondaryForeground); border: none; padding: 3px 8px; cursor: pointer; }
+button:hover { background: var(--vscode-button-secondaryHoverBackground); }
+button:disabled { opacity: 0.5; cursor: default; }
+#push, #start { background: var(--vscode-button-background); color: var(--vscode-button-foreground); }
+.row { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; margin: 4px 0; }
+input, select, textarea { background: var(--vscode-input-background); color: var(--vscode-input-foreground); border: 1px solid var(--vscode-input-border, transparent); font-family: inherit; }
+textarea { width: 100%; box-sizing: border-box; resize: vertical; }
+#newname { flex: 1; min-width: 8em; }
+#error, #block { color: var(--vscode-errorForeground); }
+ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.card { background: var(--vscode-editor-inactiveSelectionBackground); padding: 6px 8px; border-radius: 4px; }
+.title { font-weight: bold; }
+.muted, .hint { opacity: 0.8; }
+.hint { font-size: 0.9em; margin: 4px 0; }
+pre { white-space: pre-wrap; word-break: break-word; background: var(--vscode-textCodeBlock-background); padding: 4px; max-height: 30vh; overflow: auto; }

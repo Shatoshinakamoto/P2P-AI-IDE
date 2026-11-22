@@ -1,13 +1,14 @@
 /**
- * gateways.ts -- the extension's saved gateways: names and addresses in VS Code's global state, keys in
- * VS Code's SecretStorage (the OS keychain where VS Code has one).
+ * gateways.ts -- the extension's saved gateways: names and addresses in the extension's own state file
+ * (./fileState.ts; VS Code's global state until X3), keys in VS Code's SecretStorage (the OS keychain where VS Code
+ * has one).
  *
  * Purpose: the gateway picker (side track X1). Same rules as the IDE's core/src/gateways.rs: checked name, URL and
  * key; at most 32 gateways; one active.
  * Inputs / trust boundary: values typed by the person in VS Code input boxes; the stored list (re-checked on every
- * load, because another extension or a hand edit could change global state).
+ * load, because another program or a hand edit could change the state file).
  * Security controls:
- *  - Keys are kept only in SecretStorage, never in settings, global state, logs or the webview (CWE-312, CWE-522).
+ *  - Keys are kept only in SecretStorage, never in settings, the state file, global state, logs or the webview (CWE-312, CWE-522).
  *  - A pinned CA is read once from a file the person picks, checked to look like PEM certificates and capped at
  *    64 KiB; only its text is stored (CWE-295).
  *  - Every stored entry is re-validated on load; bad entries are dropped (CWE-20).
@@ -15,6 +16,7 @@
  */
 import * as vscode from "vscode";
 import { checkKey, checkName, checkUrl } from "./gateway/checks.ts";
+import type { FileState } from "./fileState.ts";
 
 /** A saved gateway. The key is not part of it. */
 export interface SavedGateway {
@@ -44,13 +46,16 @@ export class GatewayStore {
   readonly onDidChange = this.changed.event;
 
   private readonly ctx: vscode.ExtensionContext;
-  constructor(ctx: vscode.ExtensionContext) {
+  /** Non-secret settings (the list, the active gateway); shared with the views. */
+  readonly state: FileState;
+  constructor(ctx: vscode.ExtensionContext, state: FileState) {
     this.ctx = ctx;
+    this.state = state;
   }
 
   /** The saved gateways, re-checked. */
   list(): SavedGateway[] {
-    const raw = this.ctx.globalState.get<unknown>(LIST_KEY);
+    const raw = this.state.get<unknown>(LIST_KEY);
     if (!Array.isArray(raw)) return [];
     const out: SavedGateway[] = [];
     for (const g of raw.slice(0, MAX_GATEWAYS)) {
@@ -69,12 +74,12 @@ export class GatewayStore {
   /** The active gateway, or the only one, or undefined. */
   active(): SavedGateway | undefined {
     const all = this.list();
-    const id = this.ctx.globalState.get<string>(ACTIVE_KEY);
+    const id = this.state.get<string>(ACTIVE_KEY);
     return all.find((g) => g.id === id) ?? (all.length === 1 ? all[0] : undefined);
   }
 
   async setActive(id: string): Promise<void> {
-    await this.ctx.globalState.update(ACTIVE_KEY, id);
+    await this.state.update(ACTIVE_KEY, id);
     this.changed.fire();
   }
 
@@ -96,7 +101,7 @@ export class GatewayStore {
     // SECURITY: ids come from the CSPRNG (no guessable names in SecretStorage).
     const id = Buffer.from(crypto.getRandomValues(new Uint8Array(8))).toString("hex");
     await this.ctx.secrets.store(secretName(id), k);
-    await this.ctx.globalState.update(LIST_KEY, [...all, { id, name: n, url: u, caPem }]);
+    await this.state.update(LIST_KEY, [...all, { id, name: n, url: u, caPem }]);
     await this.setActive(id);
     return undefined;
   }
@@ -117,9 +122,9 @@ export class GatewayStore {
 
   /** Removes a gateway and deletes its key. */
   async remove(id: string): Promise<void> {
-    await this.ctx.globalState.update(LIST_KEY, this.list().filter((g) => g.id !== id));
+    await this.state.update(LIST_KEY, this.list().filter((g) => g.id !== id));
     await this.ctx.secrets.delete(secretName(id));
-    if (this.ctx.globalState.get<string>(ACTIVE_KEY) === id) await this.ctx.globalState.update(ACTIVE_KEY, undefined);
+    if (this.state.get<string>(ACTIVE_KEY) === id) await this.state.update(ACTIVE_KEY, undefined);
     this.changed.fire();
   }
 }

@@ -1,0 +1,126 @@
+
+> p2p-ai-ide@0.1.0 ui-smoke
+> node tests/ui-smoke.mjs
+
+PASS welcome state shows Open folder
+PASS status bar shows the gateway chip and the mission switches (off until a project says otherwise)
+PASS explorer lists folders first -- src, README.md
+PASS Monaco opens the file with its text
+PASS typing marks the tab unsaved
+PASS Ctrl+S saves the edited text
+PASS save sends the loaded version (lost-update guard)
+PASS multi-cursor edits two lines at once -- "X# edited\nXimport os\n\n"
+PASS conflicting save is refused and explained
+PASS reload replaces the editor copy with the disk version
+PASS two files open in two tabs -- server.py, README.md
+PASS status bar shows the new tab's language -- No gateway Tools: Local Reloaded server.py from disk Autopilot off Auto Improve off Ln 1, Col 1 markdown
+PASS search finds matches -- 1 result in 1 file
+PASS a refused repository says why and offers no actions
+PASS source control lists the branch's changes; odd file names are text -- CHANGES (2) Stage all src/orders.py modified <img src=x onerror=window.__xss5=1>.md new
+PASS Commit is off until something is staged and a message is written
+PASS staging sends one file's path -- {"rel":"src/orders.py"}
+PASS a file's diff against the last commit is view-only (no Accept or Reject)
+PASS Commit sends the message and the history shows it as text
+PASS after the commit the message box is empty and Staged is empty
+PASS the Extensions view opens with nothing installed
+PASS Missions without a gateway points to the Gateways view
+PASS chat without a gateway points to the Gateways view
+PASS a bad gateway address is refused with the core's message
+PASS added gateway is listed with its key in the keychain, key never shown -- Home manual https://gw.example.org key in keychain Check Replace key Pin CA Remove
+PASS status bar chip names the active gateway
+PASS Check shows latency and model count
+PASS a plain-http loopback gateway is marked INSECURE — DEV ONLY
+PASS removing a gateway takes two clicks
+PASS public list fetches nothing until a directory is added
+PASS a private directory address is refused with the core's message
+PASS public list shows latency, access mode and the prompt-logging notice -- fe812c12 eu 41 ms llama3.2:1b, <img src=x onerror="window.__xss2=1"> Sign-up gives a key · chat, openai_api Logs prompts, kept 30 days API https://pub.example.o
+PASS advert text is shown as text (no element, no script, links not clickable)
+PASS skipped adverts are counted by reason
+PASS adding a public gateway sends only its advert id (the core takes the address) -- {"gatewayId":"fe812c12f3ab4ce6ac5db69ac352f906cb1b11ef","key":null}
+PASS an added public gateway is marked Added in the list
+PASS streamed answer is shown as text (no element from the answer, no script ran) -- imgs=0
+PASS code fences in an answer render as a code block
+PASS with a folder open and Tools on, the turn runs with tools and carries the model and message -- {"model":"tiny-model","messages":[{"role":"user","content":"Explain the timeout\nplease"}],"runs":false,"runner":"gatewa
+PASS tool steps are shown in the chat (name and target only) -- Explain the timeout please Hello read_file src/orders.py failed: read_file .env from the gateway. <img src=x onerror="window.__xss=1"> const a = 1; 
+PASS proposed edits are listed under Changes and not written yet
+PASS the diff view shows the proposed text as text (no element from it)
+PASS Accept writes the reviewed file
+PASS an open clean tab reloads after the change is accepted
+PASS Reject drops a change without writing it
+PASS with Tools off the turn is a plain chat, and tool lines are not sent to the model -- ["user","assistant","assistant","user"]
+PASS the chat is saved in history with a title from the first message
+PASS history search finds the chat by answer text
+PASS deleting a chat takes two clicks
+PASS sending the folder reports what was sent and what stayed home
+PASS switching Autopilot on for the project shows in the status bar
+PASS Autopilot starts with the goal, model and a tests check -- {"kind":"autopilot","goal":"Make the tests pass","model":"tiny-model","checks":[{"id":"tests","kind":"tests","framework":"pytest"}]}
+PASS an approval shows the call's arguments as text (no element, no script)
+PASS Approve sends the decision bound to the arguments' digest -- {"runId":"run_1","approvalId":"apr_1","decision":"approve","argumentsSha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}
+PASS proposals show text only and their sources are not links
+PASS a proposal can be dismissed
+PASS stopping a mission takes two clicks
+PASS task titles from the gateway are shown as text
+PASS Collect changes shows the new version
+PASS pulled files wait in Changes to review and are not written
+PASS explorer keeps expanded folders across views
+PASS switching views keeps the chat in progress (one chat, saved twice) -- ["","0000000000000004"]
+PASS the gateway, local sandbox and container runners are offered -- ["Gateway sandbox (no network, changes not kept)","Local sandbox on this computer (no network, changes not kept)","Local container, Docker or Podman"]
+PASS a test run shows the verdict, counts and failing tests -- Failed (exit code 1) run_tests pytest · on node-1 · 2.3 s Tests: 3 passed, 1 failed, 0 skipped tests/test_orders.py::test_<b>total</b> Output collected 4 items 
+PASS run output is shown as text (no element, no script)
+PASS a test run sends the runner, framework and time limit -- {"runner":"gateway","input":{"kind":"tests","framework":"pytest","cwd":"","timeout_s":120},"image":"python","onStage":{"id":3}}
+PASS a command is sent as words; shell signs are plain words -- {"kind":"command","argv":["echo","a b",";","ls","$HOME"],"cwd":"","timeout_s":120}
+PASS a run on the local sandbox goes to the local runner
+PASS a missing image offers Get image and no run
+PASS Get image asks for that image by its id
+PASS a container run sends the runner and the chosen image -- {"runner":"container","input":{"kind":"command","argv":["echo","a b",";","ls","$HOME"],"cwd":"","timeout_s":120},"image":"node","onStage":{"id":7}}
+PASS cargo tests need the Rust image, which is built here
+PASS Runs is off until the person turns it on
+PASS a run request shows exactly what would run and where, as text
+PASS nothing runs before Allow
+PASS Allow answers the request's own id -- {"id":"0000000000000005","allow":true}
+PASS the chat's runs use the runner chosen in Run and test
+PASS the chat shows the run and its result
+PASS Decline answers no and the card goes away
+PASS extension search results render as text (no markup from Open VSX)
+PASS an extension that runs code is refused with the phase that adds its host
+PASS Install puts the theme in the installed list with its verified badge
+PASS picking the installed theme recolours the editor -- rgb(18, 52, 86)
+PASS Remove takes the extension off the list and out of the theme picker
+PASS removing the theme in use goes back to Dark Modern -- rgb(31, 31, 31)
+PASS a web extension installs and is listed as one
+PASS the first internet request of a web extension asks the person, naming the site -- Allow internet for Hover Web? Hover Web wants to reach example.org. If you allow it, it can reach public https sites while it is on, and can send them what it s
+PASS the web extension's code runs in the worker host and its hover shows in the editor -- WEBEXT xhr=blocked ipc=blocked http=blocked tauri=none dom=none open=refused local=open lxhr=blocked lws=blocked live=blocked borrow=none
+PASS Not now: no request is made and the extension gets an error -- WEBEXT xhr=blocked ipc=blocked http=blocked tauri=none dom=none open=refused local=open lxhr=blocked lws=blocked live=blocked borrow=none
+PASS the web extension can't reach other local ports (XMLHttpRequest or WebSocket), so the Node host's CSP opening stays out of the worker -- WEBEXT xhr=blocked ipc=blocked http=blocked tauri=none dom=none open=refused local=open lxhr=blocked lws=blocked live=blocked borrow=none hits=0
+PASS the web extension can't reach the network itself, the Tauri bridge or the page -- WEBEXT xhr=blocked ipc=blocked http=blocked tauri=none dom=none open=refused local=open lxhr=blocked lws=blocked live=blocked borrow=none
+PASS the web extension can't open a link or window on its own -- []
+PASS Allow internet saves the grant for that extension only -- {"id":"smoke.hover-web","allowed":true}
+PASS an allowed extension's https request goes through the core and gets the answer -- WEBEXT xhr=blocked ipc=blocked http=blocked tauri=none dom=none open=refused local=open lxhr=blocked lws=blocked live=200:hello-from-site borrow=blocked
+PASS a call with no extension code on the stack is refused even while allowed -- WEBEXT xhr=blocked ipc=blocked http=blocked tauri=none dom=none open=refused local=open lxhr=blocked lws=blocked live=200:hello-from-site borrow=blocked
+PASS a forged hello later on is ignored, so forged requests get nothing made -- none
+PASS Stop internet takes it away at once -- WEBEXT xhr=blocked ipc=blocked http=blocked tauri=none dom=none open=refused local=open lxhr=blocked lws=blocked live=blocked borrow=blocked
+PASS the IDE page itself still can't evaluate strings (only the extension host iframe can)
+PASS the extension host runs in a hidden, sandboxed iframe of the app's own origin -- allow-scripts allow-same-origin|none
+PASS removing the web extension stops its code (no hover from it)
+PASS TandemForge running here is found without typing a port
+PASS a code TandemForge does not know is refused, and the field is cleared
+PASS paired TandemForge is listed and active, code in the keychain, never shown -- TandemForge (this computer) TandemForge http://127.0.0.1:41234 paired (code in keychain) Check Remove
+PASS the loopback TandemForge entry is not marked INSECURE and has no key or CA buttons -- TandemForge (this computer) TandemForge http://127.0.0.1:41234 paired (code in keychain) Check Remove
+PASS Node extensions start only in a trusted folder, and the panel says what they can do
+PASS trusting is its own click, and the download is named before it happens
+PASS Electron compatibility is off by default and nothing about it was called
+PASS the compatibility hint names the extension as text, never markup
+PASS turning compatibility on is one call from the click, and the start names both downloads
+PASS the host starts with the download allowed only after that click, then the window reloads -- [{"cmd":"node_host_start","args":{"allowDownload":true}},{"cmd":"node_host_start","args":{"allowDownload":false}}]
+PASS after the reload the editor connects to the Node host on 127.0.0.1 only -- ws://127.0.0.1:35413/stable-0123456789abcdef0123456789abcdef01234567?reconnectionToken=[REDACTED:secret]&reconnection=false&skipWebSocketFrames=false ws://127.0.0.1:35413/stable-0123456789abcdef0123456789abcdef01234567?reconnectionToken=[REDACTED:secret]&reconnection=false&skipWebSocketFrames=false
+PASS the editor announces the server's pinned commit -- ws://127.0.0.1:35413/stable-0123456789abcdef0123456789abcdef01234567?reconnectionToken=[REDACTED:secret]&reconnection=false&skipWebSocketFrames=false
+PASS the connection token reaches the host over the socket, not the URL or the page's own storage -- 264 bytes
+PASS the running host says it uses Electron, and the Electron download came with the same allowed start
+PASS taking trust back stops the host, and the reloaded editor connects to nothing
+PASS a Node host built from another VS Code version is not offered or connected -- NODE EXTENSIONS (0)
+
+Node extensions can't run with this version of the IDE yet: the editor is built on VS Code 1.145.2, but the available Node extension host is built on VS Code 1.0.0. They must match. Web extensions still work.
+PASS no CSP violations under the shipped CSP
+PASS no page errors
+
+118 passed, 0 failed

@@ -1,0 +1,2 @@
+# run in repository folder `.`, as an argument list (no shell)
+sh -c cd /tmp/claude-0/i6d/dl && sha256sum electron-v43.8.3-linux-x64.zip electron-v43.8.3-win32-x64.zip && grep -E "electron-v43.8.3-(linux-x64|win32-x64)\.zip" SHASUMS256.txt && grep -c "73d7d6fe120c998db75834c23c8ce7ce8390607c198b2e167a28acd7937bef22\|98efbd2d1c7bd44150c0aa800cd9ac5fefcefd2d44fd94958a95d6744d86c6de" /tmp/claude-0/ide-i6/core/src/electron_host.rs && grep -E "^target=" /tmp/claude-0/rehb/vscode/.npmrc /tmp/claude-0/rehb/vscode/remote/.npmrc

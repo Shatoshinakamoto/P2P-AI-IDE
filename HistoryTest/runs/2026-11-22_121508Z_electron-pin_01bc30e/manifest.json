@@ -1,0 +1,62 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "b5145754b020340695b265c1d7e92cac84dbe1659b3de9847f981ef51b8f6d92",
+   "size": 1882
+  },
+  "artifacts/SHASUMS256.txt": {
+   "sha256": "bfd55c810fc04619e3d252090d81910aa738348da2030361f635a1c4f1aa88f3",
+   "size": 7610
+  },
+  "command.txt": {
+   "sha256": "6ad2681f5f9949e7c0400e78b82d2ca5e652451eb040719b699bcca4923e2a65",
+   "size": 526
+  },
+  "environment.md": {
+   "sha256": "7ba270a0ecde2e9ac2334fa17665883a6236f74f813b3f5cfd3eb8d2d990b995",
+   "size": 201
+  },
+  "logs/output.log": {
+   "sha256": "793c66e19ffd5b12391c638854514d873637760272539815fc81e276d993bba6",
+   "size": 496
+  },
+  "results/summary.txt": {
+   "sha256": "b21620f7c483360edc30ccdc8b0b0c07f7c79a65c27a57b36520def11bb5eac5",
+   "size": 292
+  }
+ },
+ "previous": {
+  "manifest_sha256": "a908830e64f7ec04c35016ee9b5116a53fd2be6eac4be4a4378fc3d7d8ad77b8",
+  "run_id": "2026-11-22_115718Z_vscode-ext-package_0c3ceb5"
+ },
+ "run": {
+  "area": "electron-pin",
+  "branch_or_pr": "claude/project-thread-8u4b8a",
+  "collected_utc": "",
+  "commit": "01bc30e9ade3bdbbaa441d05b69ddde81f2f77df",
+  "count_unit": "",
+  "date_utc": "2026-11-22T12:15:08Z",
+  "dirty": false,
+  "duration_s": 0.2,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_121508Z_electron-pin_01bc30e",
+  "kind": "manual",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "Finish TandemForge and IDE roadmaps thread",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Phase I6d: Electron 43.8.3 pins equal our own downloads and Electron's SHASUMS256.txt",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}
