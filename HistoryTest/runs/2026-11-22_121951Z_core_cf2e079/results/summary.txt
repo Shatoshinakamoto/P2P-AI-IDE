@@ -1,0 +1,11 @@
+id: 2026-11-22_121951Z_core_cf2e079
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: not recorded
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: 0
+duration_s: 16.6
+commit: cf2e079c728ec65cd116fe5cc4252d22adc899d9
+machine: cloud

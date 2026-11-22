@@ -1,0 +1,1 @@
+cargo test --locked (in core, PC local-ci)

@@ -28,6 +28,13 @@ fn ws_with(text: &str) -> (Workspace, std::path::PathBuf) {
     (Workspace::open(&d).unwrap(), d)
 }
 
+/// Closes the workspace, then removes its temp folder. Windows refuses to delete a folder while the workspace still
+/// holds a handle on it (error 32, found by the PC check), so the workspace is dropped first.
+fn done(ws: Workspace, d: std::path::PathBuf) {
+    drop(ws);
+    let _ = fs::remove_dir_all(d);
+}
+
 fn call(name: &str, a: Value) -> ToolCall {
     ToolCall { id: "c1".into(), name: name.into(), arguments: a.to_string() }
 }
@@ -46,7 +53,7 @@ fn rel_path_cases() {
         let ok = ws.check_rel(&s(c, "path")).is_ok();
         assert_eq!(ok, c["ok"].as_bool().unwrap(), "{}", s(c, "why"));
     }
-    fs::remove_dir_all(d).unwrap();
+    done(ws, d);
 }
 
 #[test]
@@ -81,7 +88,7 @@ fn edit_range_and_delta_cases() {
             }
             None => assert_eq!(out, format!("error: {}", s(c, "error")), "{why}"),
         }
-        fs::remove_dir_all(d).unwrap();
+        done(ws, d);
     }
     for c in v["ranges"].as_array().unwrap() {
         let why = s(c, "why");
@@ -97,7 +104,7 @@ fn edit_range_and_delta_cases() {
             Some(w) => assert_eq!((ok, out.as_str()), (true, w.as_str().unwrap()), "{why}"),
             None => assert_eq!(out, format!("error: {}", s(c, "error")), "{why}"),
         }
-        fs::remove_dir_all(d).unwrap();
+        done(ws, d);
     }
     for c in v["line_delta"].as_array().unwrap() {
         let (a, r) = line_delta(&s(c, "before"), &s(c, "after"));
@@ -119,5 +126,5 @@ fn argument_cases() {
         assert!(!ok, "{}", s(c, "why"));
         assert_eq!(out, format!("error: {}", s(c, "error")), "{}", s(c, "why"));
     }
-    fs::remove_dir_all(d).unwrap();
+    done(ws, d);
 }
