@@ -22,7 +22,7 @@ no Tauri commands**. On 2026-11-21 Pheonix chose **"Plus internet, asked per ext
 public https sites after the person allows it once (see [Internet for web extensions](#internet-for-web-extensions)).
 
 Extensions with only Node code (a `main` entry and no `browser` entry: most language servers, linters, Git tools)
-install as **Node extensions** (phase I6c). They run only in the local VSCodium server the IDE starts for a folder
+install as **Node extensions** (phase I6c). They run only in the local VS Code server (our own build) the IDE starts for a folder
 the person trusts; see [node-extensions-design.md](node-extensions-design.md). Extensions that ask for proposed VS Code
 APIs (`enabledApiProposals`) are refused, because those APIs are unstable and not offered.
 

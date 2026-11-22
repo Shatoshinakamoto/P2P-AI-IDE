@@ -13,7 +13,8 @@
 import { createRequire } from "node:module";
 import { createHash } from "node:crypto";
 import { createServer } from "node:http";
-import { readFile, stat } from "node:fs/promises";
+import { connect } from "node:net";
+import { readFile, readdir, stat } from "node:fs/promises";
 import { extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -54,10 +55,63 @@ await new Promise((r, j) => { localSvc.once("error", j); localSvc.listen(port + 
 // connection then fails, which the test expects. (SHA-1 here is the WebSocket handshake's fixed checksum, RFC 6455,
 // not a security use.)
 let hostBytes = Buffer.alloc(0);
+// NODE_HOST_REAL=<file>: the JSON line printed by `cargo run --example node_host_serve` (a real server built from
+// the editor's VS Code version, running on this machine). The stand-in then forwards the editor's connection to that
+// server, still keeping what the editor sends, and the test also checks that the real host starts extensions.
+// SECURITY: the file holds a live connection token; it stays on this machine and is never printed (CWE-532).
+const realHost = process.env.NODE_HOST_REAL ? JSON.parse(await readFile(process.env.NODE_HOST_REAL, "utf8")) : null;
+const hostToken = realHost?.token ?? "c0ffee".repeat(8);
+const hostCommit = realHost?.commit ?? "0123456789abcdef0123456789abcdef01234567";
+/** The real server's extension host log folders (`<data>/node-host-state/user/logs/<run>/exthost<N>`). */
+async function hostLogDirs() {
+  const root = join(process.env.NODE_HOST_REAL_DATA ?? "", "node-host-state", "user", "logs");
+  const out = [];
+  for (const run of await readdir(root).catch(() => [])) {
+    for (const d of await readdir(join(root, run)).catch(() => [])) if (/^exthost\d+$/.test(d)) out.push(join(root, run, d));
+  }
+  return out;
+}
+const hostLogsBefore = new Set(realHost ? await hostLogDirs() : []);
+/** The text of the extension host logs started during this test, after waiting up to 20 s for activation. */
+async function newHostLogs() {
+  let text = "";
+  for (let i = 0; i < 40; i++) {
+    text = "";
+    for (const d of await hostLogDirs()) if (!hostLogsBefore.has(d)) text += await readFile(join(d, "remoteexthost.log"), "utf8").catch(() => "");
+    if (/Eager extensions activated/.test(text)) break;
+    await new Promise((r) => setTimeout(r, 500));
+  }
+  return text;
+}
 const hostSvc = createServer((_req, res) => res.writeHead(404).end());
-hostSvc.on("upgrade", (req, sock) => {
+hostSvc.on("upgrade", (req, sock, head) => {
+  if (realHost) {
+    // Forward the raw upgrade request and every later byte to the real server on 127.0.0.1, and sniff the editor's
+    // frames on the way (the same parser as below would need the stream unsplit, so the raw bytes are kept instead:
+    // the token check only looks for the token text, which the editor sends unmasked inside a masked frame).
+    const up = connect(realHost.port, "127.0.0.1", () => {
+      const lines = [`${req.method} ${req.url} HTTP/1.1`];
+      for (let i = 0; i < req.rawHeaders.length; i += 2) {
+        // Without compression, so the token check below can read the editor's frames (test only).
+        if (!/^sec-websocket-extensions$/i.test(req.rawHeaders[i])) lines.push(`${req.rawHeaders[i]}: ${req.rawHeaders[i + 1]}`);
+      }
+      up.write(lines.join("\r\n") + "\r\n\r\n");
+      if (head?.length) up.write(head);
+      sock.pipe(up);
+      up.pipe(sock);
+    });
+    sniff(sock);
+    up.on("error", () => sock.destroy());
+    sock.on("error", () => up.destroy());
+    return;
+  }
   const accept = createHash("sha1").update(req.headers["sec-websocket-key"] + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11").digest("base64");
   sock.write(`HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: ${accept}\r\n\r\n`);
+  sniff(sock);
+  setTimeout(() => sock.destroy(), 1500);
+});
+/** Keeps the payloads of the editor's (masked) WebSocket frames in hostBytes. */
+function sniff(sock) {
   let buf = Buffer.alloc(0);
   sock.on("data", (d) => {
     buf = Buffer.concat([buf, d]);
@@ -73,8 +127,7 @@ hostSvc.on("upgrade", (req, sock) => {
     }
   });
   sock.on("error", () => undefined);
-  setTimeout(() => sock.destroy(), 1500);
-});
+}
 await new Promise((r, j) => { hostSvc.once("error", j); hostSvc.listen(port + 2, "127.0.0.1", r); }).catch(() => undefined);
 
 // The fake Tauri bridge: a workspace held in memory, with the same record shapes and error strings as the core.
@@ -348,7 +401,7 @@ exports.activate = async (ctx) => {
           if (!nh.trusted) throw "Node extensions run only in a folder you trust";
           if (!nh.installed && !args.allowDownload) throw "the Node extension host is not downloaded yet";
           nh.installed = true; nh.port = Number(location.port) + 2; save();
-          return { port: nh.port, token: "c0ffee".repeat(8), folder: "/home/smoke/shop-api", commit: "0123456789abcdef0123456789abcdef01234567", vscode };
+          return { port: nh.port, token: window.__smokeHost.token, folder: window.__smokeHost.folder, commit: window.__smokeHost.commit, vscode };
         }
         case "ext_set_enabled": ext.installed = ext.installed.map((e) => (e.id === args.id ? { ...e, enabled: args.enabled } : e)); return ext.installed.find((e) => e.id === args.id);
         case "ext_uninstall": ext.installed = ext.installed.filter((e) => e.id !== args.id); return null;
@@ -404,6 +457,8 @@ page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); if 
 // The VS Code version the editor library is built on, for the Node host mock (it reports a matching server).
 const editorVsCode = /version:\s*'([^']+)'/.exec(await readFile(createRequire(import.meta.url).resolve("@codingame/monaco-vscode-api/vscode/vs/platform/product/common/product"), "utf8"))?.[1] ?? "";
 await page.addInitScript((v) => { window.__smokeEditorVsCode = v; }, editorVsCode);
+// The values the mocked shell hands the editor for the Node host: the real server's when NODE_HOST_REAL is set.
+await page.addInitScript((h) => { window.__smokeHost = h; }, { token: hostToken, commit: hostCommit, folder: realHost?.folder ?? "/home/smoke/shop-api" });
 await page.addInitScript(fake);
 // The shipped window freezes Object.prototype when tauri.conf.json sets freezePrototype; do the same here so a
 // library that breaks under it fails this test instead of showing a blank window (phase I1 Windows finding).
@@ -913,7 +968,7 @@ try {
   check("Node extensions start only in a trusted folder, and the panel says what they can do", /read and change any of your files/.test(await np.innerText()) && !(await nodeCalls()).some((c) => c.cmd === "node_host_start"));
   await np.getByRole("button", { name: "Trust this folder for Node extensions" }).click();
   await np.getByRole("button", { name: "Download and start Node extensions" }).waitFor();
-  check("trusting is its own click, and the download is named before it happens", (await nodeCalls()).some((c) => c.cmd === "node_host_trust" && c.args.trusted === true) && /about 85 MB/.test(await np.innerText()));
+  check("trusting is its own click, and the download is named before it happens", (await nodeCalls()).some((c) => c.cmd === "node_host_trust" && c.args.trusted === true) && /about 90 MB/.test(await np.innerText()));
   const errBefore = errors.length;
   await Promise.all([page.waitForEvent("load"), np.getByRole("button", { name: "Download and start Node extensions" }).click()]);
   await page.getByRole("button", { name: "Extensions", exact: true }).waitFor();
@@ -922,8 +977,18 @@ try {
   const startCalls = (await nodeCalls()).filter((c) => c.cmd === "node_host_start");
   check("the host starts with the download allowed only after that click, then the window reloads", startCalls.length >= 2 && startCalls[0].args.allowDownload === true && startCalls.slice(1).every((c) => c.args.allowDownload === false), JSON.stringify(startCalls));
   check("after the reload the editor connects to the Node host on 127.0.0.1 only", sockets.length > 0 && sockets.every((u) => u.startsWith(`ws://127.0.0.1:${hostPort}/`)), sockets.slice(0, 2).join(" "));
-  check("the editor announces the server's pinned commit", sockets.some((u) => u.includes("0123456789abcdef0123456789abcdef01234567")), sockets.slice(0, 1).join(" "));
-  check("the connection token reaches the host over the socket, not the URL or the page's own storage", hostBytes.includes("c0ffee".repeat(8)) && !sockets.some((u) => u.includes("c0ffee".repeat(8))) && !(await page.evaluate(() => JSON.stringify({ ...localStorage }))).includes("c0ffee".repeat(8)), `${hostBytes.length} bytes`);
+  check("the editor announces the server's pinned commit", sockets.some((u) => u.includes(hostCommit)), sockets.slice(0, 1).join(" "));
+  check("the connection token reaches the host over the socket, not the URL or the page's own storage", hostBytes.includes(hostToken) && !sockets.some((u) => u.includes(hostToken)) && !(await page.evaluate((t) => JSON.stringify({ ...localStorage }).includes(t), hostToken)), `${hostBytes.length} bytes`);
+  if (realHost && process.env.NODE_HOST_REAL_DATA) {
+    // The real server's own extension host logs say whether the editor's messages arrived: a host logs "Eager
+    // extensions activated" only after it got the workspace, and one line per extension it starts. Each connection
+    // gets its own exthost<N> folder; only folders that are new since the test started count.
+    const fresh = await newHostLogs();
+    const activated = [...fresh.matchAll(/_doActivateExtension ([\w.-]+)/g)].map((m) => m[1]);
+    check("the real Node host gets the workspace from the editor and starts extensions", /Eager extensions activated/.test(fresh) && activated.length > 0, activated.join(", "));
+    check("the real Node host logs no errors from the editor's side", !/\[error\]/.test(fresh), fresh.split("\n").find((l) => /\[error\]/.test(l)) ?? "");
+  }
+
   await page.getByRole("button", { name: "Extensions", exact: true }).click();
   const np2 = page.getByRole("region", { name: "Node extensions" });
   await np2.getByText(/Node extensions are running/).waitFor();

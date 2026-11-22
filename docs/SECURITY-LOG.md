@@ -2,6 +2,36 @@
 
 Every security patch, hardening change, CVE remediation and accepted risk, newest first.
 
+## 2026-11-22 — url 2.5.9 (RUSTSEC-2026-0592)
+- **Type:** CVE remediation (dependency patch)
+- **CVE / CWE / advisory:** RUSTSEC-2026-0592, stack overflow in `Url::origin()` on nested `blob:` URLs (CWE-674, uncontrolled recursion). No CVE ID was listed in the advisory output we saw.
+- **Severity:** denial of service (crash) at most. No CVSS score was shown in `cargo audit`. KEV: no.
+- **Affected:** `app/src-tauri/Cargo.lock` (`url` 2.5.8, pulled in by Tauri and HTTP crates); `core/Cargo.lock` was not affected.
+- **What changed:** `cargo update -p url --precise 2.5.9`, which also updated `form_urlencoded` 1.2.2 to 1.2.3.
+- **Why it is secure now:** the patched version from the advisory is in the lockfile (NIST SI-2, flaw remediation).
+- **Verification:** `cargo audit` in `app/src-tauri`: exit 0 with only the unmaintained and unsound warnings that are already allowed. `cargo check` passes. Found by PC local CI (`local-ci/supply-chain`) on PR 23. HistoryTest 2026-11-22_101242Z_security-scan_9ebb059.
+
+## 2026-11-22 — Phase I6c-4: Node host pins moved to our own build
+- **Type:** hardening (supply chain)
+- **CVE / CWE / advisory:** none. CWE-494; NIST SI-7, SA-12
+- **Severity:** none. KEV no.
+- **Affected:** `core/src/node_host.rs` (`PINS`, `SERVER_BUILD`, `SERVER_COMMIT`, `VSCODE_VERSION`), `core/tests/node_host_real.rs`
+- **What changed:** the pins are our Linux x64 and Windows x64 builds of VS Code 1.145.2's server, on the IDE repo's pre-release `node-host-1.145.2` (github.com, already an allowed host). The VSCodium 1.140 pins were removed. macOS and Linux arm64 have no pin, so they get nothing (fail closed). On Windows the build script adds the Windows SDK's tools folder (a fixed admin-only path, CWE-427) to the end of `PATH` for `signtool.exe`, which VS Code uses only to check and strip signatures. The repo was made public on Pheonix's choice; before that, its full history was scanned for secret patterns (tokens, keys, private keys) and only test fixtures matched. Commit author emails become public, which Pheonix accepted.
+- **Why it is secure now:** the app accepts only the exact published bytes. The pin was taken by downloading the file back anonymously from the release and hashing it, and it equals the build record's hash (NIST SI-7, CWE-494).
+- **Accepted risk:** the publisher's GitHub account can replace a release file, but the app would refuse it because of the pinned hash. gitleaks itself was not run (not installed in the cloud); the regex scan is weaker.
+- **Verification:** HistoryTest 2026-11-22_061544Z_node-host-pin_dab272f (published file downloaded anonymously, SHA-256 equals the pin, pass), 2026-11-22_061550Z_core_dab272f (core tests 95 + 5 + 2 passed), 2026-11-22_061612Z_ui_dab272f (UI smoke 114/114). The real download test (`node_host_real`, ignored by default) can't run in the cloud because the app uses no proxy and the cloud has no direct internet; it runs on the PC once the Windows pin is in.
+
+## 2026-11-22 — Phase I6c-4: Node extension host server built from pinned VS Code source
+- **Type:** hardening (supply chain)
+- **CVE / CWE / advisory:** none. CWE-494, CWE-20, CWE-78; NIST SA-12, CM-7, SI-7; SSDF PS.2, PW.4; SLSA build L1
+- **Severity:** none (new build tooling). KEV no.
+- **Affected:** `scripts/build_node_host.py`, `core/examples/node_host_serve.rs`, `app/src/monaco.ts`, `app/tests/ui-smoke.mjs`
+- **What changed:** the server for Node extensions can be built from VS Code's MIT source at an exact tag and commit (checked twice: the clone and the built `product.json`), with Node checked against the tag's `.nvmrc` and dependencies from the lockfile (`npm ci`). The GitHub Copilot extension and runtime and the marketplace debugger extensions are removed from the server (least functionality, NIST CM-7: no third-party AI client in the IDE's server). Only two files in the clone are changed, and the build stops on any other change. The archive gets a SHA-256 and a build record for pinning.
+- **Why it is secure now:** the bytes the app will pin come from a known source commit, not from a third party's binary release; the app keeps refusing any other bytes (NIST SI-7).
+- **Accepted risk:** builds aren't bit-for-bit reproducible across machines yet (VS Code's bundler); the pin is of the published file. The cloud build filled `@vscode/ripgrep`'s cache by hand from the same github.com release file because the cloud proxy blocks `api.github.com` (that package checks no hash itself, upstream behaviour).
+- **Dependency:** VS Code 1.145.2 (MIT), commit c4453f8ea430795f941c1b2ff6c9321135a74a02; Node 24.22.1 (SHA-256 checked against nodejs.org SHASUMS256.txt). A live advisory lookup for VS Code 1.145.2 was not done from the cloud; none known to us on 2026-11-22.
+- **Verification:** HistoryTest runs 2026-11-22_053759Z_node-host-build_4096b2e (build, pass) and 2026-11-22_053720Z_ui-node-host-real_832a0a7 (real editor with this server, 116/116).
+
 ## 2026-11-22 — Phase I6c-3: no console windows, local folders only, Node host version check
 - **Type:** hardening; patch
 - **CVE / CWE / advisory:** none. CWE-1188 (unsafe default), CWE-20, CWE-436 (interpretation conflict between editor and server); NIST SI-10, CM-7

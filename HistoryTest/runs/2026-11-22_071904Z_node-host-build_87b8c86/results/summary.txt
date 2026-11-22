@@ -1,0 +1,11 @@
+id: 2026-11-22_071904Z_node-host-build_87b8c86
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: 1
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: 0
+duration_s: 0.0
+commit: 87b8c86
+machine: pc

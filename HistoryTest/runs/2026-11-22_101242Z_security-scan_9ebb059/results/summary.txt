@@ -1,0 +1,11 @@
+id: 2026-11-22_101242Z_security-scan_9ebb059
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: 1
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: 0
+duration_s: 1.2
+commit: 9ebb059b92c95225418379cc3ef6e2dd8082b3b8
+machine: cloud

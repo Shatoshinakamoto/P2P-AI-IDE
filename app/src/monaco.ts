@@ -21,6 +21,9 @@ import getTextmateServiceOverride from "@codingame/monaco-vscode-textmate-servic
 import getThemeServiceOverride from "@codingame/monaco-vscode-theme-service-override";
 import getLanguagesServiceOverride from "@codingame/monaco-vscode-languages-service-override";
 import type { IWorkbenchConstructionOptions } from "@codingame/monaco-vscode-api/services";
+import { SyncDescriptor } from "@codingame/monaco-vscode-api/vscode/vs/platform/instantiation/common/descriptors";
+import { ExtensionStorageService } from "@codingame/monaco-vscode-api/vscode/vs/platform/extensionManagement/common/extensionStorage";
+import { IExtensionStorageService } from "@codingame/monaco-vscode-api/vscode/vs/platform/extensionManagement/common/extensionStorage.service";
 import type { NodeHostConnection } from "./ipc.ts";
 import { authorityOf, remotePath } from "./nodeHost.ts";
 import getConfigurationServiceOverride, {
@@ -141,6 +144,10 @@ export function startEditor(node: NodeHostConnection | null = null): Promise<voi
         ...getTextmateServiceOverride(),
         ...getThemeServiceOverride(),
         ...getLanguagesServiceOverride(),
+        // Extensions keep small state (`globalState`, `workspaceState`) through this service; without it the first
+        // write from a Node extension (Git does one at start) fails with "not supported". It stores in the editor's
+        // in-memory storage, so that state lasts until the window reloads (found with the real Node host, I6c-4).
+        [IExtensionStorageService.toString()]: new SyncDescriptor(ExtensionStorageService, [], true),
         ...remote,
       },
       undefined,

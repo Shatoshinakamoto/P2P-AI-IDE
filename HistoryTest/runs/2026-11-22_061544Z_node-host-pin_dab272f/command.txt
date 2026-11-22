@@ -1,0 +1,2 @@
+# run in repository folder `.`, as an argument list (no shell)
+bash /tmp/claude-0/-home-user/7381e9a9-41fa-55e7-9bd9-3e5b8ccb0681/scratchpad/pincheck.sh

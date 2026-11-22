@@ -1,0 +1,62 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "40d6f6520ddd02bbee86440688489f3d6f95111feeec8f24f872012663210211",
+   "size": 2325
+  },
+  "command.txt": {
+   "sha256": "0c21a87ecd45d192340475b9089c0798488a61038e54527f22d16590b7752f37",
+   "size": 121
+  },
+  "environment.md": {
+   "sha256": "3d14a2f2de3394f019f2f8ed754df4f026cbf2d35a8fdbf93876e53f6b3a0ede",
+   "size": 206
+  },
+  "logs/output.log": {
+   "sha256": "13a2e19de6b8548fe975a32e62e2613103efb36e84fc47441e37df8b9f3e61d1",
+   "size": 11735
+  },
+  "results/summary.txt": {
+   "sha256": "327dab09014f9b7693ac32801d8084b4b5dbd0f2c3ffcc1fd7eb708a2071386c",
+   "size": 298
+  }
+ },
+ "previous": {
+  "manifest_sha256": "f732af91a711a313583131561f99237f88c0ad8aa7be82d6dc2d523dbeaf7c9b",
+  "run_id": "2026-11-22_053624Z_ui-node-host-real_4096b2e"
+ },
+ "run": {
+  "area": "ui-node-host-real",
+  "branch_or_pr": "claude/project-thread-8u4b8a",
+  "collected_utc": "",
+  "commit": "832a0a77f17200af72f63a087de48876d0085e3c",
+  "count_unit": "",
+  "date_utc": "2026-11-22T05:37:20Z",
+  "dirty": true,
+  "duration_s": 27.4,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_053720Z_ui-node-host-real_832a0a7",
+  "kind": "e2e",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {
+   "logs/output.log": {
+    "secret": 3
+   }
+  },
+  "requested_by": "tf-ide-roadmap-thread",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Editor with a real Node host built from VS Code 1.145.2 (Linux x64), fresh logs only",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

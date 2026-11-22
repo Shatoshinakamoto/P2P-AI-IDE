@@ -50,7 +50,7 @@ use std::time::{Duration, Instant};
 pub const ALLOWED_HOSTS: [&str; 3] =
     ["github.com", "objects.githubusercontent.com", "release-assets.githubusercontent.com"];
 
-/// Largest download accepted (the servers are about 85 MB packed).
+/// Largest download accepted (the servers are about 90 MB packed).
 pub const MAX_DOWNLOAD: u64 = 200 << 20;
 /// Largest unpacked size, counted on bytes read (CWE-409).
 pub const MAX_TOTAL: u64 = 600 << 20;
@@ -64,9 +64,9 @@ pub const START_TIMEOUT: Duration = Duration::from_secs(30);
 /// The VS Code version the pinned server is built from. The editor must be built on the same VS Code minor
 /// version: VS Code's editor-to-extension-host messages are numbered, and the numbering changes between minor
 /// versions, so a mismatched pair connects but silently never starts an extension (found on the PC in phase
-/// I6c-3: an editor on 1.145 and this 1.140 server). The editor checks this before it connects
+/// I6c-3: an editor on 1.145 and the VSCodium 1.140 server pinned then). The editor checks this before it connects
 /// (app/src/lib/vscodeVersion.ts).
-pub const VSCODE_VERSION: &str = "1.140.0";
+pub const VSCODE_VERSION: &str = "1.145.2";
 
 /// One pinned server download.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -75,7 +75,7 @@ pub struct Pin {
     pub os: &'static str,
     /// `std::env::consts::ARCH` value: `x86_64` or `aarch64`.
     pub arch: &'static str,
-    /// VSCodium release, for example `1.140.0.25xxx`.
+    /// Server build version, for example `1.145.2`.
     pub version: &'static str,
     /// The release file's https URL.
     pub url: &'static str,
@@ -86,59 +86,38 @@ pub struct Pin {
     pub commit: &'static str,
 }
 
-/// The pinned VSCodium release (built from VS Code 1.140, see `VSCODE_VERSION`).
-pub const VSCODIUM: &str = "1.140.06880";
-/// Its VS Code commit, from the server's `product.json`.
-pub const VSCODIUM_COMMIT: &str = "807ba2d6075c29587f884698cd7370c81ab0724c";
+/// Our server build's version: the VS Code release tag it is built from (`scripts/build_node_host.py`).
+pub const SERVER_BUILD: &str = "1.145.2";
+/// Its VS Code commit, checked by the build script against the clone and the built `product.json`. It is also
+/// the editor library's commit, so the server accepts the editor's connection.
+pub const SERVER_COMMIT: &str = "c4453f8ea430795f941c1b2ff6c9321135a74a02";
 
-/// The pinned servers: VSCodium 1.140.06880's `vscodium-reh-<os>-<arch>` files (MIT).
+/// The pinned servers: our own builds of VS Code 1.145.2's MIT server (REH), published on the IDE repo's
+/// pre-release `node-host-1.145.2` (decided by Pheonix 2026-11-22: build our own, host it there).
 ///
-/// Pinned 2026-11-22 on the PC: each file was downloaded from the GitHub release, hashed locally (certutil SHA-256),
-/// and the hash compared with the `.sha256` file published next to it (all five matched); the commit was read from
-/// the Windows server's `product.json`. An OS or CPU not listed here (Windows on ARM, 32-bit) gets nothing (fail
-/// closed, CWE-494). To move to a new release, repeat those steps for every file and update all three constants.
-pub const PINS: &[Pin] = &[
-    Pin {
-        os: "linux",
-        arch: "x86_64",
-        version: VSCODIUM,
-        url: "https://github.com/VSCodium/vscodium/releases/download/1.140.06880/vscodium-reh-linux-x64-1.140.06880.tar.gz",
-        sha256: "6497864eb7f9cb904dc4f1720f5ac9ba2f1acdc4be8b734af8426700510dad35",
-        commit: VSCODIUM_COMMIT,
-    },
-    Pin {
-        os: "linux",
-        arch: "aarch64",
-        version: VSCODIUM,
-        url: "https://github.com/VSCodium/vscodium/releases/download/1.140.06880/vscodium-reh-linux-arm64-1.140.06880.tar.gz",
-        sha256: "dbac1b6997388f43dfae877d6a52e3cbd924e81ada7508631889fccc24f10d9c",
-        commit: VSCODIUM_COMMIT,
-    },
-    Pin {
-        os: "macos",
-        arch: "x86_64",
-        version: VSCODIUM,
-        url: "https://github.com/VSCodium/vscodium/releases/download/1.140.06880/vscodium-reh-darwin-x64-1.140.06880.tar.gz",
-        sha256: "dd7a2961840008a71e906953133e4041f2572db5e4b78c1c4364785760391139",
-        commit: VSCODIUM_COMMIT,
-    },
-    Pin {
-        os: "macos",
-        arch: "aarch64",
-        version: VSCODIUM,
-        url: "https://github.com/VSCodium/vscodium/releases/download/1.140.06880/vscodium-reh-darwin-arm64-1.140.06880.tar.gz",
-        sha256: "d69781e5a6a0304f04d65563deb1a05dca73e9d4033bb27bcba0a443b12784c7",
-        commit: VSCODIUM_COMMIT,
-    },
-    Pin {
-        os: "windows",
-        arch: "x86_64",
-        version: VSCODIUM,
-        url: "https://github.com/VSCodium/vscodium/releases/download/1.140.06880/vscodium-reh-win32-x64-1.140.06880.tar.gz",
-        sha256: "ddc042d447c94df27460c1ca8a80b375f13d2bd8c5f08e7ec0d208cceb38f5df",
-        commit: VSCODIUM_COMMIT,
-    },
-];
+/// Pinned 2026-11-22: Linux x64 was built in the cloud (HistoryTest `2026-11-22_053759Z_node-host-build_4096b2e`),
+/// Windows x64 natively on the PC; each file was uploaded, downloaded back anonymously from the release and hashed
+/// again (same SHA-256). Platforms with no builder yet (macOS, Linux on ARM) get nothing (fail closed, CWE-494):
+/// the app says Node extensions are not available there. To add or
+/// move a build, publish the archive and its `.sha256`, download it back, hash it, and update the constants.
+pub const PINS: &[Pin] = &[Pin {
+    os: "linux",
+    arch: "x86_64",
+    version: SERVER_BUILD,
+    url: "https://github.com/Shatoshinakamoto/P2P-AI-IDE/releases/download/node-host-1.145.2/p2pide-node-host-linux-x64-1.145.2.tar.gz",
+    // SECURITY: the archive is accepted only with exactly this hash (NIST SI-7, CWE-494).
+    sha256: "75deb573a1841099c9b17bffe5680a6f32e244439480ab3c25579aa4de38d80e",
+    commit: SERVER_COMMIT,
+},
+Pin {
+    os: "windows",
+    arch: "x86_64",
+    version: SERVER_BUILD,
+    url: "https://github.com/Shatoshinakamoto/P2P-AI-IDE/releases/download/node-host-1.145.2/p2pide-node-host-win32-x64-1.145.2.tar.gz",
+    // SECURITY: the archive is accepted only with exactly this hash (NIST SI-7, CWE-494).
+    sha256: "fdbef6ee11aca9e18573815783cc5e536c1275ac3544e00bce76c6c9fadfd22e",
+    commit: SERVER_COMMIT,
+}];
 
 /// Fixed error kinds; [`HostError::message`] is safe to show.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -802,9 +781,11 @@ mod tests {
         // Every shipped pin is well formed and on an allowed host; unlisted platforms get nothing.
         for p in PINS {
             assert_eq!(pin_for(PINS, p.os, p.arch), Some(*p), "{p:?}");
-            assert!(p.url.ends_with(".tar.gz") && p.url.contains(VSCODIUM));
+            assert!(p.url.ends_with(".tar.gz") && p.url.contains(SERVER_BUILD) && allowed_url(p.url));
+            assert_eq!(p.commit, SERVER_COMMIT);
         }
-        assert_eq!(PINS.len(), 5);
+        assert_eq!(PINS.len(), 2);
+        assert_eq!(pin_for(PINS, "macos", "aarch64"), None, "no builder yet");
         assert_eq!(pin_for(PINS, "windows", "aarch64"), None);
         assert_eq!(pin_for(PINS, "freebsd", "x86_64"), None);
         let ok = Pin {

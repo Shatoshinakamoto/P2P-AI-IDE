@@ -1,0 +1,163 @@
++ git rev-parse HEAD
+c4453f8ea430795f941c1b2ff6c9321135a74a02
++ git status --porcelain --untracked-files=no
+ M build/gulpfile.reh.ts
+ M product.json
++ node --version
+v24.22.1
++ npm run gulp vscode-reh-linux-x64-min
+npm warn Unknown env config "arch". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown project config "disturl". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown project config "target". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown project config "ms_build_id". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown project config "runtime". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown project config "build_from_source". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown project config "timeout". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> code-oss-dev@1.145.2 gulp
+> node --experimental-strip-types --max-old-space-size=8192 ./node_modules/gulp/bin/gulp.js vscode-reh-linux-x64-min
+
+[05:26:08] Using gulpfile /tmp/claude-0/rehb/vscode/gulpfile.mjs
+[05:26:08] Starting 'vscode-reh-linux-x64-min'...
+[05:26:08] Starting [36mcopy-codicons[39m ...
+[05:26:08] Finished [36mcopy-codicons[39m after [35m2 ms[39m
+[05:26:08] Starting [36mcompile-api-proposal-names[39m ...
+[05:26:08] Starting [32mcompilation[39m[34m api-proposal-names[39m...
+[05:26:08] Finished [32mcompilation[39m[34m api-proposal-names[39m with 0 errors after [35m91 ms[39m
+[05:26:08] Finished [36mcompile-api-proposal-names[39m after [35m102 ms[39m
+[05:26:08] Starting [36mclean-extensions-build[39m ...
+[05:26:10] Finished [36mclean-extensions-build[39m after [35m2449 ms[39m
+[05:26:10] Starting [36mbundle-marketplace-extensions-build[39m ...
+[05:26:10] Finished [36mbundle-marketplace-extensions-build[39m after [35m7 ms[39m
+[05:26:10] Starting [36mbundle-non-native-extensions-build[39m ...
+[05:26:15] Finished [32mtypechecking extension (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/configuration-editing/tsconfig.json with 0 errors.
+[05:26:15] Finished [32mtypechecking extension (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/css-language-features/client/tsconfig.json with 0 errors.
+[05:26:15] Finished [32mtypechecking extension (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/css-language-features/server/tsconfig.json with 0 errors.
+[05:26:15] Finished [32mtypechecking extension (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/debug-auto-launch/tsconfig.json with 0 errors.
+[05:26:15] Finished [32mtypechecking extension (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/debug-server-ready/tsconfig.json with 0 errors.
+[05:26:15] Finished [32mtypechecking extension (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/emmet/tsconfig.json with 0 errors.
+[05:26:15] Finished [32mtypechecking extension (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/extension-editing/tsconfig.json with 0 errors.
+[05:26:15] Finished [32mtypechecking extension (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/git-base/tsconfig.json with 0 errors.
+[05:26:15] Finished [32mtypechecking extension (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/github-authentication/tsconfig.json with 0 errors.
+[05:26:15] Finished [32mtypechecking extension (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/github/tsconfig.json with 0 errors.
+[05:26:15] Finished [32mtypechecking extension (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/grunt/tsconfig.json with 0 errors.
+[05:26:15] Finished [32mtypechecking extension (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/gulp/tsconfig.json with 0 errors.
+[05:26:15] Finished [32mtypechecking extension (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/html-language-features/client/tsconfig.json with 0 errors.
+[05:26:15] Finished [32mtypechecking extension (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/html-language-features/server/tsconfig.json with 0 errors.
+[05:26:15] Finished [32mtypechecking extension (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/ipynb/tsconfig.json with 0 errors.
+[05:26:15] Finished [32mtypechecking extension (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/jake/tsconfig.json with 0 errors.
+[05:26:15] Finished [32mtypechecking extension (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/json-language-features/client/tsconfig.json with 0 errors.
+[05:26:15] Finished [32mtypechecking extension (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/json-language-features/server/tsconfig.json with 0 errors.
+[05:26:15] Finished [32mtypechecking extension (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/markdown-language-features/tsconfig.json with 0 errors.
+[05:26:15] Finished [32mtypechecking extension (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/markdown-math/tsconfig.json with 0 errors.
+[05:26:15] Finished [32mtypechecking extension (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/merge-conflict/tsconfig.json with 0 errors.
+[05:26:15] Finished [32mtypechecking extension (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/mermaid-markdown-features/tsconfig.json with 0 errors.
+[05:26:15] Finished [32mtypechecking extension (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/npm/tsconfig.json with 0 errors.
+[05:26:15] Finished [32mtypechecking extension (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/php-language-features/tsconfig.json with 0 errors.
+[05:26:15] Finished [32mtypechecking extension (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/references-view/tsconfig.json with 0 errors.
+[05:26:15] Finished [32mtypechecking extension (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/search-result/tsconfig.json with 0 errors.
+[05:26:15] Finished [32mtypechecking extension (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/simple-browser/tsconfig.json with 0 errors.
+[05:26:15] Finished [32mtypechecking extension (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/terminal-suggest/tsconfig.json with 0 errors.
+[05:26:15] Finished [32mtypechecking extension (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/tunnel-forwarding/tsconfig.json with 0 errors.
+[05:26:15] Finished [32mtypechecking extension (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/typescript-language-features/tsconfig.json with 0 errors.
+[05:26:15] Bundled extension: [33mtunnel-forwarding/esbuild.mts[39m with 0 errors.
+[05:26:15] Bundled extension: [33mterminal-suggest/esbuild.mts[39m with 0 errors.
+[05:26:15] Bundled extension: [33msimple-browser/esbuild.mts[39m with 0 errors.
+[05:26:15] Bundled extension: [33msearch-result/esbuild.mts[39m with 0 errors.
+[05:26:15] Bundled extension: [33mreferences-view/esbuild.mts[39m with 0 errors.
+[05:26:15] Bundled extension: [33mphp-language-features/esbuild.mts[39m with 0 errors.
+[05:26:15] Bundled extension: [33mnpm/esbuild.mts[39m with 0 errors.
+[05:26:15] Bundled extension: [33mmermaid-markdown-features/esbuild.mts[39m with 0 errors.
+[05:26:15] Bundled extension: [33mmerge-conflict/esbuild.mts[39m with 0 errors.
+[05:26:15] Bundled extension: [33mmarkdown-math/esbuild.mts[39m with 0 errors.
+[05:26:15] Bundled extension: [33mjson-language-features/esbuild.mts[39m with 0 errors.
+[05:26:15] Bundled extension: [33mjake/esbuild.mts[39m with 0 errors.
+[05:26:15] Bundled extension: [33mipynb/esbuild.mts[39m with 0 errors.
+[05:26:15] Bundled extension: [33mhtml-language-features/esbuild.mts[39m with 0 errors.
+[05:26:15] Bundled extension: [33mgulp/esbuild.mts[39m with 0 errors.
+[05:26:15] Bundled extension: [33mgrunt/esbuild.mts[39m with 0 errors.
+[05:26:15] Bundled extension: [33mgithub/esbuild.mts[39m with 0 errors.
+[05:26:15] Bundled extension: [33mgithub-authentication/esbuild.mts[39m with 0 errors.
+[05:26:15] Bundled extension: [33mgit-base/esbuild.mts[39m with 0 errors.
+[05:26:15] Bundled extension: [33mextension-editing/esbuild.mts[39m with 0 errors.
+[05:26:15] Bundled extension: [33memmet/esbuild.mts[39m with 0 errors.
+[05:26:15] Bundled extension: [33mdebug-server-ready/esbuild.mts[39m with 0 errors.
+[05:26:15] Bundled extension: [33mdebug-auto-launch/esbuild.mts[39m with 0 errors.
+[05:26:15] Bundled extension: [33mcss-language-features/esbuild.mts[39m with 0 errors.
+[05:26:15] Bundled extension: [33mconfiguration-editing/esbuild.mts[39m with 0 errors.
+[05:26:15] Bundled extension: [33mtypescript-language-features/esbuild.mts[39m with 0 errors.
+[05:26:20] Bundled extension: [33mmarkdown-language-features/esbuild.mts[39m with 0 errors.
+[05:26:25] Finished [36mbundle-non-native-extensions-build[39m after [35m14401 ms[39m
+[05:26:25] Starting [36mcompile-non-native-extensions-build[39m ...
+[05:26:25] Finished [36mcompile-non-native-extensions-build[39m after [35m0 ms[39m
+[05:26:25] Starting [36mcompile-copilot-extension-build[39m ...
+[05:26:31] [32mesbuilding[39m: Creating symlinks for Claude session storage and instructions...
+
+[05:26:34] Bundled extension: [33mcopilot/.esbuild.mts[39m with 0 errors.
+[05:29:01] Finished [36mcompile-copilot-extension-build[39m after [35m156172 ms[39m
+[05:29:01] Starting [36mcompile-extension-media-build[39m ...
+[05:29:01] Finished [32mesbuilding extension media[39m /tmp/claude-0/rehb/vscode/extensions/ipynb/esbuild.notebook.mts with 0 errors.
+[05:29:01] Finished [32mtypechecking extension media (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/ipynb/notebook-src/tsconfig.json with 0 errors.
+[05:29:02] Finished [32mesbuilding extension media[39m /tmp/claude-0/rehb/vscode/extensions/markdown-language-features/esbuild.webview.mts with 0 errors.
+[05:29:02] Finished [32mesbuilding extension media[39m /tmp/claude-0/rehb/vscode/extensions/markdown-language-features/esbuild.notebook.mts with 0 errors.
+[05:29:02] Finished [32mesbuilding extension media[39m /tmp/claude-0/rehb/vscode/extensions/notebook-renderers/esbuild.notebook.mts with 0 errors.
+[05:29:02] Finished [32mtypechecking extension media (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/markdown-language-features/notebook/tsconfig.json with 0 errors.
+[05:29:02] Finished [32mtypechecking extension media (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/markdown-language-features/preview-src/tsconfig.json with 0 errors.
+[05:29:02] Finished [32mtypechecking extension media (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/simple-browser/preview-src/tsconfig.json with 0 errors.
+[05:29:02] Finished [32mtypechecking extension media (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/markdown-language-features/markdown-editor-src/tsconfig.json with 0 errors.
+[05:29:02] Finished [32mesbuilding extension media[39m /tmp/claude-0/rehb/vscode/extensions/markdown-math/esbuild.notebook.mts with 0 errors.
+[05:29:02] Finished [32mesbuilding extension media[39m /tmp/claude-0/rehb/vscode/extensions/simple-browser/esbuild.webview.mts with 0 errors.
+[05:29:02] Finished [32mtypechecking extension media (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/markdown-math/notebook/tsconfig.json with 0 errors.
+[05:29:02] Finished [32mtypechecking extension media (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/notebook-renderers/tsconfig.json with 0 errors.
+[05:29:02] Finished [32mtypechecking extension media (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/mermaid-markdown-features/preview-src/tsconfig.json with 0 errors.
+[05:29:04] Finished [32mesbuilding extension media[39m /tmp/claude-0/rehb/vscode/extensions/markdown-language-features/esbuild.markdownEditor.mts with 0 errors.
+[05:29:06] Finished [32mesbuilding extension media[39m /tmp/claude-0/rehb/vscode/extensions/mermaid-markdown-features/esbuild.webview.mts with 0 errors.
+[05:29:06] Finished [36mcompile-extension-media-build[39m after [35m4704 ms[39m
+[05:29:06] Starting [36mbuild-date-file[39m ...
+[05:29:06] Finished [36mbuild-date-file[39m after [35m15 ms[39m
+[05:29:06] Starting [36mesbuild-vscode-reh-min[39m ...
+[clean] out-vscode-reh-min
+[bundle] src → out-vscode-reh-min (target: server) (minify) (nls) (mangle-privates)
+[nls] Extracted 3849 messages from 247 modules
+[bundle] Syntax check passed for 6 post-processed JS files
+[mangle-privates] server-main.js: 4 classes, 6 fields, 21 edits, 322ms
+[mangle-privates] Total: 4 classes, 6 fields, 21 edits, 322ms
+[resources] Copying to /tmp/claude-0/rehb/vscode/out-vscode-reh-min for target 'server'...
+[resources] Copied 18 files
+[svg] 0 files: 0 -> 0 bytes
+[bundle] Done in 24389ms (8 bundles)
+
+✓ Total: 24432ms
+[05:29:31] Finished [36mesbuild-vscode-reh-min[39m after [35m25482 ms[39m
+[05:29:31] Starting [36mcompile-native-extensions-build[39m ...
+[05:29:32] Finished [32mtypechecking extension (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/git/tsconfig.json with 0 errors.
+[05:29:32] Finished [32mtypechecking extension (tsgo)[39m /tmp/claude-0/rehb/vscode/extensions/microsoft-authentication/tsconfig.json with 0 errors.
+[05:29:32] Bundled extension: [33mgit/esbuild.mts[39m with 0 errors.
+[05:29:32] Bundled extension: [33mmicrosoft-authentication/esbuild.mts[39m with 0 errors.
+[05:29:32] Finished [36mcompile-native-extensions-build[39m after [35m1096 ms[39m
+[05:29:32] Starting [36mnode[39m ...
+[05:29:32] Finished [36mnode[39m after [35m0 ms[39m
+[05:29:32] Starting [36mclean-vscode-reh-linux-x64[39m ...
+[05:29:33] Finished [36mclean-vscode-reh-linux-x64[39m after [35m537 ms[39m
+[05:29:33] Starting [36mvscode-reh-linux-x64-min-ci[39m ...
+[05:30:02] Finished [36mvscode-reh-linux-x64-min-ci[39m after [35m28910 ms[39m
+[05:30:02] Starting [36mvscode-reh-linux-x64-min[39m ...
+[05:30:02] Finished [36mvscode-reh-linux-x64-min[39m after [35m0 ms[39m
+[05:30:02] Finished 'vscode-reh-linux-x64-min' after 3.88 min
++ git log -1 --format=%ct
+1793939293
+{
+  "file": "p2pide-node-host-linux-x64-1.145.2.tar.gz",
+  "sha256": "75deb573a1841099c9b17bffe5680a6f32e244439480ab3c25579aa4de38d80e",
+  "bytes": 92923602,
+  "vscode_tag": "1.145.2",
+  "vscode_commit": "c4453f8ea430795f941c1b2ff6c9321135a74a02",
+  "platform": "linux",
+  "arch": "x64",
+  "node": "24.22.1",
+  "built_on": "Linux 6.18.44-fc-v726 x86_64",
+  "built_at": "2026-11-22T05:30:34Z",
+  "product_quality": "stable",
+  "builtin_marketplace_extensions": "none (left out)",
+  "copilot_extension": "left out"
+}

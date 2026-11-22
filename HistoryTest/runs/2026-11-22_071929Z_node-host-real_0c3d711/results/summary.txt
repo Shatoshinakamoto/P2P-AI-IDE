@@ -1,0 +1,11 @@
+id: 2026-11-22_071929Z_node-host-real_0c3d711
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: 1
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: 0
+duration_s: 0.0
+commit: 0c3d711
+machine: pc

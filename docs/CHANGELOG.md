@@ -2,6 +2,28 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-22 - Phase I6c-4: our own Node extension host server
+
+### Added
+- Pheonix chose "Build our own server": `scripts/build_node_host.py` builds the Node extension host server from VS Code's MIT source at the editor library's exact version (1.145.2), with the Copilot extension and runtime and the marketplace debugger extensions left out. Linux x64 build: 93 MB. Page: [commands/build-node-host.md](commands/build-node-host.md).
+- `core/examples/node_host_serve.rs`: installs a local server build through the core's own hash check, unpack, trust and start, for testing before it is published.
+- UI smoke test option `NODE_HOST_REAL`: forwards the editor's connection to such a real server and checks in the server's own logs that it got the workspace and started extensions.
+
+### Fixed
+- Security: `url` 2.5.8 -> 2.5.9 in the desktop app (RUSTSEC-2026-0592, a crash on nested `blob:` URLs).
+- Extensions could not save their state (`globalState`): the editor now registers the extension storage service (in memory; state lasts until the window reloads). Found with the real host: Git's first write failed.
+
+### Changed
+- Pins: the Node extension host is now our own build, published on the IDE repo's pre-release `node-host-1.145.2`. The repo was made public on 2026-11-22 so the app can download without signing in. Linux x64 is pinned (`SERVER_BUILD` 1.145.2, `VSCODE_VERSION` 1.145.2). The VSCodium 1.140 pins are removed, because the editor refused them anyway. The download size text now says about 90 MB.
+
+- Windows x64 is pinned too (built on the PC, 86.6 MB). `scripts/build_node_host.py` now finds the Windows SDK's `signtool.exe`, which VS Code's Windows packaging step needs.
+
+### Not done yet
+- macOS and Linux arm64 have no builder, so they show Node extensions as not available. Checked on the PC: Code Spell Checker runs in the Windows desktop app with our server.
+
+### Tests
+- Linux x64 server build [run](../HistoryTest/runs/2026-11-22_053759Z_node-host-build_4096b2e/RUN.md); the real editor with that server, 116 of 116 [run](../HistoryTest/runs/2026-11-22_053720Z_ui-node-host-real_832a0a7/RUN.md) (an earlier run [is corrected by a note](../HistoryTest/runs/2026-11-22_053624Z_ui-node-host-real_4096b2e/NOTES.md)).
+
 ## 2026-11-22 - Phase I6c-3: Node host PC fixes and version check
 
 ### Fixed

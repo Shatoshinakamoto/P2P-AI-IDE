@@ -1,0 +1,16 @@
+== date Sun 11/22/2026  2:17:44.46
+0c3d711 I6c-4: pin our Windows x64 Node host build (VS Code 1.145.2)
+   Compiling p2p-ide-core v0.1.0 (D:\p2p-ai-ci\i6c3\core)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 36.08s
+     Running tests\node_host_real.rs (core\target\debug\deps\node_host_real-f70ecf7d39053b04.exe)
+
+running 1 test
+installed 1.145.2 in 12.0587676s at <data>/node-host
+listening on 127.0.0.1:<port> after 476.1267ms
+/version -> 200 c4453f8ea430795f941c1b2ff6c9321135a74a02
+/ without token -> 403, with token -> 404
+test the_pinned_server_downloads_starts_and_needs_its_token ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 15.84s
+
+real-exit 0
