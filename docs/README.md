@@ -30,8 +30,8 @@ The IDE's plan and its decisions (ADR-029) live in the P2P-AI repository: `docs/
 | [commands/build-node-host.md](commands/build-node-host.md) | `scripts/build_node_host.py`: builds the Node extension host server from the editor's VS Code version |
 | [commands/history-test.md](commands/history-test.md) | The test history recorder `scripts/history_test.py` (copied from the P2P-AI repository) |
 | [files/third-party-notices.md](files/third-party-notices.md) | `app/src-tauri/THIRD-PARTY-NOTICES.txt`: the licence texts shipped in the installers, how it is generated and checked |
-| [features/vscode-extension.md](features/vscode-extension.md) | Side track X: the P2P-AI extension for VS Code and VSCodium (X1 chat and gateway picker, X2 agent tools with diff review), shared client and agent test cases with the IDE; threat model and controls |
-| [commands/vscode-extension.md](commands/vscode-extension.md) | The extension's npm scripts: check, build, test, integration test in real VS Code, package; webview smoke script |
+| [features/vscode-extension.md](features/vscode-extension.md) | Side track X: the P2P-AI extension for VS Code and VSCodium (X1 chat and gateway picker, X2 agent tools with diff review, X3 missions), shared client and agent test cases with the IDE; threat model and controls |
+| [commands/vscode-extension.md](commands/vscode-extension.md) | The extension's npm scripts: check, build, test, integration test in real VS Code, package; chat and Missions view smoke scripts |
 | [features/tandemforge-engine.md](features/tandemforge-engine.md) | Phase I7: use TandemForge on this computer as a model engine (pairing code, loopback only); threat model and controls |
 | [features/installers.md](features/installers.md) | Windows and Linux installers and signed releases, built on the PC with the P2P-AI release script |
 | [files/app-icons.md](files/app-icons.md) | The app icons: P2P-AI logo with the IDE badge, how they are built |

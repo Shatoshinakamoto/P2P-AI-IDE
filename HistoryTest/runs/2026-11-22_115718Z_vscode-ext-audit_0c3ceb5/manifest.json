@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "41ea895a2b357e1eedbec50e1ed0b093f64a739ab31d7cdf5c7c83c95dda1110",
+   "size": 1495
+  },
+  "command.txt": {
+   "sha256": "d2d44ec685c582747d3cef4621173917cf5c214469b03300944b09467c574b0a",
+   "size": 88
+  },
+  "environment.md": {
+   "sha256": "d6fb1444ddecdf05dfde5cb11ad7fe87c4ed114bdd7faf15cb737b2927f45bb4",
+   "size": 205
+  },
+  "logs/output.log": {
+   "sha256": "6d8c5c8f3d7684adb070417bd608d01ae90aa3dc26a65af03ffda4955f38d9a3",
+   "size": 24
+  },
+  "results/summary.txt": {
+   "sha256": "755cc9742cac9cd2b7ba076695ba40ff2a858fb11b8709c037e47b85e351f3df",
+   "size": 296
+  }
+ },
+ "previous": {
+  "manifest_sha256": "4bd1a56c25bf835c9e0b8e990c5d1e68642017f69c0bacc412fdbaed97debd27",
+  "run_id": "2026-11-22_115715Z_vscode-ext-integration_0c3ceb5"
+ },
+ "run": {
+  "area": "vscode-ext-audit",
+  "branch_or_pr": "claude/project-thread-8u4b8a",
+  "collected_utc": "",
+  "commit": "0c3ceb549336daf705ee72a006c011fc890ae8c0",
+  "count_unit": "",
+  "date_utc": "2026-11-22T11:57:18Z",
+  "dirty": false,
+  "duration_s": 0.4,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_115718Z_vscode-ext-audit_0c3ceb5",
+  "kind": "scan",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "tf-ide-roadmap-finish/X3",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "npm audit of the extension (X3)",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

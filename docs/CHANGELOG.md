@@ -2,6 +2,21 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-22 - Side track X3: missions in the VS Code extension
+
+### Added
+- A **Missions** view in the extension: link the open folder to a project on the gateway, send the folder, switch Autopilot and Auto Improve, start, pause, resume and stop missions, approve or deny their commands, triage Auto Improve proposals, and collect the work into the chat's **Changes to review** list (accepted per file). Same rules as the IDE's phase I4. Extension version 0.3.0. Page: [features/vscode-extension.md](features/vscode-extension.md).
+- `core/tests/vectors/missions.json`: shared mission test cases (path grammar, ids, encoding, upload names, error messages, push and pull plans, view shapes, acceptance checks), run by `core/src/projects_vectors.rs` and the extension's `tests/missions.test.ts`.
+- `vscode-extension/tests/ui/missions-smoke.cjs`: draws the Missions view in Chromium and checks what it posts.
+
+### Changed
+- The extension keeps its settings (gateways without keys, active gateway, models, Tools switch, links) in `state.json` in its global storage folder. Old values move over once.
+
+### Fixed
+- On VS Code 1.147 a saved setting (a removed gateway, a new link) sometimes came back or vanished a moment later, because `globalState` writes were undone. The settings file fixes it.
+
+Test evidence: HistoryTest `2026-11-22_114442Z_core_ae1f4aa` (core with the shared mission cases: pass), `2026-11-22_115617Z_vscode-ext-unit_0c3ceb5` (35 of 35), `2026-11-22_115617Z_vscode-ext-integration_0c3ceb5` (real VS Code 1.147.0: pass), `2026-11-22_115715Z_vscode-ext-integration_0c3ceb5` (1.95.0: pass), `2026-11-22_114505Z_vscode-ext-ui_ae1f4aa` (Missions view: pass), `2026-11-22_115718Z_vscode-ext-audit_0c3ceb5` (npm audit: 0), `2026-11-22_115718Z_vscode-ext-package_0c3ceb5` (.vsix 0.3.0). The failed run `2026-11-22_114456Z_vscode-ext-integration_ae1f4aa` found the settings race.
+
 ## 2026-11-22 - Side track X2: agent tools with diff review in the VS Code extension
 
 ### Added
