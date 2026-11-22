@@ -79,6 +79,7 @@ fn word(e: &HostError) -> &'static str {
         HostError::StartFailed => "start_failed",
         HostError::BadInput => "bad_input",
         HostError::Io => "io",
+        HostError::FolderNotLocal => "folder_not_local",
     }
 }
 
@@ -135,7 +136,7 @@ pub async fn node_host_start(
                 return Ok(HostConnection {
                     port: r.port,
                     token: r.token.clone(),
-                    folder: r.folder.to_string_lossy().into_owned(),
+                    folder: node_host::editor_folder(&r.folder).map_err(|e| e.message().to_string())?,
                     commit: pinned_commit(),
                 });
             }
@@ -145,6 +146,8 @@ pub async fn node_host_start(
     let result = tauri::async_runtime::spawn_blocking(move || -> Result<Running, HostError> {
         let pin = node_host::pin_for(node_host::PINS, std::env::consts::OS, std::env::consts::ARCH)
             .ok_or(HostError::NotPinned)?;
+        // The editor must be able to name the folder for the server; refused before anything is downloaded.
+        node_host::editor_folder(&f)?;
         let trust = TrustStore::new(&data);
         // SECURITY: trust is checked before anything is downloaded, and again by start (CWE-829).
         if !trust.is_trusted(&f) {
@@ -167,12 +170,14 @@ pub async fn node_host_start(
     match result {
         Ok(r) => {
             audit("node_host", "started");
-            let c = HostConnection {
-                port: r.port,
-                token: r.token.clone(),
-                folder: r.folder.to_string_lossy().into_owned(),
-                commit: pinned_commit(),
+            let folder = match node_host::editor_folder(&r.folder) {
+                Ok(f) => f,
+                Err(e) => {
+                    r.stop();
+                    return Err(e.message().to_string());
+                }
             };
+            let c = HostConnection { port: r.port, token: r.token.clone(), folder, commit: pinned_commit() };
             *RUNNING.lock().map_err(|_| "internal error".to_string())? = Some(r);
             Ok(c)
         }
