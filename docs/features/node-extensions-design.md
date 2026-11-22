@@ -86,7 +86,8 @@ flowchart LR
 * **Linux x64, VS Code 1.145.2:** built in the cloud (93 MB archive). Installed and started through the core (`core/examples/node_host_serve.rs`), it works with the real editor: the server got the workspace and started Git, GitHub and merge-conflict, with no error (UI smoke test with `NODE_HOST_REAL`, 116 of 116).
 * **Found with the real host:** extensions couldn't save their state; the editor now registers the extension storage service (in memory).
 * **Published and pinned (2026-11-22):** Pheonix chose a GitHub pre-release on the IDE repo, then made the repo public so the app can download without signing in. Pre-release `node-host-1.145.2` holds the Linux x64 archive (SHA-256 `75deb573a1841099c9b17bffe5680a6f32e244439480ab3c25579aa4de38d80e`), downloaded back anonymously and hashed again before pinning (HistoryTest `2026-11-22_061544Z_node-host-pin_dab272f`). `PINS` now has only our builds: `SERVER_BUILD` 1.145.2, `SERVER_COMMIT` c4453f8e…, `VSCODE_VERSION` 1.145.2. The VSCodium 1.140 pins are gone, because the editor refuses them anyway.
-* **Still to do:** the Windows x64 build is running on the PC now that Visual Studio's Spectre-mitigated libraries are installed; then pin it and run a real Open VSX extension in the desktop app on the PC. Until then, Windows and macOS have no pin and show Node extensions as not available (fail closed). No macOS or Linux arm64 builder while GitHub Actions is billing-locked.
+* **Windows x64 (2026-11-22):** built natively on the PC once Visual Studio's Spectre-mitigated libraries were installed and the script found the Windows SDK's `signtool.exe` (VS Code's packaging step uses it to strip invalidated signatures). 86.6 MB archive, SHA-256 `fdbef6ee11aca9e18573815783cc5e536c1275ac3544e00bce76c6c9fadfd22e`, uploaded to the same pre-release, downloaded back anonymously, hashed and pinned.
+* **Still to do:** a real Open VSX extension in the desktop app on the PC. macOS has no pin and shows Node extensions as not available (fail closed). No macOS or Linux arm64 builder while GitHub Actions is billing-locked.
 
 * To move to a new server build: build it with `scripts/build_node_host.py` for each platform, publish each archive and its `.sha256` on a `node-host-<version>` pre-release, download each one back and hash it yourself, update `SERVER_BUILD`, `SERVER_COMMIT`, `VSCODE_VERSION` and `PINS` together, and run the real-server check. The server's VS Code minor version must equal the editor library's (`vscode/vs/platform/product/common/product.js` in `@codingame/monaco-vscode-api`).
 
@@ -115,5 +116,5 @@ flowchart LR
 
 * Node extensions can't be stopped one by one without restarting the server.
 * The download needs github.com; offline machines stay on web extensions.
-* **Node extensions run only on Linux x64 so far:** that is the only pinned build (section 7). Windows x64 follows; macOS and Linux arm64 have no builder. Every editor library upgrade needs a new server build of the same VS Code minor version.
+* **Node extensions run only on Linux x64 and Windows x64:** those are the pinned builds (section 7). macOS and Linux arm64 have no builder. Every editor library upgrade needs a new server build of the same VS Code minor version.
 * Network folders (`\\server\share`) are refused for Node extensions for now.

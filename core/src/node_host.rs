@@ -95,10 +95,10 @@ pub const SERVER_COMMIT: &str = "c4453f8ea430795f941c1b2ff6c9321135a74a02";
 /// The pinned servers: our own builds of VS Code 1.145.2's MIT server (REH), published on the IDE repo's
 /// pre-release `node-host-1.145.2` (decided by Pheonix 2026-11-22: build our own, host it there).
 ///
-/// Pinned 2026-11-22: the Linux x64 file was built in the cloud (HistoryTest
-/// `2026-11-22_053759Z_node-host-build_4096b2e`), uploaded, downloaded back anonymously from the release and hashed
-/// again (same SHA-256). Platforms with no builder yet (macOS, Linux on ARM) and Windows until its build is
-/// published get nothing (fail closed, CWE-494): the app says Node extensions are not available there. To add or
+/// Pinned 2026-11-22: Linux x64 was built in the cloud (HistoryTest `2026-11-22_053759Z_node-host-build_4096b2e`),
+/// Windows x64 natively on the PC; each file was uploaded, downloaded back anonymously from the release and hashed
+/// again (same SHA-256). Platforms with no builder yet (macOS, Linux on ARM) get nothing (fail closed, CWE-494):
+/// the app says Node extensions are not available there. To add or
 /// move a build, publish the archive and its `.sha256`, download it back, hash it, and update the constants.
 pub const PINS: &[Pin] = &[Pin {
     os: "linux",
@@ -107,6 +107,15 @@ pub const PINS: &[Pin] = &[Pin {
     url: "https://github.com/Shatoshinakamoto/P2P-AI-IDE/releases/download/node-host-1.145.2/p2pide-node-host-linux-x64-1.145.2.tar.gz",
     // SECURITY: the archive is accepted only with exactly this hash (NIST SI-7, CWE-494).
     sha256: "75deb573a1841099c9b17bffe5680a6f32e244439480ab3c25579aa4de38d80e",
+    commit: SERVER_COMMIT,
+},
+Pin {
+    os: "windows",
+    arch: "x86_64",
+    version: SERVER_BUILD,
+    url: "https://github.com/Shatoshinakamoto/P2P-AI-IDE/releases/download/node-host-1.145.2/p2pide-node-host-win32-x64-1.145.2.tar.gz",
+    // SECURITY: the archive is accepted only with exactly this hash (NIST SI-7, CWE-494).
+    sha256: "fdbef6ee11aca9e18573815783cc5e536c1275ac3544e00bce76c6c9fadfd22e",
     commit: SERVER_COMMIT,
 }];
 
@@ -775,7 +784,7 @@ mod tests {
             assert!(p.url.ends_with(".tar.gz") && p.url.contains(SERVER_BUILD) && allowed_url(p.url));
             assert_eq!(p.commit, SERVER_COMMIT);
         }
-        assert_eq!(PINS.len(), 1);
+        assert_eq!(PINS.len(), 2);
         assert_eq!(pin_for(PINS, "macos", "aarch64"), None, "no builder yet");
         assert_eq!(pin_for(PINS, "windows", "aarch64"), None);
         assert_eq!(pin_for(PINS, "freebsd", "x86_64"), None);
