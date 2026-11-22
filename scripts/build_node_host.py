@@ -144,9 +144,10 @@ def main() -> None:
     # SECURITY: the source must be exactly the pinned commit (SSDF PS.2); a moved tag or a wrong clone stops here.
     if head != a.commit:
         raise SystemExit(f"tag {a.tag} is at {head}, expected {a.commit}")
-    # SECURITY: product.json is the only file this script changes; any other change means an untrusted tree.
+    # SECURITY: product.json and the server gulp file are the only files this script changes (see below); any other
+    # change means an untrusted tree.
     changed = [line[3:] for line in run(["git", "status", "--porcelain", "--untracked-files=no"], src).splitlines()]
-    if [p for p in changed if p != "product.json"]:
+    if [p for p in changed if p not in ("product.json", "build/gulpfile.reh.ts")]:
         raise SystemExit("the VS Code checkout has local changes; delete the work folder and run again")
     node = check_node(src)
 
@@ -154,7 +155,22 @@ def main() -> None:
     pj = src / "product.json"
     product = json.loads(pj.read_text(encoding="utf-8"))
     product["quality"] = "stable"
+    # Marketplace-built extensions (js-debug, js-debug-companion, js-profile-table) are left out: the IDE has no
+    # debugger UI for them, and downloading them needs GitHub's API. Least functionality (NIST CM-7), smaller server.
+    product["builtInExtensions"] = []
     pj.write_text(json.dumps(product, indent="\t") + "\n", encoding="utf-8")
+
+    # The built-in GitHub Copilot extension is left out of the server (least functionality, NIST CM-7: the IDE has
+    # its own agent and must not ship a client for a third-party AI service). VS Code's server build step that
+    # prepares Copilot's ripgrep shim needs that extension's SDK, so that one step is removed; the build stops if the
+    # line isn't found exactly once (an upstream change must be looked at, not silently skipped).
+    reh = src / "build" / "gulpfile.reh.ts"
+    gulp = reh.read_text(encoding="utf-8")
+    shim = "\t\t\t\tprepareCopilotRipgrepShimTaskREH(platform, arch, destinationFolderName)\n"
+    if gulp.count(shim) == 1:
+        reh.write_text(gulp.replace(shim, ""), encoding="utf-8")
+    elif "prepareCopilotRipgrepShimTaskREH(platform, arch, destinationFolderName)" in gulp:
+        raise SystemExit("unexpected layout of build/gulpfile.reh.ts; update this script")
 
     env = dict(os.environ)
     env.update({
@@ -173,6 +189,11 @@ def main() -> None:
     built = work / f"vscode-reh-{plat}-{arch}"
     if not (built / "out" / "server-main.js").is_file():
         raise SystemExit(f"the build did not produce {built}/out/server-main.js")
+    # Copilot is left out (see above): its extension and the server's Copilot runtime packages (about 170 MB, loaded
+    # only when the Copilot agent host is asked for) are removed from the output.
+    shutil.rmtree(built / "extensions" / "copilot", ignore_errors=True)
+    for p in sorted((built / "node_modules" / "@github").glob("copilot*")):
+        shutil.rmtree(p)
     server_product = json.loads((built / "product.json").read_text(encoding="utf-8"))
     if server_product.get("commit") != a.commit:
         raise SystemExit(f"the server's product.json says commit {server_product.get('commit')}, expected {a.commit}")
@@ -196,6 +217,8 @@ def main() -> None:
         "built_on": f"{platform.system()} {platform.release()} {platform.machine()}",
         "built_at": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "product_quality": "stable",
+        "builtin_marketplace_extensions": "none (left out)",
+        "copilot_extension": "left out",
     }
     (out / f"{name}.json").write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(record, indent=2))
