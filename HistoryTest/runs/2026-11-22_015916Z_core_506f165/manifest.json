@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "16008b6cbf8d3453ba93b9c01d89e98ba3bae3e3245d8c106310ace4c013b159",
+   "size": 1757
+  },
+  "command.txt": {
+   "sha256": "8566a4001da7095c30d2f0f68a41547fd702d9874afe2ba6558de19bc00ddb65",
+   "size": 134
+  },
+  "environment.md": {
+   "sha256": "6b1aec55ab1966b449081ccc4183e6ab1a0bc4665d48864d55869016f12e787b",
+   "size": 193
+  },
+  "logs/output.log": {
+   "sha256": "6c9164bde0b87696fb5056d1bfdd71f0cd68a7724be98e380aa7cfe4c9401163",
+   "size": 1054
+  },
+  "results/summary.txt": {
+   "sha256": "971254750f1659df13ee0d53377473cb14d5e77a173432ffeff2479c4458152b",
+   "size": 285
+  }
+ },
+ "previous": {
+  "manifest_sha256": "6966772c304ceda4bfa4e01a9251df20ade6cfe1a59825be0296f16f763c1a4a",
+  "run_id": "2026-11-22_015908Z_node-host_506f165"
+ },
+ "run": {
+  "area": "core",
+  "branch_or_pr": "claude/project-thread-8u4b8a",
+  "collected_utc": "",
+  "commit": "506f165cd7ebf5e3b111145fc445f1f359f22084",
+  "count_unit": "",
+  "date_utc": "2026-11-22T01:59:16Z",
+  "dirty": false,
+  "duration_s": 14.6,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_015916Z_core_506f165",
+  "kind": "unit",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "Finish TandemForge and IDE roadmaps thread",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Phase I6c-3 core unit tests with the real pins (plus clippy on all targets)",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

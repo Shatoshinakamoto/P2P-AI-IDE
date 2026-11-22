@@ -2,6 +2,16 @@
 
 Every security patch, hardening change, CVE remediation and accepted risk, newest first.
 
+## 2026-11-22 — Phase I6c-3: real VSCodium server pinned by SHA-256
+- **Type:** hardening
+- **CVE / CWE / advisory:** none. CWE-494, CWE-306; NIST SI-7, SA-12; SSDF PS.2
+- **Severity:** none (pins for an existing control). KEV no.
+- **Affected:** `core/src/node_host.rs` (`VSCODIUM`, `VSCODIUM_COMMIT`, `PINS`), `core/tests/node_host_real.rs`
+- **What changed:** the pin list, empty until now (so nothing could download), holds VSCodium 1.140.06880's server for five OS and CPU pairs. Each hash was computed on the PC from the downloaded file and matched the `.sha256` VSCodium publishes; a file with any other hash is refused. Other platforms still get nothing.
+- **Why it is secure now:** only those exact bytes are ever unpacked and run (NIST SI-7, CWE-494). The real server was checked to refuse requests without its connection token (CWE-306) and to close its port when stopped.
+- **Dependency:** VSCodium server 1.140.06880 (MIT, built from VS Code 1.140). A live advisory lookup for it was not possible from the cloud; no advisory known to us on 2026-11-22.
+- **Verification:** HistoryTest runs 2026-11-22_015908Z_node-host_506f165 (PC, real server, pass) and 2026-11-22_015916Z_core_506f165 (94 passed).
+
 ## 2026-11-22 — Phase I6c-2: Node extensions in the editor, local host connection, CSP for 127.0.0.1
 - **Type:** hardening; accepted risk
 - **CVE / CWE / advisory:** none (new feature). CWE-59, CWE-200, CWE-306, CWE-522, CWE-598, CWE-610, CWE-829, CWE-918; NIST AC-3, SC-7

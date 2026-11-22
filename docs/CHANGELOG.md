@@ -2,6 +2,18 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-22 - Phase I6c-3: the real Node extension host pinned
+
+### Added
+- Pins for VSCodium 1.140.06880's server on Linux x64/arm64, macOS x64/arm64 and Windows x64, with their SHA-256 (checked against the published hashes) and the server's commit. "Download and start Node extensions" now works on those systems.
+- `core/tests/node_host_real.rs`: an ignored check that downloads, starts and probes the real server.
+
+### Changed
+- extensions.md no longer says Node extensions wait for I6c.
+
+### Tests
+- Real server on the PC, passed [run](../HistoryTest/runs/2026-11-22_015908Z_node-host_506f165/RUN.md); core unit tests 94 passed [run](../HistoryTest/runs/2026-11-22_015916Z_core_506f165/RUN.md).
+
 ## 2026-11-22 - Phase I6c-2: Node extensions in the editor
 
 ### Added
