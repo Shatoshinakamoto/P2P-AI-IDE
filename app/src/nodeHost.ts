@@ -14,7 +14,18 @@
  * Security: the server listens on 127.0.0.1 only; the CSP allows the page (not the extension host iframe, see
  * vite.config.ts) to open `ws://127.0.0.1:*` and `http://127.0.0.1:*` for it (CWE-1385 style origin limits).
  */
+import product from "@codingame/monaco-vscode-api/vscode/vs/platform/product/common/product";
 import { nodeHostStart, nodeHostStatus, type NodeHostConnection } from "./ipc.ts";
+import { sameMinor } from "./lib/vscodeVersion.ts";
+
+/** The VS Code version the editor library is built on. */
+export const editorVsCode: string = product.version ?? "";
+
+/**
+ * True when a server built from VS Code `server` speaks this editor's protocol (same minor version). A mismatched
+ * pair connects but never starts an extension, so the editor neither offers nor connects one (lib/vscodeVersion.ts).
+ */
+export const hostMatchesEditor = (server: string) => sameMinor(editorVsCode, server);
 
 let current: NodeHostConnection | null = null;
 
@@ -24,7 +35,11 @@ export async function resolveNodeHost(): Promise<NodeHostConnection | null> {
     const st = await nodeHostStatus();
     // Reuse only a server that already runs (the person started it before the reload): never start one here.
     if (st.port === null || !st.trusted) return null;
+    // SECURITY: fail closed on a server that can't speak this editor's protocol, instead of a silent half-working
+    // connection (CWE-1188 style safe default).
+    if (!hostMatchesEditor(st.vscode)) return null;
     current = await nodeHostStart(false);
+    if (!hostMatchesEditor(current.vscode)) current = null;
   } catch {
     current = null;
   }

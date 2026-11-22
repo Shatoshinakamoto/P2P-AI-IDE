@@ -15,7 +15,7 @@
  */
 import { useEffect, useState } from "react";
 import { nodeHostStart, nodeHostStatus, nodeHostStop, nodeHostTrust, type NodeHostStatus } from "../ipc.ts";
-import { nodeHost, reloadForNodeHost } from "../nodeHost.ts";
+import { editorVsCode, hostMatchesEditor, nodeHost, reloadForNodeHost } from "../nodeHost.ts";
 
 interface Props {
   /** How many enabled Node extensions are installed. */
@@ -54,6 +54,14 @@ export function NodeHostPanel({ nodeCount, onNotice }: Props) {
   let body: React.ReactNode;
   if (!st) body = <p>Open a folder to use Node extensions.</p>;
   else if (!st.pinned) body = <p>Node extensions can't run on this computer yet: the Node extension host is not available for it.</p>;
+  else if (!hostMatchesEditor(st.vscode))
+    // Offered only when the server speaks this editor's protocol (lib/vscodeVersion.ts); nothing is downloaded.
+    body = (
+      <p>
+        Node extensions can't run with this version of the IDE yet: the editor is built on VS Code {editorVsCode || "?"},
+        but the available Node extension host is built on VS Code {st.vscode}. They must match. Web extensions still work.
+      </p>
+    );
   else if (!st.trusted)
     body = (
       <>

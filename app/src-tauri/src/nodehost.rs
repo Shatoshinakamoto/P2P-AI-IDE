@@ -41,6 +41,9 @@ pub struct HostStatus {
     trusted: bool,
     /// The port on 127.0.0.1 while a server runs.
     port: Option<u16>,
+    /// The VS Code version the pinned server is built from (empty when nothing is pinned). The editor compares it
+    /// with its own and offers Node extensions only when they match (app/src/lib/vscodeVersion.ts).
+    vscode: &'static str,
 }
 
 /// Where the server connects: SECURITY: the token is for the webview only, never logged (CWE-532).
@@ -54,6 +57,8 @@ pub struct HostConnection {
     folder: String,
     /// The server's VS Code commit, which the editor announces so the server accepts it.
     commit: String,
+    /// The VS Code version the server is built from; the editor refuses to connect when it differs from its own.
+    vscode: &'static str,
 }
 
 fn pinned_commit() -> String {
@@ -102,7 +107,8 @@ pub fn node_host_status(app: AppHandle, state: State<AppState>) -> Result<HostSt
     let trusted = folder(&state)?.is_some_and(|f| TrustStore::new(&data).is_trusted(&f));
     let mut g = RUNNING.lock().map_err(|_| "internal error".to_string())?;
     let port = g.as_mut().and_then(|r| if r.alive() { Some(r.port) } else { None });
-    Ok(HostStatus { pinned: pin.is_some(), installed, trusted, port })
+    let vscode = if pin.is_some() { node_host::VSCODE_VERSION } else { "" };
+    Ok(HostStatus { pinned: pin.is_some(), installed, trusted, port, vscode })
 }
 
 /// Trusts or stops trusting the open folder. Only from the person's click in the trust prompt or the view.
@@ -138,6 +144,7 @@ pub async fn node_host_start(
                     token: r.token.clone(),
                     folder: node_host::editor_folder(&r.folder).map_err(|e| e.message().to_string())?,
                     commit: pinned_commit(),
+                    vscode: node_host::VSCODE_VERSION,
                 });
             }
         }
@@ -177,7 +184,13 @@ pub async fn node_host_start(
                     return Err(e.message().to_string());
                 }
             };
-            let c = HostConnection { port: r.port, token: r.token.clone(), folder, commit: pinned_commit() };
+            let c = HostConnection {
+                port: r.port,
+                token: r.token.clone(),
+                folder,
+                commit: pinned_commit(),
+                vscode: node_host::VSCODE_VERSION,
+            };
             *RUNNING.lock().map_err(|_| "internal error".to_string())? = Some(r);
             Ok(c)
         }

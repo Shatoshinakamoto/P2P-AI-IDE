@@ -61,7 +61,11 @@ pub const MAX_ENTRIES: usize = 60_000;
 /// How long the server may take to say which port it listens on.
 pub const START_TIMEOUT: Duration = Duration::from_secs(30);
 
-/// The VS Code version the editor library is built on; the server must match it.
+/// The VS Code version the pinned server is built from. The editor must be built on the same VS Code minor
+/// version: VS Code's editor-to-extension-host messages are numbered, and the numbering changes between minor
+/// versions, so a mismatched pair connects but silently never starts an extension (found on the PC in phase
+/// I6c-3: an editor on 1.145 and this 1.140 server). The editor checks this before it connects
+/// (app/src/lib/vscodeVersion.ts).
 pub const VSCODE_VERSION: &str = "1.140.0";
 
 /// One pinned server download.
@@ -82,7 +86,7 @@ pub struct Pin {
     pub commit: &'static str,
 }
 
-/// The pinned VSCodium release (built from VS Code 1.140, the version the editor library is built on).
+/// The pinned VSCodium release (built from VS Code 1.140, see `VSCODE_VERSION`).
 pub const VSCODIUM: &str = "1.140.06880";
 /// Its VS Code commit, from the server's `product.json`.
 pub const VSCODIUM_COMMIT: &str = "807ba2d6075c29587f884698cd7370c81ab0724c";

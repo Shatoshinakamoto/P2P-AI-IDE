@@ -335,6 +335,8 @@ export interface NodeHostStatus {
   trusted: boolean;
   /** The port on 127.0.0.1 while the server runs. */
   port: number | null;
+  /** The VS Code version the pinned server is built from ("" when nothing is pinned); see lib/vscodeVersion.ts. */
+  vscode: string;
 }
 /** Where the editor connects to the running server. SECURITY: the token stays in memory only (CWE-522). */
 export interface NodeHostConnection {
@@ -343,6 +345,8 @@ export interface NodeHostConnection {
   folder: string;
   /** The server's VS Code commit; the editor announces it so the server accepts the connection. */
   commit: string;
+  /** The VS Code version the server is built from; the editor connects only when its own matches. */
+  vscode: string;
 }
 export const nodeHostStatus = () => call<NodeHostStatus>("node_host_status");
 /** Trusts or stops trusting the open folder. Only from the person's click. */
