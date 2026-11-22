@@ -1,0 +1,1 @@
+cargo test --test node_host_real -- --ignored --nocapture && cargo test --lib node_host

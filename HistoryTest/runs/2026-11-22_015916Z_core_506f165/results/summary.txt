@@ -1,0 +1,11 @@
+id: 2026-11-22_015916Z_core_506f165
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: not recorded
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: 0
+duration_s: 14.6
+commit: 506f165cd7ebf5e3b111145fc445f1f359f22084
+machine: cloud

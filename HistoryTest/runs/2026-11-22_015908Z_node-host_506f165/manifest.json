@@ -1,0 +1,66 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "b8c223678f16c922ab89e21614e4cd5c091d5b969243b157790b2e04ebaa5ba7",
+   "size": 3074
+  },
+  "command.txt": {
+   "sha256": "9e4753c9cfdc36c3532dce3ae672ffed68a39f0bf79426c354fda6ec4f667c14",
+   "size": 88
+  },
+  "environment.md": {
+   "sha256": "d11b62cc0e48d9280d39f94daa06bba409c331fac485eae7bc6b0ee56cc923c3",
+   "size": 130
+  },
+  "logs/node_host_real.log": {
+   "sha256": "48c6a9993accf1ebf5e949b38058cee8ad904ab45d9a7a4e05772528358015b5",
+   "size": 977
+  },
+  "logs/node_host_unit.log": {
+   "sha256": "70122f38a7d5a22e3c656bb075a7a41c641be4cc6aa34ad0e82538efb9b573ec",
+   "size": 753
+  },
+  "results/server-builtins.txt": {
+   "sha256": "5e387fcb1e75bafd3133ac29002cd6482dd4882ff729ed138ed659293ae62885",
+   "size": 659
+  },
+  "results/summary.txt": {
+   "sha256": "c80f5eeb75c6a185ff8ebcf09e486d105f1374d1d85e7bfdd6af27020a4c0b9f",
+   "size": 228
+  }
+ },
+ "previous": {
+  "manifest_sha256": "ab14017a32aaad9723248383a1d6ee2add22989f911099a178135526d3ce135c",
+  "run_id": "2026-11-22_014648Z_security-scan_10da8d4"
+ },
+ "run": {
+  "area": "node-host",
+  "branch_or_pr": "claude/project-thread-8u4b8a",
+  "collected_utc": "2026-11-22T01:59:08Z",
+  "commit": "506f165",
+  "count_unit": "",
+  "date_utc": "2026-11-22T01:59:08Z",
+  "dirty": false,
+  "duration_s": null,
+  "exit_code": null,
+  "failed": 0,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_015908Z_node-host_506f165",
+  "kind": "integration",
+  "machine": "pc",
+  "passed": 7,
+  "record": "imported",
+  "redactions": {},
+  "requested_by": "Finish TandemForge and IDE roadmaps thread",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Phase I6c-3: the real pinned VSCodium 1.140.06880 server downloads, starts and needs its token (PC, Windows x64)",
+  "verdict": "pass",
+  "verdict_reason": ""
+ },
+ "schema": 1
+}

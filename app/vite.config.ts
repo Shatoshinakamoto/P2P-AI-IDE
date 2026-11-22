@@ -35,9 +35,34 @@ function pageCsp(): Plugin {
   };
 }
 
+/**
+ * Phase I6c: the page may reach the local Node extension host (`ws://127.0.0.1:*`, `http://127.0.0.1:*` in the
+ * header CSP), but web extensions must not reach this computer. VS Code's extension host iframe ships its own meta
+ * CSP that allows localhost; browsers apply both policies, so this plugin takes every localhost and 127.0.0.1 source
+ * out of that meta tag in the built iframe page. The worker started by the iframe inherits the iframe's policies.
+ * SECURITY: keeps I6b's "no access to this computer" for web extensions (CWE-918, NIST SC-7). The build fails if the
+ * iframe page is missing or still names a local source, so a library update can't undo it silently.
+ */
+function iframeCsp(): Plugin {
+  return {
+    name: "ide-iframe-csp",
+    apply: "build",
+    generateBundle(_opts, bundle) {
+      const pages = Object.values(bundle).filter((f) => f.type === "asset" && /webWorkerExtensionHostIframe.*\.html$/.test(f.fileName));
+      if (pages.length === 0) throw new Error("the web extension host iframe page was not found");
+      for (const f of pages) {
+        if (f.type !== "asset") continue;
+        const html = String(f.source).replace(/ (?:http|ws):\/\/(?:localhost|127\.0\.0\.1):\*/g, "");
+        if (/localhost|127\.0\.0\.1/.test(html.split("</head>")[0])) throw new Error("the iframe CSP still allows local addresses");
+        f.source = html;
+      }
+    },
+  };
+}
+
 export default defineConfig({
   clearScreen: false,
-  plugins: [pageCsp(), tailwindcss()],
+  plugins: [pageCsp(), iframeCsp(), tailwindcss()],
   oxc: { jsx: { runtime: "automatic" } },
   server: { host: "127.0.0.1", port: 5174, strictPort: true },
   // The editor and TextMate workers are built as separate files so the CSP's worker-src 'self' covers them.

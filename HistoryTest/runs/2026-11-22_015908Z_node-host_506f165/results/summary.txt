@@ -1,0 +1,11 @@
+id: 2026-11-22_015908Z_node-host_506f165
+verdict: pass
+verdict_reason: not recorded
+passed: 7
+failed: 0
+skipped: not recorded
+count_unit: not recorded
+exit_code: not recorded
+duration_s: not recorded
+commit: 506f165
+machine: pc

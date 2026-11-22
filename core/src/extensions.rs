@@ -9,8 +9,9 @@
 //! Phase I6a installs **declarative** extensions (no code). Phase I6b also installs **web** extensions (a `browser`
 //! entry): their code runs only in the editor's web worker extension host, inside a sandboxed hidden iframe under the
 //! app's Content-Security-Policy, with no Node, no file system and no network (see docs/features/extensions.md).
-//! Extensions with only a `main` (Node code) are refused until the Node sidecar (I6c). Web extensions that ask for
-//! proposed VS Code APIs (`enabledApiProposals`) are refused: those APIs are unstable and not offered (CWE-693).
+//! Phase I6c installs **Node** extensions too (only a `main` entry): their code runs only in the local VSCodium
+//! server started by [`crate::node_host`] for a folder the person trusts, never in the webview. Extensions that ask
+//! for proposed VS Code APIs (`enabledApiProposals`) are refused: those APIs are unstable and not offered (CWE-693).
 //!
 //! Inputs and trust boundaries:
 //!   * Search text, namespace, name and version come from the webview (untrusted): allow-listed before they reach a URL.
@@ -80,8 +81,6 @@ pub enum ExtError {
     BadSignature,
     /// The archive holds a path that could leave the extension folder.
     UnsafePath,
-    /// The extension runs code; `kind` says which host it needs.
-    NeedsHost(Kind),
     /// A web extension asks for proposed (unstable) VS Code APIs.
     ProposedApi,
     /// Not installed, or no such file in the extension.
@@ -103,9 +102,6 @@ impl ExtError {
             ExtError::UnsafePath => "the extension holds a file path that is not allowed; nothing was installed".into(),
             ExtError::ProposedApi => {
                 "this extension uses proposed VS Code APIs, which the IDE does not offer; nothing was installed".into()
-            }
-            ExtError::NeedsHost(_) => {
-                "this extension runs Node.js code; the Node extension host arrives in phase I6c".into()
             }
             ExtError::NotFound => "that extension or file is not installed".into(),
             ExtError::Io => "could not read or write the app's extensions folder".into(),
@@ -459,13 +455,10 @@ impl ExtStore {
             return Err(ExtError::BadPackage);
         }
         let kind = kind_of(&manifest);
-        // Phase I6b: declarative and web worker extensions install; Node extensions wait for I6c.
-        if kind == Kind::Node {
-            return Err(ExtError::NeedsHost(kind));
-        }
-        // SECURITY: proposed (unstable) VS Code APIs are refused: they are not part of the reviewed API surface the
-        // web worker host offers (CWE-1357, NIST CM-7).
-        if kind == Kind::Web
+        // Phase I6c: Node extensions install too; they only run in the Node host of a trusted folder (node_host.rs).
+        // SECURITY: proposed (unstable) VS Code APIs are refused for every extension with code: they are not part of
+        // the reviewed API surface either host offers (CWE-1357, NIST CM-7).
+        if kind != Kind::Declarative
             && manifest.get("enabledApiProposals").and_then(|v| v.as_array()).is_some_and(|a| !a.is_empty())
         {
             return Err(ExtError::ProposedApi);
@@ -763,13 +756,19 @@ mod tests {
 
     #[test]
     fn refuses_node_extensions_and_installs_web_ones() {
-        let node = THEME.replace("\"displayName\"", "\"main\":\"./out/ext.js\",\"displayName\"");
+        // Phase I6c: a Node extension installs (it runs only in a trusted folder's Node host), unless it asks for
+        // proposed APIs, and it can never get the web worker's internet grant.
+        let node = THEME
+            .replace("\"displayName\"", "\"main\":\"./out/ext.js\",\"enabledApiProposals\":[\"x\"],\"displayName\"");
         let fake = Fake::new(&node, &[], |_| {});
         let store = ExtStore::new(tmp());
-        assert_eq!(
-            store.install(&|u, m| fake.get(u, m), "acme", "theme-x", "latest"),
-            Err(ExtError::NeedsHost(Kind::Node))
-        );
+        assert_eq!(store.install(&|u, m| fake.get(u, m), "acme", "theme-x", "latest"), Err(ExtError::ProposedApi));
+        let node = THEME.replace("\"displayName\"", "\"main\":\"./out/ext.js\",\"displayName\"");
+        let fake = Fake::new(&node, &[], |_| {});
+        let got = store.install(&|u, m| fake.get(u, m), "acme", "theme-x", "latest").unwrap();
+        assert_eq!(got.kind, Kind::Node);
+        assert_eq!(store.set_network(&got.id, true), Err(ExtError::BadInput));
+        store.uninstall(&got.id).unwrap();
         // Phase I6b: a web extension installs, unless it asks for proposed APIs.
         let web = THEME.replace(
             "\"displayName\"",
@@ -836,11 +835,8 @@ mod tests {
         let m = store.manifest(&e.id).unwrap();
         let theme = m["contributes"]["themes"][0]["path"].as_str().unwrap();
         assert!(store.read_file(&e.id, theme).unwrap().len() > 1000);
-        // A Node extension is refused before anything is written.
-        assert_eq!(
-            store.install(&get, "redhat", "vscode-yaml", "latest").unwrap_err(),
-            ExtError::NeedsHost(Kind::Node)
-        );
+        // Phase I6c: a Node extension installs as kind node.
+        assert_eq!(store.install(&get, "redhat", "vscode-yaml", "latest").unwrap().kind, Kind::Node);
         println!("installed {} {} sha256 {}", e.id, e.version, e.sha256);
     }
 

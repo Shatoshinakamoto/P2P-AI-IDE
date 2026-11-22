@@ -1,0 +1,14 @@
+# PC (Windows 11, x86_64) output of: cargo test --lib node_host
+   Compiling p2p-ide-core v0.1.0 (<clone>\core)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 9.62s
+     Running unittests src\lib.rs (target\debug\deps\p2p_ide_core-1c9656c9c3223c35.exe)
+
+running 6 tests
+test node_host::tests::pins_fail_closed_and_check_shape ... ok
+test node_host::tests::env_and_port_parsing ... ok
+test node_host::tests::download_needs_the_pinned_hash ... ok
+test node_host::tests::unpack_refuses_unsafe_entries ... ok
+test node_host::tests::trust_is_per_canonical_folder ... ok
+test node_host::tests::stage_copies_only_enabled_node_extensions ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 85 filtered out; finished in 0.03s

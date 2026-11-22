@@ -2,6 +2,34 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-22 - Phase I6c-3: the real Node extension host pinned
+
+### Added
+- Pins for VSCodium 1.140.06880's server on Linux x64/arm64, macOS x64/arm64 and Windows x64, with their SHA-256 (checked against the published hashes) and the server's commit. "Download and start Node extensions" now works on those systems.
+- `core/tests/node_host_real.rs`: an ignored check that downloads, starts and probes the real server.
+
+### Changed
+- extensions.md no longer says Node extensions wait for I6c.
+
+### Tests
+- Real server on the PC, passed [run](../HistoryTest/runs/2026-11-22_015908Z_node-host_506f165/RUN.md); core unit tests 94 passed [run](../HistoryTest/runs/2026-11-22_015916Z_core_506f165/RUN.md).
+
+## 2026-11-22 - Phase I6c-2: Node extensions in the editor
+
+### Added
+- Pheonix picked "VSCodium server, on first need" for Node extensions (design accepted).
+- **Node extensions install** from Open VSX (same hash and signature checks) and run only in the local Node extension host of a trusted folder.
+- Extensions view > **Node extensions** panel: trust the folder (its own click, with what Node extensions can do), download and start the host (names the size and the hash check), restart, stop, stop trusting. Starting or stopping reloads the window.
+- The editor connects to the running host on 127.0.0.1 with its token and pinned commit, and the folder becomes the host's workspace, so Node extensions see real file paths.
+- New npm package `@codingame/monaco-vscode-remote-agent-service-override` 39.0.5 (exact), loaded only when a host runs.
+
+### Changed
+- CSP `connect-src` adds `ws://127.0.0.1:*` and `http://127.0.0.1:*` for the page; the build removes local sources from the extension host iframe's CSP, so web extensions still can't reach this computer.
+- Pins now carry the server's VS Code commit.
+
+### Tests
+- Core unit tests 94 passed [run](../HistoryTest/runs/2026-11-22_014615Z_core_10da8d4/RUN.md); UI smoke test 113 of 113 [run](../HistoryTest/runs/2026-11-22_014626Z_ui_10da8d4/RUN.md); app unit tests [run](../HistoryTest/runs/2026-11-22_014647Z_app-unit_10da8d4/RUN.md); static checks [run](../HistoryTest/runs/2026-11-22_014648Z_security-scan_10da8d4/RUN.md).
+
 ## 2026-11-21 - Phase I6c-1: Node extension host, core part
 
 ### Added

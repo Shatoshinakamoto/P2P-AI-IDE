@@ -11,6 +11,7 @@
 // Not covered: the real Rust commands (core tests cover them) and the native window (checked on a PC).
 // Dependencies: playwright (preinstalled in the test environment, not a project dependency), node:http.
 import { createRequire } from "node:module";
+import { createHash } from "node:crypto";
 import { createServer } from "node:http";
 import { readFile, stat } from "node:fs/promises";
 import { extname, join, normalize } from "node:path";
@@ -42,6 +43,39 @@ const server = createServer(async (req, res) => {
 });
 await new Promise((r) => server.listen(0, "127.0.0.1", r));
 const port = server.address().port;
+// Phase I6c: a second local server on the next port stands for any local service (and the Node extension host). The
+// page may connect to 127.0.0.1 for the Node host; web extensions must still reach nothing here.
+let localHits = 0;
+const localSvc = createServer((req, res) => { localHits++; res.writeHead(200, { "access-control-allow-origin": "*" }).end("local"); });
+localSvc.on("upgrade", (_req, sock) => { localHits++; sock.destroy(); });
+await new Promise((r, j) => { localSvc.once("error", j); localSvc.listen(port + 1, "127.0.0.1", r); }).catch(() => undefined);
+// Phase I6c: a stand-in for the Node extension host on port + 2. It completes the WebSocket handshake and keeps what
+// the editor sends (unmasked), so the test can see the connection token arrive; it never answers, so the editor's
+// connection then fails, which the test expects. (SHA-1 here is the WebSocket handshake's fixed checksum, RFC 6455,
+// not a security use.)
+let hostBytes = Buffer.alloc(0);
+const hostSvc = createServer((_req, res) => res.writeHead(404).end());
+hostSvc.on("upgrade", (req, sock) => {
+  const accept = createHash("sha1").update(req.headers["sec-websocket-key"] + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11").digest("base64");
+  sock.write(`HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: ${accept}\r\n\r\n`);
+  let buf = Buffer.alloc(0);
+  sock.on("data", (d) => {
+    buf = Buffer.concat([buf, d]);
+    while (buf.length >= 2) {
+      let len = buf[1] & 0x7f, off = 2;
+      if (len === 126) { if (buf.length < 4) return; len = buf.readUInt16BE(2); off = 4; }
+      else if (len === 127) { if (buf.length < 10) return; len = Number(buf.readBigUInt64BE(2)); off = 10; }
+      if (buf.length < off + 4 + len) return;
+      const mask = buf.subarray(off, off + 4);
+      const body = Buffer.from(buf.subarray(off + 4, off + 4 + len).map((b, i) => b ^ mask[i % 4]));
+      hostBytes = Buffer.concat([hostBytes, body]);
+      buf = buf.subarray(off + 4 + len);
+    }
+  });
+  sock.on("error", () => undefined);
+  setTimeout(() => sock.destroy(), 1500);
+});
+await new Promise((r, j) => { hostSvc.once("error", j); hostSvc.listen(port + 2, "127.0.0.1", r); }).catch(() => undefined);
 
 // The fake Tauri bridge: a workspace held in memory, with the same record shapes and error strings as the core.
 const fake = () => {
@@ -104,13 +138,17 @@ exports.activate = async (ctx) => {
   // Straight past the IDE: XMLHttpRequest is not routed, so the CSP must stop it.
   const xhr = await new Promise((r) => { try { const x = new XMLHttpRequest(); x.onload = () => r("open"); x.onerror = () => r("blocked"); x.open("GET", "https://example.org/xhr"); x.send(); } catch { r("blocked"); } });
   const local = await tryFetch(location.origin.startsWith("http") ? location.origin + "/index.html" : "http://127.0.0.1/");
+  // Phase I6c: other local ports (the Node host, any local service) stay closed to web extensions.
+  const lport = Number(new URL(location.href.replace(/^blob:/, "")).port) + 1;
+  const lxhr = await new Promise((r) => { try { const x = new XMLHttpRequest(); x.onload = () => r("open"); x.onerror = () => r("blocked"); x.open("GET", "http://127.0.0.1:" + lport + "/x"); x.send(); } catch { r("blocked"); } });
+  const lws = await new Promise((r) => { try { const w = new WebSocket("ws://127.0.0.1:" + lport + "/"); w.onopen = () => r("open"); w.onerror = () => r("blocked"); setTimeout(() => r("blocked"), 1500); } catch { r("blocked"); } });
   const ipc = await tryFetch("ipc://localhost/read_file");
   const plain = await tryFetch("http://example.org/");
   const tauri = typeof self.__TAURI_INTERNALS__ === "undefined" ? "none" : "present";
   const dom = typeof document === "undefined" ? "none" : "present";
   let opened = "refused";
   try { opened = (await vscode.env.openExternal(vscode.Uri.parse("https://example.org/?leak=1"))) ? "opened" : "refused"; } catch { opened = "refused"; }
-  const report = "WEBEXT xhr=" + xhr + " ipc=" + ipc + " http=" + plain + " tauri=" + tauri + " dom=" + dom + " open=" + opened + " local=" + local;
+  const report = "WEBEXT xhr=" + xhr + " ipc=" + ipc + " http=" + plain + " tauri=" + tauri + " dom=" + dom + " open=" + opened + " local=" + local + " lxhr=" + lxhr + " lws=" + lws;
   // Through the IDE: allowed only after the person says yes. A call with no extension code on the stack is refused.
   const live = async () => { try { const r = await fetch("https://example.org/hover", { headers: { "x-probe": "1" } }); return r.status + ":" + (await r.text()); } catch { return "blocked"; } };
   // fetch called by a promise job that no extension code awaits: no extension frame on the stack.
@@ -295,6 +333,21 @@ exports.activate = async (ctx) => {
           ext.installed = [...ext.installed.filter((x) => x.id !== e.id), e]; return e;
         }
         case "ext_list": return ext.installed;
+        // Phase I6c: the Node extension host. Its state lives in sessionStorage because starting it reloads the page
+        // (in the app the shell keeps it); every call is logged there too.
+        case "node_host_status": case "node_host_trust": case "node_host_start": case "node_host_stop": {
+          const nh = JSON.parse(sessionStorage.getItem("smoke-node-host") ?? '{"trusted":false,"installed":false,"port":null}');
+          const log = JSON.parse(sessionStorage.getItem("smoke-node-calls") ?? "[]");
+          log.push({ cmd, args }); sessionStorage.setItem("smoke-node-calls", JSON.stringify(log));
+          const save = () => sessionStorage.setItem("smoke-node-host", JSON.stringify(nh));
+          if (cmd === "node_host_status") return { pinned: true, ...nh };
+          if (cmd === "node_host_trust") { nh.trusted = args.trusted; if (!args.trusted) nh.port = null; save(); return null; }
+          if (cmd === "node_host_stop") { nh.port = null; save(); return null; }
+          if (!nh.trusted) throw "Node extensions run only in a folder you trust";
+          if (!nh.installed && !args.allowDownload) throw "the Node extension host is not downloaded yet";
+          nh.installed = true; nh.port = Number(location.port) + 2; save();
+          return { port: nh.port, token: "c0ffee".repeat(8), folder: "/home/smoke/shop-api", commit: "0123456789abcdef0123456789abcdef01234567" };
+        }
         case "ext_set_enabled": ext.installed = ext.installed.map((e) => (e.id === args.id ? { ...e, enabled: args.enabled } : e)); return ext.installed.find((e) => e.id === args.id);
         case "ext_uninstall": ext.installed = ext.installed.filter((e) => e.id !== args.id); return null;
         case "ext_set_network": {
@@ -752,6 +805,7 @@ try {
   let hover = await hoverText(/WEBEXT.*live=/);
   check("the web extension's code runs in the worker host and its hover shows in the editor", /WEBEXT/.test(hover), hover.slice(0, 200));
   check("Not now: no request is made and the extension gets an error", /live=blocked/.test(hover) && (await page.evaluate(() => window.__calls.filter((c) => c.cmd === "ext_fetch").length)) === 0, hover.slice(0, 200));
+  check("the web extension can't reach other local ports (XMLHttpRequest or WebSocket), so the Node host's CSP opening stays out of the worker", /lxhr=blocked/.test(hover) && /lws=blocked/.test(hover) && localHits === 0, hover.slice(0, 240) + " hits=" + localHits);
   check("the web extension can't reach the network itself, the Tauri bridge or the page", /xhr=blocked/.test(hover) && /ipc=blocked/.test(hover) && /http=blocked/.test(hover) && /tauri=none/.test(hover) && /dom=none/.test(hover), hover.slice(0, 200));
   const opened = await page.evaluate(() => window.__opened);
   check("the web extension can't open a link or window on its own", /open=refused/.test(hover) && !opened.some((u) => /leak/.test(u)), JSON.stringify(opened));
@@ -841,6 +895,45 @@ try {
   await page.screenshot({ path: process.env.SHOT_TF ?? join(here, "..", "ui-smoke-tf.png") });
 
   await page.screenshot({ path: process.env.SHOT ?? join(here, "..", "ui-smoke.png") });
+
+  // Phase I6c: Node extensions. Trust is its own explained click, the download its own click, and the editor then
+  // connects to the host on 127.0.0.1 with its token. Nothing listens on that port here, so the connection fails;
+  // the reports of that expected failure are taken out below.
+  const sockets = [];
+  page.on("websocket", (w) => sockets.push(w.url()));
+  const nodeCalls = () => page.evaluate(() => JSON.parse(sessionStorage.getItem("smoke-node-calls") ?? "[]"));
+  await page.getByRole("button", { name: "Extensions", exact: true }).click();
+  const np = page.getByRole("region", { name: "Node extensions" });
+  await np.getByText(/start only in a folder you trust/).waitFor();
+  check("Node extensions start only in a trusted folder, and the panel says what they can do", /read and change any of your files/.test(await np.innerText()) && !(await nodeCalls()).some((c) => c.cmd === "node_host_start"));
+  await np.getByRole("button", { name: "Trust this folder for Node extensions" }).click();
+  await np.getByRole("button", { name: "Download and start Node extensions" }).waitFor();
+  check("trusting is its own click, and the download is named before it happens", (await nodeCalls()).some((c) => c.cmd === "node_host_trust" && c.args.trusted === true) && /about 70 MB/.test(await np.innerText()));
+  const errBefore = errors.length;
+  await Promise.all([page.waitForEvent("load"), np.getByRole("button", { name: "Download and start Node extensions" }).click()]);
+  await page.getByRole("button", { name: "Extensions", exact: true }).waitFor();
+  await page.waitForTimeout(2500);
+  const hostPort = port + 2;
+  const startCalls = (await nodeCalls()).filter((c) => c.cmd === "node_host_start");
+  check("the host starts with the download allowed only after that click, then the window reloads", startCalls.length >= 2 && startCalls[0].args.allowDownload === true && startCalls.slice(1).every((c) => c.args.allowDownload === false), JSON.stringify(startCalls));
+  check("after the reload the editor connects to the Node host on 127.0.0.1 only", sockets.length > 0 && sockets.every((u) => u.startsWith(`ws://127.0.0.1:${hostPort}/`)), sockets.slice(0, 2).join(" "));
+  check("the editor announces the server's pinned commit", sockets.some((u) => u.includes("0123456789abcdef0123456789abcdef01234567")), sockets.slice(0, 1).join(" "));
+  check("the connection token reaches the host over the socket, not the URL or the page's own storage", hostBytes.includes("c0ffee".repeat(8)) && !sockets.some((u) => u.includes("c0ffee".repeat(8))) && !(await page.evaluate(() => JSON.stringify({ ...localStorage }))).includes("c0ffee".repeat(8)), `${hostBytes.length} bytes`);
+  await page.getByRole("button", { name: "Extensions", exact: true }).click();
+  const np2 = page.getByRole("region", { name: "Node extensions" });
+  await np2.getByText(/Node extensions are running/).waitFor();
+  await page.screenshot({ path: process.env.SHOT_NODE ?? join(here, "..", "ui-smoke-node.png") });
+  await Promise.all([page.waitForEvent("load"), np2.getByRole("button", { name: "Stop trusting this folder" }).click()]);
+  await page.getByRole("button", { name: "Extensions", exact: true }).waitFor();
+  const socketsBefore = sockets.length;
+  await page.waitForTimeout(1500);
+  await page.getByRole("button", { name: "Extensions", exact: true }).click();
+  await page.getByRole("region", { name: "Node extensions" }).getByRole("button", { name: "Trust this folder for Node extensions" }).waitFor();
+  check("taking trust back stops the host, and the reloaded editor connects to nothing", (await nodeCalls()).some((c) => c.cmd === "node_host_trust" && c.args.trusted === false) && sockets.length === socketsBefore);
+  // The failed connections are expected (nothing listens on the host port in this test); keep any other error.
+  const nodeErrs = errors.splice(errBefore);
+  errors.push(...nodeErrs.filter((e) => !/WebSocket|127\.0\.0\.1:\d+|remote|reconnect|connection|ERR_CONNECTION_REFUSED/i.test(e)));
+  if (nodeErrs.length) console.log("expected Node host connection reports:", nodeErrs.length, nodeErrs[0]?.slice(0, 160));
 } catch (e) {
   check("flow completed", false, String(e).split("\n").slice(0, 6).join(" | "));
 }
@@ -851,6 +944,8 @@ check("no page errors", errors.length === 0, errors.slice(0, 3).join(" | "));
 
 await browser.close();
 server.close();
+localSvc.close();
+hostSvc.close();
 const failed = checks.filter((c) => !c.ok).length;
 console.log(`\n${checks.length - failed} passed, ${failed} failed`);
 process.exit(failed ? 1 : 0);

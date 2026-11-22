@@ -4,8 +4,8 @@
  *
  * Phase I6a installs extensions that only contribute files (themes, icon themes, grammars, snippets, language
  * settings). Phase I6b adds web extensions, whose code runs in the editor's web worker extension host (sandboxed
- * iframe, no network, no file system, no Node). Extensions with Node code are refused by the Rust core with a
- * message naming the phase that adds their host; the view shows that message.
+ * iframe, no network, no file system, no Node). Phase I6c adds Node extensions: they install here and run only in
+ * the local Node extension host of a folder the person trusts (NodeHostPanel.tsx).
  *
  * Trust boundary: search results, names and descriptions come from Open VSX and are rendered by React as text only
  * (CWE-79). Nothing is installed without the person's click on Install; the core checks the download's SHA-256 and
@@ -18,6 +18,7 @@ import { extInstall, extList, extManifest, extSearch, extSetEnabled, extSetNetwo
 import { syncExtensions } from "../extensions.ts";
 import { DEFAULT_THEME, setColorTheme } from "../monaco.ts";
 import { saveTheme, savedTheme } from "../lib/theme.ts";
+import { NodeHostPanel } from "./NodeHostPanel.tsx";
 
 interface Props {
   onNotice: (m: string) => void;
@@ -124,7 +125,8 @@ export function ExtensionsView({ onNotice }: Props) {
       <p className="text-xs text-ide-dim">
         Installs themes, icon themes, language grammars, snippets and web extensions. Each download is checked against
         its SHA-256 and Open VSX signature first. Web extensions run in a sandbox inside the editor: they see the files
-        open in the editor and have no other access to your computer. One that wants the internet asks you first. Extensions that need Node.js come with the Node extension host in a later phase.
+        open in the editor and have no other access to your computer. One that wants the internet asks you first. Node
+        extensions run only in a folder you trust, in the Node extension host below.
       </p>
 
       {results && (
@@ -156,6 +158,8 @@ export function ExtensionsView({ onNotice }: Props) {
         </section>
       )}
 
+      <NodeHostPanel nodeCount={installed.filter((e) => e.kind === "node" && e.enabled).length} onNotice={onNotice} />
+
       <section aria-label="Installed extensions" className="flex flex-col gap-2">
         <h2 className="text-xs uppercase tracking-wide text-ide-dim">Installed</h2>
         {installed.length === 0 && <p className="text-ide-dim">No extensions installed.</p>}
@@ -168,7 +172,7 @@ export function ExtensionsView({ onNotice }: Props) {
                   {e.verified_publisher && <BadgeCheck size={13} aria-label="Verified publisher on Open VSX" />}
                 </div>
                 <div className="truncate text-xs text-ide-dim">
-                  {e.namespace} · v{e.version}{e.kind === "web" ? (e.network ? " · web extension (runs in the editor sandbox, internet allowed)" : " · web extension (runs in the editor sandbox, no internet)") : ""}
+                  {e.namespace} · v{e.version}{e.kind === "web" ? (e.network ? " · web extension (runs in the editor sandbox, internet allowed)" : " · web extension (runs in the editor sandbox, no internet)") : e.kind === "node" ? " · Node extension (runs in a trusted folder's Node extension host)" : ""}
                 </div>
                 {e.kind === "web" && !e.network && (
                   <button type="button" disabled={busy !== null || !e.enabled} onClick={() => void act(e.id, () => extSetNetwork(e.id, true), `Allowed internet for ${e.name}`)} className="mt-1 rounded border border-ide-line px-1.5 text-xs hover:bg-ide-hover disabled:opacity-50">

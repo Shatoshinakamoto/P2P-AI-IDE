@@ -12,6 +12,7 @@ import { Circle, X } from "lucide-react";
 import { monaco } from "../monaco.ts";
 import { readFile, writeFile } from "../ipc.ts";
 import { baseName, crumbs, languageFor } from "../lib/paths.ts";
+import { authorityOf, nodeHost, remotePath } from "../nodeHost.ts";
 
 /** One open file. `savedAltId` is the model's alternative version id at the last load or save (for dirty tracking). */
 interface Tab {
@@ -37,8 +38,16 @@ interface Props {
   onNotice: (message: string) => void;
 }
 
-/** A Monaco URI per relative path, under a private scheme so Monaco never treats it as a real file URL. */
-const uriFor = (rel: string) => monaco.Uri.from({ scheme: "p2pws", path: `/${rel}` });
+/**
+ * A Monaco URI per relative path, under a private scheme so Monaco never treats it as a real file URL. With the Node
+ * extension host on (phase I6c), the URI is the file on the server instead, so Node extensions (language servers,
+ * linters) see the document as the file it is; the text still loads and saves through the Rust core.
+ */
+const uriFor = (rel: string) => {
+  const node = nodeHost();
+  if (!node) return monaco.Uri.from({ scheme: "p2pws", path: `/${rel}` });
+  return monaco.Uri.from({ scheme: "vscode-remote", authority: authorityOf(node), path: `${remotePath(node.folder).replace(/\/$/, "")}/${rel}` });
+};
 
 export function Editor({ ref, onActiveChange, onCursor, onNotice }: Props) {
   const host = useRef<HTMLDivElement>(null);

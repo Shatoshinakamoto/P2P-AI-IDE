@@ -37,8 +37,9 @@ fn main() {
     );
     let icons = store.install(&get, "PKief", "material-icon-theme", "latest");
     println!("material-icon-theme: {:?}", icons.as_ref().map(|e| (&e.id, &e.version, e.kind)).map_err(|e| e.message()));
-    let yaml = store.install(&get, "redhat", "vscode-yaml", "latest").unwrap_err();
-    assert_eq!(yaml, ExtError::NeedsHost(Kind::Node));
-    println!("redhat.vscode-yaml refused: {}", yaml.message());
+    // Phase I6c: Node extensions install (they run only in a trusted folder's Node extension host).
+    let yaml = store.install(&get, "redhat", "vscode-yaml", "latest").map_err(|e| e.message()).unwrap();
+    assert_eq!(yaml.kind, Kind::Node);
+    println!("redhat.vscode-yaml installed as a Node extension");
     let _ = std::fs::remove_dir_all(dir);
 }

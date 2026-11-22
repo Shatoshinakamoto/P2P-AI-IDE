@@ -1,0 +1,16 @@
+# PC (Windows 11, x86_64) output of: cargo test --test node_host_real -- --ignored --nocapture
+# The 90 "Compiling <crate> vX" lines before "Finished" are shortened to their count here; nothing else changed.
+    Blocking waiting for file lock on package cache   (4 lines)
+   Compiling ... (90 crates, incl. tar v0.4.46, flate2 v1.1.11, ureq v3.5.2, rustls v0.23.46, sha2 v0.10.9)
+   Compiling p2p-ide-core v0.1.0 (<clone>\core)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 40.54s
+     Running tests\node_host_real.rs (target\debug\deps\node_host_real-f70ecf7d39053b04.exe)
+
+running 1 test
+installed 1.140.06880 in 14.9323306s at <data>/node-host
+listening on 127.0.0.1:<port> after 703.6936ms
+/version -> 200 807ba2d6075c29587f884698cd7370c81ab0724c
+/ without token -> 403, with token -> 404
+test the_pinned_server_downloads_starts_and_needs_its_token ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 19.17s

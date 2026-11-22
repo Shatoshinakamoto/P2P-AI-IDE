@@ -39,7 +39,6 @@ fn kind_word(e: &ExtError) -> &'static str {
         ExtError::HashMismatch => "hash_mismatch",
         ExtError::BadSignature => "bad_signature",
         ExtError::UnsafePath => "unsafe_path",
-        ExtError::NeedsHost(_) => "needs_host",
         ExtError::ProposedApi => "proposed_api",
         ExtError::NotFound => "not_found",
         ExtError::Io => "io",

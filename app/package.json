@@ -36,6 +36,7 @@
     "@codingame/monaco-vscode-php-default-extension": "39.0.5",
     "@codingame/monaco-vscode-powershell-default-extension": "39.0.5",
     "@codingame/monaco-vscode-python-default-extension": "39.0.5",
+    "@codingame/monaco-vscode-remote-agent-service-override": "39.0.5",
     "@codingame/monaco-vscode-ruby-default-extension": "39.0.5",
     "@codingame/monaco-vscode-rust-default-extension": "39.0.5",
     "@codingame/monaco-vscode-scss-default-extension": "39.0.5",

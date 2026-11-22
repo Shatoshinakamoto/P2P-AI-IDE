@@ -2,6 +2,27 @@
 
 Every security patch, hardening change, CVE remediation and accepted risk, newest first.
 
+## 2026-11-22 — Phase I6c-3: real VSCodium server pinned by SHA-256
+- **Type:** hardening
+- **CVE / CWE / advisory:** none. CWE-494, CWE-306; NIST SI-7, SA-12; SSDF PS.2
+- **Severity:** none (pins for an existing control). KEV no.
+- **Affected:** `core/src/node_host.rs` (`VSCODIUM`, `VSCODIUM_COMMIT`, `PINS`), `core/tests/node_host_real.rs`
+- **What changed:** the pin list, empty until now (so nothing could download), holds VSCodium 1.140.06880's server for five OS and CPU pairs. Each hash was computed on the PC from the downloaded file and matched the `.sha256` VSCodium publishes; a file with any other hash is refused. Other platforms still get nothing.
+- **Why it is secure now:** only those exact bytes are ever unpacked and run (NIST SI-7, CWE-494). The real server was checked to refuse requests without its connection token (CWE-306) and to close its port when stopped.
+- **Dependency:** VSCodium server 1.140.06880 (MIT, built from VS Code 1.140). A live advisory lookup for it was not possible from the cloud; no advisory known to us on 2026-11-22.
+- **Verification:** HistoryTest runs 2026-11-22_015908Z_node-host_506f165 (PC, real server, pass) and 2026-11-22_015916Z_core_506f165 (94 passed).
+
+## 2026-11-22 — Phase I6c-2: Node extensions in the editor, local host connection, CSP for 127.0.0.1
+- **Type:** hardening; accepted risk
+- **CVE / CWE / advisory:** none (new feature). CWE-59, CWE-200, CWE-306, CWE-522, CWE-598, CWE-610, CWE-829, CWE-918; NIST AC-3, SC-7
+- **Severity:** none (new feature built with these controls). KEV no.
+- **Affected:** `core/src/{extensions,node_host}.rs`, `app/src-tauri/src/{nodehost,ext}.rs`, `app/src-tauri/tauri.conf.json`, `app/vite.config.ts`, `app/src/{nodeHost,monaco,main,ipc}.ts(x)`, `app/src/components/{NodeHostPanel,ExtensionsView,Editor}.tsx`
+- **What changed:** Node extensions install and run only in the local host of a trusted folder; the host gets a fresh copy of the enabled Node extensions on every start (no links). The page may connect to `ws://`/`http://127.0.0.1:*` for the host; the build strips every local source from VS Code's extension host iframe CSP and fails if one is left. The editor sends the token only to the host on 127.0.0.1, over the socket, kept in memory (not the URL or web storage). Extensions can't make the window open other server folders. The full folder path reaches the webview only once the folder is trusted.
+- **Why it is secure now:** Node code runs only after the person's trust click (CWE-829, NIST AC-3); web extensions still reach nothing on this computer (CWE-918, NIST SC-7; tested with a counting local server); the host is reachable only with its token (CWE-306).
+- **Accepted risk:** while the host runs, the editor and web extensions can read files through it (`vscode-remote://`), including outside the folder; only in a trusted folder, where Node extensions already can. Documented in docs/features/node-extensions-design.md.
+- **Dependency:** `@codingame/monaco-vscode-remote-agent-service-override` 39.0.5 (MIT); npm audit gate passed 2026-11-22.
+- **Verification:** HistoryTest runs 2026-11-22_014615Z_core_10da8d4 (94 passed), 2026-11-22_014626Z_ui_10da8d4 (113/113), 2026-11-22_014647Z_app-unit_10da8d4, 2026-11-22_014648Z_security-scan_10da8d4.
+
 ## 2026-11-21 — Phase I6c-1: Node extension host core (download check, safe unpack, folder trust, local sidecar)
 - **Type:** hardening; accepted risk
 - **CVE / CWE / advisory:** none (new feature). CWE-22, CWE-59, CWE-214, CWE-306, CWE-330, CWE-409, CWE-494, CWE-522, CWE-532, CWE-601, CWE-829, CWE-918; NIST SI-7, AC-3, AC-6, AU-2; SSDF PS.2
