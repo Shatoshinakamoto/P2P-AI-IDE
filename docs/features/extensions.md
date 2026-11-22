@@ -199,8 +199,9 @@ encodings. The IDE never opens files through VS Code's file service, so an npm o
 A web extension is listed with "web extension (runs in the editor sandbox, no network)" and starts when the editor
 needs it (its activation events, for example opening a file of its language).
 
-An extension with only Node code shows, for example: "this extension runs Node.js code; the Node extension host
-arrives in phase I6c".
+An extension with Node code (a `main` entry) is listed as a Node extension. It runs only in the local Node extension
+host, in a folder you trusted (Extensions view > **Node extensions**, see
+[node-extensions-design.md](node-extensions-design.md)).
 
 ## 5. Dependencies
 
@@ -215,7 +216,8 @@ arrives in phase I6c".
 
 ## 6. Limitations and known risks
 
-* Node extensions (most language servers, linters, Git tools) wait for I6c.
+* Node extensions (most language servers, linters, Git tools) run only while the Node extension host runs for a
+  trusted folder; they have your own rights there.
 * A web extension sees and can change the text of files open in the editor, as any editor extension does (that is
   how formatters work). It has no network to send them anywhere, but a hostile one could change an open file's
   text; the person still saves and reviews changes. Only install extensions you trust.
@@ -242,9 +244,9 @@ arrives in phase I6c".
 |---|---|---|
 | "Open VSX could not be reached or refused the request" | No internet, a firewall, or a proxy (the IDE does not use system proxies) | Check the connection; proxies are not supported yet |
 | "the extension has no valid Open VSX signature; nothing was installed" | Unsigned extension, or a changed file | Choose another extension; report it to Open VSX if it should be signed |
-| "... runs Node.js code ..." | A Node-only extension | Waits for I6c |
+| A Node extension does nothing | The Node extension host is not running for this folder | Extensions > **Node extensions**: trust the folder, then start |
 | "this extension uses proposed VS Code APIs, which the IDE does not offer; nothing was installed" | `enabledApiProposals` in its manifest | Choose another extension |
-| A web extension does nothing | It needs a Node API, its activation event has not happened, or it uses `XMLHttpRequest`/`WebSocket` | Open a file of its language; allow internet if it asks; Node extensions wait for I6c |
+| A web extension does nothing | It needs a Node API, its activation event has not happened, or it uses `XMLHttpRequest`/`WebSocket` | Open a file of its language; allow internet if it asks; Node extensions need the Node extension host |
 | "internet is not allowed for this extension" | You chose Not now, or stopped its internet | Extensions > the extension > **Allow internet** |
 | "extensions may reach public https sites only" | It tried http, a local address or a private network | Nothing to fix: those stay closed |
 | "network requests must come from an extension" | The call had no extension code on the stack | Report it to the extension's author |

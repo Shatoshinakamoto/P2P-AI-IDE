@@ -82,12 +82,59 @@ pub struct Pin {
     pub commit: &'static str,
 }
 
-/// The pinned servers.
+/// The pinned VSCodium release (built from VS Code 1.140, the version the editor library is built on).
+pub const VSCODIUM: &str = "1.140.06880";
+/// Its VS Code commit, from the server's `product.json`.
+pub const VSCODIUM_COMMIT: &str = "807ba2d6075c29587f884698cd7370c81ab0724c";
+
+/// The pinned servers: VSCodium 1.140.06880's `vscodium-reh-<os>-<arch>` files (MIT).
 ///
-/// TODO(security): filled in phase I6c-3 on the PC from the VSCodium 1.140.x release (file and its published
-/// `.sha256`, compared with our own hash of the download). Until then every entry is empty and [`pin_for`] gives
-/// nothing, so no server is ever downloaded (fail closed, CWE-494).
-pub const PINS: &[Pin] = &[];
+/// Pinned 2026-11-22 on the PC: each file was downloaded from the GitHub release, hashed locally (certutil SHA-256),
+/// and the hash compared with the `.sha256` file published next to it (all five matched); the commit was read from
+/// the Windows server's `product.json`. An OS or CPU not listed here (Windows on ARM, 32-bit) gets nothing (fail
+/// closed, CWE-494). To move to a new release, repeat those steps for every file and update all three constants.
+pub const PINS: &[Pin] = &[
+    Pin {
+        os: "linux",
+        arch: "x86_64",
+        version: VSCODIUM,
+        url: "https://github.com/VSCodium/vscodium/releases/download/1.140.06880/vscodium-reh-linux-x64-1.140.06880.tar.gz",
+        sha256: "6497864eb7f9cb904dc4f1720f5ac9ba2f1acdc4be8b734af8426700510dad35",
+        commit: VSCODIUM_COMMIT,
+    },
+    Pin {
+        os: "linux",
+        arch: "aarch64",
+        version: VSCODIUM,
+        url: "https://github.com/VSCodium/vscodium/releases/download/1.140.06880/vscodium-reh-linux-arm64-1.140.06880.tar.gz",
+        sha256: "dbac1b6997388f43dfae877d6a52e3cbd924e81ada7508631889fccc24f10d9c",
+        commit: VSCODIUM_COMMIT,
+    },
+    Pin {
+        os: "macos",
+        arch: "x86_64",
+        version: VSCODIUM,
+        url: "https://github.com/VSCodium/vscodium/releases/download/1.140.06880/vscodium-reh-darwin-x64-1.140.06880.tar.gz",
+        sha256: "dd7a2961840008a71e906953133e4041f2572db5e4b78c1c4364785760391139",
+        commit: VSCODIUM_COMMIT,
+    },
+    Pin {
+        os: "macos",
+        arch: "aarch64",
+        version: VSCODIUM,
+        url: "https://github.com/VSCodium/vscodium/releases/download/1.140.06880/vscodium-reh-darwin-arm64-1.140.06880.tar.gz",
+        sha256: "d69781e5a6a0304f04d65563deb1a05dca73e9d4033bb27bcba0a443b12784c7",
+        commit: VSCODIUM_COMMIT,
+    },
+    Pin {
+        os: "windows",
+        arch: "x86_64",
+        version: VSCODIUM,
+        url: "https://github.com/VSCodium/vscodium/releases/download/1.140.06880/vscodium-reh-win32-x64-1.140.06880.tar.gz",
+        sha256: "ddc042d447c94df27460c1ca8a80b375f13d2bd8c5f08e7ec0d208cceb38f5df",
+        commit: VSCODIUM_COMMIT,
+    },
+];
 
 /// Fixed error kinds; [`HostError::message`] is safe to show.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -703,7 +750,14 @@ mod tests {
 
     #[test]
     fn pins_fail_closed_and_check_shape() {
-        assert_eq!(pin_for(PINS, std::env::consts::OS, std::env::consts::ARCH), None);
+        // Every shipped pin is well formed and on an allowed host; unlisted platforms get nothing.
+        for p in PINS {
+            assert_eq!(pin_for(PINS, p.os, p.arch), Some(*p), "{p:?}");
+            assert!(p.url.ends_with(".tar.gz") && p.url.contains(VSCODIUM));
+        }
+        assert_eq!(PINS.len(), 5);
+        assert_eq!(pin_for(PINS, "windows", "aarch64"), None);
+        assert_eq!(pin_for(PINS, "freebsd", "x86_64"), None);
         let ok = Pin {
             os: "linux",
             arch: "x86_64",
