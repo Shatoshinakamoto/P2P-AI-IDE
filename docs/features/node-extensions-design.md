@@ -195,7 +195,7 @@ follows links. It only drives the hint; the person decides.
   start and the panel shows "the Node extension host did not start". Untick the box to use plain Node.
 * A classic module built for another Electron (another VS Code version) still won't load.
 * The scan is a hint: a module packed inside an archive or loaded from elsewhere isn't seen.
-* Windows: checked in the cloud only so far (pin and hash); the Windows desktop app run on the PC is still to do.
+* Windows: checked in the Windows desktop app on the PC on 2026-11-22 ([run](../../HistoryTest/runs/2026-11-22_200619Z_desktop-node-ext-electron_cc16e75/RUN.md)): the switch was off by default, the first start downloaded the pinned Electron 43.8.3, `electron.exe` ran both the server and the extension host, and Code Spell Checker worked.
 
 ### Troubleshooting
 
@@ -212,5 +212,6 @@ follows links. It only drives the hint; the person decides.
 * [Core, 116 passed (7 new)](../../HistoryTest/runs/2026-11-22_121508Z_core_01bc30e/RUN.md)
 * [UI smoke, 118 of 118 (4 new)](../../HistoryTest/runs/2026-11-22_121522Z_ui_01bc30e/RUN.md)
 * [Real server under Electron through the core: the abi-probe extension activates, 120 of 120](../../HistoryTest/runs/2026-11-22_121549Z_node-host-electron_01bc30e/RUN.md),
+* [Windows desktop app on the PC: Electron downloaded on first start, Code Spell Checker works under it](../../HistoryTest/runs/2026-11-22_200619Z_desktop-node-ext-electron_cc16e75/RUN.md),
   and the [control on plain Node, where it fails as expected](../../HistoryTest/runs/2026-11-22_121624Z_node-host-electron_01bc30e/RUN.md)
 * Static checks [failed on stale notices from the url bump](../../HistoryTest/runs/2026-11-22_121653Z_security-scan_01bc30e/RUN.md), then [passed](../../HistoryTest/runs/2026-11-22_121745Z_security-scan_882c782/RUN.md)

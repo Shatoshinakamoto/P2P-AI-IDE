@@ -1,0 +1,78 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "1ad4406d9e5d8f7c3cbfb84d9c35cf6993d31caba010c3e3c63f969a11b3f83b",
+   "size": 3001
+  },
+  "artifacts/cspell-hover.jpg": {
+   "sha256": "e8e7d9f5d785b12afc8fe46f63d79c2d3f668015017e022c2bd5220f30beb81f",
+   "size": 5921
+  },
+  "artifacts/panel-electron-running.jpg": {
+   "sha256": "404502b92284eb3d92e98f40240eb518bf7161f73173636adac5a81e99706eff",
+   "size": 24147
+  },
+  "artifacts/panel-switch-off-again.jpg": {
+   "sha256": "7e6369977e8db57ea5f2b3c0208824fc3aca85208787dcf1894deda98723e321",
+   "size": 15963
+  },
+  "command.txt": {
+   "sha256": "1badc5085d381f421fa2d19e453fb89fac7909799bce8288e71a9607c3d3fa3b",
+   "size": 49
+  },
+  "environment.md": {
+   "sha256": "a17ab3a79da81f3f02e8690564e42d2e209a2e50b69881924db45a8d0378b55d",
+   "size": 146
+  },
+  "logs/i6d-build.txt": {
+   "sha256": "39d1a3d99f0ed79a3f63d1a2d0bf9fa1a6aa46940c8434a31ff08a77615efe1b",
+   "size": 21464
+  },
+  "logs/i6d-exthost.log": {
+   "sha256": "3850c4cf7e89b513eed156ada73e1bc43499f704717fd441cdaac59c44c9e300",
+   "size": 1950
+  },
+  "results/i6d-procs.txt": {
+   "sha256": "d5d07998b4f3289156f76423b944ce3632b98f383d35a53fdd536ff3b1628777",
+   "size": 492
+  },
+  "results/summary.txt": {
+   "sha256": "bbcf16d8091119f7dd3353a4ccebce34aa7d27c41849978d34962d838d49e475",
+   "size": 244
+  }
+ },
+ "previous": {
+  "manifest_sha256": "ac21b87b7448e9b7260b3e3641d1ae7d588dce09e3ad56e73c25c4ea40adafd6",
+  "run_id": "2026-11-22_121951Z_core_cf2e079"
+ },
+ "run": {
+  "area": "desktop-node-ext-electron",
+  "branch_or_pr": "#25",
+  "collected_utc": "2026-11-22T20:06:19Z",
+  "commit": "cc16e75",
+  "count_unit": "",
+  "date_utc": "2026-11-22T20:06:19Z",
+  "dirty": false,
+  "duration_s": null,
+  "exit_code": null,
+  "failed": 0,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_200619Z_desktop-node-ext-electron_cc16e75",
+  "kind": "manual",
+  "machine": "pc",
+  "passed": 4,
+  "record": "imported",
+  "redactions": {},
+  "requested_by": "TandemForge and IDE roadmap thread",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "I6d Electron compatibility host in the Windows desktop app",
+  "verdict": "pass",
+  "verdict_reason": ""
+ },
+ "schema": 1
+}

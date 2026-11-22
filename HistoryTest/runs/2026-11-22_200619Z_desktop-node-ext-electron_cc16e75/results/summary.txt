@@ -1,0 +1,11 @@
+id: 2026-11-22_200619Z_desktop-node-ext-electron_cc16e75
+verdict: pass
+verdict_reason: not recorded
+passed: 4
+failed: 0
+skipped: not recorded
+count_unit: not recorded
+exit_code: not recorded
+duration_s: not recorded
+commit: cc16e75
+machine: pc

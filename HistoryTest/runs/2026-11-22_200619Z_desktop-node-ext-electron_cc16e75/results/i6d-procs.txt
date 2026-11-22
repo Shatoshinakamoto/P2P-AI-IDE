@@ -1,0 +1,7 @@
+﻿C:\Users\<user>\AppData\Roaming\org.p2p-ai.ide\electron-host\43.8.3-windows-x86_64\electron.exe | server-main
+C:\Users\<user>\AppData\Roaming\org.p2p-ai.ide\electron-host\43.8.3-windows-x86_64\electron.exe | extensionHost
+C:\Users\<user>\AppData\Roaming\org.p2p-ai.ide\electron-host\43.8.3-windows-x86_64\electron.exe | other
+C:\Users\<user>\AppData\Roaming\org.p2p-ai.ide\electron-host\43.8.3-windows-x86_64\electron.exe | other
+electron-host folder:
+43.8.3-windows-x86_64
+enabled
