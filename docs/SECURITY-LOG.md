@@ -9,7 +9,7 @@ Every security patch, hardening change, CVE remediation and accepted risk, newes
 - **Affected:** `app/src-tauri/Cargo.lock` (`url` 2.5.8, pulled in by Tauri and HTTP crates); `core/Cargo.lock` was not affected.
 - **What changed:** `cargo update -p url --precise 2.5.9`, which also updated `form_urlencoded` 1.2.2 to 1.2.3.
 - **Why it is secure now:** the patched version from the advisory is in the lockfile (NIST SI-2, flaw remediation).
-- **Verification:** `cargo audit` in `app/src-tauri`: exit 0 with only the unmaintained and unsound warnings that are already allowed. `cargo check` passes. Found by PC local CI (`local-ci/supply-chain`) on PR 23. HistoryTest run below.
+- **Verification:** `cargo audit` in `app/src-tauri`: exit 0 with only the unmaintained and unsound warnings that are already allowed. `cargo check` passes. Found by PC local CI (`local-ci/supply-chain`) on PR 23. HistoryTest 2026-11-22_101242Z_security-scan_9ebb059.
 
 ## 2026-11-22 — Phase I6c-4: Node host pins moved to our own build
 - **Type:** hardening (supply chain)

@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "fe8f08716922b37dad7fd8782c640f52690cdedc9526b88e199b5d68bdc03b62",
+   "size": 1408
+  },
+  "command.txt": {
+   "sha256": "0fa50e7943532107b33ba4c86246f3da562da4a841879855a2859c08dfe91c46",
+   "size": 87
+  },
+  "environment.md": {
+   "sha256": "98226275a57ffdd000f075c36d39848670c5f8fa52d8d0d4f124467d4d9bde12",
+   "size": 202
+  },
+  "logs/output.log": {
+   "sha256": "77ad6e4598e5a07d1b64ae6311ca775f985b214232095d58324d29391997c9be",
+   "size": 1879
+  },
+  "results/summary.txt": {
+   "sha256": "277cc328d8a84d8b5d7a31c0fb78d85a79abae96012c555f56884aaa72cd0f9a",
+   "size": 282
+  }
+ },
+ "previous": {
+  "manifest_sha256": "ba22015ee7b3887697de23ee3901932286f1bb2a3ad0e498be6ae7c8604a4521",
+  "run_id": "2026-11-22_100316Z_desktop-node-ext_311cb8d"
+ },
+ "run": {
+  "area": "security-scan",
+  "branch_or_pr": "",
+  "collected_utc": "",
+  "commit": "9ebb059b92c95225418379cc3ef6e2dd8082b3b8",
+  "count_unit": "",
+  "date_utc": "2026-11-22T10:12:42Z",
+  "dirty": false,
+  "duration_s": 1.2,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_101242Z_security-scan_9ebb059",
+  "kind": "scan",
+  "machine": "cloud",
+  "passed": 1,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "cargo audit of the desktop app after url 2.5.9",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}
