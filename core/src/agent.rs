@@ -609,6 +609,12 @@ pub fn run_turn(
     Ok(end)
 }
 
+/// The shared agent-tool cases (core/tests/vectors/agent_tools.json), also run by the VS Code extension (side track
+/// X2). A child module, so it can test the private argument and path helpers.
+#[cfg(test)]
+#[path = "agent_vectors.rs"]
+mod vectors;
+
 #[cfg(test)]
 mod tests {
     use super::*;

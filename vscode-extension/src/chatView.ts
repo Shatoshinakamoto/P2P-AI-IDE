@@ -1,8 +1,10 @@
 /**
- * chatView.ts -- the P2P-AI chat view in VS Code's side bar (side track X1).
+ * chatView.ts -- the P2P-AI chat view in VS Code's side bar (side track X1, tools X2).
  *
  * Purpose: a chat with the active gateway's models, like the IDE's chat panel: pick a gateway and a model, type,
- * watch the answer stream in, stop it, start a new chat.
+ * watch the answer stream in, stop it, start a new chat. With **Tools** on and a trusted local folder open (X2), the
+ * model can look at the folder and propose edits through the agent tools (./agent/tools.ts); proposals are listed
+ * under "Changes to review" and only written when the person accepts them (./review.ts).
  * Inputs / trust boundary: messages posted by the view's webview (untrusted: allow-listed types, capped text);
  * gateway answers (untrusted: plain text only). Output: requests through GatewayClient; text posted to the webview.
  * Security controls:
@@ -11,15 +13,27 @@
  *  - The webview renders every message with `textContent`, never as HTML (CWE-79).
  *  - The webview never sees the key or the gateway's address; it gets the gateway's name and a dev flag only.
  *  - Messages from the webview are checked by type and size before use (CWE-20, CWE-400).
- * Dependencies: the `vscode` API, ./gateway/client.ts, ./gateways.ts.
+ *  - Tools are off in Restricted Mode and for remote or virtual folders; every tool step is shown in the chat; the
+ *    agent never writes (OWASP LLM01, LLM06; see review.ts).
+ * Dependencies: the `vscode` API, ./gateway/client.ts, ./gateways.ts, ./agent/tools.ts, ./review.ts.
  */
 import * as vscode from "vscode";
 import { GatewayClient } from "./gateway/client.ts";
 import { NetError, modelOk, type Msg } from "./gateway/checks.ts";
 import type { GatewayStore, SavedGateway } from "./gateways.ts";
 import { parseFromView, type FromView } from "./viewMessages.ts";
+import { runTurn, toolDefs } from "./agent/tools.ts";
+import type { ChangeReview } from "./review.ts";
 
 const MODEL_KEY = (id: string): string => `p2pAi.model.${id}`;
+const TOOLS_KEY = "p2pAi.tools";
+
+/** What the view says when the tools can't be used. */
+const BLOCK_TEXT = {
+  untrusted: "Tools are off in Restricted Mode. Trust this folder to let the assistant read it.",
+  no_folder: "Open a folder to let the assistant read it and propose changes.",
+  not_local: "Tools work on local folders only.",
+} as const;
 
 /** A random nonce for the webview's script tag (CSPRNG). */
 function nonce(): string {
@@ -30,15 +44,30 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
   static readonly viewId = "p2pAi.chat";
   private view: vscode.WebviewView | undefined;
   private messages: Msg[] = [];
+  /** What the view shows: the messages plus tool steps, in order (tool steps are never sent to the model). */
+  private display: { role: "user" | "assistant" | "tool"; content: string; ok?: boolean }[] = [];
   private turn: AbortController | undefined;
 
   private readonly ctx: vscode.ExtensionContext;
   private readonly store: GatewayStore;
+  private readonly review: ChangeReview;
 
-  constructor(ctx: vscode.ExtensionContext, store: GatewayStore) {
+  constructor(ctx: vscode.ExtensionContext, store: GatewayStore, review: ChangeReview) {
     this.ctx = ctx;
     this.store = store;
+    this.review = review;
     store.onDidChange(() => this.postState());
+    review.onDidChangeList(() => this.post({ type: "changes", changes: review.views() }));
+  }
+
+  /** The person's Tools switch (on by default). */
+  toolsOn(): boolean {
+    return this.ctx.globalState.get<boolean>(TOOLS_KEY) !== false;
+  }
+
+  async setTools(on: boolean): Promise<void> {
+    await this.ctx.globalState.update(TOOLS_KEY, on);
+    this.postState();
   }
 
   resolveWebviewView(view: vscode.WebviewView): void {
@@ -58,6 +87,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
   newChat(): void {
     this.turn?.abort();
     this.messages = [];
+    this.display = [];
     this.postState();
   }
 
@@ -100,6 +130,17 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
         return this.pickModel();
       case "send":
         return void (await this.send(m.text));
+      case "tools":
+        return this.setTools(m.on);
+      case "review":
+        return void (await this.review.open(m.rel));
+      case "accept": {
+        const err = this.review.accept(m.rel);
+        if (err) this.post({ type: "error", text: err });
+        return;
+      }
+      case "reject":
+        return void this.review.reject(m.rel);
     }
   }
 
@@ -123,6 +164,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
       return { error };
     }
     this.messages.push({ role: "user", content: text });
+    this.display.push({ role: "user", content: text });
     const answer: Msg = { role: "assistant", content: "" };
     this.post({ type: "user", text });
     const turn = new AbortController();
@@ -130,17 +172,39 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
     this.post({ type: "busy", busy: true });
     try {
       const client = new GatewayClient({ url: gw.url, key: await this.store.key(gw.id), caPem: gw.caPem });
-      const end = await client.chatStream(
-        model,
-        this.messages,
-        (t) => {
-          answer.content += t;
-          this.post({ type: "delta", text: t });
-        },
-        turn.signal,
-      );
+      const onText = (t: string): void => {
+        answer.content += t;
+        const last = this.display[this.display.length - 1];
+        if (last?.role === "assistant") last.content += t;
+        else this.display.push({ role: "assistant", content: t });
+        this.post({ type: "delta", text: t });
+      };
+      const ws = this.toolsOn() ? this.review.folder() : undefined;
+      let finish: string | null;
+      if (ws) {
+        // X2: an agent turn. Tool steps are shown as they happen; proposals go to the review list, never to disk.
+        const end = await runTurn(
+          ws,
+          this.review.pending,
+          this.messages,
+          (msgs, onDelta) => client.agentStep(model, msgs, toolDefs(), onDelta, turn.signal),
+          (ev) => {
+            if (ev.kind === "delta") onText(ev.text);
+            else {
+              const line = ev.target ? `${ev.name} ${ev.target}` : ev.name;
+              this.display.push({ role: "tool", content: line, ok: ev.ok });
+              this.post({ type: "tool", text: line, ok: ev.ok });
+              if (ev.name === "edit_file" || ev.name === "create_file") this.review.notify();
+            }
+          },
+          turn.signal,
+        );
+        finish = end.finishReason;
+      } else {
+        finish = (await client.chatStream(model, this.messages, onText, turn.signal)).finishReason;
+      }
       this.messages.push(answer);
-      this.post({ type: "end", finish: end.finishReason });
+      this.post({ type: "end", finish });
       return { answer: answer.content };
     } catch (e) {
       // A stopped or failed turn keeps what arrived, so the chat can go on.
@@ -163,8 +227,16 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
       // INSECURE — DEV ONLY marker for plain http on loopback, shown in the view.
       dev: gw ? gw.url.startsWith("http://") : false,
       model: this.model(gw) ?? null,
-      messages: this.messages,
+      messages: this.display,
       busy: !!this.turn,
+      tools: this.toolsOn(),
+      // Why the tools can't run here (shown under the switch), or null.
+      toolsNote: (() => {
+        const b = this.review.block();
+        return b ? BLOCK_TEXT[b] : null;
+      })(),
+      folder: this.review.block() === undefined ? (vscode.workspace.workspaceFolders?.[0]?.name ?? null) : null,
+      changes: this.review.views(),
     });
   }
 
@@ -194,6 +266,8 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
   <button id="new" type="button" title="New chat">New</button>
 </header>
 <p id="dev" hidden>INSECURE — DEV ONLY: plain http to this computer</p>
+<div id="toolsbar"><label><input id="tools" type="checkbox"> Tools</label> <span id="toolsnote"></span></div>
+<section id="changes" hidden><h2>Changes to review</h2><ul id="changelist"></ul></section>
 <main id="log" aria-live="polite"></main>
 <p id="error" role="alert" hidden></p>
 <form id="form">

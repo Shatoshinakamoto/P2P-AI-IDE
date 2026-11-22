@@ -1,8 +1,9 @@
 /**
- * extension.ts -- entry point of the P2P-AI extension for VS Code and VSCodium (ADR-029 side track X, phase X1).
+ * extension.ts -- entry point of the P2P-AI extension for VS Code and VSCodium (ADR-029 side track X, X1 and X2).
  *
- * Purpose: registers the chat view and the gateway commands:
- *   P2P-AI: Add Gateway, Pick Gateway, Pick Model, Set Gateway Key, Remove Gateway, New Chat.
+ * Purpose: registers the chat view, the diff review of the agent's proposed changes and the commands:
+ *   P2P-AI: Add Gateway, Pick Gateway, Pick Model, Set Gateway Key, Remove Gateway, New Chat,
+ *   Accept Change, Reject Change (the last two also in the diff editor's title bar).
  * Inputs / trust boundary: what the person types into VS Code input boxes and the chat view; gateway answers.
  * Security controls: keys only in SecretStorage and only typed into password input boxes (never echoed, CWE-549);
  * a CA file is read only from a file the person picks, capped and checked (CWE-295); see gateways.ts, chatView.ts
@@ -12,11 +13,22 @@
 import * as vscode from "vscode";
 import { ChatViewProvider } from "./chatView.ts";
 import { GatewayStore, caLooksValid } from "./gateways.ts";
+import { ChangeReview } from "./review.ts";
 
 /** Called by VS Code when the chat view or a P2P-AI command is first used. */
 export function activate(ctx: vscode.ExtensionContext): void {
   const store = new GatewayStore(ctx);
-  const chat = new ChatViewProvider(ctx, store);
+  const review = new ChangeReview(ctx);
+  const chat = new ChatViewProvider(ctx, store, review);
+  // Accept or reject from the diff editor's title bar: the command gets the diff's URI, and only a URI of a pending
+  // change is acted on (SECURITY: no other file can be named this way, CWE-22).
+  const decide = (accept: boolean) => (uri?: vscode.Uri) => {
+    const rel = review.relOf(uri ?? vscode.window.activeTextEditor?.document.uri);
+    if (!rel) return void vscode.window.showWarningMessage("Open a proposed change from the P2P-AI chat first.");
+    if (!accept) return void review.reject(rel);
+    const err = review.accept(rel);
+    if (err) vscode.window.showErrorMessage(err);
+  };
   ctx.subscriptions.push(
     vscode.window.registerWebviewViewProvider(ChatViewProvider.viewId, chat, { webviewOptions: { retainContextWhenHidden: false } }),
     vscode.commands.registerCommand("p2pAi.addGateway", () => addGateway(store)),
@@ -25,6 +37,8 @@ export function activate(ctx: vscode.ExtensionContext): void {
     vscode.commands.registerCommand("p2pAi.setKey", () => setKey(store)),
     vscode.commands.registerCommand("p2pAi.removeGateway", () => removeGateway(store)),
     vscode.commands.registerCommand("p2pAi.newChat", () => chat.newChat()),
+    vscode.commands.registerCommand("p2pAi.acceptChange", decide(true)),
+    vscode.commands.registerCommand("p2pAi.rejectChange", decide(false)),
   );
   // Test hooks for the integration test (tests/integration). SECURITY: registered only when VS Code itself runs
   // the extension in test mode (`--extensionTestsPath`, which a normal install never does) AND the test runner
@@ -35,6 +49,13 @@ export function activate(ctx: vscode.ExtensionContext): void {
       vscode.commands.registerCommand("p2pAi.test.setModel", (m: string) => chat.setModel(String(m))),
       vscode.commands.registerCommand("p2pAi.test.send", (t: string) => chat.send(String(t))),
       vscode.commands.registerCommand("p2pAi.test.gateways", () => store.list().map((g) => ({ name: g.name, url: g.url }))),
+      vscode.commands.registerCommand("p2pAi.test.removeAll", async () => {
+        for (const g of store.list()) await store.remove(g.id);
+      }),
+      vscode.commands.registerCommand("p2pAi.test.setTools", (on: boolean) => chat.setTools(on === true)),
+      vscode.commands.registerCommand("p2pAi.test.changes", () => review.views()),
+      vscode.commands.registerCommand("p2pAi.test.review", (rel: string) => review.open(String(rel))),
+      vscode.commands.registerCommand("p2pAi.test.accept", (rel: string) => review.accept(String(rel)) ?? "ok"),
     );
   }
 }

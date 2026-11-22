@@ -12,3 +12,13 @@ button:hover { background: var(--vscode-button-secondaryHoverBackground); }
 #error { color: var(--vscode-errorForeground); margin: 0 0 6px; }
 textarea { width: 100%; box-sizing: border-box; resize: vertical; background: var(--vscode-input-background); color: var(--vscode-input-foreground); border: 1px solid var(--vscode-input-border, transparent); font-family: inherit; }
 .row { display: flex; justify-content: flex-end; gap: 4px; margin-top: 4px; }
+#toolsbar { margin: 6px 0 0; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+#toolsnote { opacity: 0.8; }
+.tool { font-family: var(--vscode-editor-font-family); font-size: 0.9em; opacity: 0.85; padding: 2px 8px; }
+.tool::before { content: "⚙ "; }
+.tool.failed { color: var(--vscode-errorForeground); }
+#changes h2 { font-size: 1em; margin: 6px 0 4px; }
+#changelist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; max-height: 30vh; overflow-y: auto; }
+#changelist li { display: flex; gap: 4px; align-items: center; }
+#changelist .rel { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#changelist .stat { opacity: 0.8; }

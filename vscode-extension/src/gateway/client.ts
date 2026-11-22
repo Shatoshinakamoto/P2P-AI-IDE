@@ -36,8 +36,10 @@ import {
   checkStatus,
   checkUrl,
   parseModels,
+  addPieces,
   parseSseLine,
   type Msg,
+  type ToolCall,
 } from "./checks.ts";
 
 /** How a streamed turn ended. */
@@ -110,6 +112,31 @@ export class GatewayClient {
     }
     const res = await this.request("POST", "/v1/chat/completions", body, "text/event-stream", CHAT_TIMEOUT_MS, signal);
     return readStream(res, onDelta, signal);
+  }
+
+  /**
+   * One step of an agent turn (phase X2, same as core/src/client.rs `agent_step`): sends `messages` (built and
+   * checked by the agent) with the tool definitions, streams answer text to `onDelta`, and returns the end and any
+   * tool calls.
+   * SECURITY: same transport controls as `chatStream`; the body is capped at 2 MiB; tool calls come back as untrusted
+   * text for the agent to check (CWE-20, CWE-400).
+   */
+  async agentStep(
+    model: string,
+    messages: unknown[],
+    tools: unknown,
+    onDelta: (t: string) => void,
+    signal?: AbortSignal,
+  ): Promise<{ end: StreamEnd; calls: ToolCall[] }> {
+    checkModel(model);
+    const body = JSON.stringify({ model, messages, tools, stream: true });
+    if (Buffer.byteLength(body) > MAX_REQUEST_BYTES) {
+      throw new NetError("bad_request", "the chat and the files read are larger than 2 MiB; start a new chat");
+    }
+    const res = await this.request("POST", "/v1/chat/completions", body, "text/event-stream", CHAT_TIMEOUT_MS, signal);
+    const calls: ToolCall[] = [];
+    const end = await readStream(res, onDelta, signal, calls);
+    return { end, calls };
   }
 
   /** Makes one request to a fixed path on the gateway and checks its status. */
@@ -188,9 +215,15 @@ export async function readCapped(res: NodeJS.ReadableStream, max: number): Promi
 
 /**
  * Reads an SSE body line by line (split out so tests can feed it bytes). Answers without `[DONE]` are kept,
- * as some gateways close early.
+ * as some gateways close early. With `calls`, streamed tool-call pieces are collected into it (phase X2);
+ * without it they are ignored (plain chat).
  */
-export async function readStream(res: NodeJS.ReadableStream, onDelta: (t: string) => void, signal?: AbortSignal): Promise<StreamEnd> {
+export async function readStream(
+  res: NodeJS.ReadableStream,
+  onDelta: (t: string) => void,
+  signal?: AbortSignal,
+  calls?: ToolCall[],
+): Promise<StreamEnd> {
   const end: StreamEnd = { finishReason: null, chars: 0 };
   let total = 0;
   let pending = Buffer.alloc(0);
@@ -215,8 +248,11 @@ export async function readStream(res: NodeJS.ReadableStream, onDelta: (t: string
         return "done";
       case "error":
         throw new NetError("upstream");
+      case "tools":
+        if (calls) addPieces(calls, item.pieces);
+        return undefined; // ignored in a plain chat
       default:
-        return undefined; // tool pieces are ignored in a plain chat
+        return undefined;
     }
   };
   try {

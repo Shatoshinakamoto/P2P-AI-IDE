@@ -1,8 +1,8 @@
 {
   "name": "p2p-ai",
   "displayName": "P2P-AI",
-  "description": "Chat with the models on a P2P-AI gateway from VS Code or VSCodium.",
-  "version": "0.1.0",
+  "description": "Chat with the models on a P2P-AI gateway from VS Code or VSCodium, and let them propose changes to your folder for you to review.",
+  "version": "0.2.0",
   "publisher": "p2p-ai",
   "license": "Apache-2.0",
   "private": true,
@@ -68,15 +68,54 @@
         "command": "p2pAi.newChat",
         "title": "New Chat",
         "category": "P2P-AI"
+      },
+      {
+        "command": "p2pAi.acceptChange",
+        "title": "Accept Change",
+        "category": "P2P-AI",
+        "icon": "$(check)"
+      },
+      {
+        "command": "p2pAi.rejectChange",
+        "title": "Reject Change",
+        "category": "P2P-AI",
+        "icon": "$(discard)"
       }
-    ]
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "p2pAi.acceptChange",
+          "when": "resourceScheme == p2p-ai-review",
+          "group": "navigation@1"
+        },
+        {
+          "command": "p2pAi.rejectChange",
+          "when": "resourceScheme == p2p-ai-review",
+          "group": "navigation@2"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "p2pAi.acceptChange",
+          "when": "resourceScheme == p2p-ai-review"
+        },
+        {
+          "command": "p2pAi.rejectChange",
+          "when": "resourceScheme == p2p-ai-review"
+        }
+      ]
+    }
   },
   "capabilities": {
     "untrustedWorkspaces": {
-      "supported": true,
-      "description": "The extension reads no workspace files in this version."
+      "supported": "limited",
+      "description": "In Restricted Mode the chat works, but the assistant's tools are off: it can't read the folder or propose changes."
     },
-    "virtualWorkspaces": true
+    "virtualWorkspaces": {
+      "supported": "limited",
+      "description": "The assistant's tools work on local folders only."
+    }
   },
   "scripts": {
     "build": "tsc -p .",

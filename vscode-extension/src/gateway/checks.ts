@@ -140,12 +140,41 @@ export function checkStatus(code: number): void {
   throw new NetError("status", code);
 }
 
-/** One streamed piece of a tool call (kept for later phases; X1 only shows text). */
+/** One streamed piece of a tool call (`delta.tool_calls[]`). */
 export interface ToolPiece {
   index: number;
   id: string;
   name: string;
   args: string;
+}
+
+/** A complete tool call the model asked for (phase X2). Untrusted: the agent checks the name and arguments. */
+export interface ToolCall {
+  id: string;
+  name: string;
+  /** The arguments as the JSON text the model wrote. */
+  arguments: string;
+}
+
+/** Most tool calls accepted in one answer, and the largest arguments text of one call (same as the Rust client). */
+export const MAX_TOOL_CALLS = 8;
+export const MAX_TOOL_ARGS_BYTES = 1 << 20;
+
+/**
+ * Adds streamed tool-call pieces to the calls collected so far, by index (same as core/src/client.rs `add_pieces`).
+ * SECURITY: at most 8 calls, ids and names cut to 64 characters, arguments capped at 1 MiB while they stream in
+ * (CWE-400). @throws NetError `too_large`.
+ */
+export function addPieces(calls: ToolCall[], pieces: ToolPiece[]): void {
+  for (const p of pieces) {
+    if (p.index >= MAX_TOOL_CALLS) throw new NetError("too_large");
+    while (calls.length <= p.index) calls.push({ id: "", name: "", arguments: "" });
+    const c = calls[p.index];
+    if (c.id === "" && p.id !== "") c.id = [...p.id].slice(0, 64).join("");
+    if (c.name === "" && p.name !== "") c.name = [...p.name].slice(0, 64).join("");
+    c.arguments += p.args;
+    if (byteLen(c.arguments) > MAX_TOOL_ARGS_BYTES) throw new NetError("too_large");
+  }
 }
 
 /** One parsed server-sent event line. */
