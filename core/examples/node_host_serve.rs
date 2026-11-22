@@ -6,6 +6,8 @@
 //! to a real server built from the editor's VS Code version before it is published and pinned.
 //!
 //! Inputs: `--tgz <file> --sha256 <64 hex> --data <dir> --folder <dir>` (all from the developer's command line).
+//! Phase I6d: add `--electron-zip <file> --electron-sha256 <64 hex>` to run the server with that Electron in Node mode
+//! (the compatibility host), through the same checks as `electron_host::ensure_installed` (hash, safe unzip).
 //! Output: `{"port":…,"token":…,"folder":…,"commit":…,"vscode":…}` on stdout. SECURITY-WARNING: the connection token is
 //! printed for the test harness on this machine only; never run this where stdout is logged or shared (CWE-532).
 //! Security: the archive goes through the same SHA-256 check, safe unpack, folder trust and scrubbed start as a real
@@ -18,6 +20,11 @@ use p2p_ide_core::extensions::ExtStore;
 use p2p_ide_core::node_host::{self, HostError, Launcher, Pin, TrustStore};
 use std::io::Read;
 use std::path::PathBuf;
+
+fn opt(name: &str) -> Option<String> {
+    let args: Vec<String> = std::env::args().collect();
+    args.iter().position(|a| a == name).and_then(|i| args.get(i + 1).cloned())
+}
 
 fn arg(name: &str) -> String {
     let args: Vec<String> = std::env::args().collect();
@@ -57,7 +64,28 @@ fn main() {
     let trust = TrustStore::new(&data);
     trust.set(&folder, true).expect("trust");
     node_host::stage_extensions(&ExtStore::new(data.join("extensions")), &data.join("node-extensions")).expect("stage");
-    let run = node_host::start(&Launcher::for_root(&root), &data, &trust, &folder).expect("start");
+    let launcher = match (opt("--electron-zip"), opt("--electron-sha256")) {
+        (Some(zip), Some(sha)) => {
+            let zip = PathBuf::from(zip);
+            let epin = p2p_ide_core::electron_host::ElectronPin {
+                sha256: Box::leak(sha.into_boxed_str()),
+                ..p2p_ide_core::electron_host::this_pin().expect("an Electron pin for this computer")
+            };
+            let eget = |_url: &str, max: u64| -> Result<Vec<u8>, HostError> {
+                let mut f = std::fs::File::open(&zip).map_err(|_| HostError::Io)?;
+                let mut b = Vec::new();
+                f.by_ref().take(max + 1).read_to_end(&mut b).map_err(|_| HostError::Io)?;
+                if b.len() as u64 > max {
+                    return Err(HostError::TooLarge);
+                }
+                Ok(b)
+            };
+            let exe = p2p_ide_core::electron_host::ensure_installed(&eget, &data, &epin).expect("electron install");
+            p2p_ide_core::electron_host::launcher(&exe, &root)
+        }
+        _ => Launcher::for_root(&root),
+    };
+    let run = node_host::start(&launcher, &data, &trust, &folder).expect("start");
     println!(
         "{}",
         serde_json::json!({

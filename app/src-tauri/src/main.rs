@@ -247,7 +247,8 @@ fn main() {
             nodehost::node_host_status,
             nodehost::node_host_trust,
             nodehost::node_host_start,
-            nodehost::node_host_stop
+            nodehost::node_host_stop,
+            nodehost::node_host_electron
         ])
         .build(tauri::generate_context!())
         .expect("the IDE window could not start")
