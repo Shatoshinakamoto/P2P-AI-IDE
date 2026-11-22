@@ -1,0 +1,11 @@
+id: 2026-11-21_232857Z_core_3e0d986
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: not recorded
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: 0
+duration_s: 16.5
+commit: 3e0d9862c4318359498b473cfa5fd45d75c387d1
+machine: cloud

@@ -27,6 +27,7 @@ mod agent;
 mod ext;
 mod missions;
 mod net;
+mod nodehost;
 mod run;
 mod scm;
 
@@ -113,6 +114,8 @@ async fn pick_folder(app: tauri::AppHandle, state: State<'_, AppState>) -> Resul
     };
     let path = picked.into_path().map_err(|_| WsError::BadRoot.message().to_string())?;
     let ws = Workspace::open(&path).map_err(refuse)?;
+    // SECURITY: the Node extension host serves one folder; opening another ends it (phase I6c, CWE-829).
+    nodehost::stop_all();
     let info = WorkspaceInfo { name: ws.name() };
     *state.workspace.lock().map_err(|_| "internal error".to_string())? = Some(ws);
     // SECURITY: pending agent changes belong to the folder they were proposed in; never carry them over.
@@ -240,8 +243,18 @@ fn main() {
             ext::ext_manifest,
             ext::ext_file,
             ext::ext_set_network,
-            ext::ext_fetch
+            ext::ext_fetch,
+            nodehost::node_host_status,
+            nodehost::node_host_trust,
+            nodehost::node_host_start,
+            nodehost::node_host_stop
         ])
-        .run(tauri::generate_context!())
-        .expect("the IDE window could not start");
+        .build(tauri::generate_context!())
+        .expect("the IDE window could not start")
+        .run(|_, event| {
+            // SECURITY: the Node extension host never outlives the app (phase I6c).
+            if let tauri::RunEvent::Exit = event {
+                nodehost::stop_all();
+            }
+        });
 }

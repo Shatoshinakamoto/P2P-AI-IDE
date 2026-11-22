@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "e06877aae6ee30009dd7020458c94ce73d957f2caa0ef3b4fbedecc6d11ea5dd",
+   "size": 1611
+  },
+  "command.txt": {
+   "sha256": "ae0c92c4aae6aa6d46985de53f4dc295f58d175d7455c01c980da999b596fc20",
+   "size": 159
+  },
+  "environment.md": {
+   "sha256": "0ef9ddd5e1b1a5b12b8874e705367b2151a7064d3518c7e09093af5ba4ed2c44",
+   "size": 202
+  },
+  "logs/output.log": {
+   "sha256": "0de80f60b86d495711bf3a4b942de730a79e479d57f433da21a9ff5bb4a575f0",
+   "size": 2493
+  },
+  "results/summary.txt": {
+   "sha256": "8154e01def900c2cbee716bb37b4bb69db4af923afecc18419e77305e646caa6",
+   "size": 256
+  }
+ },
+ "previous": {
+  "manifest_sha256": "a7408587041c712d2b7b9a8b195821f6c0cfa303a85b996b6449c5dde8d0fbd9",
+  "run_id": "2026-11-21_232914Z_security-scan_3e0d986"
+ },
+ "run": {
+  "area": "security-scan",
+  "branch_or_pr": "claude/project-thread-8u4b8a",
+  "collected_utc": "",
+  "commit": "f363048a371c8d47ef6aa035014e02ead33064c5",
+  "count_unit": "packages",
+  "date_utc": "2026-11-21T23:29:48Z",
+  "dirty": false,
+  "duration_s": 7.9,
+  "exit_code": 0,
+  "failed": 0,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-21_232948Z_security-scan_f363048",
+  "kind": "scan",
+  "machine": "cloud",
+  "passed": 5,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "Finish TandemForge and IDE roadmaps thread",
+  "shortened_logs": [],
+  "skipped": 0,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Phase I6c-1 static checks (re-run after notices update)",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

@@ -2,6 +2,17 @@
 
 Every security patch, hardening change, CVE remediation and accepted risk, newest first.
 
+## 2026-11-21 — Phase I6c-1: Node extension host core (download check, safe unpack, folder trust, local sidecar)
+- **Type:** hardening; accepted risk
+- **CVE / CWE / advisory:** none (new feature). CWE-22, CWE-59, CWE-214, CWE-306, CWE-330, CWE-409, CWE-494, CWE-522, CWE-532, CWE-601, CWE-829, CWE-918; NIST SI-7, AC-3, AC-6, AU-2; SSDF PS.2
+- **Severity:** none (new feature built with these controls). KEV no.
+- **Affected:** `core/src/{node_host,lib}.rs`, `core/Cargo.toml`, `app/src-tauri/src/{nodehost,main}.rs`, both `Cargo.lock` files, `THIRD-PARTY-NOTICES.txt`
+- **What changed:** the core can download the VSCodium server only from a per-OS pin with its SHA-256 (the pin list is empty, so it fails closed until the real files are pinned), from GitHub release hosts only, public addresses only, every redirect checked. The `.tar.gz` is unpacked entry by entry into a fresh folder (no `..`, absolute or drive paths, no links, hard links or devices, size and count caps, owner-only permissions) and renamed into place. The server starts only for a folder in the trust list, on 127.0.0.1 with a 192-bit token passed in a 0600 file, with an environment rebuilt from an allow-list so gateway keys and tokens never reach extensions. One server at most; it stops on folder change, trust removal and app exit.
+- **Why it is secure now:** a tampered download is never used (NIST SI-7, CWE-494); a hostile archive can't write outside its folder (CWE-22, CWE-59, CWE-409); an untrusted folder never runs Node code (CWE-829); other local programs can't drive the server without the token (CWE-306).
+- **Dependency:** `tar` 0.4.46 and `filetime` 0.2.30 added; RustSec scan of both lockfiles found no vulnerabilities (2026-11-21).
+- **Accepted risk:** Node extensions run with the person's own rights, as in VS Code; mitigated by folder trust and installs from Open VSX by the person's action only.
+- **Verification:** HistoryTest runs 2026-11-21_232857Z_core_3e0d986 (93 passed), 2026-11-21_232914Z_security-scan_3e0d986 (failed: stale notices), 2026-11-21_232948Z_security-scan_f363048 (pass).
+
 ## 2026-11-21 — Phase I6b: internet for web extensions through the core, asked per extension
 - **Type:** hardening; accepted risk
 - **CVE / CWE / advisory:** none (new feature). CWE-113, CWE-345, CWE-400, CWE-532, CWE-565, CWE-601, CWE-862, CWE-918; NIST AC-3, SC-7, SC-8, AU-2

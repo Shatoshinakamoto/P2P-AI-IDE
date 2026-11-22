@@ -99,3 +99,7 @@ run_id,date_utc,area,commit,branch_or_pr,machine,verdict,passed,failed,skipped,s
 2026-11-21_231813Z_ui_caf40d4,2026-11-21T23:18:13Z,ui,caf40d4,claude/project-thread-8u4b8a,cloud container,pass,,,,"Phase I6b UI smoke test: internet for web extensions asked once per extension (headless Chromium, shipped CSP)"
 2026-11-21_231829Z_app-unit_caf40d4,2026-11-21T23:18:29Z,app-unit,caf40d4,claude/project-thread-8u4b8a,cloud container,pass,4,0,0,Phase I6b internet consent: app unit tests
 2026-11-21_231829Z_security-scan_caf40d4,2026-11-21T23:18:29Z,security-scan,caf40d4,claude/project-thread-8u4b8a,cloud container,pass,5,0,0,"Phase I6b internet consent static checks: tsc, rustfmt, clippy, cargo audit, npm audit gate, licence notices"
+2026-11-21_232857Z_core_3e0d986,2026-11-21T23:28:57Z,core,3e0d986,claude/project-thread-8u4b8a,cloud container,pass,,,,Phase I6c-1 Node extension host core: unit tests
+2026-11-21_232914Z_security-scan_3e0d986,2026-11-21T23:29:14Z,security-scan,3e0d986,claude/project-thread-8u4b8a,cloud container,fail,5,0,0,"Phase I6c-1 static checks: tsc, rustfmt, clippy, cargo audit, npm audit gate, licence notices"
+2026-11-21_232948Z_security-scan_f363048,2026-11-21T23:29:48Z,security-scan,f363048,claude/project-thread-8u4b8a,cloud container,pass,5,0,0,Phase I6c-1 static checks (re-run after notices update)
+2026-11-22_004243Z_core_48f004d,2026-11-22T00:42:43Z,core,48f004d,PR 20,cloud container,pass,,,,Phase I6c-1 core unit tests after the Windows trust-test fix
