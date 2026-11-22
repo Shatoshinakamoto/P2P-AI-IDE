@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "8e0407c63daa77b209f9782dd7cf309c3916b69d3e7e3864ffcf2f0788cc7b5f",
+   "size": 1565
+  },
+  "command.txt": {
+   "sha256": "4f5e53f9eaf4abf77fa104d8c75f92828e352a0c2645bbac3d49fb61e35d57d4",
+   "size": 83
+  },
+  "environment.md": {
+   "sha256": "d15fe337007947e2a4f4b20f248bb699e56153609aeca1c9f325655786366aa0",
+   "size": 193
+  },
+  "logs/output.log": {
+   "sha256": "f405eea1742bc7181adf813f9d9c6fe119d36cce73970db13eb55ec24f359110",
+   "size": 6488
+  },
+  "results/summary.txt": {
+   "sha256": "d72ed67698ce8592f083e29093cbec9da1934bb1e7894b013036a48286a81d19",
+   "size": 285
+  }
+ },
+ "previous": {
+  "manifest_sha256": "54e593eb822f15f29577a34bfab0b2dc40dede673b1716ca2872d43e9cf20300",
+  "run_id": "2026-11-22_015916Z_core_506f165"
+ },
+ "run": {
+  "area": "core",
+  "branch_or_pr": "claude/project-thread-8u4b8a",
+  "collected_utc": "",
+  "commit": "c727219c84eb42b22b5ed2c150218906c9ada5a4",
+  "count_unit": "",
+  "date_utc": "2026-11-22T04:25:49Z",
+  "dirty": true,
+  "duration_s": 10.8,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_042549Z_core_c727219",
+  "kind": "unit",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "tf-ide-roadmap-thread",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Core unit tests after the I6c-3 version check",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

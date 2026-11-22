@@ -29,8 +29,9 @@ If you have used VS Code, you will feel at home:
 - **Activity bar** (the icons on the far left), top to bottom: Explorer, Search, Source control, Run and test, Agent
   chat, Missions, Gateways, Extensions (themes, grammars, snippets, web extensions and Node extensions from Open VSX; see
   [features/extensions.md](features/extensions.md)). Node extensions run only after you trust the folder in the
-  **Node extensions** panel there and start the Node extension host (downloaded once, about 70 MB; see
-  [features/node-extensions-design.md](features/node-extensions-design.md)).
+  **Node extensions** panel there and start the Node extension host (downloaded once, about 85 MB; see
+  [features/node-extensions-design.md](features/node-extensions-design.md)). In this build the panel says Node
+  extensions can't run yet: they need a Node extension host built from the same VS Code version as the editor.
 - **Side panel** next to it shows the view you picked.
 - **Editor** in the middle, with tabs.
 - **Status bar** at the bottom: the active gateway, where tools run (Tools: Local), the latest message, the

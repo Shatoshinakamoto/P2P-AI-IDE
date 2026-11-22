@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "88fc0487057c4a9e65837dcffb29de38b69070e832d1bb3c03791af48c7bbc54",
+   "size": 1514
+  },
+  "command.txt": {
+   "sha256": "7597f46acbcfa009e3ff718a56a919ba9e774fd681099c655a37c4f6780d060b",
+   "size": 74
+  },
+  "environment.md": {
+   "sha256": "847e5c7d3a021a67849226fe43550838c0af36dd40a93e5937d91aba391fee43",
+   "size": 197
+  },
+  "logs/output.log": {
+   "sha256": "49004c16343661b9946c8fd782bd1cb8e5e05ddf462f84a4c00df4651dab3220",
+   "size": 1189
+  },
+  "results/summary.txt": {
+   "sha256": "add9d3be73f99ae669be1af01c8f8ae407abf639ab42fcefdfcf78750f654986",
+   "size": 251
+  }
+ },
+ "previous": {
+  "manifest_sha256": "997d8d0b20f782d5f8402fefe6c4e5891e89393d2f42c33174c86cad958f5cb1",
+  "run_id": "2026-11-22_042549Z_core_c727219"
+ },
+ "run": {
+  "area": "app-unit",
+  "branch_or_pr": "claude/project-thread-8u4b8a",
+  "collected_utc": "",
+  "commit": "c727219c84eb42b22b5ed2c150218906c9ada5a4",
+  "count_unit": "packages",
+  "date_utc": "2026-11-22T04:26:00Z",
+  "dirty": true,
+  "duration_s": 0.3,
+  "exit_code": 0,
+  "failed": 0,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_042600Z_app-unit_c727219",
+  "kind": "unit",
+  "machine": "cloud",
+  "passed": 8,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "tf-ide-roadmap-thread",
+  "shortened_logs": [],
+  "skipped": 0,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "App unit tests incl. the VS Code version match rule",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

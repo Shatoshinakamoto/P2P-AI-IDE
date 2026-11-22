@@ -1,0 +1,98 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "975dc58c95466d04a695f83c60802ce478c23b23b9fc801615f25fcf2cbf1f65",
+   "size": 3896
+  },
+  "artifacts/node-panel-version-mismatch.jpg": {
+   "sha256": "17a0e1401fe25d713dfdd8231ea3891671a6e05aa4fa7f459a3547cf63107264",
+   "size": 18145
+  },
+  "command.txt": {
+   "sha256": "e81fa55331fcb4d6d448bc004f218184371c79d47173298d6d0c469e6c12b02f",
+   "size": 95
+  },
+  "environment.md": {
+   "sha256": "c05000ccf1c3d626c446ba3ad6b934af45106520d984d7988979907bf2b55d37",
+   "size": 262
+  },
+  "logs/server-logs-excerpt.log": {
+   "sha256": "02108c1accaea86a7098e7ef6fcd32a8156a0ad69313a593866b10e5ca3ecb86",
+   "size": 1773
+  },
+  "projects/input/debug-hook.patch.txt": {
+   "sha256": "dab0bc512fbf54f65146adcdbbaf236f837cc0c8491de50e158dac71351903a7",
+   "size": 744
+  },
+  "projects/input/i6c3-act-probe.js": {
+   "sha256": "b6e8c17e9dac62f73dd4115f914e82f4b440ce65cfc7d80fb79af94b74bf3ad2",
+   "size": 684
+  },
+  "projects/input/i6c3-eval.mjs": {
+   "sha256": "217f757032f75495fa8b6a69a7bfffad2f379484fbc32cedd19492261476792b",
+   "size": 759
+  },
+  "results/results/editor-1.145.2-proxy-ids.txt": {
+   "sha256": "a90d038bcca4aba734f0ad65285cb0b4a074329a6dede757f6a08b71e2cde28c",
+   "size": 3688
+  },
+  "results/results/editor-probes.txt": {
+   "sha256": "2fdcc9e0e6a3a2ff6dd60ac7c6e4cc8de51fb9fc40132443759ce26c29990953",
+   "size": 2217
+  },
+  "results/results/pc-bugs-fixed.txt": {
+   "sha256": "0a3172851deefb4b03a6075d0626cb277cde3ddee38c7510755c1e4dbf9a4b6e",
+   "size": 989
+  },
+  "results/results/proxy-identifier-diff.txt": {
+   "sha256": "adc25e7d3a7153aa70de8442d11b295f8e4a668d4ff34d3ad0561f1de857f4b9",
+   "size": 110
+  },
+  "results/results/server-1.140.06880-proxy-ids.txt": {
+   "sha256": "b42bc1010fcfe29f77605e0d7e01cedd2fc98c6a95b9f644d2281578defcd92e",
+   "size": 3604
+  },
+  "results/results/vscode-tags-proxy-id-lists.txt": {
+   "sha256": "4f40ea2cd5f90405289b4a22d09325b9d786360281a7fc67c6b2c90cbf11b184",
+   "size": 222
+  },
+  "results/summary.txt": {
+   "sha256": "effb726392c2991f8ef8a9349035ff80c47d0e17106691a65afeda13aa197bba",
+   "size": 324
+  }
+ },
+ "previous": {
+  "manifest_sha256": "0d918462171b769edec169ca75bc36b9dbd7fb9324ca4225dca3599951c5d2bc",
+  "run_id": "2026-11-22_042600Z_ui_c727219"
+ },
+ "run": {
+  "area": "node-host",
+  "branch_or_pr": "claude/project-thread-8u4b8a",
+  "collected_utc": "2026-11-22T04:29:52Z",
+  "commit": "c727219",
+  "count_unit": "",
+  "date_utc": "2026-11-22T04:29:52Z",
+  "dirty": false,
+  "duration_s": null,
+  "exit_code": null,
+  "failed": 1,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_042952Z_node-host_c727219",
+  "kind": "manual",
+  "machine": "pc",
+  "passed": 4,
+  "record": "imported",
+  "redactions": {},
+  "requested_by": "tf-ide-roadmap-thread",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Real Node extension in the desktop app on the PC: 3 bugs fixed, version mismatch found, version check verified",
+  "verdict": "partial",
+  "verdict_reason": "partial: the 3 bugs are fixed and the new version check works in the real app, but no Node extension ran."
+ },
+ "schema": 1
+}

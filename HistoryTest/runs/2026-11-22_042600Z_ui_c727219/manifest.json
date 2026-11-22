@@ -1,0 +1,62 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "60ee9d8dd7ffe81405528e32b561f90d4be90ba146d861127bc00468e81fc873",
+   "size": 1752
+  },
+  "command.txt": {
+   "sha256": "bbf9eb17c625d866dffe21ff5ccffb50bace401ba1129922543bb3ea15e6e061",
+   "size": 163
+  },
+  "environment.md": {
+   "sha256": "85ce407d6205d7672be09f97a25c2444b21a93974062be2aa9bae921d47335e7",
+   "size": 191
+  },
+  "logs/output.log": {
+   "sha256": "2571f1c89c117f28a8fb9b8e27365fde5c5d40786c6e18cc29fdfdcf7c802abb",
+   "size": 11494
+  },
+  "results/summary.txt": {
+   "sha256": "db812f6be80a18e2798c729918c2470c96c36b2343895e4829b9f0b349483342",
+   "size": 283
+  }
+ },
+ "previous": {
+  "manifest_sha256": "81d9bcfa470d1e5d2286e66c634e2bd61db23e47c147f065799f17cca17e4c70",
+  "run_id": "2026-11-22_042600Z_app-unit_c727219"
+ },
+ "run": {
+  "area": "ui",
+  "branch_or_pr": "claude/project-thread-8u4b8a",
+  "collected_utc": "",
+  "commit": "c727219c84eb42b22b5ed2c150218906c9ada5a4",
+  "count_unit": "",
+  "date_utc": "2026-11-22T04:26:00Z",
+  "dirty": true,
+  "duration_s": 25.7,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_042600Z_ui_c727219",
+  "kind": "e2e",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {
+   "logs/output.log": {
+    "secret": 3
+   }
+  },
+  "requested_by": "tf-ide-roadmap-thread",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "UI smoke with a mismatched Node host",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

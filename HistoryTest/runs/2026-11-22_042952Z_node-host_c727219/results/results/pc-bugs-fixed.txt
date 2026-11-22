@@ -1,0 +1,10 @@
+Bugs found in the desktop app on the Windows PC during this click-through, fixed on branch claude/project-thread-8u4b8a:
+1. Staging layout (commit 4a24e3c): stage_extensions copied <folder>/extension/, but the store keeps the .vsix's
+   extension/ contents directly in <folder>/. The server listed no user extension. Now the folder itself is copied.
+2. Console window (4a24e3c): node.exe (and container engine calls) opened a visible console window from the
+   windowed app. Now started with CREATE_NO_WINDOW.
+3. Folder path (4a24e3c, 7cade19): canonicalize gave \\?\D:\... paths, so the workspace URI path started with //
+   and every file request failed. The shell now sends the plain path (node_host::editor_folder) and refuses network
+   shares (folder_not_local).
+After 1-3 the server starts cleanly from the app, lists Code Spell Checker 4.10.0 and its 33 built-ins, and the
+editor loads them over vscode-remote-resource. Nothing activates: see editor-probes.txt (version mismatch).

@@ -1,0 +1,11 @@
+id: 2026-11-22_042600Z_app-unit_c727219
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: 8
+failed: 0
+skipped: 0
+count_unit: packages
+exit_code: 0
+duration_s: 0.3
+commit: c727219c84eb42b22b5ed2c150218906c9ada5a4
+machine: cloud
