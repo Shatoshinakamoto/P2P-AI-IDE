@@ -1,0 +1,164 @@
+
+> p2p-ai@0.2.0 test
+> node --test tests/*.test.ts
+
+TAP version 13
+# Subtest: shared: tool definitions and system prompt
+ok 1 - shared: tool definitions and system prompt
+  ---
+  duration_ms: 1.120691
+  type: 'test'
+  ...
+# Subtest: shared: path rules
+ok 2 - shared: path rules
+  ---
+  duration_ms: 0.246321
+  type: 'test'
+  ...
+# Subtest: shared: deny list and path normalising
+ok 3 - shared: deny list and path normalising
+  ---
+  duration_ms: 0.317529
+  type: 'test'
+  ...
+# Subtest: shared: edits, line ranges and line counts
+ok 4 - shared: edits, line ranges and line counts
+  ---
+  duration_ms: 7.019772
+  type: 'test'
+  ...
+# Subtest: shared: argument checks
+ok 5 - shared: argument checks
+  ---
+  duration_ms: 1.926294
+  type: 'test'
+  ...
+# Subtest: workspace refuses links, drive roots and escapes
+ok 6 - workspace refuses links, drive roots and escapes
+  ---
+  duration_ms: 7.261764
+  type: 'test'
+  ...
+# Subtest: workspace caps, binary files and the lost-update check
+ok 7 - workspace caps, binary files and the lost-update check
+  ---
+  duration_ms: 5.656593
+  type: 'test'
+  ...
+# Subtest: edits stay pending until accepted; secrets stay hidden
+ok 8 - edits stay pending until accepted; secrets stay hidden
+  ---
+  duration_ms: 2.531595
+  type: 'test'
+  ...
+# Subtest: a turn runs tools, keeps budgets and stops
+ok 9 - a turn runs tools, keeps budgets and stops
+  ---
+  duration_ms: 1.716297
+  type: 'test'
+  ...
+# Subtest: a turn caps tool results at 1 MiB in total
+ok 10 - a turn caps tool results at 1 MiB in total
+  ---
+  duration_ms: 7.236762
+  type: 'test'
+  ...
+# Subtest: streamed tool calls are assembled by index with caps
+ok 11 - streamed tool calls are assembled by index with caps
+  ---
+  duration_ms: 1.032114
+  type: 'test'
+  ...
+# Subtest: models: key only in Authorization, sorted ids
+ok 12 - models: key only in Authorization, sorted ids
+  ---
+  duration_ms: 12.561376
+  type: 'test'
+  ...
+# Subtest: chat streams text and sends only checked fields
+ok 13 - chat streams text and sends only checked fields
+  ---
+  duration_ms: 3.652144
+  type: 'test'
+  ...
+# Subtest: stop aborts a turn
+ok 14 - stop aborts a turn
+  ---
+  duration_ms: 2.624749
+  type: 'test'
+  ...
+# Subtest: a redirect is not followed and the key goes nowhere else
+ok 15 - a redirect is not followed and the key goes nowhere else
+  ---
+  duration_ms: 2.697546
+  type: 'test'
+  ...
+# Subtest: status codes map to fixed errors without the key or address
+ok 16 - status codes map to fixed errors without the key or address
+  ---
+  duration_ms: 4.236053
+  type: 'test'
+  ...
+# Subtest: caps: a huge model list and an endless stream are cut off
+ok 17 - caps: a huge model list and an endless stream are cut off
+  ---
+  duration_ms: 56.414867
+  type: 'test'
+  ...
+# Subtest: bad inputs are refused before any request
+ok 18 - bad inputs are refused before any request
+  ---
+  duration_ms: 0.393833
+  type: 'test'
+  ...
+# Subtest: an unreachable gateway is a fixed connect error
+ok 19 - an unreachable gateway is a fixed connect error
+  ---
+  duration_ms: 0.927953
+  type: 'test'
+  ...
+# Subtest: webview messages are allow-listed and capped
+ok 20 - webview messages are allow-listed and capped
+  ---
+  duration_ms: 1.748501
+  type: 'test'
+  ...
+# Subtest: a pinned CA is trusted; no pin or another CA is refused
+ok 21 - a pinned CA is trusted; no pin or another CA is refused
+  ---
+  duration_ms: 109.183782
+  type: 'test'
+  ...
+# Subtest: SSE lines
+ok 22 - SSE lines
+  ---
+  duration_ms: 1.935692
+  type: 'test'
+  ...
+# Subtest: model lists and ids
+ok 23 - model lists and ids
+  ---
+  duration_ms: 0.355221
+  type: 'test'
+  ...
+# Subtest: HTTP status
+ok 24 - HTTP status
+  ---
+  duration_ms: 0.269351
+  type: 'test'
+  ...
+# Subtest: URLs, names and keys
+ok 25 - URLs, names and keys
+  ---
+  duration_ms: 0.545964
+  type: 'test'
+  ...
+1..25
+# tests 25
+# suites 0
+# pass 25
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 241.705119

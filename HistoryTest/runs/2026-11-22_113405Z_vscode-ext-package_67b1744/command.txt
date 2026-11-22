@@ -1,0 +1,2 @@
+# run in repository folder `vscode-extension`, as an argument list (no shell)
+sh -c npm run package && unzip -l p2p-ai.vsix && sha256sum p2p-ai.vsix

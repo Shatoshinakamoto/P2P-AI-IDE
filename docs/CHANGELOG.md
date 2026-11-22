@@ -2,6 +2,18 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-22 - Side track X2: agent tools with diff review in the VS Code extension
+
+### Added
+- The extension's chat has a **Tools** switch (on by default). With a trusted local folder open, the model can list, read and search the folder and propose edits and new files, with the same five tools, rules and limits as the IDE's phase I3. Each tool step shows in the chat. Proposals are listed under **Changes to review**: **Review** opens VS Code's read-only diff, and **Accept** (also in the diff's title bar) writes the file with a version check. **Reject** drops the change. New commands: **P2P-AI: Accept Change**, **P2P-AI: Reject Change**. Extension version 0.2.0. Page: [features/vscode-extension.md](features/vscode-extension.md).
+- `core/tests/vectors/agent_tools.json`: shared agent-tool test cases (tool definitions and system prompt byte for byte, path rules, deny list, path normalising, edits with Windows line endings, line ranges, line counts, argument errors). The IDE runs them in `core/src/agent_vectors.rs` and the extension in `tests/agent.test.ts`.
+- `vscode-extension/tests/ui/view-smoke.cjs`: draws the chat view in Chromium with a sample state and checks what it posts.
+
+### Changed
+- The extension declares limited support for Restricted Mode and virtual workspaces: chat works there, tools are off.
+
+Test evidence: HistoryTest `2026-11-22_113321Z_core_67b1744` (core 104 + 7 passed), `2026-11-22_113334Z_vscode-ext-unit_67b1744` (extension 25 of 25), `2026-11-22_113346Z_vscode-ext-integration_67b1744` (real VS Code 1.147.0: pass), `2026-11-22_113352Z_vscode-ext-integration_67b1744` (real VS Code 1.95.0: pass), `2026-11-22_113429Z_vscode-ext-ui_739ab5c` (chat view: pass), `2026-11-22_113405Z_vscode-ext-audit_67b1744` (npm audit: 0), `2026-11-22_113405Z_vscode-ext-package_67b1744` (.vsix 0.2.0 built).
+
 ## 2026-11-22 - Side track X1: P2P-AI extension for VS Code and VSCodium
 
 ### Added

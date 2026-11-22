@@ -2,6 +2,16 @@
 
 Every security patch, hardening change, CVE remediation and accepted risk, newest first.
 
+## 2026-11-22 — Side track X2: agent tools in the VS Code extension
+- **Type:** hardening (new component); accepted risk
+- **CVE / CWE / advisory:** none. CWE-20, CWE-22, CWE-59, CWE-73, CWE-79, CWE-200, CWE-367, CWE-400, CWE-538, CWE-770; OWASP LLM01, LLM06
+- **Severity:** none (new feature). KEV: no.
+- **Affected:** `vscode-extension/src/agent/{workspace,tools}.ts`, `src/review.ts`, `src/chatView.ts`, `src/extension.ts`, `src/viewMessages.ts`, `src/gateway/{checks,client}.ts`, `media/chat.js`, `package.json`; `core/src/agent_vectors.rs` (tests only)
+- **What changed:** the extension's chat can give the model the IDE's five folder tools. They are read-only on disk: edits and new files only become pending changes. A change is written only when the person accepts it, through an atomic write with a SHA-256 version check, so a file changed meanwhile is refused and a new file never replaces one that appeared. The tools run only in a trusted workspace on a local folder. The same deny list as the IDE keeps likely secrets out of reads, listings and search. Paths pass the IDE's allow-list, and links are never followed. Tool arguments are strict JSON, and every budget from the IDE applies. The diff is VS Code's read-only text diff of in-memory documents, and the view can only name a pending change.
+- **Why it is secure now:** human approval for every write (OWASP LLM06, NIST AC-6), least data to the gateway (CWE-200), confinement (CWE-22, CWE-59), and lost-update protection (CWE-367). The shared cases make the IDE and the extension apply the same rules (NIST SI-10).
+- **Accepted risk:** Node has no handle-based file access, so the link check and the open are two steps (TOCTOU, CWE-367). Only a program already running as the person could use the gap, and it can change the files directly. TODO(security) in `workspace.ts`.
+- **Verification:** HistoryTest `2026-11-22_113321Z_core_67b1744` (core 104 + 7 passed), `2026-11-22_113334Z_vscode-ext-unit_67b1744` (25 of 25, including links refused, conflicts and budgets), `2026-11-22_113346Z_vscode-ext-integration_67b1744` and `2026-11-22_113352Z_vscode-ext-integration_67b1744` (real VS Code 1.147.0 and 1.95.0: `.env` refused and never sent, nothing written before Accept, a hand edit not overwritten), `2026-11-22_113405Z_vscode-ext-audit_67b1744` (npm audit: 0).
+
 ## 2026-11-22 — Side track X1: VS Code extension; IPv6 gateway URL check
 - **Type:** hardening (new component); patch (URL check)
 - **CVE / CWE / advisory:** none. CWE-20, CWE-79, CWE-113, CWE-209, CWE-295, CWE-319, CWE-400, CWE-522, CWE-601, CWE-668; GHSA-g3hv-75wg-m249 (minimatch, dev tool only, overridden)

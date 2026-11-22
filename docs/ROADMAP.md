@@ -28,9 +28,9 @@ Last checked against `main` (468ee3b): 2026-11-21.
 
 ## Side tracks
 
-- [ ] **X** VSCodium / VS Code extension ([page](features/vscode-extension.md)). Its own TypeScript gateway client and the IDE's Rust client run the same test cases (`core/tests/vectors/gateway_client.json`), so they behave the same. Phases: X1 chat and gateway picker, X2 local agent tools with diff review, X3 missions
+- [ ] **X** VSCodium / VS Code extension ([page](features/vscode-extension.md)). Its own TypeScript gateway client and agent tools and the IDE's Rust ones run the same test cases (`core/tests/vectors/gateway_client.json`, `agent_tools.json`), so they behave the same. Phases: X1 chat and gateway picker, X2 local agent tools with diff review, X3 missions
   - [x] X1 chat view and gateway picker (2026-11-22; real VS Code 1.95.0 and 1.147.0)
-  - [ ] X2 local agent tools with diff review
+  - [x] X2 local agent tools with diff review (2026-11-22; shared agent-tool test cases with the IDE; real VS Code 1.95.0 and 1.147.0)
   - [ ] X3 missions
 - [ ] **Accounts** Email sign-in on gateways with universal accounts (ADR-030 phase A3, built with the P2P-AI accounts work)
 

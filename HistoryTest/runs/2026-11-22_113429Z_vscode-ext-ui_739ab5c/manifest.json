@@ -1,0 +1,62 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "4508348860e6ee8f3f06432548ea4b648925c19e563ee62ad68f9846a31f6df1",
+   "size": 1819
+  },
+  "artifacts/chat-view-x2.png": {
+   "sha256": "c73ed5dabcbb14389258f15a076e8a67aca65178cd8e81e979ba2646aaf3219e",
+   "size": 41362
+  },
+  "command.txt": {
+   "sha256": "74792843b957f71b9868e89f55f04d2010df02a3133f833893f97ea9ae90eddc",
+   "size": 200
+  },
+  "environment.md": {
+   "sha256": "61b9c77dfa911655a373049f2ead49753509ac2725e767c7abae8918b8614bba",
+   "size": 202
+  },
+  "logs/output.log": {
+   "sha256": "947818f4a97ce0a76d7edbf52831dc6e42e30545911b85753b131a5f8e996575",
+   "size": 72
+  },
+  "results/summary.txt": {
+   "sha256": "5afef07831be492aac9a3448d8d4c07c5e65ee21367efb409f856edee21e39b7",
+   "size": 293
+  }
+ },
+ "previous": {
+  "manifest_sha256": "d3d3ce7fa326e853b73222f3114dcda55c8d6362bef95e0fdb01bbd398357cd0",
+  "run_id": "2026-11-22_113405Z_vscode-ext-package_67b1744"
+ },
+ "run": {
+  "area": "vscode-ext-ui",
+  "branch_or_pr": "claude/project-thread-8u4b8a",
+  "collected_utc": "",
+  "commit": "739ab5c49dca034c0840a0b873bddf4288f95f50",
+  "count_unit": "",
+  "date_utc": "2026-11-22T11:34:29Z",
+  "dirty": false,
+  "duration_s": 0.4,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-22_113429Z_vscode-ext-ui_739ab5c",
+  "kind": "e2e",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "tf-ide-roadmap-finish/X2",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Chat view webview with tool steps and change list (X2)",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

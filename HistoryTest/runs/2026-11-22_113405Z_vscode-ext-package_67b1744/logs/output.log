@@ -1,0 +1,57 @@
+
+> p2p-ai@0.2.0 package
+> npm run build && vsce package --no-dependencies --allow-missing-repository --out p2p-ai.vsix
+
+
+> p2p-ai@0.2.0 build
+> tsc -p .
+
+ INFO  Files included in the VSIX:
+p2p-ai.vsix
+├─ [Content_Types].xml 
+├─ extension.vsixmanifest 
+└─ extension/
+   ├─ LICENSE.txt [11.3 KB]
+   ├─ package.json [3.36 KB]
+   ├─ readme.md 
+   ├─ media/
+   │  ├─ chat.css [2.3 KB]
+   │  ├─ chat.js [5.29 KB]
+   │  └─ icon.svg [0.31 KB]
+   └─ out/
+      ├─ chatView.js [13.74 KB]
+      ├─ extension.js [9.18 KB]
+      ├─ gateways.js [6.94 KB]
+      ├─ review.js [8.09 KB]
+      ├─ viewMessages.js [1.93 KB]
+      ├─ agent/
+      │  ├─ tools.js [20.93 KB]
+      │  └─ workspace.js [18.17 KB]
+      └─ gateway/
+         ├─ checks.js [12.19 KB]
+         └─ client.js [13.1 KB]
+
+ DONE  Packaged: p2p-ai.vsix (17 files, 46.25 KB)
+Archive:  p2p-ai.vsix
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+     2582  2026-11-22 11:34   extension.vsixmanifest
+      516  2026-11-22 11:34   [Content_Types].xml
+    11574  2026-11-22 11:20   extension/LICENSE.txt
+      506  2026-11-22 11:34   extension/readme.md
+     3436  2026-11-22 11:31   extension/package.json
+     2351  2026-11-22 11:31   extension/media/chat.css
+     5415  2026-11-22 11:31   extension/media/chat.js
+      316  2026-11-22 11:16   extension/media/icon.svg
+    14072  2026-11-22 11:34   extension/out/chatView.js
+     9404  2026-11-22 11:34   extension/out/extension.js
+     7110  2026-11-22 11:34   extension/out/gateways.js
+     8284  2026-11-22 11:34   extension/out/review.js
+     1973  2026-11-22 11:34   extension/out/viewMessages.js
+    12485  2026-11-22 11:34   extension/out/gateway/checks.js
+    13416  2026-11-22 11:34   extension/out/gateway/client.js
+    21434  2026-11-22 11:34   extension/out/agent/tools.js
+    18602  2026-11-22 11:34   extension/out/agent/workspace.js
+---------                     -------
+   133476                     17 files
+228b90164e896ac2b6ee5c33fddbf7ad7ad4c8f6bdeba800333a499f0b0e75e3  p2p-ai.vsix

@@ -1,0 +1,11 @@
+id: 2026-11-22_113429Z_vscode-ext-ui_739ab5c
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: not recorded
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: 0
+duration_s: 0.4
+commit: 739ab5c49dca034c0840a0b873bddf4288f95f50
+machine: cloud
