@@ -89,4 +89,6 @@ No new crate or npm package. It uses the person's installed `git`, like the Sour
 
 ## 8. Test evidence
 
-See the `HistoryTest/runs/` folders listed in the 2026-11-23 CHANGELOG entry.
+- PC (Windows): run 1 [2026-11-23_042344Z_ide-core_4bc367d](../../HistoryTest/runs/2026-11-23_042344Z_ide-core_4bc367d/RUN.md) fail (line endings in the test), run 2 [2026-11-23_042344Z_ide-core_5d10b7b](../../HistoryTest/runs/2026-11-23_042344Z_ide-core_5d10b7b/RUN.md) fail (test setup ran the hook; app and shell checks pass), run 3 [2026-11-23_042414Z_ide-core_f256ea5](../../HistoryTest/runs/2026-11-23_042414Z_ide-core_f256ea5/RUN.md) **pass**.
+- Cloud first try: [2026-11-23_040711Z_ide-core_d834367](../../HistoryTest/runs/2026-11-23_040711Z_ide-core_d834367/RUN.md) fail (2, fixed).
+- Not yet tried: the Source Control view by hand against a live gateway with a real agent run.

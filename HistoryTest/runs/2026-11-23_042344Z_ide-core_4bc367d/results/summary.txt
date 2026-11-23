@@ -1,0 +1,11 @@
+id: 2026-11-23_042344Z_ide-core_4bc367d
+verdict: fail
+verdict_reason: not recorded
+passed: 114
+failed: 1
+skipped: not recorded
+count_unit: not recorded
+exit_code: not recorded
+duration_s: not recorded
+commit: 4bc367d
+machine: pc

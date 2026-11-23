@@ -1,0 +1,14 @@
+# D:\p2p-ai-ci\logs\ideac2.txt (PC, Windows), result lines; head 5d10b7b
+core-fmt-exit 0
+core-clippy-exit 0
+thread 'scm::tests::real_git_applies_an_agent_checkpoint' panicked at src\scm.rs:936:9:
+SECURITY: the commit-msg hook must not run
+test result: FAILED. 114 passed; 1 failed; 1 ignored; 0 measured; 0 filtered out; finished in 10.82s
+core-test-exit 101
+npm-ci-exit 0
+tsc-exit 0
+app-test-exit 0
+vite-build-exit 0
+shell-fmt-exit 0
+shell-clippy-exit 0
+shell-test-exit 0

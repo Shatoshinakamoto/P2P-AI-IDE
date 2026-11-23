@@ -159,3 +159,6 @@ run_id,date_utc,area,commit,branch_or_pr,machine,verdict,passed,failed,skipped,s
 2026-11-22_121951Z_core_cf2e079,2026-11-22T12:19:51Z,core,cf2e079,24,cloud container,pass,,,,Core tests after the Windows temp-folder fix in agent_vectors.rs
 2026-11-22_200619Z_desktop-node-ext-electron_cc16e75,2026-11-22T20:06:19Z,desktop-node-ext-electron,cc16e75,#25,user PC (Windows),pass,4,0,,I6d Electron compatibility host in the Windows desktop app
 2026-11-23_040711Z_ide-core_d834367,2026-11-23T04:07:11Z,ide-core,d834367,claude/project-thread-2jylpu,cloud container,fail,4,2,,"IDE core scm tests for agent checkpoints (cloud, first try: 2 failures)"
+2026-11-23_042344Z_ide-core_4bc367d,2026-11-23T04:23:44Z,ide-core,4bc367d,claude/project-thread-2jylpu,user PC (Windows),fail,114,1,,"PC IDE checks for agent commits, run 1: 1 core failure (Windows line endings in the test)"
+2026-11-23_042344Z_ide-core_5d10b7b,2026-11-23T04:23:44Z,ide-core,5d10b7b,claude/project-thread-2jylpu,user PC (Windows),fail,114,1,,"PC IDE checks for agent commits, run 2: 1 core failure (test hook ran in the test's own setup)"
+2026-11-23_042414Z_ide-core_f256ea5,2026-11-23T04:24:14Z,ide-core,f256ea5,claude/project-thread-2jylpu,user PC (Windows),pass,122,0,3,"PC IDE core checks for agent commits, run 3: pass (fmt, clippy, 122 tests)"

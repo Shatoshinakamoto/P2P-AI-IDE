@@ -1,0 +1,10 @@
+# D:\p2p-ai-ci\logs\ideac3.txt (PC, Windows), result lines; head f256ea5
+core-fmt-exit 0
+core-clippy-exit 0
+unittests src\lib.rs: test result: ok. 115 passed; 0 failed; 1 ignored; finished in 10.77s
+tests\discovery.rs: ok. 5 passed
+tests\node_host_real.rs: 0 passed; 1 ignored
+tests\projects.rs: ok. 2 passed
+tests\tandemforge_engine.rs: 0 passed; 1 ignored (needs a running TandemForge backend)
+doc tests: 0
+core-test-exit 0
