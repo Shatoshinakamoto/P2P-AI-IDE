@@ -160,7 +160,7 @@ const fake = () => {
   // Gateways and chats of the fake core. Keys are kept apart, as the OS keychain would, and never returned.
   const gws = []; let active = null; let dirs = []; const pending = new Map(); const keys = new Map(); const chats = new Map(); let nextId = 1;
   const hex = () => (nextId++).toString(16).padStart(16, "0");
-  const view = (g) => ({ id: g.id, name: g.name, url: g.url, kind: g.kind, dev: g.kind !== "tandemforge" && g.url.startsWith("http://"), pinned: false, has_key: keys.has(g.id), account: g.account ?? null });
+  const view = (g) => ({ id: g.id, name: g.name, url: g.url, kind: g.kind, dev: !["tandemforge", "nexus"].includes(g.kind) && g.url.startsWith("http://"), pinned: false, has_key: keys.has(g.id), account: g.account ?? null });
   // Phase A3: account services the fake core remembers. The fake "browser" signs in at once.
   let homes = [];
   const callbacks = new Map(); let cbId = 1;
@@ -242,7 +242,12 @@ exports.activate = async (ctx) => {
         case "gateway_set_active": active = args.id; return null;
         case "gateway_set_key": keys.set(args.id, args.key); return null;
         case "gateway_remove": { const i = gws.findIndex((g) => g.id === args.id); gws.splice(i, 1); keys.delete(args.id); if (active === args.id) active = gws[0]?.id ?? null; return null; }
-        case "gateway_check": if (!keys.has(args.id)) throw "this gateway has no key yet; add one in the Gateways view"; return { latency_ms: 12, models: ["tiny-model", "big-model"] };
+        case "gateway_check": {
+          const g = gws.find((x) => x.id === args.id);
+          if (!g || (!keys.has(args.id) && !g.account && g.kind !== "nexus")) throw "this gateway has no key yet; add one in the Gateways view";
+          if (g.kind === "nexus") return { latency_ms: 2, models: g.name.startsWith("NEXUS Runtime") ? ["nexus-native-3b"] : ["nexus-proxy-model"] };
+          return { latency_ms: 12, models: ["tiny-model", "big-model"] };
+        }
         case "chat_send": {
           const cb = callbacks.get(args.onEvent.id);
           const pieces = ["Hello ", "from the gateway. ", "<img src=x onerror=\"window.__xss=1\">", "\n```js\nconst a = 1;\n```"];
@@ -459,6 +464,35 @@ exports.activate = async (ctx) => {
           if (args.code.trim() !== "tfa_" + "Q".repeat(43)) throw "TandemForge did not accept this code; connect the IDE again in TandemForge";
           const g = { id: hex(), name: "TandemForge (this computer)", url: "http://127.0.0.1:41234", kind: "tandemforge" };
           gws.push(g); keys.set(g.id, args.code.trim()); active = g.id; return { latency_ms: 3, models: ["llama3.2:1b"] };
+        }
+        // NEXUS Engine on this computer: keyless loopback Proxy (11435) and Runtime (11436).
+        case "nexus_status": return {
+          proxy: {
+            service: "nexus-proxy", url: "http://127.0.0.1:11435", running: true,
+            mock_upstream: false, airlock_threshold: 250, active_model_mode: "standard_proxy",
+            artifacts: 2, episodic_memories: 1, models_loaded: null, models_available: null, simd: null,
+            id: gws.find((g) => g.kind === "nexus" && g.name.startsWith("NEXUS Proxy"))?.id ?? null,
+          },
+          runtime: {
+            service: "nexus-runtime", url: "http://127.0.0.1:11436", running: true,
+            mock_upstream: null, airlock_threshold: null, active_model_mode: null,
+            artifacts: null, episodic_memories: null, models_loaded: 1, models_available: 2,
+            simd: "avx2<b>probe</b>",
+            id: gws.find((g) => g.kind === "nexus" && g.name.startsWith("NEXUS Runtime"))?.id ?? null,
+          },
+        };
+        case "nexus_connect": {
+          if (args.role !== "proxy" && args.role !== "runtime") throw "bad input";
+          const p = args.port ?? (args.role === "proxy" ? 11435 : 11436);
+          if (!Number.isInteger(p) || p < 1024 || p > 65535) throw "pick an unprivileged port between 1024 and 65535";
+          const url = `http://127.0.0.1:${p}`;
+          const prefix = args.role === "runtime" ? "NEXUS Runtime" : "NEXUS Proxy";
+          const defPort = args.role === "runtime" ? 11436 : 11435;
+          const name = p === defPort ? `${prefix} (this computer)` : `${prefix} (this computer :${p})`;
+          let g = gws.find((x) => x.kind === "nexus" && (x.url === url || x.name.startsWith(prefix)));
+          if (g) { g.name = name; g.url = url; } else { g = { id: hex(), name, url, kind: "nexus" }; gws.push(g); }
+          active = g.id;
+          return { latency_ms: 2, models: args.role === "runtime" ? ["nexus-native-3b"] : ["nexus-proxy-model"] };
         }
         default: throw "unknown command";
       }
@@ -981,6 +1015,48 @@ try {
   check("the loopback TandemForge entry is not marked INSECURE and has no key or CA buttons", !/INSECURE/.test(tfText) && (await tfRow.getByRole("button", { name: /key|CA/i }).count()) === 0, tfText.replace(/\s+/g, " "));
   await page.screenshot({ path: process.env.SHOT_TF ?? join(here, "..", "ui-smoke-tf.png") });
 
+  // NEXUS Engine on this computer: Proxy + Runtime, XSS-safe telemetry, custom port check, Chat & Missions UX.
+  const nx = page.getByRole("region", { name: "NEXUS Engine on this computer" });
+  await nx.getByText(/airlock 250 tok/).waitFor();
+  check("NEXUS telemetry shows as text (no element from simd string)", (await nx.locator("b").count()) === 0 && /avx2<b>probe<\/b>/.test(await nx.innerText()));
+  await nx.getByRole("button", { name: "Connect Proxy" }).click();
+  const savedList = page.getByRole("list", { name: "Saved gateways" });
+  const nxProxyRow = savedList.locator("li", { hasText: "NEXUS Proxy (this computer)" });
+  await nxProxyRow.waitFor();
+  const nxProxyText = await nxProxyRow.innerText();
+  check("connected NEXUS Proxy shows as local engine without key, INSECURE flag, or CA/account buttons",
+    /NEXUS Engine/.test(nxProxyText) && /local engine \(no key needed\)/.test(nxProxyText) && !/INSECURE/.test(nxProxyText) && (await nxProxyRow.getByRole("button", { name: /key|CA|account/i }).count()) === 0,
+    nxProxyText.replace(/\s+/g, " "));
+  await nx.getByRole("button", { name: "Custom local port" }).click();
+  await nx.getByLabel("NEXUS Engine local port").fill("80");
+  await nx.getByRole("button", { name: "Connect as Runtime" }).click();
+  await nx.getByText(/between 1024 and 65535/).waitFor();
+  check("NEXUS custom privileged port (<1024) is refused cleanly", true);
+  await nx.getByLabel("NEXUS Engine local port").fill("12436");
+  await nx.getByRole("button", { name: "Connect as Runtime" }).click();
+  const nxRtRow = savedList.locator("li", { hasText: "NEXUS Runtime (this computer :12436)" });
+  await nxRtRow.waitFor();
+  await page.getByRole("button", { name: "Missions: Autopilot and Auto Improve", exact: true }).click();
+  await page.getByText(/is a local model engine on this computer/).waitFor();
+  check("Missions with NEXUS Engine shows local-engine guidance instead of missing-key prompt", true);
+  await page.getByRole("button", { name: "Agent chat", exact: true }).click();
+  await page.getByLabel("Model").locator("option", { hasText: "nexus-native-3b" }).waitFor({ state: "attached" });
+  const nxToolsBtn = page.getByRole("button", { name: "Tools", exact: true });
+  if ((await nxToolsBtn.getAttribute("aria-pressed")) !== "true") await nxToolsBtn.click();
+  await page.getByText(/NEXUS Runtime supports chat only/).waitFor();
+  await nxToolsBtn.click();
+  await page.getByLabel("Message", { exact: true }).fill("hello nexus");
+  await page.keyboard.press("Control+Enter");
+  await page.getByRole("log", { name: "Messages" }).getByText("hello nexus").waitFor();
+  await page.getByRole("button", { name: "Stop" }).waitFor({ state: "detached" });
+  check("NEXUS Runtime loads models, warns Tools is chat-only, and chats without an API key", true);
+  await page.getByRole("button", { name: "Gateways", exact: true }).click();
+  for (const label of ["NEXUS Proxy (this computer)", "NEXUS Runtime (this computer :12436)"]) {
+    await page.getByRole("button", { name: `Remove ${label}` }).click();
+    await page.getByRole("button", { name: `Click again to remove ${label}` }).click();
+  }
+  await page.getByRole("list", { name: "Saved gateways" }).locator("li").first().getByRole("radio").check();
+
   // Phase A3: sign in with a P2P-AI account, replace the one-time password, link a gateway, sign out.
   const ap = page.getByRole("region", { name: "P2P-AI accounts" });
   await ap.getByLabel("Account service address").fill("accounts.example.org");
@@ -1013,6 +1089,30 @@ try {
   await firstRow.getByRole("button", { name: "Link" }).click();
   await firstRow.getByText(/account dana@example.org/).waitFor();
   check("the gateway card shows it signs in with the account", (await firstRow.getByRole("button", { name: "Use key instead" }).count()) === 1);
+  // Regression test: an account-linked gateway with NO saved API key (has_key === false) must load models in Chat and open Missions.
+  await page.getByRole("button", { name: "Add gateway" }).click();
+  await page.getByLabel("Gateway name").fill("AcctOnly");
+  await page.getByLabel("Gateway address").fill("https://acct.example.org");
+  await page.getByLabel("Gateway key").fill("");
+  await page.getByRole("button", { name: "Add by address" }).click();
+  const acctRow = page.getByRole("list", { name: "Saved gateways" }).locator("li", { hasText: "AcctOnly" });
+  await acctRow.getByText("no key").waitFor();
+  await acctRow.getByRole("button", { name: "Use account" }).click();
+  await acctRow.getByLabel("Account id of AcctOnly").fill("gw-example-01");
+  await acctRow.getByRole("button", { name: "Link" }).click();
+  await acctRow.getByText(/account dana@example.org/).waitFor();
+  await acctRow.getByRole("radio").check();
+  await page.getByRole("button", { name: "Agent chat", exact: true }).click();
+  await page.getByLabel("Model").locator("option", { hasText: "tiny-model" }).waitFor({ state: "attached" });
+  check("account-linked gateway without an API key loads models in Chat", !(await page.getByLabel("Model").innerText()).includes("add a key"));
+  await page.getByRole("button", { name: "Missions: Autopilot and Auto Improve", exact: true }).click();
+  await page.getByRole("button", { name: /Send folder to the project|Create project and link/ }).waitFor();
+  check("account-linked gateway without an API key opens Missions instead of asking for a key", true);
+  await page.getByRole("button", { name: "Gateways", exact: true }).click();
+  await page.getByRole("button", { name: "Remove AcctOnly" }).click();
+  await page.getByRole("button", { name: "Click again to remove AcctOnly" }).click();
+  await acctRow.waitFor({ state: "detached" });
+  await page.getByRole("list", { name: "Saved gateways" }).locator("li").first().getByRole("radio").check();
   await page.screenshot({ path: process.env.SHOT_ACCT ?? join(here, "..", "ui-smoke-accounts.png") });
   await ap.getByRole("button", { name: "Sign out" }).click();
   await ap.getByLabel("Account service address").waitFor();

@@ -229,7 +229,7 @@ pub fn parse_sse_line(line: &str) -> Result<SseItem, NetError> {
 /// A client bound to one gateway and its key.
 pub struct Client {
     pub(crate) base: String,
-    key: String,
+    key: Option<String>,
     pub(crate) short: ureq::Agent,
     pub(crate) long: ureq::Agent,
 }
@@ -242,9 +242,16 @@ impl std::fmt::Debug for Client {
 }
 
 impl Client {
-    /// Builds a client. `key` comes from the keychain; a gateway without a key cannot be used.
+    /// Builds a client. `key` comes from the keychain, except local NEXUS Engine instances run keyless on 127.0.0.1.
     pub fn new(gw: &Gateway, key: Option<String>) -> Result<Client, NetError> {
-        let key = key.ok_or(NetError::NoKey)?;
+        let key = match key {
+            Some(k) => Some(k),
+            None if gw.kind == crate::gateways::Kind::Nexus && crate::nexus::is_engine_url(&gw.url) => None,
+            None => return Err(NetError::NoKey),
+        };
+        if gw.kind == crate::gateways::Kind::Nexus && !crate::nexus::is_engine_url(&gw.url) {
+            return Err(NetError::BadRequest("NEXUS Engine may run only on 127.0.0.1"));
+        }
         let roots = match &gw.ca_pem {
             Some(pem) => {
                 let certs = ureq::tls::parse_pem(pem.as_bytes())
@@ -292,17 +299,18 @@ impl Client {
         })
     }
 
-    pub(crate) fn auth(&self) -> String {
-        format!("Bearer {}", self.key)
+    pub(crate) fn authorize<B>(&self, req: ureq::RequestBuilder<B>) -> ureq::RequestBuilder<B> {
+        match &self.key {
+            Some(k) => req.header("Authorization", format!("Bearer {k}")),
+            None => req,
+        }
     }
 
     /// Lists the gateway's model ids and the round-trip time in milliseconds.
     pub fn models(&self) -> Result<(Vec<String>, u64), NetError> {
         let t0 = Instant::now();
         let resp = self
-            .short
-            .get(format!("{}/v1/models", self.base))
-            .header("Authorization", self.auth())
+            .authorize(self.short.get(format!("{}/v1/models", self.base)))
             .header("Accept", "application/json")
             .call()
             .map_err(map_ureq)?;
@@ -335,9 +343,7 @@ impl Client {
             return Err(NetError::BadRequest("the chat is larger than 2 MiB; start a new chat"));
         }
         let resp = self
-            .long
-            .post(format!("{}/v1/chat/completions", self.base))
-            .header("Authorization", self.auth())
+            .authorize(self.long.post(format!("{}/v1/chat/completions", self.base)))
             .header("Content-Type", "application/json")
             .header("Accept", "text/event-stream")
             .send(body.as_bytes())
@@ -367,9 +373,7 @@ impl Client {
             return Err(NetError::BadRequest("the chat and the files read are larger than 2 MiB; start a new chat"));
         }
         let resp = self
-            .long
-            .post(format!("{}/v1/chat/completions", self.base))
-            .header("Authorization", self.auth())
+            .authorize(self.long.post(format!("{}/v1/chat/completions", self.base)))
             .header("Content-Type", "application/json")
             .header("Accept", "text/event-stream")
             .send(body.as_bytes())
@@ -706,5 +710,22 @@ mod tests {
         let mut g = gw("https://gw.example.org");
         g.ca_pem = Some("not a pem file".into());
         assert_eq!(Client::new(&g, Some("p2p_test_key_123".into())).unwrap_err(), NetError::Tls);
+    }
+
+    #[test]
+    fn nexus_client_allows_keyless_loopback_and_omits_authorization() {
+        let mut bad = gw("https://gw.example.org");
+        bad.kind = crate::gateways::Kind::Nexus;
+        assert!(Client::new(&bad, None).is_err());
+
+        let (base, handle) = fake("200 OK", r#"{"data":[{"id":"qwen3:8b"}]}"#.into());
+        let mut nxgw = gw(&base);
+        nxgw.kind = crate::gateways::Kind::Nexus;
+        let client = Client::new(&nxgw, None).unwrap();
+        let (models, _) = client.models().unwrap();
+        assert_eq!(models, vec!["qwen3:8b"]);
+        let raw = handle.join().unwrap();
+        let headers_lower = raw.to_ascii_lowercase();
+        assert!(!headers_lower.contains("authorization:"), "unexpected auth header in {raw}");
     }
 }

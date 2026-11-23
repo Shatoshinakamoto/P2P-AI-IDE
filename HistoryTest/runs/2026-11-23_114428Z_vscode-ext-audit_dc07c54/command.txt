@@ -1,0 +1,2 @@
+# run in repository folder `.`, as an argument list (no shell)
+python3 scripts/npm_audit_gate.py vscode-extension

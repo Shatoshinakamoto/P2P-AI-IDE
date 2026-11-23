@@ -141,6 +141,10 @@ export class MissionsViewProvider implements vscode.WebviewViewProvider {
       out.folder = folderKey(ws.root);
       if (gw) out.link = this.links().find((l) => l.folder === out.folder && l.gateway_id === gw.id);
     }
+    if (gw?.kind === "nexus") {
+      out.block = `${gw.name} runs locally on this computer; use Chat for local models (Missions run on a remote P2P-AI gateway).`;
+      return out;
+    }
     if (gw) {
       try {
         out.client = new GatewayClient(await this.store.target(gw));

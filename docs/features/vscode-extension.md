@@ -188,6 +188,11 @@ To use a P2P-AI account instead of a key (A3): run **P2P-AI: Sign In with a P2P-
 service address and finish in your browser (change the one-time password if asked), then run **P2P-AI: Use a P2P-AI
 Account for a Gateway**, pick the gateway and the account, and type the gateway's account id.
 
+To use a local NEXUS Engine without a key: run **P2P-AI: Connect NEXUS Engine** (`p2pAi.connectNexus`) to connect
+**NEXUS Proxy** (`127.0.0.1:11435`, Agent chat + Context Packer + Airlock) or **NEXUS Runtime** (`127.0.0.1:11436`,
+native `.nexus` chat), discovering ports from `~/.nexus-studio/studio-settings.json` or accepting a custom `127.0.0.1`
+port (`1024-65535`). See [features/nexus-engine.md](nexus-engine.md).
+
 For missions (X3): in the **Missions** view click **Pick a project** (or type a name and **Create project**), then
 **Send folder to the project**. Tick **Autopilot** (or **Auto Improve**), type a goal, pick a model and click
 **Start**. When it asks to run a command, read the arguments and click **Approve** or **Reject**. When it is done,

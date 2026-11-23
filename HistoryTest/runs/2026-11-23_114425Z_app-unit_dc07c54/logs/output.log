@@ -1,0 +1,60 @@
+npm notice run p2p-ai-ide@0.1.0 test
+npm notice run node --test tests/*.test.ts
+TAP version 13
+# Subtest: baseName and dirName split on /
+ok 1 - baseName and dirName split on /
+  ---
+  duration_ms: 1.323312
+  type: 'test'
+  ...
+# Subtest: crumbs
+ok 2 - crumbs
+  ---
+  duration_ms: 1.17787
+  type: 'test'
+  ...
+# Subtest: languageFor maps extensions and names
+ok 3 - languageFor maps extensions and names
+  ---
+  duration_ms: 0.260117
+  type: 'test'
+  ...
+# Subtest: sizeLabel
+ok 4 - sizeLabel
+  ---
+  duration_ms: 0.436938
+  type: 'test'
+  ...
+# Subtest: minorOf keeps major.minor
+ok 5 - minorOf keeps major.minor
+  ---
+  duration_ms: 1.615857
+  type: 'test'
+  ...
+# Subtest: minorOf refuses what isn't a version
+ok 6 - minorOf refuses what isn't a version
+  ---
+  duration_ms: 0.399216
+  type: 'test'
+  ...
+# Subtest: sameMinor matches only the same minor version
+ok 7 - sameMinor matches only the same minor version
+  ---
+  duration_ms: 0.311007
+  type: 'test'
+  ...
+# Subtest: sameMinor fails closed on bad input
+ok 8 - sameMinor fails closed on bad input
+  ---
+  duration_ms: 0.188782
+  type: 'test'
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 398.136011

@@ -130,6 +130,8 @@ TandemForge on this computer (phase I7) is a third kind of entry, added with **P
 | "the system keychain could not store or read the key" | Linux: start GNOME Keyring or KWallet |
 | "that folder has no gateway setup" | pick the folder where the desktop app ran Set up (it has `.env` and `tls/ca/ca.pem`) |
 
+* Account-linked gateways (`gateway.account !== null`) and keyless local NEXUS Engine gateways (`kind: "nexus"`) load models and chat without requiring a manually stored API key. For local NEXUS Proxy and Runtime discovery, health checks, and controls, see [features/nexus-engine.md](nexus-engine.md).
+
 ## 8. Test evidence
 
 * [Core: fmt, clippy, 31 tests incl. a loopback fake gateway](../../HistoryTest/runs/2026-11-17_062006Z_core_bd2763f/RUN.md)

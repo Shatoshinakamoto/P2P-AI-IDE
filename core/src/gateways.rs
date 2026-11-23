@@ -51,6 +51,9 @@ pub enum Kind {
     /// TandemForge running on this computer (phase I7): always `http://127.0.0.1:<port>`, the port re-read from
     /// TandemForge's engine file before each use (see tandemforge.rs).
     TandemForge,
+    /// NEXUS Engine running on this computer (nexus-proxy or nexus-runtime): always `http://127.0.0.1:<port>`
+    /// without an API key (see nexus.rs).
+    Nexus,
 }
 
 /// One saved gateway. `ca_pem` is the pinned trust root when present.
@@ -72,7 +75,7 @@ impl Gateway {
     /// True for a plain-http loopback URL typed in by hand (INSECURE — DEV ONLY). TandemForge on this computer is
     /// plain http on loopback by design (a local process, nothing leaves the computer), so it is not flagged.
     pub fn dev(&self) -> bool {
-        self.url.starts_with("http://") && self.kind != Kind::TandemForge
+        self.url.starts_with("http://") && !matches!(self.kind, Kind::TandemForge | Kind::Nexus)
     }
 }
 
@@ -318,11 +321,15 @@ impl GatewayStore {
             let ok = store::id_ok(&g.id)
                 && check_name(&g.name).is_ok()
                 && check_url(&g.url).as_deref() == Ok(g.url.as_str())
-                // SECURITY: a TandemForge entry may only ever point at 127.0.0.1 (NIST SC-7).
+                // SECURITY: a TandemForge or NEXUS Engine entry may only ever point at 127.0.0.1 (NIST SC-7).
                 && (g.kind != Kind::TandemForge || crate::tandemforge::is_engine_url(&g.url))
+                && (g.kind != Kind::Nexus || crate::nexus::is_engine_url(&g.url))
                 && g.ca_pem.as_deref().map(|c| check_ca(c).is_ok()).unwrap_or(true)
-                // SECURITY: an account link is re-checked too; TandemForge on this computer never takes one (A3).
-                && g.account.as_ref().map(|a| a.valid() && g.kind != Kind::TandemForge).unwrap_or(true);
+                // SECURITY: an account link is re-checked too; local engines on this computer never take one (A3).
+                && g.account
+                    .as_ref()
+                    .map(|a| a.valid() && !matches!(g.kind, Kind::TandemForge | Kind::Nexus))
+                    .unwrap_or(true);
             if !ok {
                 return Err(GwError::Store(StoreError::Bad));
             }
@@ -458,6 +465,72 @@ impl GatewayStore {
         self.save(&list)
     }
 
+    /// Saves (or updates) a NEXUS Engine entry on this computer (`nexus-proxy` or `nexus-runtime`) and makes it active.
+    /// No API key is stored; local NEXUS Engine instances authenticate by loopback binding only (`127.0.0.1`).
+    ///
+    /// Security: `url` must pass [`crate::nexus::is_engine_url`] (loopback only, NIST SC-7, CWE-918), and
+    /// existing entries with matching URL or service role prefix are updated rather than duplicated.
+    pub fn save_nexus(&self, url: &str, name: &str) -> Result<String, GwError> {
+        if !crate::nexus::is_engine_url(url) {
+            return Err(GwError::BadUrl);
+        }
+        let name = check_name(name)?;
+        let role_prefix = if name.starts_with("NEXUS Runtime") {
+            "NEXUS Runtime"
+        } else if name.starts_with("NEXUS Proxy") {
+            "NEXUS Proxy"
+        } else {
+            ""
+        };
+        let mut list = self.load()?;
+        if list.gateways.iter().any(|g| g.url == url && g.kind != Kind::Nexus) {
+            return Err(GwError::Duplicate);
+        }
+        let id = match list.gateways.iter_mut().find(|g| {
+            g.kind == Kind::Nexus && (g.url == url || (!role_prefix.is_empty() && g.name.starts_with(role_prefix)))
+        }) {
+            Some(g) => {
+                g.name = name;
+                g.url = url.to_string();
+                g.ca_pem = None;
+                g.account = None;
+                g.id.clone()
+            }
+            None => {
+                if list.gateways.len() >= MAX_GATEWAYS {
+                    return Err(GwError::TooMany);
+                }
+                let id = store::new_id();
+                list.gateways.push(Gateway {
+                    id: id.clone(),
+                    name,
+                    url: url.to_string(),
+                    kind: Kind::Nexus,
+                    ca_pem: None,
+                    account: None,
+                });
+                id
+            }
+        };
+        list.active = Some(id.clone());
+        self.save(&list)?;
+        Ok(id)
+    }
+
+    /// Points a saved NEXUS Engine entry at its verified loopback URL.
+    pub fn set_nexus_url(&self, id: &str, url: &str) -> Result<(), GwError> {
+        if !crate::nexus::is_engine_url(url) {
+            return Err(GwError::BadUrl);
+        }
+        let mut list = self.load()?;
+        let g = list.gateways.iter_mut().find(|g| g.id == id && g.kind == Kind::Nexus).ok_or(GwError::NotFound)?;
+        if g.url == url {
+            return Ok(());
+        }
+        g.url = url.to_string();
+        self.save(&list)
+    }
+
     /// Replaces (or with `None`, removes) the pinned CA of a gateway.
     pub fn set_ca(&self, id: &str, ca_pem: Option<&str>) -> Result<(), GwError> {
         let ca = ca_pem.map(check_ca).transpose()?;
@@ -475,7 +548,7 @@ impl GatewayStore {
         }
         let mut list = self.load()?;
         let g = list.gateways.iter_mut().find(|g| g.id == id).ok_or(GwError::NotFound)?;
-        if g.kind == Kind::TandemForge && link.is_some() {
+        if matches!(g.kind, Kind::TandemForge | Kind::Nexus) && link.is_some() {
             return Err(GwError::BadUrl);
         }
         g.account = link;
@@ -716,5 +789,37 @@ mod account_link_tests {
         let l2 = AccountLink::new("https://accounts.example.org", "gw-example-01").unwrap();
         assert_eq!(s2.set_account(&tf, Some(l2)), Err(GwError::BadUrl));
         let _ = std::fs::remove_dir_all(&dir2);
+    }
+
+    #[test]
+    fn nexus_entries_stay_on_loopback_without_accounts_or_dev_flag() {
+        let dir = std::env::temp_dir().join(format!("gw-nexus-{}", store::new_id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let s = GatewayStore::new(&dir);
+        assert_eq!(s.save_nexus("http://10.0.0.5:11435", "NEXUS Proxy (this computer)"), Err(GwError::BadUrl));
+        assert_eq!(s.save_nexus("http://127.0.0.1:80", "NEXUS Proxy (this computer)"), Err(GwError::BadUrl));
+
+        let proxy_id = s.save_nexus("http://127.0.0.1:11435", "NEXUS Proxy (this computer)").unwrap();
+        let runtime_id = s.save_nexus("http://127.0.0.1:11436", "NEXUS Runtime (this computer)").unwrap();
+        assert_ne!(proxy_id, runtime_id);
+        let list = s.load().unwrap();
+        assert_eq!(list.gateways.len(), 2);
+        assert_eq!(list.active.as_deref(), Some(runtime_id.as_str()));
+
+        // Updating Proxy port reuses the Proxy entry rather than duplicating it.
+        let proxy_again = s.save_nexus("http://127.0.0.1:12435", "NEXUS Proxy (this computer :12435)").unwrap();
+        assert_eq!(proxy_id, proxy_again);
+        assert_eq!(s.load().unwrap().gateways.len(), 2);
+
+        let gp = s.get(&proxy_id).unwrap();
+        assert_eq!((gp.kind, gp.url.as_str(), gp.dev()), (Kind::Nexus, "http://127.0.0.1:12435", false));
+        let acct = AccountLink::new("https://accounts.example.org", "gw-example-01").unwrap();
+        assert_eq!(s.set_account(&proxy_id, Some(acct)), Err(GwError::BadUrl));
+
+        // An edited list file pointing a Kind::Nexus entry off 127.0.0.1 is refused on open.
+        let text = std::fs::read_to_string(dir.join(FILE)).unwrap().replace("127.0.0.1:12435", "localhost:12435");
+        std::fs::write(dir.join(FILE), text).unwrap();
+        assert!(s.load().is_err());
+        let _ = std::fs::remove_dir_all(&dir);
     }
 }

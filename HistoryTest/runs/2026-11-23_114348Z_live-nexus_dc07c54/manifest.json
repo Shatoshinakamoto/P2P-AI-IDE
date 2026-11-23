@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "8487963d722282f456489fd3efc955316fc187459f6d1b0b70fbadd9e7e45894",
+   "size": 1634
+  },
+  "command.txt": {
+   "sha256": "785a15212bdb547dec2ab291631d88c5c4b54c5636e0a119431247b24d932501",
+   "size": 168
+  },
+  "environment.md": {
+   "sha256": "2ff709bd137f47555519b1c5cc254a708eddf87c7fbc4306451acbe0df320a72",
+   "size": 190
+  },
+  "logs/output.log": {
+   "sha256": "e848650faae27b90db139e81c272b4f06a8a6eccfa66bdf0f147afbd811b4161",
+   "size": 2479
+  },
+  "results/summary.txt": {
+   "sha256": "c6cc5382936ce77ccec958bcc731abe1dbdda5aea7b3763725d6bbf3cdc83778",
+   "size": 290
+  }
+ },
+ "previous": {
+  "manifest_sha256": "921483b7fbceddefb9cd60cb988a4138459ca2c517470e5574e17ea2ae00540e",
+  "run_id": "2026-11-23_114345Z_core_dc07c54"
+ },
+ "run": {
+  "area": "live-nexus",
+  "branch_or_pr": "",
+  "collected_utc": "",
+  "commit": "dc07c54892d791b3739a3fa897566a292ca8d58a",
+  "count_unit": "",
+  "date_utc": "2026-11-23T11:43:48Z",
+  "dirty": true,
+  "duration_s": 3.0,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-23_114348Z_live-nexus_dc07c54",
+  "kind": "e2e",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Live NEXUS Engine E2E against real nexus-proxy and nexus-runtime",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

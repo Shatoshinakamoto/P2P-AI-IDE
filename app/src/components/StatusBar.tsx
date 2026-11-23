@@ -32,7 +32,7 @@ export function StatusBar({ line, col, language, notice, gateway, onGateway, swi
           {gateway?.dev ? <span className="ml-1 flex items-center gap-0.5 rounded bg-[#5a1d1d] px-1"><ShieldAlert size={11} aria-hidden />INSECURE — DEV ONLY</span> : null}
         </button>
       </Tip>
-      <Tip text="Where the agent's tools run: Local (this folder) or Gateway (the gateway's copy). Arrives with the agent in phase I3.">
+      <Tip text="Where the Agent chat's tools run: Local (this folder, with your review before edits or commands run).">
         <button type="button" disabled aria-disabled className={`${item} opacity-90`}><Wrench size={13} aria-hidden />Tools: Local</button>
       </Tip>
       <span role="status" aria-live="polite" className="truncate px-2">{notice}</span>

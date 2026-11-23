@@ -18,6 +18,7 @@ import {
 } from "../ipc.ts";
 import { AccountsPanel } from "./AccountsPanel.tsx";
 import { PublicGateways } from "./PublicGateways.tsx";
+import { NexusConnect } from "./NexusConnect.tsx";
 import { TandemForgeConnect } from "./TandemForgeConnect.tsx";
 import { Tip } from "./Tip.tsx";
 
@@ -109,7 +110,7 @@ export function NetworkView({ onChanged, onNotice }: Props) {
               <label className="flex items-center gap-2">
                 <input type="radio" name="active-gateway" checked={list.active === g.id} onChange={() => void act(() => gatewaySetActive(g.id), `Using ${g.name}`)} />
                 <span className="truncate font-semibold text-ide-bright">{g.name}</span>
-                <span className="ml-auto text-[11px] text-ide-dim">{g.kind === "local" ? "this computer" : g.kind === "public" ? "public list" : g.kind === "tandemforge" ? "TandemForge" : "manual"}</span>
+                <span className="ml-auto text-[11px] text-ide-dim">{g.kind === "local" ? "this computer" : g.kind === "public" ? "public list" : g.kind === "tandemforge" ? "TandemForge" : g.kind === "nexus" ? "NEXUS Engine" : "manual"}</span>
               </label>
               <div className="truncate pl-5 text-xs text-ide-dim" title={g.url}>{g.url}</div>
               <div className="flex flex-wrap items-center gap-1 pl-5 pt-1 text-xs">
@@ -120,7 +121,7 @@ export function NetworkView({ onChanged, onNotice }: Props) {
                     account {homes.find((h) => h.issuer === g.account?.home)?.email || g.account.home}
                     {homes.find((h) => h.issuer === g.account?.home && h.signed_in) ? null : <span className="text-[#cca700]">(sign in)</span>}
                   </span>
-                ) : g.has_key ? <span className="flex items-center gap-1 text-ide-dim"><KeyRound size={12} aria-hidden />{g.kind === "tandemforge" ? "paired (code in keychain)" : "key in keychain"}</span> : <span className="text-[#cca700]">no key</span>}
+                ) : g.kind === "nexus" ? <span className="flex items-center gap-1 text-ide-dim">local engine (no key needed)</span> : g.has_key ? <span className="flex items-center gap-1 text-ide-dim"><KeyRound size={12} aria-hidden />{g.kind === "tandemforge" ? "paired (code in keychain)" : "key in keychain"}</span> : <span className="text-[#cca700]">no key</span>}
               </div>
               {c ? (
                 <div className="pl-5 pt-1 text-xs" role="status">
@@ -131,7 +132,7 @@ export function NetworkView({ onChanged, onNotice }: Props) {
               ) : null}
               <div className="flex flex-wrap gap-1 pl-4 pt-1 text-xs">
                 <button type="button" className={btn} onClick={() => void check(g.id)}><RefreshCw size={12} className="mr-1 inline" aria-hidden />Check</button>
-                {g.kind === "tandemforge" ? null : (
+                {g.kind === "tandemforge" || g.kind === "nexus" ? null : (
                   <>
                     <button type="button" className={btn} onClick={() => { setKeyFor(keyFor === g.id ? null : g.id); setNewKey(""); }}>{g.has_key ? "Replace key" : "Add key"}</button>
                     {g.account ? (
@@ -199,6 +200,7 @@ export function NetworkView({ onChanged, onNotice }: Props) {
       </ul>
       <AccountsPanel onChanged={setHomes} onNotice={onNotice} />
       <TandemForgeConnect onPaired={() => void refresh()} onNotice={onNotice} />
+      <NexusConnect onConnected={() => void refresh()} onNotice={onNotice} />
       {adding ? (
         <form className="flex flex-col gap-2 rounded border border-ide-line p-2" onSubmit={(e) => { e.preventDefault(); void add(false); }}>
           <label className="text-xs text-ide-dim">Name<input aria-label="Gateway name" value={name} onChange={(e) => setName(e.target.value)} className={input} placeholder="My gateway" /></label>

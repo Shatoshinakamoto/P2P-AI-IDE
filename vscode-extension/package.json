@@ -50,6 +50,11 @@
         "category": "P2P-AI"
       },
       {
+        "command": "p2pAi.connectNexus",
+        "title": "Connect NEXUS Engine",
+        "category": "P2P-AI"
+      },
+      {
         "command": "p2pAi.pickGateway",
         "title": "Pick Gateway",
         "category": "P2P-AI"

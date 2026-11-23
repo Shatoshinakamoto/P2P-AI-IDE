@@ -56,7 +56,7 @@ export interface GatewayView {
   id: string;
   name: string;
   url: string;
-  kind: "local" | "manual" | "public" | "tandemforge";
+  kind: "local" | "manual" | "public" | "tandemforge" | "nexus";
   /** Plain http on loopback: shown as INSECURE - DEV ONLY. */
   dev: boolean;
   pinned: boolean;
@@ -128,6 +128,31 @@ export interface TandemForgeStatus { running: boolean; reason: string | null; id
 export const tandemforgeStatus = () => call<TandemForgeStatus>("tandemforge_status");
 /** Pairs with the running TandemForge using the code it showed; the code goes to the OS keychain only. */
 export const tandemforgeConnect = (code: string) => call<GatewayCheck>("tandemforge_connect", { code });
+
+/** NEXUS Engine on this computer: nexus-proxy (11435) and nexus-runtime (11436). */
+export type NexusRole = "proxy" | "runtime";
+export interface NexusServiceStatus {
+  service: "nexus-proxy" | "nexus-runtime";
+  url: string;
+  running: boolean;
+  mock_upstream: boolean | null;
+  airlock_threshold: number | null;
+  active_model_mode: string | null;
+  artifacts: number | null;
+  episodic_memories: number | null;
+  models_loaded: number | null;
+  models_available: number | null;
+  simd: string | null;
+  id: string | null;
+}
+export interface NexusStatusView {
+  proxy: NexusServiceStatus;
+  runtime: NexusServiceStatus;
+}
+export const nexusStatus = () => call<NexusStatusView>("nexus_status");
+/** Connects to a running local NEXUS Proxy or NEXUS Runtime instance (optional custom loopback port). */
+export const nexusConnect = (role: NexusRole, port: number | null = null) =>
+  call<GatewayCheck>("nexus_connect", { role, port });
 
 /** The directories the public list is fetched from (phase I2b). */
 export const directoriesList = () => call<string[]>("directories_list");

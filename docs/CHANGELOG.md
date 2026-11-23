@@ -7,6 +7,22 @@ All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepac
 ### Fixed
 - `.gitattributes`: images, PDFs and archives under `HistoryTest/` are now `binary`. The `HistoryTest/** text eol=lf` rule had marked them as text, so git showed `runs/2026-11-23_031839Z_ui_ffb62c3/artifacts/ui-smoke-accounts.png` as changed in every clone, and committing it would have rewritten its CR LF bytes and broken the image and its manifest SHA-256.
 - `HistoryTest/INDEX.csv` regenerated with `history_test.py index`: an earlier merge of IDE #27 into #28 kept both sides by hand, and the rows were out of order.
+## 2026-11-23 - NEXUS Engine support and account/gateway UX fixes
+
+### Added
+- **NEXUS Engine on this computer** ([features/nexus-engine.md](features/nexus-engine.md)): discover and connect local **NEXUS Proxy** (`127.0.0.1:11435`, Agent chat with tools + Context Packer + Data Airlock) and **NEXUS Runtime** (`127.0.0.1:11436`, native `.nexus` chat) without an API key or the `INSECURE — DEV ONLY` label.
+- Core module [`core/src/nexus.rs`](../core/src/nexus.rs), `Kind::Nexus` and `GatewayStore::save_nexus` in [`core/src/gateways.rs`](../core/src/gateways.rs), keyless loopback-only `Client::new` in [`core/src/client.rs`](../core/src/client.rs), Tauri commands `nexus_status` and `nexus_connect` in [`app/src-tauri/src/net.rs`](../app/src-tauri/src/net.rs), UI component [`NexusConnect.tsx`](../app/src/components/NexusConnect.tsx), and VS Code extension command **P2P-AI: Connect NEXUS Engine** (`p2pAi.connectNexus`, [`vscode-extension/src/nexus.ts`](../vscode-extension/src/nexus.ts)).
+- Live E2E test suite [`core/tests/nexus_engine.rs`](../core/tests/nexus_engine.rs) and runner [`scripts/live_nexus_e2e.py`](../scripts/live_nexus_e2e.py) ([commands/live-nexus-e2e.md](commands/live-nexus-e2e.md)).
+
+### Fixed
+- **Account-linked gateways in Chat & Missions**: `ChatView.tsx` and `MissionsView.tsx` previously gated on `gateway.has_key`, blocking gateways linked to a P2P-AI account (`gateway.account !== null`) when no API key is saved; both now accept account-linked gateways and load models/projects without requesting an API key.
+- **Missions view for local engines & Status bar wording**: Missions displays clear local-engine guidance for `TandemForge` and `NEXUS Engine` instead of failing on `/v1/projects`, and `StatusBar.tsx` / `docs/user-guide.md` no longer carry stale Phase I3 / Node-host placeholder wording.
+
+### Security
+- See SECURITY-LOG 2026-11-23 (NEXUS Engine keyless loopback bounds).
+
+### Tests
+- Core [`2026-11-23_114345Z_core_dc07c54`](../HistoryTest/runs/2026-11-23_114345Z_core_dc07c54/RUN.md), Live NEXUS E2E [`2026-11-23_114348Z_live-nexus_dc07c54`](../HistoryTest/runs/2026-11-23_114348Z_live-nexus_dc07c54/RUN.md), Shell [`2026-11-23_114353Z_shell_dc07c54`](../HistoryTest/runs/2026-11-23_114353Z_shell_dc07c54/RUN.md), UI smoke [`2026-11-23_114250Z_ui_dc07c54`](../HistoryTest/runs/2026-11-23_114250Z_ui_dc07c54/RUN.md), App unit [`2026-11-23_114425Z_app-unit_dc07c54`](../HistoryTest/runs/2026-11-23_114425Z_app-unit_dc07c54/RUN.md), VS Code ext [`2026-11-23_114356Z_vscode-ext-unit_dc07c54`](../HistoryTest/runs/2026-11-23_114356Z_vscode-ext-unit_dc07c54/RUN.md), Security scan [`2026-11-23_114426Z_security-scan_dc07c54`](../HistoryTest/runs/2026-11-23_114426Z_security-scan_dc07c54/RUN.md).
 
 ## 2026-11-23 - Agent commits in the Source Control view
 

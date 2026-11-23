@@ -147,17 +147,15 @@ impl Client {
         }
         let url = format!("{}{}", self.base, path);
         let resp = match (method, body) {
-            ("GET", None) => agent.get(&url).header("Authorization", self.auth()).call(),
-            ("DELETE", None) => agent.delete(&url).header("Authorization", self.auth()).call(),
+            ("GET", None) => self.authorize(agent.get(&url)).call(),
+            ("DELETE", None) => self.authorize(agent.delete(&url)).call(),
             ("POST" | "PUT", b) => {
                 let text = b.map(Value::to_string).unwrap_or_else(|| "{}".into());
                 if text.len() > MAX_JSON_BODY {
                     return Err(NetError::BadRequest("the request is too large"));
                 }
                 let req = if method == "POST" { agent.post(&url) } else { agent.put(&url) };
-                req.header("Authorization", self.auth())
-                    .header("Content-Type", "application/json")
-                    .send(text.as_bytes())
+                self.authorize(req).header("Content-Type", "application/json").send(text.as_bytes())
             }
             _ => return Err(NetError::BadRequest("internal: bad method")),
         }
@@ -205,9 +203,7 @@ impl Client {
         body.extend_from_slice(bytes);
         body.extend_from_slice(format!("\r\n--{boundary}--\r\n").as_bytes());
         let resp = self
-            .long
-            .post(format!("{}/v1/files", self.base))
-            .header("Authorization", self.auth())
+            .authorize(self.long.post(format!("{}/v1/files", self.base)))
             .header("Content-Type", format!("multipart/form-data; boundary={boundary}"))
             .send(&body[..])
             .map_err(map_ureq)?;
@@ -224,12 +220,7 @@ impl Client {
         if !path.starts_with("/v1/") || path.contains("..") || path.chars().any(|c| c.is_control() || c == '#') {
             return Err(NetError::BadRequest("internal: bad gateway path"));
         }
-        let resp = self
-            .long
-            .get(format!("{}{}", self.base, path))
-            .header("Authorization", self.auth())
-            .call()
-            .map_err(map_ureq)?;
+        let resp = self.authorize(self.long.get(format!("{}{}", self.base, path))).call().map_err(map_ureq)?;
         let status = resp.status().as_u16();
         let bytes = read_capped(resp.into_body().into_reader(), MAX_TRANSFER_BYTES as u64)?;
         if !(200..300).contains(&status) {

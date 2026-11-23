@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "f487a9cb960c439010a3357334ddea112c8d8c69bda1db89583326b68f2e1dfc",
+   "size": 1468
+  },
+  "command.txt": {
+   "sha256": "84456be1889831835e25d2a9d84a42d798218b0b0eb8576d87c424d0891eeece",
+   "size": 101
+  },
+  "environment.md": {
+   "sha256": "07d39792cc741965d253753aee8caf40ca8c66c0a7a8b5a348f55c529cf7637d",
+   "size": 193
+  },
+  "logs/output.log": {
+   "sha256": "a485744bbd97eb35f3e815d9c47f2b1cf2626fe96efd59832d9828c8ffe0dcb0",
+   "size": 121
+  },
+  "results/summary.txt": {
+   "sha256": "1ce10ffe836e9260812175e08bce32e174cecb1be5b9843a405a15e2245b693f",
+   "size": 293
+  }
+ },
+ "previous": {
+  "manifest_sha256": "c30e835b709009d888f1d39b0f8d3df54c65e08becf705f9951671edabb0781b",
+  "run_id": "2026-11-23_114425Z_app-unit_dc07c54"
+ },
+ "run": {
+  "area": "security-scan",
+  "branch_or_pr": "",
+  "collected_utc": "",
+  "commit": "dc07c54892d791b3739a3fa897566a292ca8d58a",
+  "count_unit": "",
+  "date_utc": "2026-11-23T11:44:26Z",
+  "dirty": true,
+  "duration_s": 1.8,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-23_114426Z_security-scan_dc07c54",
+  "kind": "scan",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Supply-chain npm audit gate on app and vscode-extension",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

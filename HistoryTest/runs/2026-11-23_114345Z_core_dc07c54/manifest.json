@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "74380fd5844d077ae9967d2637c636041672ba78ea8261b3ceb25accc7c28762",
+   "size": 1592
+  },
+  "command.txt": {
+   "sha256": "1159d1787e887b0a382f74dd2ad6699611612085214a57e0e61ebce0f40bcdd9",
+   "size": 86
+  },
+  "environment.md": {
+   "sha256": "94ca4eda22fe9de62f596e02b71fcb3beaf173f39c434f2c64cdca0e5e3c2e49",
+   "size": 184
+  },
+  "logs/output.log": {
+   "sha256": "d8978c90f9f0b1a7a2f3ae3119a6c53747fb7bafcda8d655a42f88fa3a755f43",
+   "size": 11308
+  },
+  "results/summary.txt": {
+   "sha256": "1c9550a0bff08f89529159625b022c4b34a77ff881e39df5432b7e2108d6c669",
+   "size": 284
+  }
+ },
+ "previous": {
+  "manifest_sha256": "0b5dcf28a97cd2a538c133ff4919d29f5c81ecfb1d655ade1ed9ecda5bf01dd2",
+  "run_id": "2026-11-23_114250Z_ui_dc07c54"
+ },
+ "run": {
+  "area": "core",
+  "branch_or_pr": "",
+  "collected_utc": "",
+  "commit": "dc07c54892d791b3739a3fa897566a292ca8d58a",
+  "count_unit": "",
+  "date_utc": "2026-11-23T11:43:45Z",
+  "dirty": true,
+  "duration_s": 2.5,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-23_114345Z_core_dc07c54",
+  "kind": "unit",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Core tests incl. NEXUS Engine module, keyless Client, and Kind::Nexus",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

@@ -1,0 +1,2 @@
+note: exception GHSA-fc5q-39xc-vjpf is no longer needed; remove it from npm-audit-exceptions.json
+npm audit gate: passed

@@ -37,6 +37,8 @@ The IDE's plan and its decisions (ADR-029) live in the P2P-AI repository: `docs/
 | [features/account-sign-in.md](features/account-sign-in.md) | Phase A3: sign in to gateways with a P2P-AI account (system browser, loopback PKCE, refresh token in the OS keychain, 5-minute gateway tokens); threat model and controls |
 | [commands/live-accounts-e2e.md](commands/live-accounts-e2e.md) | `scripts/live_accounts_e2e.mjs`: live check of account sign-in with the real account service, Go gateway and Chromium (development only) |
 | [features/tandemforge-engine.md](features/tandemforge-engine.md) | Phase I7: use TandemForge on this computer as a model engine (pairing code, loopback only); threat model and controls |
+| [features/nexus-engine.md](features/nexus-engine.md) | Use NEXUS Engine (`nexus-proxy` and `nexus-runtime`) on this computer without an API key (loopback only); threat model and controls |
+| [commands/live-nexus-e2e.md](commands/live-nexus-e2e.md) | `scripts/live_nexus_e2e.py`: live end-to-end test against real `nexus-proxy` and `nexus-runtime` binaries (development only) |
 | [features/installers.md](features/installers.md) | Windows and Linux installers and signed releases, built on the PC with the P2P-AI release script |
 | [files/app-icons.md](files/app-icons.md) | The app icons: P2P-AI logo with the IDE badge, how they are built |
 | [configuration/tauri-conf.md](configuration/tauri-conf.md) | `tauri.conf.json` (window, CSP) and `capabilities/default.json`, every key |

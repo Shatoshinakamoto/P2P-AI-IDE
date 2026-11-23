@@ -30,6 +30,7 @@ use p2p_ide_core::chats::{scope_for, Chat, ChatError, ChatHit, ChatStore, ChatSu
 use p2p_ide_core::client::{Client, Msg, NetError, StreamEnd};
 use p2p_ide_core::discovery::{self, DirError, DirectoryStore, PublicList};
 use p2p_ide_core::gateways::{self, GatewayStore, GatewayView, GwError, Kind, SecretStore, KEY_SERVICE};
+use p2p_ide_core::nexus;
 use p2p_ide_core::store;
 use p2p_ide_core::tandemforge;
 use serde::Serialize;
@@ -210,12 +211,16 @@ fn client_for(app: &AppHandle, id: &str) -> Result<(Client, String), String> {
         let url = tandemforge::find().map_err(|e| e.message().to_string())?;
         store.set_tandemforge_url(id, &url).map_err(gw_err)?;
         gw.url = url;
+    } else if gw.kind == Kind::Nexus && !nexus::is_engine_url(&gw.url) {
+        return Err(nexus::NexusError::BadUrl.message().to_string());
     }
     // Phase A3: a gateway linked to a P2P-AI account uses a fresh 5-minute token from the account service in place
-    // of a stored key. SECURITY: the token stays in Rust memory and only goes to this gateway (CWE-522).
-    let key = match &gw.account {
-        Some(link) => Some(crate::account::token_for(app, link)?),
-        None => Keychain.get(id).map_err(gw_err)?,
+    // of a stored key. SECURITY: the token stays in Rust memory and only goes to this gateway (CWE-522);
+    // local NEXUS Engine instances run keyless on 127.0.0.1.
+    let key = match (&gw.kind, &gw.account) {
+        (Kind::Nexus, _) => None,
+        (_, Some(link)) => Some(crate::account::token_for(app, link)?),
+        (_, None) => Keychain.get(id).map_err(gw_err)?,
     };
     let name = gw.name.clone();
     Ok((Client::new(&gw, key).map_err(|e| e.message())?, name))
@@ -283,6 +288,87 @@ pub async fn tandemforge_connect(app: AppHandle, code: String) -> Result<Gateway
     })?;
     gw_store(&app)?.save_tandemforge(&Keychain, &url, &code).map_err(gw_err)?;
     audit("gateway", "tandemforge_paired");
+    Ok(GatewayCheck { latency_ms, models })
+}
+
+/// Discovery status for one local NEXUS Engine service (`nexus-proxy` or `nexus-runtime`).
+#[derive(Serialize)]
+pub struct NexusServiceStatus {
+    #[serde(flatten)]
+    probe: nexus::ProbeResult,
+    id: Option<String>,
+}
+
+/// Discovery status for both local NEXUS Engine services.
+#[derive(Serialize)]
+pub struct NexusStatusView {
+    proxy: NexusServiceStatus,
+    runtime: NexusServiceStatus,
+}
+
+fn nexus_gateway_id(list: &gateways::GatewayList, url: &str, prefix: &str) -> Option<String> {
+    list.gateways
+        .iter()
+        .find(|g| g.kind == Kind::Nexus && g.url == url)
+        .or_else(|| list.gateways.iter().find(|g| g.kind == Kind::Nexus && g.name.starts_with(prefix)))
+        .map(|g| g.id.clone())
+}
+
+/// Checks whether local NEXUS Proxy and NEXUS Runtime services are running on `127.0.0.1` and whether they
+/// are already saved in the IDE's gateway list.
+#[tauri::command]
+pub async fn nexus_status(app: AppHandle) -> Result<NexusStatusView, String> {
+    let (proxy_probe, runtime_probe) =
+        tauri::async_runtime::spawn_blocking(nexus::status).await.map_err(|_| "internal error".to_string())?;
+    let list = gw_store(&app)?.load().map_err(gw_err)?;
+    let proxy_id = nexus_gateway_id(&list, &proxy_probe.url, "NEXUS Proxy");
+    let runtime_id = nexus_gateway_id(&list, &runtime_probe.url, "NEXUS Runtime");
+    Ok(NexusStatusView {
+        proxy: NexusServiceStatus { probe: proxy_probe, id: proxy_id },
+        runtime: NexusServiceStatus { probe: runtime_probe, id: runtime_id },
+    })
+}
+
+/// Verifies a running NEXUS Proxy or NEXUS Runtime service on `127.0.0.1` (default/studio port or explicit
+/// custom unprivileged port), checks `/v1/models`, saves it without an API key, and makes it active.
+#[tauri::command]
+pub async fn nexus_connect(app: AppHandle, role: String, port: Option<u16>) -> Result<GatewayCheck, String> {
+    let service = match role.as_str() {
+        "proxy" => nexus::ServiceKind::Proxy,
+        "runtime" => nexus::ServiceKind::Runtime,
+        _ => return Err("bad input".to_string()),
+    };
+    let url = match port {
+        Some(p) => nexus::url_for(p).map_err(|e| e.message().to_string())?,
+        None => {
+            let ep = nexus::discover_endpoints();
+            match service {
+                nexus::ServiceKind::Proxy => ep.proxy_url,
+                nexus::ServiceKind::Runtime => ep.runtime_url,
+            }
+        }
+    };
+    let name = service.display_name(&url);
+    let url_for_probe = url.clone();
+    let name_for_probe = name.clone();
+    let (models, latency_ms) = tauri::async_runtime::spawn_blocking(move || -> Result<(Vec<String>, u64), String> {
+        nexus::probe_endpoint(&url_for_probe, service).map_err(|e| e.message().to_string())?;
+        let probe_gw = gateways::Gateway {
+            id: "0000000000000000".into(),
+            name: name_for_probe,
+            url: url_for_probe,
+            kind: Kind::Nexus,
+            ca_pem: None,
+            account: None,
+        };
+        let client = Client::new(&probe_gw, None).map_err(|e| e.message())?;
+        client.models().map_err(|e| e.message())
+    })
+    .await
+    .map_err(|_| "internal error".to_string())??;
+
+    gw_store(&app)?.save_nexus(&url, &name).map_err(gw_err)?;
+    audit("gateway", "nexus_connected");
     Ok(GatewayCheck { latency_ms, models })
 }
 

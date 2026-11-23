@@ -205,6 +205,8 @@ fn main() {
             net::gateway_check,
             net::tandemforge_status,
             net::tandemforge_connect,
+            net::nexus_status,
+            net::nexus_connect,
             net::chat_send,
             net::chat_stop,
             net::chats_list,

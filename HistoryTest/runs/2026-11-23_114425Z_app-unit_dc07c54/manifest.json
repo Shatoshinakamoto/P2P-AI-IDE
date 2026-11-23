@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "67e659631f57d19f2bb082afd0f28732b2fc17d0b292542a4b7ee3dfc5d07dda",
+   "size": 1441
+  },
+  "command.txt": {
+   "sha256": "7597f46acbcfa009e3ff718a56a919ba9e774fd681099c655a37c4f6780d060b",
+   "size": 74
+  },
+  "environment.md": {
+   "sha256": "a9ec02e93ae3fb1f8eea4d9b0cf7e1b5fba9afe4cfb6d3d3b3c739d0a784c9c7",
+   "size": 188
+  },
+  "logs/output.log": {
+   "sha256": "8e898db99e466bda4bdc782e6af59e916e4b8a8debcf0b61bef9c5dd02010c9a",
+   "size": 1214
+  },
+  "results/summary.txt": {
+   "sha256": "786df931c02b6798108116d70e37c43cfe12ff2624671485a114e649c066eb24",
+   "size": 251
+  }
+ },
+ "previous": {
+  "manifest_sha256": "917e00c71f4a2998d48d1d34cccbf84957796b223430f00d85c2fb0747e81e31",
+  "run_id": "2026-11-23_114356Z_vscode-ext-unit_dc07c54"
+ },
+ "run": {
+  "area": "app-unit",
+  "branch_or_pr": "",
+  "collected_utc": "",
+  "commit": "dc07c54892d791b3739a3fa897566a292ca8d58a",
+  "count_unit": "packages",
+  "date_utc": "2026-11-23T11:44:25Z",
+  "dirty": true,
+  "duration_s": 0.7,
+  "exit_code": 0,
+  "failed": 0,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-23_114425Z_app-unit_dc07c54",
+  "kind": "unit",
+  "machine": "cloud",
+  "passed": 8,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "",
+  "shortened_logs": [],
+  "skipped": 0,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "App unit tests and Vite webview build",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

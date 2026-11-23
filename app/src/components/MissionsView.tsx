@@ -61,8 +61,10 @@ export function MissionsView({ gateway, folderName, onNotice, onOpenGateways, on
 
   const fail = useCallback((e: unknown) => onNotice((e as Error).message), [onNotice]);
 
+  const hasCreds = Boolean(gateway && (gateway.has_key || gateway.account !== null));
+  const supportsMissions = Boolean(gateway && hasCreds && gateway.kind !== "tandemforge" && gateway.kind !== "nexus");
   const refresh = useCallback(async () => {
-    if (!gateway?.has_key || !folderName) return;
+    if (!supportsMissions || !folderName) return;
     try {
       const s = await missionProject();
       setSt(s);
@@ -74,7 +76,7 @@ export function MissionsView({ gateway, folderName, onNotice, onOpenGateways, on
     } catch (e) {
       fail(e);
     }
-  }, [gateway?.has_key, folderName, fail, onSwitches]);
+  }, [supportsMissions, folderName, fail, onSwitches]);
 
   useEffect(() => {
     setSt(null);
@@ -88,12 +90,12 @@ export function MissionsView({ gateway, folderName, onNotice, onOpenGateways, on
 
   useEffect(() => {
     setModels([]);
-    if (!gateway?.has_key) return;
+    if (!supportsMissions || !gateway) return;
     gatewayCheck(gateway.id).then((r) => {
       setModels(r.models);
       setModel((m) => (r.models.includes(m) ? m : (r.models[0] ?? "")));
     }).catch(() => undefined);
-  }, [gateway?.id, gateway?.has_key]);
+  }, [gateway?.id, supportsMissions]);
 
   // While a mission runs, refresh its state every 10 seconds.
   const running = missions.some((m) => m.state === "running");
@@ -117,7 +119,15 @@ export function MissionsView({ gateway, folderName, onNotice, onOpenGateways, on
       </div>
     );
   }
-  if (!gateway.has_key) return <p className="px-3 text-ide-dim">Add a key for {gateway.name} in the Gateways view first.</p>;
+  if (gateway.kind === "tandemforge" || gateway.kind === "nexus") {
+    return (
+      <div className="flex flex-col gap-3 px-3">
+        <p className="text-ide-dim">Missions run on a P2P-AI gateway project. {gateway.name} is a local model engine on this computer — use Agent chat for local work, or switch to a remote gateway.</p>
+        <button type="button" onClick={onOpenGateways} className="rounded bg-ide-accent px-3 py-1.5 text-white">Open Gateways</button>
+      </div>
+    );
+  }
+  if (!hasCreds) return <p className="px-3 text-ide-dim">Add a key (or link an account) for {gateway.name} in the Gateways view first.</p>;
   if (!st) return <p className="px-3 text-ide-dim">Loading…</p>;
 
   // ---- not linked yet: pick or create a project
