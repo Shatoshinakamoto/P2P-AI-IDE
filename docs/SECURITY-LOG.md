@@ -2,6 +2,15 @@
 
 Every security patch, hardening change, CVE remediation and accepted risk, newest first.
 
+## 2026-11-23 — HistoryTest binary artifacts excluded from line-ending conversion
+- **Type:** hardening
+- **CVE / CWE / advisory:** none; CWE-354 (improper validation of integrity check value) as the failure mode prevented
+- **Severity:** n/a (record integrity, no product code)
+- **Affected:** `.gitattributes`, `HistoryTest/INDEX.csv`
+- **What changed:** `HistoryTest/**/*.{png,jpg,jpeg,gif,webp,pdf,zip,gz}` are `binary`, so git never converts line endings inside them. The index was regenerated from the run folders.
+- **Why it is secure now:** archived evidence keeps the exact bytes its manifest hashes, so the SHA-256 chain stays verifiable (NIST AU-9, AU-10).
+- **Verification:** `git ls-files --eol HistoryTest`: all 34 images `-text`; the PNG's SHA-256 matches its manifest; `history_test.py verify`: 171 runs, the only problem is the chain note on `2026-11-23_035621Z`, which was already marked invalid.
+
 ## 2026-11-23 — Agent commits: applying a gateway patch to the person's repository
 - **Type:** hardening (new feature with its controls)
 - **CVE / CWE / advisory:** none; controls for CWE-20, CWE-22, CWE-59, CWE-73, CWE-77, CWE-88, CWE-367, CWE-460, CWE-829

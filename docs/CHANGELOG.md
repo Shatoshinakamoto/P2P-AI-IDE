@@ -2,6 +2,12 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-23 - HistoryTest images keep their bytes
+
+### Fixed
+- `.gitattributes`: images, PDFs and archives under `HistoryTest/` are now `binary`. The `HistoryTest/** text eol=lf` rule had marked them as text, so git showed `runs/2026-11-23_031839Z_ui_ffb62c3/artifacts/ui-smoke-accounts.png` as changed in every clone, and committing it would have rewritten its CR LF bytes and broken the image and its manifest SHA-256.
+- `HistoryTest/INDEX.csv` regenerated with `history_test.py index`: an earlier merge of IDE #27 into #28 kept both sides by hand, and the rows were out of order.
+
 ## 2026-11-23 - Agent commits in the Source Control view
 
 ### Added
