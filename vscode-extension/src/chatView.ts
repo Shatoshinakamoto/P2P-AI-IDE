@@ -20,6 +20,7 @@
 import * as vscode from "vscode";
 import { GatewayClient } from "./gateway/client.ts";
 import { NetError, modelOk, type Msg } from "./gateway/checks.ts";
+import { AcctError } from "./accounts.ts";
 import type { GatewayStore, SavedGateway } from "./gateways.ts";
 import { parseFromView, type FromView } from "./viewMessages.ts";
 import { runTurn, toolDefs } from "./agent/tools.ts";
@@ -96,7 +97,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
     const gw = this.store.active();
     if (!gw) return void vscode.window.showWarningMessage("Add a gateway first (P2P-AI: Add Gateway).");
     try {
-      const client = new GatewayClient({ url: gw.url, key: await this.store.key(gw.id), caPem: gw.caPem });
+      const client = new GatewayClient(await this.store.target(gw));
       const { ids, ms } = await client.models();
       if (ids.length === 0) return void vscode.window.showWarningMessage("This gateway lists no models.");
       const pick = await vscode.window.showQuickPick(ids, { title: `Models on ${gw.name} (${ms} ms)`, placeHolder: "Pick a model" });
@@ -105,7 +106,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
         this.postState();
       }
     } catch (e) {
-      vscode.window.showErrorMessage(e instanceof NetError ? e.message : "could not list the models");
+      vscode.window.showErrorMessage(e instanceof NetError || e instanceof AcctError ? e.message : "could not list the models");
     }
   }
 
@@ -171,7 +172,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
     this.turn = turn;
     this.post({ type: "busy", busy: true });
     try {
-      const client = new GatewayClient({ url: gw.url, key: await this.store.key(gw.id), caPem: gw.caPem });
+      const client = new GatewayClient(await this.store.target(gw));
       const onText = (t: string): void => {
         answer.content += t;
         const last = this.display[this.display.length - 1];
@@ -210,7 +211,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
       // A stopped or failed turn keeps what arrived, so the chat can go on.
       if (answer.content) this.messages.push(answer);
       else this.messages.pop();
-      const error = e instanceof NetError ? e.message : "the request failed";
+      const error = e instanceof NetError || e instanceof AcctError ? e.message : "the request failed";
       this.post({ type: "error", text: error });
       return { error };
     } finally {

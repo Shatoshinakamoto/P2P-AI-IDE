@@ -12,11 +12,15 @@
  *  - A pinned CA is read once from a file the person picks, checked to look like PEM certificates and capped at
  *    64 KiB; only its text is stored (CWE-295).
  *  - Every stored entry is re-validated on load; bad entries are dropped (CWE-20).
- * Dependencies: the `vscode` API (provided by VS Code at run time), ./gateway/checks.ts.
+ *  - A gateway can instead be linked to a P2P-AI account (phase A3, ./accounts.ts): the link (account service address
+ *    and the gateway's account id) holds no secret and is re-checked on load; the token is fetched per call.
+ * Dependencies: the `vscode` API (provided by VS Code at run time), ./gateway/checks.ts, ./accounts.ts.
  */
 import * as vscode from "vscode";
 import { checkKey, checkName, checkUrl } from "./gateway/checks.ts";
+import type { GatewayTarget } from "./gateway/client.ts";
 import type { FileState } from "./fileState.ts";
+import { Accounts, AcctError, linkValid, makeLink, type AccountLink } from "./accounts.ts";
 
 /** A saved gateway. The key is not part of it. */
 export interface SavedGateway {
@@ -25,6 +29,8 @@ export interface SavedGateway {
   url: string;
   /** PEM text of a pinned CA, if any. */
   caPem?: string;
+  /** Phase A3: sign in with this account instead of the key (no secret in it). */
+  account?: AccountLink;
 }
 
 const LIST_KEY = "p2pAi.gateways";
@@ -48,9 +54,12 @@ export class GatewayStore {
   private readonly ctx: vscode.ExtensionContext;
   /** Non-secret settings (the list, the active gateway); shared with the views. */
   readonly state: FileState;
+  /** P2P-AI account sign-ins (refresh tokens in SecretStorage, homes in the state file). */
+  readonly accounts: Accounts;
   constructor(ctx: vscode.ExtensionContext, state: FileState) {
     this.ctx = ctx;
     this.state = state;
+    this.accounts = new Accounts(ctx.secrets, state);
   }
 
   /** The saved gateways, re-checked. */
@@ -60,13 +69,15 @@ export class GatewayStore {
     const out: SavedGateway[] = [];
     for (const g of raw.slice(0, MAX_GATEWAYS)) {
       if (typeof g !== "object" || g === null) continue;
-      const { id, name, url, caPem } = g as Record<string, unknown>;
+      const { id, name, url, caPem, account } = g as Record<string, unknown>;
       // SECURITY: stored values are untrusted too; anything that doesn't pass the same checks is dropped.
       if (typeof id !== "string" || !/^[a-z0-9]{8,32}$/.test(id)) continue;
       if (typeof name !== "string" || checkName(name) !== name) continue;
       if (typeof url !== "string" || checkUrl(url) !== url) continue;
       if (caPem !== undefined && (typeof caPem !== "string" || !caLooksValid(caPem))) continue;
-      out.push({ id, name, url, caPem: caPem as string | undefined });
+      // SECURITY: a damaged account link drops only the link, so the gateway falls back to its key (CWE-20).
+      const acct = linkValid(account) ? { home: account.home, audience: account.audience } : undefined;
+      out.push({ id, name, url, caPem: caPem as string | undefined, ...(acct ? { account: acct } : {}) });
     }
     return out;
   }
@@ -118,6 +129,42 @@ export class GatewayStore {
   /** The key, read only when a request is made. */
   key(id: string): Thenable<string | undefined> {
     return this.ctx.secrets.get(secretName(id));
+  }
+
+  /**
+   * What goes in `Authorization` for `gw`: a fresh account token when the gateway is linked to an account, else its
+   * key. Rejects with an AcctError (a fixed message) when the account cannot give a token.
+   */
+  async credential(gw: SavedGateway): Promise<string | undefined> {
+    return gw.account ? this.accounts.tokenFor(gw.account) : this.key(gw.id);
+  }
+
+  /** Everything GatewayClient needs for `gw`; an account-linked gateway also gets `renew` for later requests. */
+  async target(gw: SavedGateway): Promise<GatewayTarget> {
+    const link = gw.account;
+    return { url: gw.url, key: await this.credential(gw), caPem: gw.caPem, ...(link ? { renew: () => this.accounts.tokenFor(link) } : {}) };
+  }
+
+  /**
+   * Links a gateway to an account (`home` + the gateway's account id), or with an empty `home`, back to its key.
+   * Returns an error message or undefined. The key stays saved, so unlinking needs no new key.
+   */
+  async setAccount(id: string, home: string, audience: string): Promise<string | undefined> {
+    let link: AccountLink | undefined;
+    if (home.trim() !== "") {
+      const l = makeLink(home, audience);
+      if (l instanceof AcctError) return l.message;
+      link = l;
+    }
+    const all = this.list();
+    if (!all.some((g) => g.id === id)) return "that gateway is no longer saved";
+    await this.state.update(LIST_KEY, all.map((g) => {
+      if (g.id !== id) return g;
+      const { account: _old, ...rest } = g;
+      return link ? { ...rest, account: link } : rest;
+    }));
+    this.changed.fire();
+    return undefined;
   }
 
   /** Removes a gateway and deletes its key. */

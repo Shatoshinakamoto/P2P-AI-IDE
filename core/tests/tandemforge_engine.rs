@@ -34,6 +34,7 @@ fn client(url: &str, code: &str) -> Client {
         url: url.into(),
         kind: Kind::TandemForge,
         ca_pem: None,
+        account: None,
     };
     Client::new(&gw, Some(code.into())).unwrap()
 }

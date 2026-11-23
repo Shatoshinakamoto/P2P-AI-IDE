@@ -1,0 +1,56 @@
+
+> p2p-ai@0.4.0 test
+> node --test tests/*.test.ts
+
+✔ address and gateway id rules match the IDE core (2.573ms)
+✔ sign-in link: our client, S256, loopback return, URL-safe (0.5525ms)
+✔ callback: state, iss, path, method and repeated parameters (1.2301ms)
+✔ token errors map to fixed messages (0.2516ms)
+✔ sign in, token cache and rotation, sign out (62.2825ms)
+✔ one-time password: no gateway token until changed; short one refused before sending (19.118ms)
+✔ a token for another audience is refused; a dead session forgets the token (11.703ms)
+✔ sign-in: cancel stops the wait; a browser that cannot open fails; wrong requests do not finish it (65.3888ms)
+✔ an edited state file cannot point a secret at another home (0.4356ms)
+✔ shared: tool definitions and system prompt (1.5453ms)
+✔ shared: path rules (0.373ms)
+✔ shared: deny list and path normalising (0.3856ms)
+✔ shared: edits, line ranges and line counts (48.7458ms)
+✔ shared: argument checks (2.0755ms)
+✔ workspace refuses links, drive roots and escapes (15.7801ms)
+✔ workspace caps, binary files and the lost-update check (9.457ms)
+✔ edits stay pending until accepted; secrets stay hidden (15.1588ms)
+✔ a turn runs tools, keeps budgets and stops (9.3307ms)
+✔ a turn caps tool results at 1 MiB in total (16.4355ms)
+✔ streamed tool calls are assembled by index with caps (1.248ms)
+✔ models: key only in Authorization, sorted ids (28.566ms)
+✔ chat streams text and sends only checked fields (6.1022ms)
+✔ stop aborts a turn (4.0894ms)
+✔ a redirect is not followed and the key goes nowhere else (4.0232ms)
+✔ status codes map to fixed errors without the key or address (9.7005ms)
+✔ caps: a huge model list and an endless stream are cut off (70.1469ms)
+✔ bad inputs are refused before any request (0.7257ms)
+✔ an unreachable gateway is a fixed connect error (2.02ms)
+✔ webview messages are allow-listed and capped (0.6657ms)
+✔ moves the old globalState values once, then reads and writes the file (16.469ms)
+✔ broken, oversized or hostile files read as empty (12.0556ms)
+✔ shared: path grammar, ids, encoding and upload names (1.8314ms)
+✔ shared: gateway error codes (0.9037ms)
+✔ shared: push and pull plans (1.4058ms)
+✔ shared: view shapes (0.8339ms)
+✔ shared: acceptance checks (0.3574ms)
+✔ push sends changes, keeps secrets home and commits with the base version (20.0091ms)
+✔ pull brings changes back for review only, checking digests (15.368ms)
+✔ client: JSON calls, multipart upload and download against a fake gateway (33.5273ms)
+✔ a pinned CA is trusted; no pin or another CA is refused (199.788ms)
+✔ SSE lines (2.0305ms)
+✔ model lists and ids (0.4096ms)
+✔ HTTP status (0.2188ms)
+✔ URLs, names and keys (1.3977ms)
+ℹ tests 44
+ℹ suites 0
+ℹ pass 44
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 487.1369

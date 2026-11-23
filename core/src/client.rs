@@ -638,7 +638,14 @@ mod tests {
     }
 
     fn gw(url: &str) -> Gateway {
-        Gateway { id: "0123456789abcdef".into(), name: "dev".into(), url: url.into(), kind: Kind::Manual, ca_pem: None }
+        Gateway {
+            id: "0123456789abcdef".into(),
+            name: "dev".into(),
+            url: url.into(),
+            kind: Kind::Manual,
+            ca_pem: None,
+            account: None,
+        }
     }
 
     #[test]

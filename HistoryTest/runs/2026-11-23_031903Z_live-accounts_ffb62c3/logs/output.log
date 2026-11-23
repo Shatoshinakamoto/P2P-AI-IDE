@@ -1,0 +1,20 @@
+PASS account service up
+PASS gateway up with accounts on
+PASS fake model node registered
+PASS account created by the operator
+PASS IDE opens the home sign-in page with PKCE S256 and a 127.0.0.1 return
+PASS browser lands on the IDE's "Signed in" page
+PASS browser sign-in returns to the IDE; refresh token in the secret store, none in the file
+PASS profile email shown
+PASS no gateway token before the one-time password is replaced
+PASS too-short new password refused before it is sent
+PASS password changed from the IDE
+PASS gateway token issued (JWT shape)
+PASS second call uses the cached token
+PASS gateway lists models for the account token
+PASS streamed chat answered with the account token
+PASS token for another gateway id is refused by this gateway
+PASS sign out revokes and forgets
+PASS no token after sign-out
+PASS IDE core example finished cleanly
+SUMMARY: 19 passed, 0 failed

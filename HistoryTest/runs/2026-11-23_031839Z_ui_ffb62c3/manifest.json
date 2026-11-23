@@ -1,0 +1,66 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "34aa8dc4eef0173e0e7143c690625e6244dcd3169a01a5fc5bee65ee01fa8278",
+   "size": 1756
+  },
+  "artifacts/ui-smoke-accounts.png": {
+   "sha256": "0dc2289cad81f3896d1102e7b94b67d6b886b61b02e2f73f4fb6eb4ced7bb82b",
+   "size": 121105
+  },
+  "command.txt": {
+   "sha256": "bc6dcb7f2d3c62d9d9968dace93bbfff3fe9e15c466f53c7f31970eb39f644e0",
+   "size": 132
+  },
+  "environment.md": {
+   "sha256": "a4f451722f9f47b6376fcc781c4d16ce83a57d94b30edb1d8974fbbd38474864",
+   "size": 191
+  },
+  "logs/output.log": {
+   "sha256": "6e9a611a76dd15f4e8caafe6312c94e48d569d052682630a1f4b0d67fcc020b3",
+   "size": 12259
+  },
+  "results/summary.txt": {
+   "sha256": "8d28a0d0f5c016827c4d73f4c73fb7e5fd120390c9f4f9028d9c237d0ddc92a8",
+   "size": 283
+  }
+ },
+ "previous": {
+  "manifest_sha256": "122bebd858dde2819b22557cfcbb2d28ccddeb88dcd5dcd5ec26d5e7aacf9d6e",
+  "run_id": "2026-11-23_031826Z_core_ffb62c3"
+ },
+ "run": {
+  "area": "ui",
+  "branch_or_pr": "",
+  "collected_utc": "",
+  "commit": "ffb62c3d5247f9bff9f1f5e2c034912a9be10971",
+  "count_unit": "",
+  "date_utc": "2026-11-23T03:18:39Z",
+  "dirty": true,
+  "duration_s": 24.0,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-23_031839Z_ui_ffb62c3",
+  "kind": "integration",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {
+   "logs/output.log": {
+    "secret": 3
+   }
+  },
+  "requested_by": "thread: Finish TandemForge and IDE roadmaps (A3 accounts)",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "UI smoke incl. P2P-AI accounts panel",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

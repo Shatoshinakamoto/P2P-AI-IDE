@@ -7,13 +7,16 @@
  * Trust boundary: everything goes through ipc.ts to the Rust core, which checks it. The key field is a password
  * input; its value is sent once to the core (which writes it to the OS keychain) and then cleared from the form.
  * Keys never come back to the webview (only `has_key`). Names and URLs are rendered as React text (CWE-79).
+ * Phase A3: a gateway can instead be linked to a P2P-AI account (AccountsPanel.tsx): the card then shows the account
+ * and the core asks the account service for a short token before each call. The link holds no secret.
  */
 import { useEffect, useState } from "react";
-import { CheckCircle2, KeyRound, Lock, Plus, RefreshCw, ShieldAlert, Trash2 } from "lucide-react";
+import { CheckCircle2, KeyRound, Lock, Plus, RefreshCw, ShieldAlert, Trash2, UserRound } from "lucide-react";
 import {
   gatewayAdd, gatewayAddLocal, gatewayCheck, gatewayClearCa, gatewayPickCa, gatewayRemove, gatewaySetActive,
-  gatewaySetKey, gatewaysList, type GatewayCheck, type GatewayList,
+  gatewaySetAccount, gatewaySetKey, gatewaysList, type AccountHome, type GatewayCheck, type GatewayList,
 } from "../ipc.ts";
+import { AccountsPanel } from "./AccountsPanel.tsx";
 import { PublicGateways } from "./PublicGateways.tsx";
 import { TandemForgeConnect } from "./TandemForgeConnect.tsx";
 import { Tip } from "./Tip.tsx";
@@ -37,6 +40,10 @@ export function NetworkView({ onChanged, onNotice }: Props) {
   const [keyFor, setKeyFor] = useState<string | null>(null);
   const [newKey, setNewKey] = useState("");
   const [removeArmed, setRemoveArmed] = useState<string | null>(null);
+  const [homes, setHomes] = useState<AccountHome[]>([]);
+  const [acctFor, setAcctFor] = useState<string | null>(null);
+  const [acctHome, setAcctHome] = useState("");
+  const [acctAud, setAcctAud] = useState("");
 
   const refresh = async () => {
     try {
@@ -108,7 +115,12 @@ export function NetworkView({ onChanged, onNotice }: Props) {
               <div className="flex flex-wrap items-center gap-1 pl-5 pt-1 text-xs">
                 {g.dev ? <span className="flex items-center gap-1 rounded bg-[#5a1d1d] px-1.5 text-white"><ShieldAlert size={12} aria-hidden />INSECURE — DEV ONLY</span> : null}
                 {g.pinned ? <span className="flex items-center gap-1 text-ide-dim"><Lock size={12} aria-hidden />CA pinned</span> : null}
-                {g.has_key ? <span className="flex items-center gap-1 text-ide-dim"><KeyRound size={12} aria-hidden />{g.kind === "tandemforge" ? "paired (code in keychain)" : "key in keychain"}</span> : <span className="text-[#cca700]">no key</span>}
+                {g.account ? (
+                  <span className="flex items-center gap-1 text-ide-dim" title={g.account.home}><UserRound size={12} aria-hidden />
+                    account {homes.find((h) => h.issuer === g.account?.home)?.email || g.account.home}
+                    {homes.find((h) => h.issuer === g.account?.home && h.signed_in) ? null : <span className="text-[#cca700]">(sign in)</span>}
+                  </span>
+                ) : g.has_key ? <span className="flex items-center gap-1 text-ide-dim"><KeyRound size={12} aria-hidden />{g.kind === "tandemforge" ? "paired (code in keychain)" : "key in keychain"}</span> : <span className="text-[#cca700]">no key</span>}
               </div>
               {c ? (
                 <div className="pl-5 pt-1 text-xs" role="status">
@@ -122,6 +134,13 @@ export function NetworkView({ onChanged, onNotice }: Props) {
                 {g.kind === "tandemforge" ? null : (
                   <>
                     <button type="button" className={btn} onClick={() => { setKeyFor(keyFor === g.id ? null : g.id); setNewKey(""); }}>{g.has_key ? "Replace key" : "Add key"}</button>
+                    {g.account ? (
+                      <button type="button" className={btn} onClick={() => void act(() => gatewaySetAccount(g.id, "", ""), "This gateway uses its key again")}>Use key instead</button>
+                    ) : (
+                      <Tip text="Sign in to this gateway with your P2P-AI account instead of a key. The gateway's operator tells you its account id.">
+                        <button type="button" className={btn} onClick={() => { setAcctFor(acctFor === g.id ? null : g.id); setAcctHome(homes.find((h) => h.signed_in)?.issuer ?? ""); setAcctAud(""); }}>Use account</button>
+                      </Tip>
+                    )}
                     <Tip text="Trust only this CA for this gateway (for a private or self-signed gateway).">
                       <button type="button" className={btn} onClick={() => void act(() => gatewayPickCa(g.id))}>{g.pinned ? "Change CA" : "Pin CA"}</button>
                     </Tip>
@@ -155,10 +174,30 @@ export function NetworkView({ onChanged, onNotice }: Props) {
                   <button type="submit" className="rounded bg-ide-accent px-2 text-white">Save</button>
                 </form>
               ) : null}
+              {acctFor === g.id ? (
+                <form
+                  className="flex flex-col gap-1 pl-5 pt-1 text-xs"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    setAcctFor(null);
+                    void act(() => gatewaySetAccount(g.id, acctHome, acctAud), "This gateway now signs in with your account");
+                  }}
+                >
+                  <label className="text-ide-dim">Account service
+                    <input aria-label={`Account service for ${g.name}`} list="account-homes" value={acctHome} onChange={(e) => setAcctHome(e.target.value)} className={input} placeholder="https://accounts.example.org" />
+                  </label>
+                  <datalist id="account-homes">{homes.map((h) => <option key={h.id} value={h.issuer}>{h.email}</option>)}</datalist>
+                  <label className="text-ide-dim">Gateway's account id
+                    <input aria-label={`Account id of ${g.name}`} value={acctAud} onChange={(e) => setAcctAud(e.target.value)} className={input} placeholder="gw-example-01" />
+                  </label>
+                  <button type="submit" className="self-start rounded bg-ide-accent px-2 text-white">Link</button>
+                </form>
+              ) : null}
             </li>
           );
         })}
       </ul>
+      <AccountsPanel onChanged={setHomes} onNotice={onNotice} />
       <TandemForgeConnect onPaired={() => void refresh()} onNotice={onNotice} />
       {adding ? (
         <form className="flex flex-col gap-2 rounded border border-ide-line p-2" onSubmit={(e) => { e.preventDefault(); void add(false); }}>

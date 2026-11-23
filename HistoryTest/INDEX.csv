@@ -158,3 +158,11 @@ run_id,date_utc,area,commit,branch_or_pr,machine,verdict,passed,failed,skipped,s
 2026-11-22_121745Z_security-scan_882c782,2026-11-22T12:17:45Z,security-scan,882c782,claude/project-thread-8u4b8a,cloud container,pass,5,0,0,Phase I6d static checks after regenerating the notices
 2026-11-22_121951Z_core_cf2e079,2026-11-22T12:19:51Z,core,cf2e079,24,cloud container,pass,,,,Core tests after the Windows temp-folder fix in agent_vectors.rs
 2026-11-22_200619Z_desktop-node-ext-electron_cc16e75,2026-11-22T20:06:19Z,desktop-node-ext-electron,cc16e75,#25,user PC (Windows),pass,4,0,,I6d Electron compatibility host in the Windows desktop app
+2026-11-23_031826Z_core_ffb62c3,2026-11-23T03:18:26Z,core,ffb62c3,,cloud container,pass,,,,IDE core tests with the accounts module
+2026-11-23_031839Z_ui_ffb62c3,2026-11-23T03:18:39Z,ui,ffb62c3,,cloud container,pass,,,,UI smoke incl. P2P-AI accounts panel
+2026-11-23_031903Z_live-accounts_ffb62c3,2026-11-23T03:19:03Z,live-accounts,ffb62c3,,cloud container,pass,,,,Account sign-in end to end: real p2p-accounts + Go gateway + Chromium
+2026-11-23_032814Z_security-scan_ffb62c3,2026-11-23T03:28:14Z,security-scan,ffb62c3,claude/project-thread-w0i40c,cloud container,pass,4,0,1,"Accounts (A3) security scan: RustSec, npm audit, token grep"
+2026-11-23_035621Z_vscode-ext-check_9243fa4,2026-11-23T03:56:21Z,vscode-ext-check,9243fa4,IDE PR 27,user PC (Windows),invalid,,,,"INVALID (The test result itself is correct, but the manifest chain link is wrong: this clone had core.autocrlf=true, so the previous run's manifest was hashed as its CRLF working copy (c91e8cdc...) in"
+2026-11-23_035628Z_vscode-ext-unit_9243fa4,2026-11-23T03:56:28Z,vscode-ext-unit,9243fa4,IDE PR 27,user PC (Windows),invalid,,,,"INVALID (The test result itself is correct, but the manifest chain link is wrong: this clone had core.autocrlf=true, so the previous run's manifest was hashed as its CRLF working copy (c91e8cdc...) in"
+2026-11-23_035759Z_vscode-ext-check_9243fa4,2026-11-23T03:57:59Z,vscode-ext-check,9243fa4,IDE PR 27,user PC (Windows),pass,,,,VS Code extension type check with P2P-AI account sign-in (A3)
+2026-11-23_035800Z_vscode-ext-unit_9243fa4,2026-11-23T03:58:00Z,vscode-ext-unit,9243fa4,IDE PR 27,user PC (Windows),pass,,,,VS Code extension unit tests with P2P-AI account sign-in (A3)

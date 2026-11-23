@@ -61,7 +61,10 @@ export interface GatewayView {
   dev: boolean;
   pinned: boolean;
   has_key: boolean;
+  /** Phase A3: the P2P-AI account this gateway signs in with (takes the place of the key). */
+  account: AccountLink | null;
 }
+export interface AccountLink { home: string; audience: string }
 export interface GatewayList { gateways: GatewayView[]; active: string | null }
 export interface GatewayCheck { latency_ms: number; models: string[] }
 export interface Msg { role: "system" | "user" | "assistant"; content: string }
@@ -108,6 +111,18 @@ export const gatewaySetKey = (id: string, key: string) => call<void>("gateway_se
 export const gatewayRemove = (id: string) => call<void>("gateway_remove", { id });
 export const gatewaySetActive = (id: string) => call<void>("gateway_set_active", { id });
 export const gatewayCheck = (id: string) => call<GatewayCheck>("gateway_check", { id });
+// ---- Phase A3: sign in with a P2P-AI account (src-tauri/src/account.rs). Tokens never reach the webview.
+export interface AccountHome { id: string; issuer: string; email: string; dev: boolean; signed_in: boolean; password_change_required: boolean }
+export const accountsList = () => call<AccountHome[]>("accounts_list");
+/** Opens the account service's sign-in page in the system browser; resolves when the browser comes back. */
+export const accountSignIn = (home: string) => call<AccountHome>("account_sign_in", { home });
+export const accountSignInCancel = () => call<void>("account_sign_in_cancel");
+export const accountSignOut = (id: string) => call<void>("account_sign_out", { id });
+export const accountChangePassword = (id: string, current: string, next: string) =>
+  call<void>("account_change_password", { id, current, new: next });
+/** Links a gateway to an account (home + the gateway's account id); an empty home goes back to the key. */
+export const gatewaySetAccount = (id: string, home: string, audience: string) =>
+  call<void>("gateway_set_account", { id, home, audience });
 /** Phase I7: TandemForge on this computer. `running` means its engine file was found. */
 export interface TandemForgeStatus { running: boolean; reason: string | null; id: string | null }
 export const tandemforgeStatus = () => call<TandemForgeStatus>("tandemforge_status");

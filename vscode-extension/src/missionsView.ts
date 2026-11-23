@@ -24,6 +24,7 @@
 import * as vscode from "vscode";
 import { GatewayClient } from "./gateway/client.ts";
 import { NetError, modelOk } from "./gateway/checks.ts";
+import { AcctError } from "./accounts.ts";
 import type { GatewayStore, SavedGateway } from "./gateways.ts";
 import {
   acceptance,
@@ -130,11 +131,11 @@ export class MissionsViewProvider implements vscode.WebviewViewProvider {
   }
 
   /** The gateway, a client for it, the folder and its link (any may be missing). */
-  private async context(): Promise<{ gw?: SavedGateway; client?: GatewayClient; folder?: string; link?: Link; block?: string }> {
+  private async context(): Promise<{ gw?: SavedGateway; client?: GatewayClient; folder?: string; link?: Link; block?: string; credError?: string }> {
     const gw = this.store.active();
     const ws = this.review.folder();
     const block = this.review.block();
-    const out: { gw?: SavedGateway; client?: GatewayClient; folder?: string; link?: Link; block?: string } = { gw };
+    const out: { gw?: SavedGateway; client?: GatewayClient; folder?: string; link?: Link; block?: string; credError?: string } = { gw };
     if (block) out.block = block === "untrusted" ? "Missions are off in Restricted Mode. Trust this folder to send it to a gateway." : block === "no_folder" ? "Open a folder to use missions." : "Missions work on local folders only.";
     if (ws) {
       out.folder = folderKey(ws.root);
@@ -142,9 +143,11 @@ export class MissionsViewProvider implements vscode.WebviewViewProvider {
     }
     if (gw) {
       try {
-        out.client = new GatewayClient({ url: gw.url, key: await this.store.key(gw.id), caPem: gw.caPem });
-      } catch {
+        out.client = new GatewayClient(await this.store.target(gw));
+      } catch (e) {
         out.client = undefined;
+        // Phase A3: an account that cannot give a token says why (a fixed message, CWE-209).
+        if (e instanceof AcctError) out.credError = e.message;
       }
     }
     return out;
@@ -158,7 +161,7 @@ export class MissionsViewProvider implements vscode.WebviewViewProvider {
       type: "state",
       gateway: c.gw?.name ?? null,
       folder: c.block ? null : (vscode.workspace.workspaceFolders?.[0]?.name ?? null),
-      block: c.block ?? (c.gw ? (c.client ? null : "This gateway has no key yet; run P2P-AI: Set Gateway Key.") : "Add a gateway first (P2P-AI: Add Gateway)."),
+      block: c.block ?? (c.gw ? (c.client ? null : (c.credError ?? "This gateway has no key yet; run P2P-AI: Set Gateway Key.")) : "Add a gateway first (P2P-AI: Add Gateway)."),
       project: c.link ? { id: c.link.project_id, name: c.link.project_name } : null,
       busy: this.busy,
     };
@@ -219,7 +222,7 @@ export class MissionsViewProvider implements vscode.WebviewViewProvider {
     const c = await this.context();
     if (c.block) throw new NetError("bad_request", c.block);
     if (!c.gw) throw new NetError("bad_request", "add a gateway first (P2P-AI: Add Gateway)");
-    if (!c.client) throw new NetError("no_key");
+    if (!c.client) throw c.credError ? new NetError("bad_request", c.credError) : new NetError("no_key");
     const client = c.client;
     const gid = c.gw.id;
     const folder = c.folder as string;

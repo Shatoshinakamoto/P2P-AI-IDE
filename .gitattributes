@@ -1,0 +1,5 @@
+# Line endings for files whose bytes are hashed.
+# SECURITY: HistoryTest manifests chain SHA-256 hashes of earlier runs (NIST AU-10). A Windows clone with
+# core.autocrlf=true rewrote them to CRLF, so the chain broke (runs 2026-11-23_035621Z and _035628Z, marked
+# invalid). Keeping these files LF on every checkout keeps the hashes stable on every OS.
+HistoryTest/** text eol=lf

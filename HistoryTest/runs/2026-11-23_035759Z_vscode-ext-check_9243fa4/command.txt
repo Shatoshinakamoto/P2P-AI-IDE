@@ -1,0 +1,2 @@
+# run in repository folder `vscode-extension`, as an argument list (no shell)
+npm.cmd run check

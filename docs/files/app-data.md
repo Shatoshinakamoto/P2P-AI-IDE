@@ -11,7 +11,8 @@ the identifier `org.p2p-ai.ide`:
 
 Only the Rust core reads or writes these files (`core/src/store.rs`); the webview cannot name a path. Every write is
 atomic (temp file, then rename). On Unix files are 0600 and folders 0700. Nothing here is a secret: **keys are in the
-OS keychain**, under service `org.p2p-ai.ide.gateway`, account = the gateway's id.
+OS keychain**, under service `org.p2p-ai.ide.gateway`, account = the gateway's id. P2P-AI account sign-ins (phase A3)
+keep their refresh token in the keychain too, under service `org.p2p-ai.ide.account`, account = the home's id.
 
 ## gateways.json
 
@@ -36,9 +37,34 @@ entry is refused as a whole ("a saved file is damaged or too large").
 | `gateways[].url` | string | `https://host[:port]`, or `http://127.0.0.1|localhost|[::1]:port` (dev) | where the key is sent; no path, user info, query (CWE-918, NIST SC-8) |
 | `gateways[].kind` | string | `local`, `manual`, `public` | `public` (picked from the public list, phase I2b): every connection to it goes only to public addresses (CWE-918); otherwise display only |
 | `gateways[].ca_pem` | string, optional | PEM certificates only, max 64 KiB, no private key | when present, the only trusted root for that gateway (CWE-295) |
+| `gateways[].account` | object, optional | `{home, audience}`: `home` as in `accounts.json`, `audience` 3-128 chars `a-z 0-9 . _ : -` (starting with a letter or digit) | phase A3: the gateway signs in with this P2P-AI account instead of its key; never on a `tandemforge` entry; holds no secret |
 | `active` | string, optional | an id in the list | which gateway chat uses |
 
 Limits: 32 gateways, file 4 MiB. Change it through the Gateways view, not by hand.
+
+## accounts.json
+
+Phase A3 ([features/account-sign-in.md](../features/account-sign-in.md)): the account services the person signed in
+at. No secret: refresh tokens are in the OS keychain, access tokens only in memory.
+
+```json
+{
+  "homes": [
+    { "id": "9c1e0b7a55d2f310", "issuer": "https://accounts.example.org", "email": "dana@example.org",
+      "password_change_required": false, "signed_in_at": 1795400000 }
+  ]
+}
+```
+
+| Key | Type | Default | Allowed values | Security impact |
+|---|---|---|---|---|
+| `homes[].id` | string | none | must equal the first 16 hex of SHA-256 of `issuer` | names the keychain entry; checked on load so an edited file cannot point an entry at another home (CWE-20) |
+| `homes[].issuer` | string | none | `https://host[:port][/path]`, or `http://127.0.0.1:port` (INSECURE — DEV ONLY), normalised, no trailing slash | where the refresh token is sent; must equal the home's `iss` (RFC 9207, NIST SC-8) |
+| `homes[].email` | string | `""` | up to 254 characters, no control characters | display only |
+| `homes[].password_change_required` | bool | `false` | | shows "choose your own password" |
+| `homes[].signed_in_at` | number | `0` | Unix seconds | display only |
+
+Limits: 16 homes, file 256 KiB. Re-checked on every load; a bad entry refuses the whole file.
 
 ## directories.json
 

@@ -2,6 +2,31 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-23 - VS Code extension: sign in with a P2P-AI account (A3)
+
+### Added
+- Extension commands **P2P-AI: Sign in with a P2P-AI account**, **Change account password**, **Sign out of a P2P-AI account**, **Use a P2P-AI account for a gateway** and **Use a key for a gateway**. The same sign-in as the IDE (system browser, PKCE S256, one-time loopback address, `iss` check), with the extension's own client id `p2p-ai-ide`. Extension version 0.4.0. Page: [features/account-sign-in.md](features/account-sign-in.md#vs-code-and-vscodium-extension).
+- New `vscode-extension/src/accounts.ts` (a port of `core/src/accounts.rs` with the same messages) and `vscode-extension/tests/accounts.test.ts` (9 tests against a fake account service and a fake browser).
+- `.gitattributes`: HistoryTest files stay LF on every checkout, so Windows clones keep the manifest chain intact.
+
+### Changed
+- A saved gateway can carry an `account` link. Chat and Missions ask for a fresh account token before each request; the key field is not used while linked.
+
+Test evidence (Windows PC): HistoryTest `2026-11-23_035759Z_vscode-ext-check_9243fa4` (tsc: 0 errors), `2026-11-23_035800Z_vscode-ext-unit_9243fa4` (44 of 44, including the 9 accounts tests). `2026-11-23_035621Z` and `2026-11-23_035628Z` are kept but marked invalid: the clone used `core.autocrlf=true`, which changed the hashed bytes.
+
+## 2026-11-23 - Accounts: sign in to gateways with a P2P-AI account (ADR-030 phase A3)
+
+### Added
+- **P2P-AI accounts** panel in the Gateways side bar: sign in at an account service in the system browser (OAuth for native apps with PKCE S256 and a one-time loopback address, RFC 8252 and RFC 7636), see who is signed in, replace an operator-made one-time password, and sign out (the session at the account service ends too). Page: [features/account-sign-in.md](features/account-sign-in.md).
+- Each gateway card can **Use account** (account service plus the gateway's account id) instead of a pasted key, and **Use key instead** to go back. Gateway tokens are fetched, cached in memory and renewed by the app; nothing changes for chat, runs or missions.
+- New core module `core/src/accounts.rs`; shell commands `accounts_list`, `account_sign_in`, `account_sign_in_cancel`, `account_sign_out`, `account_change_password` and `gateway_set_account` (`app/src-tauri/src/account.rs`).
+- `core/examples/live_accounts.rs` and `scripts/live_accounts_e2e.mjs`: the sign-in checked against a real account service and a real Go gateway in Chromium ([commands/live-accounts-e2e.md](commands/live-accounts-e2e.md)).
+
+### Changed
+- `gateways.json` entries can carry an `account` link; `accounts.json` lists remembered account services ([files/app-data.md](files/app-data.md)). The OS keychain has a second service, `org.p2p-ai.ide.account`, for refresh tokens.
+
+Test evidence: HistoryTest `2026-11-23_031826Z_core_ffb62c3` (core 134 passed), `2026-11-23_031839Z_ui_ffb62c3` (UI smoke 126 of 126), `2026-11-23_031903Z_live-accounts_ffb62c3` (real account service and gateway: 19 of 19), `2026-11-23_032814Z_security-scan_ffb62c3` (cargo audit, npm audit, token search: pass).
+
 ## 2026-11-22 - I6d checked in the Windows desktop app
 
 ### Changed

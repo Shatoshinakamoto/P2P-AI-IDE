@@ -8,6 +8,10 @@
 * **Next:** I2b, the public gateway list from signed directory adverts, is done: [public-gateways.md](public-gateways.md).
   I3 gives the chat its tools (read, search, patch) with diff review.
 
+
+Phase A3 (2026-11-23): a saved gateway can also sign in with a P2P-AI account instead of a key; see
+[account-sign-in.md](account-sign-in.md).
+
 ## 1. Overview
 
 The IDE can now talk to P2P-AI gateways:

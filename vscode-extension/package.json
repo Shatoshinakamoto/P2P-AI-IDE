@@ -2,7 +2,7 @@
   "name": "p2p-ai",
   "displayName": "P2P-AI",
   "description": "Chat with the models on a P2P-AI gateway from VS Code or VSCodium, let them propose changes to your folder for you to review, and run Autopilot and Auto Improve missions.",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "publisher": "p2p-ai",
   "license": "Apache-2.0",
   "private": true,
@@ -67,6 +67,31 @@
       {
         "command": "p2pAi.removeGateway",
         "title": "Remove Gateway",
+        "category": "P2P-AI"
+      },
+      {
+        "command": "p2pAi.signIn",
+        "title": "Sign In with a P2P-AI Account",
+        "category": "P2P-AI"
+      },
+      {
+        "command": "p2pAi.changeAccountPassword",
+        "title": "Change Account Password",
+        "category": "P2P-AI"
+      },
+      {
+        "command": "p2pAi.signOut",
+        "title": "Sign Out of a P2P-AI Account",
+        "category": "P2P-AI"
+      },
+      {
+        "command": "p2pAi.useAccount",
+        "title": "Use a P2P-AI Account for a Gateway",
+        "category": "P2P-AI"
+      },
+      {
+        "command": "p2pAi.useKey",
+        "title": "Use the Key for a Gateway",
         "category": "P2P-AI"
       },
       {
