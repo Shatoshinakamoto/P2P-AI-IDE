@@ -2,6 +2,15 @@
 
 Every security patch, hardening change, CVE remediation and accepted risk, newest first.
 
+## 2026-11-23 — cookie 0.18.3: RUSTSEC-2026-0594
+- **Type:** CVE remediation (dependency patch)
+- **CVE / CWE / advisory:** RUSTSEC-2026-0594 (nonce reuse in `cookie` private jars after a process fork)
+- **Severity:** CVSS 6.5 per the advisory; KEV: no
+- **Affected:** `app/src-tauri/Cargo.lock` (`cookie` 0.18.2, transitive through tauri 2.12.6, tauri-runtime 2.12.3 and wry 0.57.2)
+- **What changed:** `cargo update -p cookie --precise 0.18.3`; only the lock file changes (version and crates.io checksum).
+- **Why it is secure now:** the patched release is in use (NIST SI-2, SSDF PW.4). The IDE never used `PrivateJar`, so the flaw was not reachable in our code; this clears the finding instead of accepting it.
+- **Verification:** the PC local-ci `supply-chain` and `shell` checks on this PR's head; results archived in HistoryTest by local-ci.
+
 ## 2026-11-23 — HistoryTest binary artifacts excluded from line-ending conversion
 - **Type:** hardening
 - **CVE / CWE / advisory:** none; CWE-354 (improper validation of integrity check value) as the failure mode prevented

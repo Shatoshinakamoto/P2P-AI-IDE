@@ -2,6 +2,11 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-23 - cookie 0.18.3 (RUSTSEC-2026-0594)
+
+### Security
+- `app/src-tauri/Cargo.lock`: `cookie` 0.18.2 -> 0.18.3, pulled in through tauri, tauri-runtime and wry. Lock-file-only change; fixes the supply-chain check on main. See SECURITY-LOG 2026-11-23.
+
 ## 2026-11-23 - HistoryTest images keep their bytes
 
 ### Fixed
