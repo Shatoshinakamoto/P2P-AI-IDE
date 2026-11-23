@@ -172,6 +172,8 @@ export const gatewayAddPublic = (gatewayId: string, key: string | null) => call<
  */
 export type AgentEvent =
   | { kind: "delta"; text: string }
+  /** The step's text so far was a tool call written as text: drop its last `chars` characters. */
+  | { kind: "retract"; chars: number }
   | { kind: "tool"; name: string; target: string; ok: boolean }
   | { kind: "approval"; id: string; summary: string; runner: string }
   | { kind: "run"; id: string; result: RunResult };

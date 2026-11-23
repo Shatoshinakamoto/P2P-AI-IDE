@@ -246,6 +246,9 @@ impl Pending {
 pub enum AgentEvent {
     /// Answer text.
     Delta { text: String },
+    /// The step's answer text so far was a tool call written as text (see `text_tool_calls`): the chat drops its
+    /// last `chars` characters (Unicode scalar values), so the raw JSON does not stay on screen above the tool line.
+    Retract { chars: usize },
     /// A tool ran: its name, a short target (path or query) and whether it worked.
     Tool { name: String, target: String, ok: bool },
     /// The model asks to run something (phase I5b); the shell waits for the person's decision on `id`.
@@ -629,6 +632,10 @@ pub fn run_turn(
             // Some local models (qwen2.5-coder through Ollama, seen on the PC 2026-11-23) write the call as the whole
             // reply text instead of a tool call. Treat that as the call, so the turn goes on instead of showing JSON.
             calls = text_tool_calls(&text, runner.is_some());
+            if !calls.is_empty() && !on_event(AgentEvent::Retract { chars: text.chars().count() }) {
+                stopped = true;
+                break;
+            }
         }
         if calls.is_empty() {
             break;
@@ -885,6 +892,9 @@ mod tests {
         .unwrap();
         assert_eq!((end.steps, end.tool_calls), (2, 1));
         assert!(events.iter().any(|e| matches!(e, AgentEvent::Tool { name, ok: true, .. } if name == "read_file")));
+        // The JSON shown while it streamed is taken back before the tool line (PC recheck 2026-11-23).
+        let call_len = r#"{"name": "read_file", "arguments": {"path": "src/app.py"}}"#.chars().count();
+        assert_eq!(events[1], AgentEvent::Retract { chars: call_len });
         let _ = fs::remove_dir_all(d);
     }
 

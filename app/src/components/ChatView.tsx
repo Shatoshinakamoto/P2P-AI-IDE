@@ -176,6 +176,14 @@ export function ChatView({ gateway, workspaceKey, onNotice, onOpenGateways, hasF
             const last = turn[turn.length - 1];
             if (last.role === "assistant") turn[turn.length - 1] = { ...last, content: last.content + e.text, at: now() };
             else turn.push({ role: "assistant", content: e.text, at: now() });
+          } else if (e.kind === "retract") {
+            // The model wrote its tool call as text; the core runs it, so take the raw JSON back off the screen.
+            // Counted in code points to match the core's Rust chars().
+            const last = turn[turn.length - 1];
+            if (last.role === "assistant") {
+              const cps = Array.from(last.content);
+              turn[turn.length - 1] = { ...last, content: cps.slice(0, Math.max(0, cps.length - e.chars)).join(""), at: now() };
+            }
           } else if (e.kind === "approval") {
             setAsk({ id: e.id, summary: e.summary, runner: e.runner });
             turn.push({ role: "tool", content: `asks to run: ${e.summary}`, at: now() });

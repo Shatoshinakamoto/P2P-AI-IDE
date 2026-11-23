@@ -5,7 +5,7 @@ All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepac
 ## 2026-11-23 - Click-through fixes: text tool calls, Run and test runners, Missions on plain endpoints
 
 ### Fixed
-- **Tool calls written as text** ([features/agent-tools.md](features/agent-tools.md)): with Tools on, qwen2.5-coder through Ollama answers with the call as plain JSON text (`{"name": "read_file", "arguments": {...}}`). The agent turn (`core/src/agent.rs`, `text_tool_calls`) now reads such a reply as the call when the whole reply is the call and names an offered tool, so the turn goes on instead of showing JSON.
+- **Tool calls written as text** ([features/agent-tools.md](features/agent-tools.md)): with Tools on, qwen2.5-coder through Ollama answers with the call as plain JSON text (`{"name": "read_file", "arguments": {...}}`). The agent turn (`core/src/agent.rs`, `text_tool_calls`) now reads such a reply as the call when the whole reply is the call and names an offered tool, so the turn goes on instead of showing JSON. A new `retract` agent event then takes the streamed JSON back off the screen, so only the tool line shows.
 - **Run and test runner list** ([features/run-and-test.md](features/run-and-test.md)): the view stays mounted when hidden and kept "add a gateway in the Gateways view first" after a gateway was saved. It now reads the runner list each time it is shown and when the active gateway changes.
 - **Missions on a plain model endpoint** ([features/missions.md](features/missions.md)): a hand-added Ollama (or other OpenAI-compatible) endpoint was offered "Link this folder to a project". `mission_project` now asks `GET /v1/experimental` once when the folder is not linked; a 404 sets `no_projects` and the view says the endpoint can only chat.
 
