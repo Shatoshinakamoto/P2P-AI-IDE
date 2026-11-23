@@ -2,7 +2,7 @@
  * SourceControlView.tsx -- the Source Control view (phase I5, docs/features/source-control.md): the branch, changed
  * files split into Staged and Changes, a diff of each against the last commit, stage and unstage, a commit message
  * box with Commit, and the recent history. Like VS Code's Source Control view, without any network step (no pull,
- * push or fetch).
+ * push or fetch). "From the agent" (AgentCommits.tsx) lists commits an agent asked for, for the person to make.
  *
  * Trust boundary: file names, commit subjects and author names come from git and the repository (untrusted); they
  * are rendered by React as text, never as HTML or links (CWE-79). Every action goes through ipc.ts to the Rust core,
@@ -11,6 +11,7 @@
  */
 import { useCallback, useEffect, useState } from "react";
 import { Check, GitBranch, Minus, Plus, RefreshCw } from "lucide-react";
+import { AgentCommits } from "./AgentCommits.tsx";
 import { scmCommit, scmDiff, scmLog, scmStage, scmStatus, scmUnstage, type ScmCommit, type ScmDiff, type ScmFile, type ScmState } from "../ipc.ts";
 
 interface Props {
@@ -130,6 +131,7 @@ export function SourceControlView({ refreshTick, onNotice, onDiff }: Props) {
       </button>
       <p className="text-xs text-ide-dim">Commits stay on this computer. Hooks in the repository are not run.</p>
 
+      <AgentCommits refreshTick={refreshTick} onNotice={onNotice} onCommitted={() => void reload()} />
       <section aria-label="Staged changes">
         <div className="flex items-center text-[11px] uppercase tracking-wide text-ide-dim">
           <span className="flex-1">Staged ({staged.length})</span>

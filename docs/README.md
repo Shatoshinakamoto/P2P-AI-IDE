@@ -15,6 +15,7 @@ The IDE's plan and its decisions (ADR-029) live in the P2P-AI repository: `docs/
 | [features/agent-tools.md](features/agent-tools.md) | Phase I3: chat tools on the open folder (list, read, search, propose edits) and the diff review; threat model and controls |
 | [features/missions.md](features/missions.md) | Phase I4: send the folder to a gateway project, Autopilot and Auto Improve missions, approvals, proposals, review of returned work; threat model and controls |
 | [features/source-control.md](features/source-control.md) | Phase I5a: the Source Control view (status, diff, stage, commit) through the installed git, with repository programs and hooks off; threat model and controls |
+| [features/agent-commits.md](features/agent-commits.md) | Commit an agent's checkpoint (git_commit mode local) in your own repository after you approve it; patch checks and controls |
 | [features/run-and-test.md](features/run-and-test.md) | Phase I5b: the Run and test view and the chat's runs with per-run approval, on the gateway sandbox; threat model and controls |
 | [features/local-sandbox.md](features/local-sandbox.md) | Phase I5c: the local OS sandbox on this computer (Linux: namespaces, Landlock, seccomp), ported from TandemForge; threat model and controls |
 | [features/container-runner.md](features/container-runner.md) | Phase I5d: the local container runner (Docker or Podman) with pinned Red Hat UBI images; threat model and controls |

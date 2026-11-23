@@ -2,6 +2,15 @@
 
 Every security patch, hardening change, CVE remediation and accepted risk, newest first.
 
+## 2026-11-23 — Agent commits: applying a gateway patch to the person's repository
+- **Type:** hardening (new feature with its controls)
+- **CVE / CWE / advisory:** none; controls for CWE-20, CWE-22, CWE-59, CWE-73, CWE-77, CWE-88, CWE-367, CWE-460, CWE-829
+- **Severity:** n/a (new code)
+- **Affected:** `core/src/scm.rs` (`check_patch`, `apply_checkpoint`, `run_with`), `core/src/projects.rs` (`checkpoint_view`), `app/src-tauri/src/agent_commits.rs`, `app/src/components/AgentCommits.tsx`
+- **What changed:** a patch from the gateway is applied only after the person's click, only after `check_patch` passes (plain edits of allow-listed paths; no renames, modes, links, binaries; exact hunk counts; no `.git`, `..`, absolute, `\` or `:` paths), and with nothing of the person's staged. Patch and message reach git on standard input. Hooks and repository programs stay off. A failed commit is undone. The outcome is reported once.
+- **Why it is secure now:** the gateway cannot make the IDE write outside the folder or run anything (CWE-22, CWE-88; OWASP LLM06); the person decides each commit (NIST AC-3).
+- **Verification:** core tests `checkpoint_patches_are_checked_and_cut_to_the_diff` (15 hostile patches) and `real_git_applies_an_agent_checkpoint` (real git: staged refusal, not-fitting patch changes nothing, hooks do not run, message kept); runs in HistoryTest.
+
 ## 2026-11-22 — Phase I6d: Electron compatibility host
 - **Type:** hardening (new component, supply chain); accepted risk
 - **CVE / CWE / advisory:** none. CWE-22, CWE-59, CWE-79, CWE-94, CWE-250, CWE-276, CWE-362, CWE-409, CWE-494, CWE-522, CWE-601, CWE-732, CWE-918

@@ -59,6 +59,9 @@ pub enum ScmError {
     NotText,
     Timeout,
     Failed,
+    BadPatch,
+    Staged,
+    NotApplied,
 }
 
 impl ScmError {
@@ -78,6 +81,11 @@ impl ScmError {
             ScmError::TooLarge => "the file or git's answer is too large to show",
             ScmError::NotText => "the file is not text, so no diff is shown",
             ScmError::Timeout => "git took too long and was stopped",
+            ScmError::BadPatch => "the agent's change is not a plain text patch of files in this folder, so it was not applied",
+            ScmError::Staged => "commit or unstage your own staged changes first, so the agent's commit holds only its change",
+            ScmError::NotApplied => {
+                "the agent's change does not fit this folder's files (they differ from the previous checkpoint); nothing was changed"
+            }
             ScmError::Failed => "git could not do that",
         }
     }
@@ -199,6 +207,12 @@ impl Repo {
 
     /// Runs git with the fixed safety options and `args`; returns stdout (capped) or a fixed error.
     fn run(&self, args: &[&str]) -> Result<Vec<u8>, ScmError> {
+        self.run_with(args, None)
+    }
+
+    /// `run` with `input` written to git's standard input (a patch for `git apply -`, a message for `commit -F -`),
+    /// so neither ever becomes a command-line argument or a file in the repository (CWE-88).
+    fn run_with(&self, args: &[&str], input: Option<&[u8]>) -> Result<Vec<u8>, ScmError> {
         let null = if cfg!(windows) { "NUL" } else { "/dev/null" };
         let mut cmd = Command::new(&self.git);
         // SECURITY: a cleared environment, then only what git needs to find the person's own settings (CWE-526).
@@ -234,7 +248,7 @@ impl Repo {
             .args(["-c", "core.fsmonitor=false", "-c", "protocol.allow=never", "-c", "submodule.recurse=false"])
             .args(["-c", "gc.auto=0", "-c", "maintenance.auto=false", "-c", "core.quotePath=false"])
             .args(args)
-            .stdin(Stdio::null())
+            .stdin(if input.is_some() { Stdio::piped() } else { Stdio::null() })
             .stdout(Stdio::piped())
             .stderr(Stdio::piped());
         #[cfg(windows)]
@@ -244,6 +258,15 @@ impl Repo {
             cmd.creation_flags(0x0800_0000);
         }
         let mut child = cmd.spawn().map_err(|_| ScmError::NoGit)?;
+        if let Some(data) = input {
+            let mut sin = child.stdin.take().ok_or(ScmError::Failed)?;
+            let data = data.to_vec();
+            // Written on its own thread and then closed, so a git that stops reading never blocks this one.
+            std::thread::spawn(move || {
+                use std::io::Write;
+                let _ = sin.write_all(&data);
+            });
+        }
         let mut out = child.stdout.take().ok_or(ScmError::Failed)?;
         let mut err = child.stderr.take().ok_or(ScmError::Failed)?;
         let reader = std::thread::spawn(move || {
@@ -454,6 +477,213 @@ impl Repo {
     }
 }
 
+// ---- the agent's commits (git_commit mode "local", docs/features/agent-commits.md)
+
+/// Largest patch the IDE applies (the gateway stops at 8 MiB).
+pub const MAX_PATCH: usize = 8 << 20;
+
+/// A checked patch: the diff part only (from the first `diff --git` line, without the email head and the
+/// signature), and the files it changes.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CheckedPatch {
+    pub diff: String,
+    pub files: Vec<String>,
+}
+
+/// Checks a checkpoint patch from the gateway before git sees it, and cuts it to its diff part.
+///
+/// Allowed: per file `diff --git a/P b/P` (the same path twice), then optionally `new file mode 100644` or
+/// `deleted file mode 100644` and an `index` line, then `--- a/P` or `--- /dev/null`, `+++ b/P` or `+++ /dev/null`,
+/// then hunks whose line counts match their `@@` header exactly, each line starting with ` `, `+`, `-` or `\\`.
+/// Everything else in the diff part is refused: renames, copies, mode changes, symbolic links, binary patches,
+/// submodules (CWE-20, CWE-73). Each path must pass `ok_path` and must not be `.git` or under it (CWE-22).
+///
+/// SECURITY: git only ever sees what this function returns; `git apply` checks the paths again on its own.
+pub fn check_patch(patch: &str, ok_path: impl Fn(&str) -> bool) -> Result<CheckedPatch, ScmError> {
+    if patch.len() > MAX_PATCH || patch.contains('\0') || patch.contains('\r') {
+        return Err(ScmError::BadPatch);
+    }
+    let lines: Vec<&str> = patch.split('\n').collect();
+    let Some(first) = lines.iter().position(|l| l.starts_with("diff --git ")) else {
+        return Err(ScmError::BadPatch);
+    };
+    // SECURITY: whatever ok_path says, a path is relative, uses "/" only, and has no empty, "." or ".." part and no
+    // ".git" part (CWE-22, CWE-73).
+    let path_ok = |p: &str| {
+        !p.is_empty()
+            && !p.starts_with('/')
+            && !p.contains('\\')
+            && !p.contains(':')
+            && p.split('/').all(|seg| !seg.is_empty() && seg != "." && seg != ".." && !seg.eq_ignore_ascii_case(".git"))
+            && ok_path(p)
+    };
+    let mut out: Vec<&str> = Vec::new();
+    let mut files: Vec<String> = Vec::new();
+    let mut i = first;
+    while i < lines.len() {
+        let l = lines[i];
+        // The signature ("-- " then the sender) and the empty end close the diff part.
+        if l == "-- " || (l.is_empty() && i + 1 == lines.len()) {
+            break;
+        }
+        let Some(rest) = l.strip_prefix("diff --git a/") else { return Err(ScmError::BadPatch) };
+        // "P b/P": the same path twice, so a space in a name cannot shift the split.
+        if rest.len() < 3 || (rest.len() - 3) % 2 != 0 {
+            return Err(ScmError::BadPatch);
+        }
+        let n = (rest.len() - 3) / 2;
+        let (pa, pb) = (&rest[..n], &rest[n..]);
+        let path = pa;
+        if pb != format!(" b/{path}") || !path_ok(path) || files.iter().any(|f| f == path) {
+            return Err(ScmError::BadPatch);
+        }
+        files.push(path.to_string());
+        out.push(l);
+        i += 1;
+        let (mut new_file, mut deleted) = (false, false);
+        if lines.get(i) == Some(&"new file mode 100644") {
+            new_file = true;
+            out.push(lines[i]);
+            i += 1;
+        } else if lines.get(i) == Some(&"deleted file mode 100644") {
+            deleted = true;
+            out.push(lines[i]);
+            i += 1;
+        }
+        if let Some(x) = lines.get(i) {
+            if let Some(ix) = x.strip_prefix("index ") {
+                if !ix.chars().all(|c| c.is_ascii_hexdigit() || c == '.' || c == ' ' || c.is_ascii_digit()) {
+                    return Err(ScmError::BadPatch);
+                }
+                out.push(lines[i]);
+                i += 1;
+            }
+        }
+        let minus = if new_file { "--- /dev/null".to_string() } else { format!("--- a/{path}") };
+        let plus = if deleted { "+++ /dev/null".to_string() } else { format!("+++ b/{path}") };
+        // A new or deleted empty file has no ---/+++ lines and no hunks.
+        if (new_file || deleted)
+            && lines.get(i).map(|x| x.starts_with("diff --git ") || *x == "-- " || x.is_empty()) != Some(false)
+        {
+            continue;
+        }
+        if lines.get(i) != Some(&minus.as_str()) || lines.get(i + 1) != Some(&plus.as_str()) {
+            return Err(ScmError::BadPatch);
+        }
+        out.push(lines[i]);
+        out.push(lines[i + 1]);
+        i += 2;
+        let mut hunks = 0;
+        while let Some(h) = lines.get(i).and_then(|x| x.strip_prefix("@@ -")) {
+            let (a, b) = hunk_counts(h).ok_or(ScmError::BadPatch)?;
+            out.push(lines[i]);
+            i += 1;
+            let (mut ra, mut rb) = (a, b);
+            while ra > 0 || rb > 0 {
+                let x = *lines.get(i).ok_or(ScmError::BadPatch)?;
+                match x.as_bytes().first() {
+                    Some(b' ') if ra > 0 && rb > 0 => (ra, rb) = (ra - 1, rb - 1),
+                    Some(b'-') if ra > 0 => ra -= 1,
+                    Some(b'+') if rb > 0 => rb -= 1,
+                    Some(b'\\') => {}
+                    _ => return Err(ScmError::BadPatch),
+                }
+                out.push(x);
+                i += 1;
+            }
+            // "\ No newline at end of file" after the last line of a hunk.
+            while lines.get(i).map(|x| x.starts_with('\\')) == Some(true) {
+                out.push(lines[i]);
+                i += 1;
+            }
+            hunks += 1;
+        }
+        if hunks == 0 {
+            return Err(ScmError::BadPatch);
+        }
+    }
+    if files.is_empty() {
+        return Err(ScmError::BadPatch);
+    }
+    let mut diff = out.join("\n");
+    diff.push('\n');
+    Ok(CheckedPatch { diff, files })
+}
+
+/// Reads `A[,N] +B[,M] @@...` (after "@@ -"): the line counts of both sides (1 when N or M is left out).
+fn hunk_counts(h: &str) -> Option<(usize, usize)> {
+    let (ranges, _) = h.split_once(" @@")?;
+    let (a, b) = ranges.split_once(" +")?;
+    let count = |r: &str| -> Option<usize> {
+        let mut it = r.splitn(2, ',');
+        it.next()?.parse::<usize>().ok()?;
+        match it.next() {
+            Some(n) => n.parse::<usize>().ok().filter(|n| *n <= 1_000_000),
+            None => Some(1),
+        }
+    };
+    Some((count(a)?, count(b)?))
+}
+
+impl Repo {
+    /// Applies an agent's checkpoint patch to the index and the files, and commits it with `message` under the
+    /// person's own git identity; returns the new commit's full id. Call only after the person said yes.
+    ///
+    /// Security: the patch is checked first (`check_patch`) and reaches git on standard input; the message goes to
+    /// `commit -F -` on standard input; hooks stay off. Nothing of the person's is mixed in: with anything staged
+    /// it refuses. If the patch does not fit, git changes nothing (`git apply` is all or nothing) (CWE-20, CWE-88).
+    pub fn apply_checkpoint(&self, ws: &Workspace, patch: &str, message: &str) -> Result<String, ScmError> {
+        let m = message.trim();
+        if m.is_empty()
+            || m.chars().count() > MAX_MESSAGE
+            || m.chars().any(|c| c.is_control() && c != '\n' && c != '\t')
+        {
+            return Err(ScmError::BadMessage);
+        }
+        let checked = check_patch(patch, |p| ws.check_rel(p).is_ok())?;
+        // Staged changes would end up in the agent's commit.
+        if self.run(&["diff", "--cached", "--quiet", "--no-ext-diff"]).is_err() {
+            if self.run(&["rev-parse", "--verify", "-q", "HEAD"]).is_ok() {
+                return Err(ScmError::Staged);
+            }
+            // No commit yet: only an empty index is fine.
+            if !self.run(&["ls-files", "--cached", "-z"])?.is_empty() {
+                return Err(ScmError::Staged);
+            }
+        }
+        // `apply --index` compares the files' stat data with the index; refresh it first so an unchanged file that
+        // was only touched is not taken for a change. (`-q` and a non-zero exit for changed files are expected.)
+        let _ = self.run(&["update-index", "-q", "--refresh"]);
+        self.run_with(&["apply", "--index", "--check", "-"], Some(checked.diff.as_bytes())).map_err(|e| {
+            if e == ScmError::Failed {
+                ScmError::NotApplied
+            } else {
+                e
+            }
+        })?;
+        self.run_with(&["apply", "--index", "-"], Some(checked.diff.as_bytes())).map_err(|e| {
+            if e == ScmError::Failed {
+                ScmError::NotApplied
+            } else {
+                e
+            }
+        })?;
+        let mut body = m.to_string();
+        body.push('\n');
+        if let Err(e) = self.run_with(&["commit", "--no-verify", "-q", "-F", "-"], Some(body.as_bytes())) {
+            // Put the files and the index back as they were, so a failed commit leaves nothing half done.
+            let _ = self.run_with(&["apply", "--index", "-R", "-"], Some(checked.diff.as_bytes()));
+            return Err(e);
+        }
+        let id = self.run(&["rev-parse", "HEAD"])?;
+        let id: String = String::from_utf8_lossy(&id).trim().to_string();
+        if !(id.len() == 40 || id.len() == 64) || !id.chars().all(|c| c.is_ascii_hexdigit()) {
+            return Err(ScmError::Failed);
+        }
+        Ok(id.to_ascii_lowercase())
+    }
+}
+
 /// One commit in the history list.
 #[derive(Debug, Clone, Serialize, PartialEq, Eq)]
 pub struct Commit {
@@ -604,6 +834,106 @@ u UU N... 100644 100644 100644 100644 a b c both.txt\0\
         text.push_str("[filter \"evil\"]\n\tclean = touch pwned\n");
         std::fs::write(&cfg, text).unwrap();
         assert_eq!(Repo::open(&ws).err(), Some(ScmError::Unsafe));
+        let _ = std::fs::remove_dir_all(&d);
+    }
+
+    const GOOD: &str = "From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001\n\
+From: P2P-AI checkpoint <checkpoint@p2p-ai.invalid>\n\
+Subject: [PATCH] Update\n\n body\n ---\n diff --git a/x b/x\n---\n\n\
+diff --git a/a.txt b/a.txt\n--- a/a.txt\n+++ b/a.txt\n@@ -1 +1 @@\n-alpha\n+ALPHA\n\
+diff --git a/my file.txt b/my file.txt\nnew file mode 100644\n--- /dev/null\n+++ b/my file.txt\n@@ -0,0 +1 @@\n+no break\n\\ No newline at end of file\n\
+diff --git a/empty.txt b/empty.txt\nnew file mode 100644\n\
+diff --git a/b.txt b/b.txt\ndeleted file mode 100644\n--- a/b.txt\n+++ /dev/null\n@@ -1 +0,0 @@\n-beta\n\
+-- \nP2P-AI\n";
+
+    #[test]
+    fn checkpoint_patches_are_checked_and_cut_to_the_diff() {
+        let c = check_patch(GOOD, |_| true).unwrap();
+        assert_eq!(c.files, vec!["a.txt", "my file.txt", "empty.txt", "b.txt"]);
+        assert!(c.diff.starts_with("diff --git a/a.txt b/a.txt\n"), "the email head is cut off");
+        assert!(!c.diff.contains("P2P-AI\n") && !c.diff.contains("\n-- \n"), "the signature is cut off");
+        // SECURITY: whatever a hostile gateway puts in the diff part, only plain file edits pass (CWE-20, CWE-22).
+        let hunk = "--- a/P\n+++ b/P\n@@ -1 +1 @@\n-a\n+b\n";
+        let one = |path: &str, extra: &str| format!("diff --git a/{path} b/{path}\n{extra}{}", hunk.replace('P', path));
+        for (name, bad) in [
+            ("dot dot", one("../evil", "")),
+            ("dot git", one(".git/config", "")),
+            ("nested dot git", one("sub/.git/hooks/post-checkout", "")),
+            ("rename", one("a.txt", "rename from a.txt\nrename to b.txt\n")),
+            ("mode", one("a.txt", "old mode 100644\nnew mode 100755\n")),
+            (
+                "symlink",
+                "diff --git a/l b/l\nnew file mode 120000\n--- /dev/null\n+++ b/l\n@@ -0,0 +1 @@\n+/etc/passwd\n"
+                    .into(),
+            ),
+            ("binary", "diff --git a/a.txt b/a.txt\nGIT binary patch\nliteral 0\n".into()),
+            ("other path in ---", "diff --git a/a.txt b/a.txt\n--- a/b.txt\n+++ b/a.txt\n@@ -1 +1 @@\n-a\n+b\n".into()),
+            ("two paths", "diff --git a/a.txt b/b.txt\n--- a/a.txt\n+++ b/b.txt\n@@ -1 +1 @@\n-a\n+b\n".into()),
+            ("short hunk", "diff --git a/a.txt b/a.txt\n--- a/a.txt\n+++ b/a.txt\n@@ -1,2 +1,2 @@\n-a\n+b\n".into()),
+            ("extra line", format!("{}+smuggled\n", one("a.txt", ""))),
+            ("same file twice", format!("{}{}", one("a.txt", ""), one("a.txt", ""))),
+            ("carriage return", one("a.txt", "").replace("+b", "+b\r")),
+            ("no diff", "Subject: x\n\nnothing\n".into()),
+            ("no hunk", "diff --git a/a.txt b/a.txt\n--- a/a.txt\n+++ b/a.txt\n".into()),
+        ] {
+            assert_eq!(check_patch(&bad, |_| true), Err(ScmError::BadPatch), "{name}");
+        }
+        assert_eq!(check_patch(GOOD, |p| p != "a.txt"), Err(ScmError::BadPatch), "the workspace allow-list applies");
+        assert_eq!(hunk_counts("3,0 +4,2 @@ fn x"), Some((0, 2)));
+        assert_eq!(hunk_counts("3 +4 @@"), Some((1, 1)));
+        assert_eq!(hunk_counts("x +4 @@"), None);
+    }
+
+    /// With the real git: the agent's patch is applied and committed with the message, hooks never run; refused
+    /// with the person's own staged changes; a patch that does not fit changes nothing.
+    #[test]
+    fn real_git_applies_an_agent_checkpoint() {
+        let d = std::env::temp_dir().join(format!("p2pide-ckpt-{}", crate::store::new_id()));
+        std::fs::create_dir_all(&d).unwrap();
+        let Some(git) = find_git(&d) else { return };
+        let g = |args: &[&str]| {
+            Command::new(&git).arg("-C").arg(&d).args(args).output().unwrap();
+        };
+        g(&["init", "-q"]);
+        g(&["config", "user.name", "Test"]);
+        g(&["config", "user.email", "test@example.invalid"]);
+        let marker = d.join("hook-ran");
+        let hooks = d.join(".git/hooks");
+        std::fs::create_dir_all(&hooks).unwrap();
+        std::fs::write(hooks.join("commit-msg"), format!("#!/bin/sh\ntouch '{}'\n", marker.display())).unwrap();
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            std::fs::set_permissions(hooks.join("commit-msg"), std::fs::Permissions::from_mode(0o755)).unwrap();
+        }
+        std::fs::write(d.join("a.txt"), "alpha\n").unwrap();
+        std::fs::write(d.join("b.txt"), "beta\n").unwrap();
+        g(&["add", "-A"]);
+        g(&["commit", "-q", "-m", "base"]);
+        let ws = Workspace::open(&d).unwrap();
+        let repo = Repo::open(&ws).unwrap();
+
+        // The person's own staged change: refused, nothing touched.
+        std::fs::write(d.join("b.txt"), "mine\n").unwrap();
+        repo.stage(&ws, Some("b.txt")).unwrap();
+        assert_eq!(repo.apply_checkpoint(&ws, GOOD, "Update"), Err(ScmError::Staged));
+        repo.unstage(&ws, None).unwrap();
+        // A patch that does not fit (b.txt differs): nothing changes.
+        assert_eq!(repo.apply_checkpoint(&ws, GOOD, "Update"), Err(ScmError::NotApplied));
+        assert_eq!(std::fs::read_to_string(d.join("a.txt")).unwrap(), "alpha\n");
+        std::fs::write(d.join("b.txt"), "beta\n").unwrap();
+
+        let msg = "Update files\n\n---\nWhy: the parser.";
+        let id = repo.apply_checkpoint(&ws, GOOD, msg).unwrap();
+        assert!(id.len() == 40 || id.len() == 64, "full commit id: {id}");
+        assert_eq!(std::fs::read_to_string(d.join("a.txt")).unwrap(), "ALPHA\n");
+        assert_eq!(std::fs::read_to_string(d.join("my file.txt")).unwrap(), "no break");
+        assert_eq!(std::fs::read_to_string(d.join("empty.txt")).unwrap(), "");
+        assert!(!d.join("b.txt").exists());
+        assert!(!marker.exists(), "SECURITY: the commit-msg hook must not run");
+        let body = Command::new(&git).arg("-C").arg(&d).args(["log", "-1", "--format=%B"]).output().unwrap().stdout;
+        assert_eq!(String::from_utf8_lossy(&body).trim(), msg, "the message is the commit message, as written");
+        assert!(repo.status(&ws).unwrap().files.is_empty(), "everything is committed");
         let _ = std::fs::remove_dir_all(&d);
     }
 }
