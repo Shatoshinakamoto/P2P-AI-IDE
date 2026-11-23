@@ -3,3 +3,13 @@
 # core.autocrlf=true rewrote them to CRLF, so the chain broke (runs 2026-11-23_035621Z and _035628Z, marked
 # invalid). Keeping these files LF on every checkout keeps the hashes stable on every OS.
 HistoryTest/** text eol=lf
+# Binary run artifacts (screenshots and other files) keep their exact bytes. The text rule above would otherwise
+# rewrite any CR LF byte pair inside an image, corrupting it and breaking its manifest SHA-256 (NIST AU-10).
+HistoryTest/**/*.png binary
+HistoryTest/**/*.jpg binary
+HistoryTest/**/*.jpeg binary
+HistoryTest/**/*.gif binary
+HistoryTest/**/*.webp binary
+HistoryTest/**/*.pdf binary
+HistoryTest/**/*.zip binary
+HistoryTest/**/*.gz binary
