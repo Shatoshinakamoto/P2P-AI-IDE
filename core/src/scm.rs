@@ -897,6 +897,9 @@ diff --git a/b.txt b/b.txt\ndeleted file mode 100644\n--- a/b.txt\n+++ /dev/null
         g(&["init", "-q"]);
         g(&["config", "user.name", "Test"]);
         g(&["config", "user.email", "test@example.invalid"]);
+        // The person's own line-ending setting applies to the files git writes (Windows often has autocrlf on);
+        // the test fixes it so the bytes it compares are the same on every system.
+        g(&["config", "core.autocrlf", "false"]);
         let marker = d.join("hook-ran");
         let hooks = d.join(".git/hooks");
         std::fs::create_dir_all(&hooks).unwrap();
