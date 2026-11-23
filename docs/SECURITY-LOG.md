@@ -11,6 +11,15 @@ Every security patch, hardening change, CVE remediation and accepted risk, newes
 - **Why it is secure now:** the reply must be nothing but the call (no prose around it), at most 64 KiB and 8 calls, and each name must be a tool offered this turn (run tools only when Runs is on); arguments must be an object. The call then takes the normal path: strict argument checks, read tools on the folder allow-list, edits as pending changes the person accepts, runs only after per-run approval. So a file that makes the model echo JSON gains nothing it could not already get with a real tool call (OWASP LLM01, NIST AC-6).
 - **Verification:** core unit tests `calls_written_as_text_are_read_only_when_they_are_the_whole_reply` and `a_turn_takes_a_call_written_as_text`; PC run to be archived in HistoryTest.
 
+## 2026-11-23 — HistoryTest binary artifacts excluded from line-ending conversion
+- **Type:** hardening
+- **CVE / CWE / advisory:** none; CWE-354 (improper validation of integrity check value) as the failure mode prevented
+- **Severity:** n/a (record integrity, no product code)
+- **Affected:** `.gitattributes`, `HistoryTest/INDEX.csv`
+- **What changed:** `HistoryTest/**/*.{png,jpg,jpeg,gif,webp,pdf,zip,gz}` are `binary`, so git never converts line endings inside them. The index was regenerated from the run folders.
+- **Why it is secure now:** archived evidence keeps the exact bytes its manifest hashes, so the SHA-256 chain stays verifiable (NIST AU-9, AU-10).
+- **Verification:** `git ls-files --eol HistoryTest`: all 34 images `-text`; the PNG's SHA-256 matches its manifest; `history_test.py verify`: 171 runs, the only problem is the chain note on `2026-11-23_035621Z`, which was already marked invalid.
+
 ## 2026-11-23 — NEXUS Engine support: keyless loopback boundary and studio settings discovery
 - **Type:** hardening (new local engine integration)
 - **CVE / CWE / advisory:** none; controls for CWE-20, CWE-59, CWE-79, CWE-209, CWE-287, CWE-400, CWE-522, CWE-601, CWE-918, NIST SP 800-53 SC-7 / IA-5
