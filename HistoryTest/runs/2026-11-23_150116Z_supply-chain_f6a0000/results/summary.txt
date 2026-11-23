@@ -1,0 +1,11 @@
+id: 2026-11-23_150116Z_supply-chain_f6a0000
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: not recorded
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: 0
+duration_s: 1.9
+commit: f6a0000014733af17cf7a88b0d672294e711cd04
+machine: cloud

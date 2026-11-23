@@ -186,3 +186,4 @@ run_id,date_utc,area,commit,branch_or_pr,machine,verdict,passed,failed,skipped,s
 2026-11-23_125401Z_ide-pr30_350aa68,2026-11-23T12:54:01Z,ide-pr30,350aa68,30,user PC (Windows),pass,284,0,4,"IDE PR #30 on the PC: core tests, shell check, app tests, UI smoke, release recheck"
 2026-11-23_134100Z_ide-pr30_f4bfbc6,2026-11-23T13:41:00Z,ide-pr30,f4bfbc6,30,user PC (Windows),pass,276,0,4,"IDE PR #30 at f4bfbc6 on the PC: core, check, UI smoke, chat recheck of the JSON retract"
 2026-11-23_134803Z_ui-click_6f439af,2026-11-23T13:48:03Z,ui-click,6f439af,main,user PC (Windows),fail,2,1,,IDE main (6f439af) fresh clone: chat with a text-written tool call
+2026-11-23_150116Z_supply-chain_f6a0000,2026-11-23T15:01:16Z,supply-chain,f6a0000,30,cloud container,pass,,,,cargo audit of both IDE lockfiles after the cookie bump

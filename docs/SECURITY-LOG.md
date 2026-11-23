@@ -9,7 +9,7 @@ Every security patch, hardening change, CVE remediation and accepted risk, newes
 - **Affected:** `app/src-tauri/Cargo.lock` (cookie 0.18.2, a transitive dependency of tauri 2.12.6). The IDE does not fork and does not use private cookies, so exposure was low.
 - **What changed:** `cargo update -p cookie --precise 0.18.3`. Only the lockfile changes.
 - **Why it is secure now:** the patched version from the advisory's solution (`>=0.18.3`) is used (NIST SI-2, SSDF RV.2).
-- **Verification:** `cargo audit --file app/src-tauri/Cargo.lock` and `cargo audit --file core/Cargo.lock` report no vulnerabilities (unmaintained-crate warnings only, unchanged). `cargo check` of the shell passes. The run is recorded in HistoryTest (`supply-chain` area).
+- **Verification:** `cargo audit --file app/src-tauri/Cargo.lock` and `cargo audit --file core/Cargo.lock` report no vulnerabilities (unmaintained-crate warnings only, unchanged). `cargo check` of the shell passes. HistoryTest run `2026-11-23_150116Z_supply-chain_f6a0000` (exit 0).
 
 ## 2026-11-23 — Tool calls written as reply text are read under the same checks
 - **Type:** hardening (behaviour change with its controls)

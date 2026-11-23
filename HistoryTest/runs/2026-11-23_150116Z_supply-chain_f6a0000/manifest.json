@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "861e9c3709071513d2a07087f570d8f16677981f5ea9565750415228b17849be",
+   "size": 1415
+  },
+  "command.txt": {
+   "sha256": "9431ca07ebd058edc07ff28bc1b6cc445841c65804cc61d46223f879207e695b",
+   "size": 153
+  },
+  "environment.md": {
+   "sha256": "47597b9f10742a03d289e934f51b2eeb17a34149d874c36d7ab4144f17bc3341",
+   "size": 201
+  },
+  "logs/output.log": {
+   "sha256": "0b258c6d968aec3b449b1c8ecafcf3fa4da6ee5e497061afab41c03ea0cc7627",
+   "size": 2147
+  },
+  "results/summary.txt": {
+   "sha256": "d2093636bfc3a2d263d74ab7f82276b3e296881421130e436774e1a983857d42",
+   "size": 292
+  }
+ },
+ "previous": {
+  "manifest_sha256": "093a0c01206e6e8eda809bbbc9cec7a80969cc4feb39c7abd869aa07d052543b",
+  "run_id": "2026-11-23_134803Z_ui-click_6f439af"
+ },
+ "run": {
+  "area": "supply-chain",
+  "branch_or_pr": "30",
+  "collected_utc": "",
+  "commit": "f6a0000014733af17cf7a88b0d672294e711cd04",
+  "count_unit": "",
+  "date_utc": "2026-11-23T15:01:16Z",
+  "dirty": false,
+  "duration_s": 1.9,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-23_150116Z_supply-chain_f6a0000",
+  "kind": "scan",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "ide-tf-finish-thread",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "cargo audit of both IDE lockfiles after the cookie bump",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}
