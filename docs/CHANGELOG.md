@@ -2,6 +2,18 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-23 - VS Code extension: sign in with a P2P-AI account (A3)
+
+### Added
+- Extension commands **P2P-AI: Sign in with a P2P-AI account**, **Change account password**, **Sign out of a P2P-AI account**, **Use a P2P-AI account for a gateway** and **Use a key for a gateway**. The same sign-in as the IDE (system browser, PKCE S256, one-time loopback address, `iss` check), with the extension's own client id `p2p-ai-ide`. Extension version 0.4.0. Page: [features/account-sign-in.md](features/account-sign-in.md#vs-code-and-vscodium-extension).
+- New `vscode-extension/src/accounts.ts` (a port of `core/src/accounts.rs` with the same messages) and `vscode-extension/tests/accounts.test.ts` (9 tests against a fake account service and a fake browser).
+- `.gitattributes`: HistoryTest files stay LF on every checkout, so Windows clones keep the manifest chain intact.
+
+### Changed
+- A saved gateway can carry an `account` link. Chat and Missions ask for a fresh account token before each request; the key field is not used while linked.
+
+Test evidence (Windows PC): HistoryTest `2026-11-23_035759Z_vscode-ext-check_9243fa4` (tsc: 0 errors), `2026-11-23_035800Z_vscode-ext-unit_9243fa4` (44 of 44, including the 9 accounts tests). `2026-11-23_035621Z` and `2026-11-23_035628Z` are kept but marked invalid: the clone used `core.autocrlf=true`, which changed the hashed bytes.
+
 ## 2026-11-23 - Accounts: sign in to gateways with a P2P-AI account (ADR-030 phase A3)
 
 ### Added

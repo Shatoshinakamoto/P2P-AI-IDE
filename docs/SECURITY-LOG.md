@@ -2,6 +2,15 @@
 
 Every security patch, hardening change, CVE remediation and accepted risk, newest first.
 
+## 2026-11-23 — VS Code extension: sign in with a P2P-AI account (A3)
+- **Type:** hardening (new component, authentication)
+- **CVE / CWE / advisory:** none. CWE-20, CWE-208, CWE-338, CWE-346, CWE-352, CWE-400, CWE-522, CWE-532, CWE-601, CWE-918
+- **Severity:** none (new feature, used only when a gateway is linked to an account). KEV: no.
+- **Affected:** `vscode-extension/src/accounts.ts` (new), `vscode-extension/src/{gateways,extension,chatView,missionsView}.ts`, `vscode-extension/src/gateway/client.ts`, `.gitattributes` (new)
+- **What changed:** the extension gets the same controls as the IDE: sign-in only in the system browser (`openExternal`), PKCE S256 and `state` from `crypto.randomBytes`, `state` compared with `timingSafeEqual`, `iss` checked, repeated parameters refused, a 127.0.0.1 listener on a random port for one callback with a 5-minute limit and Cancel. Home calls use a fresh agent with no proxy from the environment, no redirects, a 64 KiB answer cap and timeouts. Refresh tokens are kept only in VS Code SecretStorage and stored again before use after each rotation, under one lock; account tokens stay in memory, must be visible ASCII of at most 4096 characters before they go into a header, and never reach webviews, settings or logs. Output channel audit lines use fixed words. `.gitattributes` keeps HistoryTest files LF so their SHA-256 chain holds on Windows.
+- **Why it is secure now:** RFC 8252 and RFC 7636 (OWASP ASVS V51), protected authenticators (NIST IA-5, CWE-522), header injection blocked (CWE-20), SSRF limits on home calls (CWE-918), audit of authentication events (NIST AU-2), record integrity (NIST AU-10).
+- **Verification:** on the Windows PC: `npm ci` (0 vulnerabilities), HistoryTest `2026-11-23_035759Z_vscode-ext-check_9243fa4` (tsc 0 errors) and `2026-11-23_035800Z_vscode-ext-unit_9243fa4` (44 of 44).
+
 ## 2026-11-23 — Accounts (ADR-030 A3): native sign-in and account tokens for gateways
 - **Type:** hardening (new component, authentication); accepted risk
 - **CVE / CWE / advisory:** none. CWE-20, CWE-78, CWE-79, CWE-200, CWE-208, CWE-294, CWE-346, CWE-352, CWE-400, CWE-522, CWE-532, CWE-601, CWE-613, CWE-918

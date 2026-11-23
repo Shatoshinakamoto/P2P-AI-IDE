@@ -145,5 +145,7 @@ the security-scan run in section 8).
 * UI smoke (sign in, one-time password, link, unlink, sign out): HistoryTest `ui` run of this change.
 * Real end to end, 19 checks: `scripts/live_accounts_e2e.mjs` with the P2P-AI account service and Go gateway built from
   P2P-AI main and a real headless Chromium: HistoryTest `live-accounts` run of this change.
+* VS Code extension, on the Windows PC: type check ([run](../../HistoryTest/runs/2026-11-23_035759Z_vscode-ext-check_9243fa4/RUN.md),
+  0 errors) and unit tests including 9 account tests ([run](../../HistoryTest/runs/2026-11-23_035800Z_vscode-ext-unit_9243fa4/RUN.md), 44 of 44).
 
 The run folders are listed in the [CHANGELOG](../CHANGELOG.md) entry of 2026-11-23.
