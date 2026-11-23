@@ -900,19 +900,22 @@ diff --git a/b.txt b/b.txt\ndeleted file mode 100644\n--- a/b.txt\n+++ /dev/null
         // The person's own line-ending setting applies to the files git writes (Windows often has autocrlf on);
         // the test fixes it so the bytes it compares are the same on every system.
         g(&["config", "core.autocrlf", "false"]);
-        let marker = d.join("hook-ran");
-        let hooks = d.join(".git/hooks");
-        std::fs::create_dir_all(&hooks).unwrap();
-        std::fs::write(hooks.join("commit-msg"), format!("#!/bin/sh\ntouch '{}'\n", marker.display())).unwrap();
-        #[cfg(unix)]
-        {
-            use std::os::unix::fs::PermissionsExt;
-            std::fs::set_permissions(hooks.join("commit-msg"), std::fs::Permissions::from_mode(0o755)).unwrap();
-        }
         std::fs::write(d.join("a.txt"), "alpha\n").unwrap();
         std::fs::write(d.join("b.txt"), "beta\n").unwrap();
         g(&["add", "-A"]);
         g(&["commit", "-q", "-m", "base"]);
+        // A hook that leaves a marker if it runs, added after the test's own base commit (which runs hooks).
+        let marker = d.join("hook-ran");
+        let hooks = d.join(".git/hooks");
+        std::fs::create_dir_all(&hooks).unwrap();
+        for name in ["pre-commit", "commit-msg", "post-commit", "pre-applypatch", "post-applypatch"] {
+            std::fs::write(hooks.join(name), format!("#!/bin/sh\ntouch '{}'\n", marker.display())).unwrap();
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::PermissionsExt;
+                std::fs::set_permissions(hooks.join(name), std::fs::Permissions::from_mode(0o755)).unwrap();
+            }
+        }
         let ws = Workspace::open(&d).unwrap();
         let repo = Repo::open(&ws).unwrap();
 
@@ -933,7 +936,7 @@ diff --git a/b.txt b/b.txt\ndeleted file mode 100644\n--- a/b.txt\n+++ /dev/null
         assert_eq!(std::fs::read_to_string(d.join("my file.txt")).unwrap(), "no break");
         assert_eq!(std::fs::read_to_string(d.join("empty.txt")).unwrap(), "");
         assert!(!d.join("b.txt").exists());
-        assert!(!marker.exists(), "SECURITY: the commit-msg hook must not run");
+        assert!(!marker.exists(), "SECURITY: no repository hook may run");
         let body = Command::new(&git).arg("-C").arg(&d).args(["log", "-1", "--format=%B"]).output().unwrap().stdout;
         assert_eq!(String::from_utf8_lossy(&body).trim(), msg, "the message is the commit message, as written");
         assert!(repo.status(&ws).unwrap().files.is_empty(), "everything is committed");
