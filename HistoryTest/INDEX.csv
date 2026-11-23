@@ -178,3 +178,6 @@ run_id,date_utc,area,commit,branch_or_pr,machine,verdict,passed,failed,skipped,s
 2026-11-23_114425Z_app-unit_dc07c54,2026-11-23T11:44:25Z,app-unit,dc07c54,,cloud container,pass,8,0,0,App unit tests and Vite webview build
 2026-11-23_114426Z_security-scan_dc07c54,2026-11-23T11:44:26Z,security-scan,dc07c54,,cloud container,pass,,,,Supply-chain npm audit gate on app and vscode-extension
 2026-11-23_114428Z_vscode-ext-audit_dc07c54,2026-11-23T11:44:28Z,vscode-ext-audit,dc07c54,,cloud container,pass,,,,Supply-chain npm audit gate on vscode-extension
+2026-11-23_122300Z_ui-click_dc07c54,2026-11-23T12:23:00Z,ui-click,dc07c54,main,user PC (Windows),partial,12,1,1,IDE desktop click-through on main (run 1)
+2026-11-23_123655Z_ui-click_ec50694,2026-11-23T12:36:55Z,ui-click,ec50694,main,user PC (Windows),partial,12,1,1,"IDE desktop click-through on latest main (run 2, fresh clone)"
+2026-11-23_125400Z_ide-pr30_350aa68,2026-11-23T12:54:00Z,ide-pr30,350aa68,30,user PC (Windows),pass,284,0,4,"IDE PR #30 on the PC: core tests, shell check, app tests, UI smoke, release recheck"
