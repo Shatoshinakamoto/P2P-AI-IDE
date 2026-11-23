@@ -1,0 +1,62 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "d02c2e416c230661589fc3d124c59e12894c31bcf6704488c643322fee9009bf",
+   "size": 1682
+  },
+  "command.txt": {
+   "sha256": "95afef35d466ed4122fac7670ec1346c49dde79f64cad3ad2e8d4a8c098722d0",
+   "size": 82
+  },
+  "environment.md": {
+   "sha256": "2fa3593c9ee2aee885157d1e1a5bb61343c7a17457fe1a594cca0ce72fd96430",
+   "size": 182
+  },
+  "logs/output.log": {
+   "sha256": "b8cd3c240d155694320214ffe4ada950e194c913276268355666713d4f018bc7",
+   "size": 13009
+  },
+  "results/summary.txt": {
+   "sha256": "6951c306457010df20f23da8ce1fdb0fb9af55a2a0b80bd6899da32ea2bce02d",
+   "size": 283
+  }
+ },
+ "previous": {
+  "manifest_sha256": "9ceefd11bb0d1752a8566cf5e339ee51694ffd0bcb400ac30a6ee17a979069d1",
+  "run_id": "2026-11-23_042414Z_ide-core_f256ea5"
+ },
+ "run": {
+  "area": "ui",
+  "branch_or_pr": "",
+  "collected_utc": "",
+  "commit": "dc07c54892d791b3739a3fa897566a292ca8d58a",
+  "count_unit": "",
+  "date_utc": "2026-11-23T11:42:50Z",
+  "dirty": true,
+  "duration_s": 34.1,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-23_114250Z_ui_dc07c54",
+  "kind": "integration",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {
+   "logs/output.log": {
+    "secret": 3
+   }
+  },
+  "requested_by": "",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "UI smoke incl. NEXUS Engine and account-linked Chat/Missions",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

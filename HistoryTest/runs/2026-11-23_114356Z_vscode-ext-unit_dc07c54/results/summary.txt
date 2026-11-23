@@ -1,0 +1,11 @@
+id: 2026-11-23_114356Z_vscode-ext-unit_dc07c54
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: 48
+failed: 0
+skipped: 0
+count_unit: packages
+exit_code: 0
+duration_s: 3.5
+commit: dc07c54892d791b3739a3fa897566a292ca8d58a
+machine: cloud

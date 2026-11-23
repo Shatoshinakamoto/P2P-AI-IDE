@@ -158,10 +158,6 @@ run_id,date_utc,area,commit,branch_or_pr,machine,verdict,passed,failed,skipped,s
 2026-11-22_121745Z_security-scan_882c782,2026-11-22T12:17:45Z,security-scan,882c782,claude/project-thread-8u4b8a,cloud container,pass,5,0,0,Phase I6d static checks after regenerating the notices
 2026-11-22_121951Z_core_cf2e079,2026-11-22T12:19:51Z,core,cf2e079,24,cloud container,pass,,,,Core tests after the Windows temp-folder fix in agent_vectors.rs
 2026-11-22_200619Z_desktop-node-ext-electron_cc16e75,2026-11-22T20:06:19Z,desktop-node-ext-electron,cc16e75,#25,user PC (Windows),pass,4,0,,I6d Electron compatibility host in the Windows desktop app
-2026-11-23_040711Z_ide-core_d834367,2026-11-23T04:07:11Z,ide-core,d834367,claude/project-thread-2jylpu,cloud container,fail,4,2,,"IDE core scm tests for agent checkpoints (cloud, first try: 2 failures)"
-2026-11-23_042344Z_ide-core_4bc367d,2026-11-23T04:23:44Z,ide-core,4bc367d,claude/project-thread-2jylpu,user PC (Windows),fail,114,1,,"PC IDE checks for agent commits, run 1: 1 core failure (Windows line endings in the test)"
-2026-11-23_042344Z_ide-core_5d10b7b,2026-11-23T04:23:44Z,ide-core,5d10b7b,claude/project-thread-2jylpu,user PC (Windows),fail,114,1,,"PC IDE checks for agent commits, run 2: 1 core failure (test hook ran in the test's own setup)"
-2026-11-23_042414Z_ide-core_f256ea5,2026-11-23T04:24:14Z,ide-core,f256ea5,claude/project-thread-2jylpu,user PC (Windows),pass,122,0,3,"PC IDE core checks for agent commits, run 3: pass (fmt, clippy, 122 tests)"
 2026-11-23_031826Z_core_ffb62c3,2026-11-23T03:18:26Z,core,ffb62c3,,cloud container,pass,,,,IDE core tests with the accounts module
 2026-11-23_031839Z_ui_ffb62c3,2026-11-23T03:18:39Z,ui,ffb62c3,,cloud container,pass,,,,UI smoke incl. P2P-AI accounts panel
 2026-11-23_031903Z_live-accounts_ffb62c3,2026-11-23T03:19:03Z,live-accounts,ffb62c3,,cloud container,pass,,,,Account sign-in end to end: real p2p-accounts + Go gateway + Chromium
@@ -170,3 +166,15 @@ run_id,date_utc,area,commit,branch_or_pr,machine,verdict,passed,failed,skipped,s
 2026-11-23_035628Z_vscode-ext-unit_9243fa4,2026-11-23T03:56:28Z,vscode-ext-unit,9243fa4,IDE PR 27,user PC (Windows),invalid,,,,"INVALID (The test result itself is correct, but the manifest chain link is wrong: this clone had core.autocrlf=true, so the previous run's manifest was hashed as its CRLF working copy (c91e8cdc...) in"
 2026-11-23_035759Z_vscode-ext-check_9243fa4,2026-11-23T03:57:59Z,vscode-ext-check,9243fa4,IDE PR 27,user PC (Windows),pass,,,,VS Code extension type check with P2P-AI account sign-in (A3)
 2026-11-23_035800Z_vscode-ext-unit_9243fa4,2026-11-23T03:58:00Z,vscode-ext-unit,9243fa4,IDE PR 27,user PC (Windows),pass,,,,VS Code extension unit tests with P2P-AI account sign-in (A3)
+2026-11-23_040711Z_ide-core_d834367,2026-11-23T04:07:11Z,ide-core,d834367,claude/project-thread-2jylpu,cloud container,fail,4,2,,"IDE core scm tests for agent checkpoints (cloud, first try: 2 failures)"
+2026-11-23_042344Z_ide-core_4bc367d,2026-11-23T04:23:44Z,ide-core,4bc367d,claude/project-thread-2jylpu,user PC (Windows),fail,114,1,,"PC IDE checks for agent commits, run 1: 1 core failure (Windows line endings in the test)"
+2026-11-23_042344Z_ide-core_5d10b7b,2026-11-23T04:23:44Z,ide-core,5d10b7b,claude/project-thread-2jylpu,user PC (Windows),fail,114,1,,"PC IDE checks for agent commits, run 2: 1 core failure (test hook ran in the test's own setup)"
+2026-11-23_042414Z_ide-core_f256ea5,2026-11-23T04:24:14Z,ide-core,f256ea5,claude/project-thread-2jylpu,user PC (Windows),pass,122,0,3,"PC IDE core checks for agent commits, run 3: pass (fmt, clippy, 122 tests)"
+2026-11-23_114250Z_ui_dc07c54,2026-11-23T11:42:50Z,ui,dc07c54,,cloud container,pass,,,,UI smoke incl. NEXUS Engine and account-linked Chat/Missions
+2026-11-23_114345Z_core_dc07c54,2026-11-23T11:43:45Z,core,dc07c54,,cloud container,pass,,,,"Core tests incl. NEXUS Engine module, keyless Client, and Kind::Nexus"
+2026-11-23_114348Z_live-nexus_dc07c54,2026-11-23T11:43:48Z,live-nexus,dc07c54,,cloud container,pass,,,,Live NEXUS Engine E2E against real nexus-proxy and nexus-runtime
+2026-11-23_114353Z_shell_dc07c54,2026-11-23T11:43:53Z,shell,dc07c54,,cloud container,pass,,,,Tauri shell clippy incl. nexus_status and nexus_connect commands
+2026-11-23_114356Z_vscode-ext-unit_dc07c54,2026-11-23T11:43:56Z,vscode-ext-unit,dc07c54,,cloud container,pass,48,0,0,VS Code extension unit tests incl. NEXUS Engine discovery and keyless client
+2026-11-23_114425Z_app-unit_dc07c54,2026-11-23T11:44:25Z,app-unit,dc07c54,,cloud container,pass,8,0,0,App unit tests and Vite webview build
+2026-11-23_114426Z_security-scan_dc07c54,2026-11-23T11:44:26Z,security-scan,dc07c54,,cloud container,pass,,,,Supply-chain npm audit gate on app and vscode-extension
+2026-11-23_114428Z_vscode-ext-audit_dc07c54,2026-11-23T11:44:28Z,vscode-ext-audit,dc07c54,,cloud container,pass,,,,Supply-chain npm audit gate on vscode-extension

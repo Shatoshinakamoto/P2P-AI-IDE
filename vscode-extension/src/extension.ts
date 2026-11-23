@@ -17,6 +17,9 @@ import * as vscode from "vscode";
 import { parseFromMissions } from "./viewMessages.ts";
 import { ChatViewProvider } from "./chatView.ts";
 import { GatewayStore, caLooksValid } from "./gateways.ts";
+import { GatewayClient } from "./gateway/client.ts";
+import { NetError } from "./gateway/checks.ts";
+import { discoverNexusEndpoints, nexusDisplayName, nexusUrlForPort, probeNexusEndpoint, type NexusServiceKind } from "./nexus.ts";
 import { AcctError, type HomeView } from "./accounts.ts";
 import { ChangeReview } from "./review.ts";
 import { FileState } from "./fileState.ts";
@@ -46,6 +49,7 @@ export function activate(ctx: vscode.ExtensionContext): void {
     vscode.window.registerWebviewViewProvider(MissionsViewProvider.viewId, missions, { webviewOptions: { retainContextWhenHidden: false } }),
     log,
     vscode.commands.registerCommand("p2pAi.addGateway", () => addGateway(store)),
+    vscode.commands.registerCommand("p2pAi.connectNexus", () => connectNexus(store, log)),
     vscode.commands.registerCommand("p2pAi.pickGateway", () => pickGateway(store)),
     vscode.commands.registerCommand("p2pAi.pickModel", () => chat.pickModel()),
     vscode.commands.registerCommand("p2pAi.setKey", () => setKey(store)),
@@ -138,10 +142,10 @@ async function pickGateway(store: GatewayStore): Promise<void> {
   await store.setActive(pick.id);
 }
 
-async function chooseSaved(store: GatewayStore, title: string): Promise<string | undefined> {
-  const all = store.list();
+async function chooseSaved(store: GatewayStore, title: string, includeNexus = true): Promise<string | undefined> {
+  const all = store.list().filter((g) => includeNexus || g.kind !== "nexus");
   if (all.length === 0) {
-    vscode.window.showWarningMessage("No gateways saved yet.");
+    vscode.window.showWarningMessage(includeNexus ? "No gateways saved yet." : "No key-based gateways saved yet.");
     return undefined;
   }
   const pick = await vscode.window.showQuickPick(all.map((g) => ({ label: g.name, description: g.url, id: g.id })), { title });
@@ -149,12 +153,89 @@ async function chooseSaved(store: GatewayStore, title: string): Promise<string |
 }
 
 async function setKey(store: GatewayStore): Promise<void> {
-  const id = await chooseSaved(store, "Set the key for which gateway?");
+  const id = await chooseSaved(store, "Set the key for which gateway?", false);
   if (!id) return;
   const key = await vscode.window.showInputBox({ title: "New key", password: true, ignoreFocusOut: true });
   if (key === undefined) return;
   const err = await store.setKey(id, key);
   if (err) vscode.window.showErrorMessage(err);
+}
+
+/** Connects to a local NEXUS Proxy or NEXUS Runtime running on 127.0.0.1 without an API key. */
+async function connectNexus(store: GatewayStore, log: vscode.LogOutputChannel): Promise<void> {
+  const ep = discoverNexusEndpoints();
+  const [proxy, runtime] = await Promise.all([
+    probeNexusEndpoint(ep.proxyUrl, "nexus-proxy"),
+    probeNexusEndpoint(ep.runtimeUrl, "nexus-runtime"),
+  ]);
+  const pick = await vscode.window.showQuickPick(
+    [
+      {
+        label: `NEXUS Proxy (${ep.proxyUrl})`,
+        description: proxy.running ? "running · Agent tools, Context Packer & Airlock" : "not detected · default :11435",
+        role: "nexus-proxy" as NexusServiceKind,
+        url: ep.proxyUrl,
+        custom: false,
+      },
+      {
+        label: `NEXUS Runtime (${ep.runtimeUrl})`,
+        description: runtime.running
+          ? `running · native .nexus models (chat only, ${runtime.modelsLoaded ?? 0}/${runtime.modelsAvailable ?? 0} loaded)`
+          : "not detected · default :11436",
+        role: "nexus-runtime" as NexusServiceKind,
+        url: ep.runtimeUrl,
+        custom: false,
+      },
+      {
+        label: "Custom local port on 127.0.0.1...",
+        description: "Connect to NEXUS Proxy or Runtime listening on another port (1024-65535)",
+        role: "nexus-proxy" as NexusServiceKind,
+        url: "",
+        custom: true,
+      },
+    ],
+    { title: "Connect NEXUS Engine on this computer" },
+  );
+  if (!pick) return;
+
+  let service = pick.role;
+  let url = pick.url;
+  if (pick.custom) {
+    const svcPick = await vscode.window.showQuickPick(
+      [
+        { label: "NEXUS Proxy", description: "Agent tools, Context Packer & Airlock", role: "nexus-proxy" as NexusServiceKind },
+        { label: "NEXUS Runtime", description: "Native .nexus inference (chat only)", role: "nexus-runtime" as NexusServiceKind },
+      ],
+      { title: "Which NEXUS Engine service?" },
+    );
+    if (!svcPick) return;
+    service = svcPick.role;
+    const rawPort = await vscode.window.showInputBox({
+      title: "Local 127.0.0.1 port (1024-65535)",
+      placeHolder: service === "nexus-proxy" ? "11435" : "11436",
+      ignoreFocusOut: true,
+    });
+    if (rawPort === undefined) return;
+    const parsed = Number(rawPort.trim());
+    const u = /^\d+$/.test(rawPort.trim()) ? nexusUrlForPort(parsed) : null;
+    if (!u) return void vscode.window.showErrorMessage("pick an unprivileged port between 1024 and 65535");
+    url = u;
+  }
+
+  const probe = await probeNexusEndpoint(url, service);
+  if (!probe.running) {
+    return void vscode.window.showErrorMessage("This NEXUS Engine service is not responding on that local port.");
+  }
+  try {
+    const { ids, ms } = await new GatewayClient({ url, nexus: true }).models();
+    const err = await store.saveNexus(url, nexusDisplayName(service, url));
+    if (err) return void vscode.window.showErrorMessage(err);
+    log.info(`nexus connected role=${service}`);
+    vscode.window.showInformationMessage(`Connected ${probe.name} (${ids.length} model(s), ${ms} ms).`);
+  } catch (e) {
+    const m = e instanceof NetError ? e.message : "could not reach NEXUS Engine";
+    vscode.window.showErrorMessage(m);
+  }
 }
 
 async function removeGateway(store: GatewayStore): Promise<void> {
@@ -261,7 +342,7 @@ async function signOut(store: GatewayStore, log: vscode.LogOutputChannel): Promi
 
 /** Links a saved gateway to a signed-in account and the gateway's account id. */
 async function useAccount(store: GatewayStore, log: vscode.LogOutputChannel): Promise<void> {
-  const id = await chooseSaved(store, "Use a P2P-AI account for which gateway?");
+  const id = await chooseSaved(store, "Use a P2P-AI account for which gateway?", false);
   if (!id) return;
   const h = await pickHome(store, "Which account?", true);
   if (!h) return;

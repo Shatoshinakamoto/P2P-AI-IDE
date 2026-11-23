@@ -225,8 +225,8 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
     this.post({
       type: "state",
       gateway: gw ? gw.name : null,
-      // INSECURE — DEV ONLY marker for plain http on loopback, shown in the view.
-      dev: gw ? gw.url.startsWith("http://") : false,
+      // INSECURE — DEV ONLY marker for plain http on loopback (remote dev gateways, not local NEXUS Engine).
+      dev: gw ? gw.kind !== "nexus" && gw.url.startsWith("http://") : false,
       model: this.model(gw) ?? null,
       messages: this.display,
       busy: !!this.turn,

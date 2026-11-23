@@ -35,9 +35,9 @@ entry is refused as a whole ("a saved file is damaged or too large").
 | `gateways[].id` | string | 16 lowercase hex | names the keychain entry; allow-listed (CWE-20) |
 | `gateways[].name` | string | 1-64 chars, one line | display only |
 | `gateways[].url` | string | `https://host[:port]`, or `http://127.0.0.1|localhost|[::1]:port` (dev) | where the key is sent; no path, user info, query (CWE-918, NIST SC-8) |
-| `gateways[].kind` | string | `local`, `manual`, `public` | `public` (picked from the public list, phase I2b): every connection to it goes only to public addresses (CWE-918); otherwise display only |
+| `gateways[].kind` | string | `local`, `manual`, `public`, `tandemforge`, `nexus` | `public` restricts connections to public addresses; `tandemforge` and `nexus` restrict to `127.0.0.1` loopback only and omit `INSECURE — DEV ONLY` (`CWE-918`, `NIST SC-7`) |
 | `gateways[].ca_pem` | string, optional | PEM certificates only, max 64 KiB, no private key | when present, the only trusted root for that gateway (CWE-295) |
-| `gateways[].account` | object, optional | `{home, audience}`: `home` as in `accounts.json`, `audience` 3-128 chars `a-z 0-9 . _ : -` (starting with a letter or digit) | phase A3: the gateway signs in with this P2P-AI account instead of its key; never on a `tandemforge` entry; holds no secret |
+| `gateways[].account` | object, optional | `{home, audience}`: `home` as in `accounts.json`, `audience` 3-128 chars `a-z 0-9 . _ : -` (starting with a letter or digit) | phase A3: the gateway signs in with this P2P-AI account instead of its key; never on a `tandemforge` or `nexus` entry; holds no secret |
 | `active` | string, optional | an id in the list | which gateway chat uses |
 
 Limits: 32 gateways, file 4 MiB. Change it through the Gateways view, not by hand.

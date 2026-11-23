@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "c7494d548d06ec3032825d38f20c30447743ae1a186fb94ab5d632c11418e797",
+   "size": 1500
+  },
+  "command.txt": {
+   "sha256": "eb39044a8104c1c6922f0fdd90df512835a87194bdfc965ff06ee72196b755c4",
+   "size": 106
+  },
+  "environment.md": {
+   "sha256": "202402114d58dc0663370b08db0469d80f08c28c5e53c51e28f1ce4f7b272dab",
+   "size": 195
+  },
+  "logs/output.log": {
+   "sha256": "aa6f23e9fae268678ff0680b398eb859079256faf1faa2bd3427fd4d8787661d",
+   "size": 8219
+  },
+  "results/summary.txt": {
+   "sha256": "76938ded62c609d260609d00a31ce65e091d46435b643bfa97730775ccfb4fde",
+   "size": 259
+  }
+ },
+ "previous": {
+  "manifest_sha256": "1173969550f3b497d0e2619ec75582e67c96fbe216a48b75178961e68e5e7058",
+  "run_id": "2026-11-23_114353Z_shell_dc07c54"
+ },
+ "run": {
+  "area": "vscode-ext-unit",
+  "branch_or_pr": "",
+  "collected_utc": "",
+  "commit": "dc07c54892d791b3739a3fa897566a292ca8d58a",
+  "count_unit": "packages",
+  "date_utc": "2026-11-23T11:43:56Z",
+  "dirty": true,
+  "duration_s": 3.5,
+  "exit_code": 0,
+  "failed": 0,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-23_114356Z_vscode-ext-unit_dc07c54",
+  "kind": "unit",
+  "machine": "cloud",
+  "passed": 48,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "",
+  "shortened_logs": [],
+  "skipped": 0,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "VS Code extension unit tests incl. NEXUS Engine discovery and keyless client",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

@@ -1,0 +1,59 @@
+warning: unused workspace dependency `nexus-ir`
+  --> Cargo.toml:40:1
+   |
+40 | nexus-ir = { path = "crates/nexus-ir" }
+   | ^^^^^^^^
+   |
+   = note: `cargo::unused_workspace_dependencies` is set to `warn` by default
+help: consider removing the workspace dependency `nexus-ir`
+warning: unused workspace dependency `nexus-proxy`
+  --> Cargo.toml:39:1
+   |
+39 | nexus-proxy = { path = "crates/nexus-proxy" }
+   | ^^^^^^^^^^^
+   |
+help: consider removing the workspace dependency `nexus-proxy`
+warning: unused field `rust-version` in `workspace.package`
+  --> Cargo.toml:31:1
+   |
+31 | rust-version = "1.75"
+   | ^^^^^^^^^^^^
+   |
+   = note: `cargo::unused_workspace_package_fields` is set to `warn` by default
+help: consider removing the field `workspace.package.rust-version`
+warning: unused field `authors` in `workspace.package`
+  --> Cargo.toml:32:1
+   |
+32 | authors = ["NEXUS Engine Contributors"]
+   | ^^^^^^^
+   |
+help: consider removing the field `workspace.package.authors`
+warning: workspace (manifest) generated 4 warnings
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.20s
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.09s
+     Running tests/nexus_engine.rs (target/debug/build/p2p-ide-core/08f55196a46296a1/out/nexus_engine-08f55196a46296a1)
+
+running 1 test
+PASS runtime health & /v1/models (models=[], simd=Some("avx2"))
+PASS proxy health & /v1/models (3 ms, models=["llama3.2:latest", "nomic-embed-text:latest"])
+PASS proxy SSE chat_stream (26 chars)
+test ide_core_uses_real_nexus_proxy_and_runtime ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.11s
+     Running tests/nexus_engine.rs (target/debug/build/p2p-ide-core/08f55196a46296a1/out/nexus_engine-08f55196a46296a1)
+
+running 1 test
+PASS runtime health & /v1/models (models=[], simd=Some("avx2"))
+PASS proxy health & /v1/models (5 ms, models=["nexus-e2e-coder"])
+PASS proxy SSE chat_stream (28 chars)
+PASS proxy agent tool turn (steps=3, tool_calls=2, pending=1)
+test ide_core_uses_real_nexus_proxy_and_runtime ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+Building nexus-proxy and nexus-runtime binaries...
+nexus-runtime ready at http://127.0.0.1:53901
+nexus-proxy (mock mode) ready at http://127.0.0.1:40395
+nexus-proxy (live upstream tool forwarding) ready at http://127.0.0.1:53045

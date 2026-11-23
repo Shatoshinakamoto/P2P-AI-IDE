@@ -83,16 +83,17 @@ export function ChatView({ gateway, workspaceKey, onNotice, onOpenGateways, hasF
   const end = useRef<HTMLDivElement>(null);
 
   // Load the active gateway's models (and keep the last choice when it is still offered).
+  const canUse = Boolean(gateway && (gateway.has_key || gateway.account !== null || gateway.kind === "nexus"));
   useEffect(() => {
     setModels([]);
-    if (!gateway?.has_key) return;
+    if (!gateway || !canUse) return;
     gatewayCheck(gateway.id)
       .then((r) => {
         setModels(r.models);
         setModel((m) => (r.models.includes(m) ? m : (r.models[0] ?? "")));
       })
       .catch((e) => onNotice((e as Error).message));
-  }, [gateway?.id, gateway?.has_key, onNotice]);
+  }, [gateway?.id, canUse, onNotice]);
 
   const refreshChanges = useCallback(async () => {
     try { setChanges(await changesList()); } catch { setChanges([]); }
@@ -257,7 +258,7 @@ export function ChatView({ gateway, workspaceKey, onNotice, onOpenGateways, hasF
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="flex items-center gap-1 px-3 pb-2">
         <select aria-label="Model" value={model} onChange={(e) => setModel(e.target.value)} className="min-w-0 flex-1 rounded border border-ide-line bg-ide-bg px-1 py-1 text-ide-bright">
-          {models.length === 0 ? <option value="">{gateway.has_key ? "no models yet" : "add a key first"}</option> : null}
+          {models.length === 0 ? <option value="">{canUse ? "no models yet" : "add a key or link an account first"}</option> : null}
           {models.map((m) => <option key={m} value={m}>{m}</option>)}
         </select>
         <button
@@ -281,6 +282,9 @@ export function ChatView({ gateway, workspaceKey, onNotice, onOpenGateways, hasF
         <button type="button" aria-label="New chat" title="New chat" onClick={() => setChat(empty("", ""))} className="rounded p-1 hover:bg-ide-hover"><Plus size={16} aria-hidden /></button>
         <button type="button" aria-label="Chat history" aria-pressed={showHistory} title="History" onClick={() => { setShowHistory(!showHistory); void loadHistory(); }} className="rounded p-1 hover:bg-ide-hover"><History size={16} aria-hidden /></button>
       </div>
+      {gateway.kind === "nexus" && gateway.name.startsWith("NEXUS Runtime") && tools && hasFolder ? (
+        <p className="px-3 pb-1.5 text-[11px] text-ide-dim">NEXUS Runtime supports chat only; connect NEXUS Proxy for Agent tools.</p>
+      ) : null}
       {showHistory ? (
         <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto px-3">
           <form className="flex gap-1" onSubmit={(e) => { e.preventDefault(); if (!query.trim()) { setHits(null); return; } chatsSearch(query).then(setHits).catch((er) => onNotice((er as Error).message)); }}>

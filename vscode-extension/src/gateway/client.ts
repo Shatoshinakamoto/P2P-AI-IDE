@@ -35,6 +35,7 @@ import {
   checkModel,
   checkStatus,
   checkUrl,
+  isNexusLoopbackUrl,
   parseModels,
   addPieces,
   answerError,
@@ -54,7 +55,9 @@ export interface StreamEnd {
 /** What the client needs about a gateway. */
 export interface GatewayTarget {
   url: string;
-  key: string | undefined;
+  key?: string | undefined;
+  /** True only when targeting a keyless local NEXUS Engine on 127.0.0.1. */
+  nexus?: boolean;
   /** PEM text of a pinned CA, or undefined for the normal trust roots. */
   caPem?: string;
   /**
@@ -115,16 +118,19 @@ function mapError(e: unknown): NetError {
 
 export class GatewayClient {
   private readonly base: URL;
-  private key: string;
+  private key: string | undefined;
   private readonly caPem: string | undefined;
   private readonly renew: (() => Promise<string | undefined>) | undefined;
 
   /** @throws NetError `no_key` without a key, `bad_request` for a URL that fails `checkUrl`. */
   constructor(t: GatewayTarget) {
-    if (!t.key) throw new NetError("no_key");
     const url = checkUrl(t.url);
     // SECURITY: the URL is re-checked here, so a stored value edited by hand can't reach another scheme (CWE-20).
     if (url === null) throw new NetError("bad_request", "the gateway address is not valid");
+    if (t.nexus && !isNexusLoopbackUrl(url)) {
+      throw new NetError("bad_request", "NEXUS Engine may run only on 127.0.0.1");
+    }
+    if (!t.key && !t.nexus) throw new NetError("no_key");
     this.base = new URL(url);
     this.key = t.key;
     this.caPem = t.caPem;
@@ -262,8 +268,8 @@ export class GatewayClient {
       checkApiPath(path);
       const secure = this.base.protocol === "https:";
       const headers: Record<string, string | number> = {
-        // SECURITY: the key goes only in this header, to this host (CWE-522).
-        Authorization: `Bearer ${this.key}`,
+        // SECURITY: the key (when present) goes only in this header, to this host (CWE-522).
+        ...(this.key ? { Authorization: `Bearer ${this.key}` } : {}),
         Accept: accept,
         "User-Agent": "p2p-ai-vscode/0.1",
       };

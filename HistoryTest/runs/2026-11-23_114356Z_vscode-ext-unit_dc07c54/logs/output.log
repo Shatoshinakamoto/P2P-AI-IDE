@@ -1,0 +1,298 @@
+TAP version 13
+# Subtest: address and gateway id rules match the IDE core
+ok 1 - address and gateway id rules match the IDE core
+  ---
+  duration_ms: 3.25569
+  type: 'test'
+  ...
+# Subtest: sign-in link: our client, S256, loopback return, URL-safe
+ok 2 - sign-in link: our client, S256, loopback return, URL-safe
+  ---
+  duration_ms: 1.306474
+  type: 'test'
+  ...
+# Subtest: callback: state, iss, path, method and repeated parameters
+ok 3 - callback: state, iss, path, method and repeated parameters
+  ---
+  duration_ms: 1.729169
+  type: 'test'
+  ...
+# Subtest: token errors map to fixed messages
+ok 4 - token errors map to fixed messages
+  ---
+  duration_ms: 1.160605
+  type: 'test'
+  ...
+# Subtest: sign in, token cache and rotation, sign out
+ok 5 - sign in, token cache and rotation, sign out
+  ---
+  duration_ms: 83.766683
+  type: 'test'
+  ...
+# Subtest: one-time password: no gateway token until changed; short one refused before sending
+ok 6 - one-time password: no gateway token until changed; short one refused before sending
+  ---
+  duration_ms: 29.357633
+  type: 'test'
+  ...
+# Subtest: a token for another audience is refused; a dead session forgets the token
+ok 7 - a token for another audience is refused; a dead session forgets the token
+  ---
+  duration_ms: 16.594956
+  type: 'test'
+  ...
+# Subtest: sign-in: cancel stops the wait; a browser that cannot open fails; wrong requests do not finish it
+ok 8 - sign-in: cancel stops the wait; a browser that cannot open fails; wrong requests do not finish it
+  ---
+  duration_ms: 59.047042
+  type: 'test'
+  ...
+# Subtest: an edited state file cannot point a secret at another home
+ok 9 - an edited state file cannot point a secret at another home
+  ---
+  duration_ms: 0.761965
+  type: 'test'
+  ...
+# Subtest: shared: tool definitions and system prompt
+ok 10 - shared: tool definitions and system prompt
+  ---
+  duration_ms: 2.719657
+  type: 'test'
+  ...
+# Subtest: shared: path rules
+ok 11 - shared: path rules
+  ---
+  duration_ms: 1.204386
+  type: 'test'
+  ...
+# Subtest: shared: deny list and path normalising
+ok 12 - shared: deny list and path normalising
+  ---
+  duration_ms: 0.75046
+  type: 'test'
+  ...
+# Subtest: shared: edits, line ranges and line counts
+ok 13 - shared: edits, line ranges and line counts
+  ---
+  duration_ms: 15.886294
+  type: 'test'
+  ...
+# Subtest: shared: argument checks
+ok 14 - shared: argument checks
+  ---
+  duration_ms: 1.012183
+  type: 'test'
+  ...
+# Subtest: workspace refuses links, drive roots and escapes
+ok 15 - workspace refuses links, drive roots and escapes
+  ---
+  duration_ms: 20.133998
+  type: 'test'
+  ...
+# Subtest: workspace caps, binary files and the lost-update check
+ok 16 - workspace caps, binary files and the lost-update check
+  ---
+  duration_ms: 13.984957
+  type: 'test'
+  ...
+# Subtest: edits stay pending until accepted; secrets stay hidden
+ok 17 - edits stay pending until accepted; secrets stay hidden
+  ---
+  duration_ms: 12.794026
+  type: 'test'
+  ...
+# Subtest: a turn runs tools, keeps budgets and stops
+ok 18 - a turn runs tools, keeps budgets and stops
+  ---
+  duration_ms: 4.727362
+  type: 'test'
+  ...
+# Subtest: a turn caps tool results at 1 MiB in total
+ok 19 - a turn caps tool results at 1 MiB in total
+  ---
+  duration_ms: 20.399868
+  type: 'test'
+  ...
+# Subtest: streamed tool calls are assembled by index with caps
+ok 20 - streamed tool calls are assembled by index with caps
+  ---
+  duration_ms: 2.253575
+  type: 'test'
+  ...
+# Subtest: models: key only in Authorization, sorted ids
+ok 21 - models: key only in Authorization, sorted ids
+  ---
+  duration_ms: 36.492427
+  type: 'test'
+  ...
+# Subtest: chat streams text and sends only checked fields
+ok 22 - chat streams text and sends only checked fields
+  ---
+  duration_ms: 10.368731
+  type: 'test'
+  ...
+# Subtest: stop aborts a turn
+ok 23 - stop aborts a turn
+  ---
+  duration_ms: 8.402585
+  type: 'test'
+  ...
+# Subtest: a redirect is not followed and the key goes nowhere else
+ok 24 - a redirect is not followed and the key goes nowhere else
+  ---
+  duration_ms: 7.395999
+  type: 'test'
+  ...
+# Subtest: status codes map to fixed errors without the key or address
+ok 25 - status codes map to fixed errors without the key or address
+  ---
+  duration_ms: 15.538413
+  type: 'test'
+  ...
+# Subtest: caps: a huge model list and an endless stream are cut off
+ok 26 - caps: a huge model list and an endless stream are cut off
+  ---
+  duration_ms: 164.581582
+  type: 'test'
+  ...
+# Subtest: bad inputs are refused before any request
+ok 27 - bad inputs are refused before any request
+  ---
+  duration_ms: 1.078818
+  type: 'test'
+  ...
+# Subtest: an unreachable gateway is a fixed connect error
+ok 28 - an unreachable gateway is a fixed connect error
+  ---
+  duration_ms: 7.229738
+  type: 'test'
+  ...
+# Subtest: webview messages are allow-listed and capped
+ok 29 - webview messages are allow-listed and capped
+  ---
+  duration_ms: 2.892642
+  type: 'test'
+  ...
+# Subtest: moves the old globalState values once, then reads and writes the file
+ok 30 - moves the old globalState values once, then reads and writes the file
+  ---
+  duration_ms: 12.530926
+  type: 'test'
+  ...
+# Subtest: broken, oversized or hostile files read as empty
+ok 31 - broken, oversized or hostile files read as empty
+  ---
+  duration_ms: 18.618694
+  type: 'test'
+  ...
+# Subtest: shared: path grammar, ids, encoding and upload names
+ok 32 - shared: path grammar, ids, encoding and upload names
+  ---
+  duration_ms: 3.971521
+  type: 'test'
+  ...
+# Subtest: shared: gateway error codes
+ok 33 - shared: gateway error codes
+  ---
+  duration_ms: 1.670591
+  type: 'test'
+  ...
+# Subtest: shared: push and pull plans
+ok 34 - shared: push and pull plans
+  ---
+  duration_ms: 1.757928
+  type: 'test'
+  ...
+# Subtest: shared: view shapes
+ok 35 - shared: view shapes
+  ---
+  duration_ms: 1.703605
+  type: 'test'
+  ...
+# Subtest: shared: acceptance checks
+ok 36 - shared: acceptance checks
+  ---
+  duration_ms: 0.622184
+  type: 'test'
+  ...
+# Subtest: push sends changes, keeps secrets home and commits with the base version
+ok 37 - push sends changes, keeps secrets home and commits with the base version
+  ---
+  duration_ms: 21.651951
+  type: 'test'
+  ...
+# Subtest: pull brings changes back for review only, checking digests
+ok 38 - pull brings changes back for review only, checking digests
+  ---
+  duration_ms: 14.621839
+  type: 'test'
+  ...
+# Subtest: client: JSON calls, multipart upload and download against a fake gateway
+ok 39 - client: JSON calls, multipart upload and download against a fake gateway
+  ---
+  duration_ms: 56.186496
+  type: 'test'
+  ...
+# Subtest: nexusUrlForPort and isNexusLoopbackUrl allow canonical loopback unprivileged ports only
+ok 40 - nexusUrlForPort and isNexusLoopbackUrl allow canonical loopback unprivileged ports only
+  ---
+  duration_ms: 4.585492
+  type: 'test'
+  ...
+# Subtest: discoverNexusEndpoints reads studio-settings.json and refuses symlinks
+ok 41 - discoverNexusEndpoints reads studio-settings.json and refuses symlinks
+  ---
+  duration_ms: 6.815489
+  type: 'test'
+  ...
+# Subtest: probeNexusEndpoint verifies service identity and cleans telemetry
+ok 42 - probeNexusEndpoint verifies service identity and cleans telemetry
+  ---
+  duration_ms: 55.720271
+  type: 'test'
+  ...
+# Subtest: GatewayClient keyless mode works solely for nexus loopback URLs and sends no Authorization
+ok 43 - GatewayClient keyless mode works solely for nexus loopback URLs and sends no Authorization
+  ---
+  duration_ms: 22.324211
+  type: 'test'
+  ...
+# Subtest: a pinned CA is trusted; no pin or another CA is refused
+ok 44 - a pinned CA is trusted; no pin or another CA is refused
+  ---
+  duration_ms: 277.647353
+  type: 'test'
+  ...
+# Subtest: SSE lines
+ok 45 - SSE lines
+  ---
+  duration_ms: 3.647212
+  type: 'test'
+  ...
+# Subtest: model lists and ids
+ok 46 - model lists and ids
+  ---
+  duration_ms: 0.725207
+  type: 'test'
+  ...
+# Subtest: HTTP status
+ok 47 - HTTP status
+  ---
+  duration_ms: 0.461691
+  type: 'test'
+  ...
+# Subtest: URLs, names and keys
+ok 48 - URLs, names and keys
+  ---
+  duration_ms: 1.144152
+  type: 'test'
+  ...
+1..48
+# tests 48
+# suites 0
+# pass 48
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3366.777642

@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "1f94979f6d457463eeba8bd9f46dc97f0623b8a5d8b081b75220e0b28252fc1e",
+   "size": 1491
+  },
+  "command.txt": {
+   "sha256": "94f3d2ccf9851d6a6faaae1e21e982047edfd2171318e512d0ab3b865b43fdc8",
+   "size": 126
+  },
+  "environment.md": {
+   "sha256": "a6ef75dd02efe21a6616fd8b2fd760b43ec8b898684c447888313d6468e541a2",
+   "size": 185
+  },
+  "logs/output.log": {
+   "sha256": "1cdd622014a5aed64ec7eb4525e6897ef33562cac7dda02a2445e5ea92d4a866",
+   "size": 72
+  },
+  "results/summary.txt": {
+   "sha256": "979e61b2df586e842860508bc9f4bebeac76f684d16c7753f880cfeeb4217cfe",
+   "size": 285
+  }
+ },
+ "previous": {
+  "manifest_sha256": "854827f5b5fadb79575fad9f2af45bf94d7f8e7ac64d475f5942fdcc135ddf5d",
+  "run_id": "2026-11-23_114348Z_live-nexus_dc07c54"
+ },
+ "run": {
+  "area": "shell",
+  "branch_or_pr": "",
+  "collected_utc": "",
+  "commit": "dc07c54892d791b3739a3fa897566a292ca8d58a",
+  "count_unit": "",
+  "date_utc": "2026-11-23T11:43:53Z",
+  "dirty": true,
+  "duration_s": 1.9,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-23_114353Z_shell_dc07c54",
+  "kind": "build",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Tauri shell clippy incl. nexus_status and nexus_connect commands",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

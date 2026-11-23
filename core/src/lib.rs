@@ -22,6 +22,7 @@ pub mod extensions;
 pub mod gateways;
 pub mod gwapi;
 pub mod localbox;
+pub mod nexus;
 pub mod node_host;
 pub mod projects;
 pub mod runner;

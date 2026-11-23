@@ -17,7 +17,7 @@
  * Dependencies: the `vscode` API (provided by VS Code at run time), ./gateway/checks.ts, ./accounts.ts.
  */
 import * as vscode from "vscode";
-import { checkKey, checkName, checkUrl } from "./gateway/checks.ts";
+import { checkKey, checkName, checkUrl, isNexusLoopbackUrl } from "./gateway/checks.ts";
 import type { GatewayTarget } from "./gateway/client.ts";
 import type { FileState } from "./fileState.ts";
 import { Accounts, AcctError, linkValid, makeLink, type AccountLink } from "./accounts.ts";
@@ -27,6 +27,8 @@ export interface SavedGateway {
   id: string;
   name: string;
   url: string;
+  /** Local engine kind when saved from NEXUS Engine discovery (no key or account). */
+  kind?: "nexus";
   /** PEM text of a pinned CA, if any. */
   caPem?: string;
   /** Phase A3: sign in with this account instead of the key (no secret in it). */
@@ -69,15 +71,25 @@ export class GatewayStore {
     const out: SavedGateway[] = [];
     for (const g of raw.slice(0, MAX_GATEWAYS)) {
       if (typeof g !== "object" || g === null) continue;
-      const { id, name, url, caPem, account } = g as Record<string, unknown>;
+      const { id, name, url, kind, caPem, account } = g as Record<string, unknown>;
       // SECURITY: stored values are untrusted too; anything that doesn't pass the same checks is dropped.
       if (typeof id !== "string" || !/^[a-z0-9]{8,32}$/.test(id)) continue;
       if (typeof name !== "string" || checkName(name) !== name) continue;
       if (typeof url !== "string" || checkUrl(url) !== url) continue;
+      if (kind !== undefined && kind !== "nexus") continue;
+      if (kind === "nexus" && !isNexusLoopbackUrl(url)) continue;
       if (caPem !== undefined && (typeof caPem !== "string" || !caLooksValid(caPem))) continue;
       // SECURITY: a damaged account link drops only the link, so the gateway falls back to its key (CWE-20).
-      const acct = linkValid(account) ? { home: account.home, audience: account.audience } : undefined;
-      out.push({ id, name, url, caPem: caPem as string | undefined, ...(acct ? { account: acct } : {}) });
+      // Local NEXUS Engine entries never link to a remote account.
+      const acct = kind !== "nexus" && linkValid(account) ? { home: account.home, audience: account.audience } : undefined;
+      out.push({
+        id,
+        name,
+        url,
+        ...(kind === "nexus" ? { kind: "nexus" as const } : {}),
+        caPem: caPem as string | undefined,
+        ...(acct ? { account: acct } : {}),
+      });
     }
     return out;
   }
@@ -136,11 +148,15 @@ export class GatewayStore {
    * key. Rejects with an AcctError (a fixed message) when the account cannot give a token.
    */
   async credential(gw: SavedGateway): Promise<string | undefined> {
+    if (gw.kind === "nexus") return undefined;
     return gw.account ? this.accounts.tokenFor(gw.account) : this.key(gw.id);
   }
 
   /** Everything GatewayClient needs for `gw`; an account-linked gateway also gets `renew` for later requests. */
   async target(gw: SavedGateway): Promise<GatewayTarget> {
+    if (gw.kind === "nexus") {
+      return { url: gw.url, nexus: true };
+    }
     const link = gw.account;
     return { url: gw.url, key: await this.credential(gw), caPem: gw.caPem, ...(link ? { renew: () => this.accounts.tokenFor(link) } : {}) };
   }
@@ -157,13 +173,39 @@ export class GatewayStore {
       link = l;
     }
     const all = this.list();
-    if (!all.some((g) => g.id === id)) return "that gateway is no longer saved";
+    const target = all.find((g) => g.id === id);
+    if (!target) return "that gateway is no longer saved";
+    if (target.kind === "nexus" && link) return "NEXUS Engine runs on this computer without an account";
     await this.state.update(LIST_KEY, all.map((g) => {
       if (g.id !== id) return g;
       const { account: _old, ...rest } = g;
       return link ? { ...rest, account: link } : rest;
     }));
     this.changed.fire();
+    return undefined;
+  }
+
+  /**
+   * Saves (or updates) a local NEXUS Proxy or NEXUS Runtime entry and makes it active.
+   * No API key is stored; local NEXUS Engine instances authenticate by loopback binding (`127.0.0.1`) only.
+   */
+  async saveNexus(url: string, name: string): Promise<string | undefined> {
+    if (!isNexusLoopbackUrl(url)) return "NEXUS Engine addresses must be http://127.0.0.1:<port>";
+    const n = checkName(name);
+    if (n === null) return "give the gateway a name (1 to 64 characters on one line)";
+    const prefix = n.startsWith("NEXUS Runtime") ? "NEXUS Runtime" : n.startsWith("NEXUS Proxy") ? "NEXUS Proxy" : "";
+    const all = this.list();
+    if (all.some((g) => g.url === url && g.kind !== "nexus")) return "that gateway is already saved";
+    const match = all.find((g) => g.kind === "nexus" && (g.url === url || (prefix !== "" && g.name.startsWith(prefix))));
+    if (match) {
+      await this.state.update(LIST_KEY, all.map((g) => (g.id === match.id ? { id: match.id, name: n, url, kind: "nexus" as const } : g)));
+      await this.setActive(match.id);
+      return undefined;
+    }
+    if (all.length >= MAX_GATEWAYS) return "at most 32 gateways can be saved";
+    const id = Buffer.from(crypto.getRandomValues(new Uint8Array(8))).toString("hex");
+    await this.state.update(LIST_KEY, [...all, { id, name: n, url, kind: "nexus" as const }]);
+    await this.setActive(id);
     return undefined;
   }
 

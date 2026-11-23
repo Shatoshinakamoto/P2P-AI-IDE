@@ -28,10 +28,10 @@ If you have used VS Code, you will feel at home:
 
 - **Activity bar** (the icons on the far left), top to bottom: Explorer, Search, Source control, Run and test, Agent
   chat, Missions, Gateways, Extensions (themes, grammars, snippets, web extensions and Node extensions from Open VSX; see
-  [features/extensions.md](features/extensions.md)). Node extensions run only after you trust the folder in the
-  **Node extensions** panel there and start the Node extension host (downloaded once, about 90 MB; see
-  [features/node-extensions-design.md](features/node-extensions-design.md)). In this build the panel says Node
-  extensions can't run yet: they need a Node extension host built from the same VS Code version as the editor.
+  [features/extensions.md](features/extensions.md)). Node extensions run after you trust the folder in the
+  **Node extensions** panel and start the Node extension host (downloaded once, about 90 MB; optional
+  Electron compatibility host in I6d on Windows x64 and Linux x64 — macOS & Linux arm64 hosts wait for a builder; see
+  [features/node-extensions-design.md](features/node-extensions-design.md)).
 - **Side panel** next to it shows the view you picked.
 - **Editor** in the middle, with tabs.
 - **Status bar** at the bottom: the active gateway, where tools run (Tools: Local), the latest message, the
@@ -66,6 +66,7 @@ The branch icon opens **Source control**, which uses the git already installed o
 - **Changes** lists modified and new files; **+** stages one, **Stage all** stages everything.
 - **Staged** lists what goes into the next commit; click a file to see its diff.
 - Type a **commit message** and press **Commit**. Commits stay on your computer.
+- **From the agent**: when a gateway proposes a checkpoint commit in `local` mode, review its message and diff, then press **Commit** (using your own git identity) or **Reject**.
 - **History** shows the latest commits.
 
 For safety, the IDE turns off the repository's own hooks and programs (filters, signing) when it runs git. If a
@@ -86,6 +87,13 @@ The agent's models run on a P2P-AI **gateway**. Open the **Gateways** view (the 
 4. **TandemForge on this computer**: if you run TandemForge, it can lend the IDE its local models. In TandemForge
    open Settings, Connected apps, and press **Connect**; copy the code it shows once. Here press **Pair with
    TandemForge** and paste it. Nothing leaves your computer.
+5. **NEXUS Engine on this computer**: if you run **NEXUS Proxy** (`127.0.0.1:11435`, Agent chat + Context Packer +
+   Data Airlock) or **NEXUS Runtime** (`127.0.0.1:11436`, native `.nexus` chat), the **NEXUS Engine** panel detects
+   them automatically (including custom ports from `~/.nexus-studio/studio-settings.json` or a manual `127.0.0.1`
+   port) and connects without an API key. Note that NEXUS Runtime is chat-only; use NEXUS Proxy for Agent tools.
+6. **P2P-AI accounts**: under **P2P-AI accounts**, sign in with your account service in your browser once (change any
+   one-time password when asked), then press **Use account** on a gateway and enter the gateway's account id so
+   short-lived 5-minute tokens are fetched automatically instead of storing a static key.
 
 ![Gateways and the public list](images/gateways.png)
 

@@ -371,3 +371,11 @@ export function answerError(status: number, body: string): NetError {
   }
   return new NetError("status", status);
 }
+
+/** True only for `http://127.0.0.1:<port>` where `<port>` is canonical digits in `1024..=65535` (CWE-918). */
+export function isNexusLoopbackUrl(url: string): boolean {
+  const rest = url.startsWith("http://127.0.0.1:") ? url.slice("http://127.0.0.1:".length) : "";
+  if (!/^[1-9]\d{3,4}$/.test(rest)) return false;
+  const port = Number(rest);
+  return port >= 1024 && port <= 65535;
+}

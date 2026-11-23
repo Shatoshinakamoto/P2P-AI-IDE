@@ -2,6 +2,19 @@
 
 Every security patch, hardening change, CVE remediation and accepted risk, newest first.
 
+## 2026-11-23 — NEXUS Engine support: keyless loopback boundary and studio settings discovery
+- **Type:** hardening (new local engine integration)
+- **CVE / CWE / advisory:** none; controls for CWE-20, CWE-59, CWE-79, CWE-209, CWE-287, CWE-400, CWE-522, CWE-601, CWE-918, NIST SP 800-53 SC-7 / IA-5
+- **Severity:** n/a (new feature)
+- **Affected:** `core/src/nexus.rs` (new), `core/src/gateways.rs`, `core/src/client.rs`, `core/src/gwapi.rs`, `app/src-tauri/src/{net,main}.rs`, `app/src/{ipc,components/{NexusConnect,NetworkView,ChatView,MissionsView}}.tsx`, `vscode-extension/src/{nexus,gateways,extension,chatView,missionsView}.ts`, `vscode-extension/src/gateway/{checks,client}.ts`
+- **What changed:** added discovery and health verification for local NEXUS Proxy (`127.0.0.1:11435`) and NEXUS Runtime (`127.0.0.1:11436`) without API keys.
+- **Why it is secure now:**
+  - `Kind::Nexus` / `kind: "nexus"` enforces canonical `http://127.0.0.1:<port>` (`1024..=65535`, no path/query/userinfo) on save, on `GatewayStore::open` / `GatewayStore.list()`, and in `Client::new` / `GatewayClient` before any HTTP request (`NIST SC-7`, `CWE-918`).
+  - `key = None` is permitted **only** when `kind == Kind::Nexus` on a verified `127.0.0.1` loopback URL (`Authorization` header omitted); all remote, manual, `Local`, and `TandemForge` gateways continue to fail closed (`NetError::NoKey`) without credentials (`CWE-287`).
+  - Reading `~/.nexus-studio/studio-settings.json` is capped at 64 KiB and refuses symlinks (`store::read_capped` / `fs.lstatSync`, `CWE-59`, `CWE-400`); HTTP probes use 2 s timeouts, 64 KiB body caps, `max_redirects(0)`, and no env proxy (`CWE-601`); account links (`gateway_set_account`) are refused on `Kind::Nexus` so remote bearer tokens can never be sent to local engines (`CWE-522`).
+  - Telemetry strings (`simd`, model modes) are ASCII-sanitized and rendered strictly as React / DOM text (`CWE-79`); errors use fixed strings with no raw paths or URLs (`CWE-209`).
+- **Verification:** HistoryTest runs `2026-11-23_114345Z_core_dc07c54` (core), `2026-11-23_114348Z_live-nexus_dc07c54` (live NEXUS proxy + runtime E2E), `2026-11-23_114353Z_shell_dc07c54` (Tauri shell), `2026-11-23_114250Z_ui_dc07c54` (UI smoke 133/133), `2026-11-23_114356Z_vscode-ext-unit_dc07c54` (extension 48/48), `2026-11-23_114426Z_security-scan_dc07c54`, and `2026-11-23_114428Z_vscode-ext-audit_dc07c54`.
+
 ## 2026-11-23 — Agent commits: applying a gateway patch to the person's repository
 - **Type:** hardening (new feature with its controls)
 - **CVE / CWE / advisory:** none; controls for CWE-20, CWE-22, CWE-59, CWE-73, CWE-77, CWE-88, CWE-367, CWE-460, CWE-829
