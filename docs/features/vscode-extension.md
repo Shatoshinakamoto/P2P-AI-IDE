@@ -15,6 +15,10 @@ X1 adds:
 * commands **P2P-AI: Add Gateway, Pick Gateway, Pick Model, Set Gateway Key, Remove Gateway, New Chat**;
 * gateways saved by name and address, keys in VS Code's secret storage, an optional pinned CA per gateway.
 
+Accounts (P2P-AI ADR-030 phase A3, 2026-11-23; [account-sign-in.md](account-sign-in.md#vs-code-and-vscodium-extension)) adds
+commands **P2P-AI: Sign In with a P2P-AI Account, Change Account Password, Sign Out of a P2P-AI Account, Use a P2P-AI
+Account for a Gateway, Use the Key for a Gateway**: a saved gateway can sign in with an account instead of its key.
+
 X2 adds, like the IDE's phase I3 ([agent-tools.md](agent-tools.md)):
 
 * a **Tools** switch in the chat (on by default). With a trusted local folder open, the model can list folders, read
@@ -179,6 +183,10 @@ To let the assistant work on your code (X2): open a folder and trust it, keep **
 "the total in orders.py is wrong, fix it". Its steps show in the chat. Then, under **Changes to review**, click
 **Review** to see the diff, and **Accept** (or the ✓ in the diff's title bar) to save it, or **Reject**. Untick
 **Tools** for a plain chat that sends no files. 
+
+To use a P2P-AI account instead of a key (A3): run **P2P-AI: Sign In with a P2P-AI Account**, type the account
+service address and finish in your browser (change the one-time password if asked), then run **P2P-AI: Use a P2P-AI
+Account for a Gateway**, pick the gateway and the account, and type the gateway's account id.
 
 For missions (X3): in the **Missions** view click **Pick a project** (or type a name and **Create project**), then
 **Send folder to the project**. Tick **Autopilot** (or **Auto Improve**), type a goal, pick a model and click

@@ -3,17 +3,21 @@
  *
  * Purpose: registers the chat view, the Missions view (X3), the diff review of proposed changes and the commands:
  *   P2P-AI: Add Gateway, Pick Gateway, Pick Model, Set Gateway Key, Remove Gateway, New Chat,
- *   Accept Change, Reject Change (the last two also in the diff editor's title bar).
+ *   Accept Change, Reject Change (the last two also in the diff editor's title bar), and for P2P-AI accounts
+ *   (phase A3): Sign In with a P2P-AI Account, Change Account Password, Sign Out of a P2P-AI Account, Use a P2P-AI
+ *   Account for a Gateway, Use the Key for a Gateway.
  * Inputs / trust boundary: what the person types into VS Code input boxes and the chat view; gateway answers.
  * Security controls: keys only in SecretStorage and only typed into password input boxes (never echoed, CWE-549);
- * a CA file is read only from a file the person picks, capped and checked (CWE-295); see gateways.ts, chatView.ts
- * and gateway/client.ts for the rest.
+ * a CA file is read only from a file the person picks, capped and checked (CWE-295); account sign-in happens in the
+ * system browser (the extension never sees the password) and passwords for "change password" are typed into password
+ * boxes and dropped after the call; see accounts.ts, gateways.ts, chatView.ts and gateway/client.ts for the rest.
  * Dependencies: the `vscode` API.
  */
 import * as vscode from "vscode";
 import { parseFromMissions } from "./viewMessages.ts";
 import { ChatViewProvider } from "./chatView.ts";
 import { GatewayStore, caLooksValid } from "./gateways.ts";
+import { AcctError, type HomeView } from "./accounts.ts";
 import { ChangeReview } from "./review.ts";
 import { FileState } from "./fileState.ts";
 import { MissionsViewProvider } from "./missionsView.ts";
@@ -46,6 +50,11 @@ export function activate(ctx: vscode.ExtensionContext): void {
     vscode.commands.registerCommand("p2pAi.pickModel", () => chat.pickModel()),
     vscode.commands.registerCommand("p2pAi.setKey", () => setKey(store)),
     vscode.commands.registerCommand("p2pAi.removeGateway", () => removeGateway(store)),
+    vscode.commands.registerCommand("p2pAi.signIn", () => signIn(store, log)),
+    vscode.commands.registerCommand("p2pAi.changeAccountPassword", () => changePassword(store, log)),
+    vscode.commands.registerCommand("p2pAi.signOut", () => signOut(store, log)),
+    vscode.commands.registerCommand("p2pAi.useAccount", () => useAccount(store, log)),
+    vscode.commands.registerCommand("p2pAi.useKey", () => useKey(store, log)),
     vscode.commands.registerCommand("p2pAi.newChat", () => chat.newChat()),
     vscode.commands.registerCommand("p2pAi.acceptChange", decide(true)),
     vscode.commands.registerCommand("p2pAi.rejectChange", decide(false)),
@@ -153,4 +162,128 @@ async function removeGateway(store: GatewayStore): Promise<void> {
   if (!id) return;
   const ok = await vscode.window.showWarningMessage("Remove this gateway and delete its key?", { modal: true }, "Remove");
   if (ok === "Remove") await store.remove(id);
+}
+
+// ---------------------------------------------------------------------------------------------------------------
+// P2P-AI accounts (phase A3; accounts.ts)
+// ---------------------------------------------------------------------------------------------------------------
+
+const errText = (e: unknown): string => (e instanceof AcctError ? e.message : "the account action failed");
+
+/** Picks one remembered account service (or undefined). */
+async function pickHome(store: GatewayStore, title: string, signedInOnly: boolean): Promise<HomeView | undefined> {
+  const homes = (await store.accounts.views()).filter((h) => !signedInOnly || h.signedIn);
+  if (homes.length === 0) {
+    vscode.window.showWarningMessage(signedInOnly ? "No P2P-AI account is signed in (P2P-AI: Sign In with a P2P-AI Account)." : "No P2P-AI account service is remembered yet.");
+    return undefined;
+  }
+  const items = homes.map((h) => ({
+    label: h.email || h.issuer,
+    description: `${h.dev ? "INSECURE — DEV ONLY · " : ""}${h.signedIn ? "signed in" : "signed out"}${h.mustChange ? " · choose your own password" : ""}`,
+    detail: h.issuer,
+    home: h,
+  }));
+  return (await vscode.window.showQuickPick(items, { title }))?.home;
+}
+
+/** Signs in at an account service in the system browser; a cancellable notification waits for it. */
+async function signIn(store: GatewayStore, log: vscode.LogOutputChannel): Promise<void> {
+  const known = await store.accounts.views();
+  const address = await vscode.window.showInputBox({
+    title: "Sign in with a P2P-AI account",
+    prompt: "The account service address (the gateway's operator gives it to you). Sign-in happens in your browser; VS Code never sees your password.",
+    placeHolder: "https://accounts.example.org",
+    value: known[0]?.issuer ?? "",
+    ignoreFocusOut: true,
+  });
+  if (address === undefined) return;
+  try {
+    const view = await vscode.window.withProgress(
+      { location: vscode.ProgressLocation.Notification, title: "Finish signing in in your browser...", cancellable: true },
+      async (_p, token) => {
+        const stop = new AbortController();
+        token.onCancellationRequested(() => stop.abort());
+        // SECURITY: the system browser, never a webview (RFC 8252 8.12); accounts.ts opens only the home's own page.
+        const open = async (url: string): Promise<boolean> => {
+          if (await vscode.env.openExternal(vscode.Uri.parse(url, true))) return true;
+          // No browser opened: offer the link to copy (it holds no secret; the PKCE verifier never leaves the extension).
+          const pick = await vscode.window.showWarningMessage("No browser opened. Copy the sign-in link and open it yourself?", "Copy sign-in link");
+          if (pick) await vscode.env.clipboard.writeText(url);
+          return pick !== undefined;
+        };
+        return store.accounts.signIn(address, open, stop.signal);
+      },
+    );
+    // SECURITY: audit line with fixed words only (NIST AU-2, CWE-117).
+    log.info("account signed_in");
+    if (view.mustChange) {
+      const go = await vscode.window.showWarningMessage("Signed in. This account must choose its own password before it can use gateways.", "Change password");
+      if (go) await changePasswordFor(store, log, view.id);
+    } else vscode.window.showInformationMessage(`Signed in${view.email ? ` as ${view.email}` : ""}. Link a gateway with 'P2P-AI: Use a P2P-AI Account for a Gateway'.`);
+  } catch (e) {
+    log.info("account sign_in_failed");
+    vscode.window.showErrorMessage(errText(e));
+  }
+}
+
+async function changePassword(store: GatewayStore, log: vscode.LogOutputChannel): Promise<void> {
+  const h = await pickHome(store, "Change the password of which account?", true);
+  if (h) await changePasswordFor(store, log, h.id);
+}
+
+/** Replaces the (one-time) password. SECURITY: password boxes (CWE-549); the values are dropped after the call. */
+async function changePasswordFor(store: GatewayStore, log: vscode.LogOutputChannel, id: string): Promise<void> {
+  const current = await vscode.window.showInputBox({ title: "Change password (1/2)", prompt: "Current (or one-time) password", password: true, ignoreFocusOut: true });
+  if (current === undefined) return;
+  const next = await vscode.window.showInputBox({ title: "Change password (2/2)", prompt: "New password, 15 or more characters", password: true, ignoreFocusOut: true });
+  if (next === undefined) return;
+  try {
+    await store.accounts.changePassword(id, current, next);
+    log.info("account password_changed");
+    vscode.window.showInformationMessage("Password changed. Your other signed-in devices were signed out.");
+  } catch (e) {
+    log.info("account password_change_failed");
+    vscode.window.showErrorMessage(errText(e));
+  }
+}
+
+async function signOut(store: GatewayStore, log: vscode.LogOutputChannel): Promise<void> {
+  const h = await pickHome(store, "Sign out of which account?", false);
+  if (!h) return;
+  try {
+    await store.accounts.signOut(h.id);
+    log.info("account signed_out");
+    vscode.window.showInformationMessage("Signed out. Gateways linked to this account need a sign-in again (or their key).");
+  } catch (e) {
+    vscode.window.showErrorMessage(errText(e));
+  }
+}
+
+/** Links a saved gateway to a signed-in account and the gateway's account id. */
+async function useAccount(store: GatewayStore, log: vscode.LogOutputChannel): Promise<void> {
+  const id = await chooseSaved(store, "Use a P2P-AI account for which gateway?");
+  if (!id) return;
+  const h = await pickHome(store, "Which account?", true);
+  if (!h) return;
+  const audience = await vscode.window.showInputBox({
+    title: "The gateway's account id",
+    prompt: "The gateway's account id (its GATEWAY_ID); the gateway's operator gives it to you.",
+    placeHolder: "gw-example-01",
+    ignoreFocusOut: true,
+  });
+  if (audience === undefined) return;
+  const err = await store.setAccount(id, h.issuer, audience);
+  if (err) return void vscode.window.showErrorMessage(err);
+  log.info("account gateway_linked");
+  vscode.window.showInformationMessage("This gateway now signs in with the account. Its key, if any, stays saved for 'P2P-AI: Use the Key for a Gateway'.");
+}
+
+async function useKey(store: GatewayStore, log: vscode.LogOutputChannel): Promise<void> {
+  const linked = store.list().filter((g) => g.account);
+  if (linked.length === 0) return void vscode.window.showWarningMessage("No gateway uses an account.");
+  const pick = await vscode.window.showQuickPick(linked.map((g) => ({ label: g.name, description: g.account?.home, id: g.id })), { title: "Use the key again for which gateway?" });
+  if (!pick) return;
+  const err = await store.setAccount(pick.id, "", "");
+  if (err) return void vscode.window.showErrorMessage(err);
+  log.info("account gateway_unlinked");
 }

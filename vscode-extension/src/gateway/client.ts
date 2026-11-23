@@ -57,6 +57,11 @@ export interface GatewayTarget {
   key: string | undefined;
   /** PEM text of a pinned CA, or undefined for the normal trust roots. */
   caPem?: string;
+  /**
+   * Phase A3: for a gateway linked to a P2P-AI account, gives the current short-lived token before each request (the
+   * account code caches it), so a long agent turn or the missions view never sends an expired token.
+   */
+  renew?: () => Promise<string | undefined>;
 }
 
 const MODELS_TIMEOUT_MS = 15_000;
@@ -110,8 +115,9 @@ function mapError(e: unknown): NetError {
 
 export class GatewayClient {
   private readonly base: URL;
-  private readonly key: string;
+  private key: string;
   private readonly caPem: string | undefined;
+  private readonly renew: (() => Promise<string | undefined>) | undefined;
 
   /** @throws NetError `no_key` without a key, `bad_request` for a URL that fails `checkUrl`. */
   constructor(t: GatewayTarget) {
@@ -122,6 +128,7 @@ export class GatewayClient {
     this.base = new URL(url);
     this.key = t.key;
     this.caPem = t.caPem;
+    this.renew = t.renew;
   }
 
   /** Lists the gateway's model ids and the round-trip time in milliseconds. */
@@ -235,7 +242,7 @@ export class GatewayClient {
   }
 
   /** Makes one request to a path on the gateway and checks its status. */
-  private request(
+  private async request(
     method: "GET" | "POST" | "PUT" | "DELETE",
     path: string,
     body: string | Buffer | undefined,
@@ -244,6 +251,12 @@ export class GatewayClient {
     signal?: AbortSignal,
     extra: { codes?: boolean; contentType?: string } = {},
   ): Promise<http.IncomingMessage> {
+    if (this.renew) {
+      const k = await this.renew();
+      // SECURITY: visible ASCII only, so a token cannot break the header (CWE-113); JWTs can be longer than keys.
+      if (!k || k.length > 4096 || !/^[\x21-\x7e]+$/.test(k)) throw new NetError("no_key");
+      this.key = k;
+    }
     return new Promise((resolve, reject) => {
       if (signal?.aborted) return reject(new NetError("stopped"));
       checkApiPath(path);

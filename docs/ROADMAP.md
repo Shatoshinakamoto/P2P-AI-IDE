@@ -32,7 +32,7 @@ Last checked against `main` (d834367): 2026-11-23.
   - [x] X1 chat view and gateway picker (2026-11-22; real VS Code 1.95.0 and 1.147.0)
   - [x] X2 local agent tools with diff review (2026-11-22; shared agent-tool test cases with the IDE; real VS Code 1.95.0 and 1.147.0)
   - [x] X3 missions (2026-11-22; shared mission test cases with the IDE; real VS Code 1.95.0 and 1.147.0)
-- [x] **Accounts** Sign in to gateways with a P2P-AI account (ADR-030 phase A3, 2026-11-23; [features/account-sign-in.md](features/account-sign-in.md)): system browser with loopback PKCE, refresh token in the OS keychain, 5-minute token per gateway, one-time password change, sign out. Checked end to end with the real account service, Go gateway and Chromium. Still to do: sign-in in the VS Code extension; a desktop-app click-through on the PC
+- [x] **Accounts** Sign in to gateways with a P2P-AI account (ADR-030 phase A3, 2026-11-23; [features/account-sign-in.md](features/account-sign-in.md)): system browser with loopback PKCE, refresh token in the OS keychain, 5-minute token per gateway, one-time password change, sign out. Checked end to end with the real account service, Go gateway and Chromium. The VS Code extension signs in the same way (2026-11-23, five commands). Still to do: a desktop-app click-through on the PC
 
 ## Also shipped
 

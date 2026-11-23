@@ -90,9 +90,26 @@ These are implemented controls, not a compliance assessment.
 For a test on one computer, run the account service with `ACCOUNTS_ALLOW_INSECURE_HTTP=on` on `http://127.0.0.1:<port>`
 (INSECURE — DEV ONLY); see [commands/live-accounts-e2e.md](../commands/live-accounts-e2e.md).
 
+### VS Code and VSCodium extension
+
+The extension (`vscode-extension/src/accounts.ts`, 2026-11-23) is a TypeScript port of `core/src/accounts.rs` with the
+same rules, messages and client id (`p2p-ai-ide`):
+
+* **P2P-AI: Sign In with a P2P-AI Account** asks for the address, opens the home's sign-in page with
+  `vscode.env.openExternal` (the system browser, never a webview) and waits in a cancellable notification. If no browser
+  opens, it offers to copy the sign-in link (the link holds no secret; the PKCE verifier stays in the extension).
+* **P2P-AI: Change Account Password** (password boxes), **P2P-AI: Sign Out of a P2P-AI Account**.
+* **P2P-AI: Use a P2P-AI Account for a Gateway** links a saved gateway (account service + the gateway's account id);
+  **P2P-AI: Use the Key for a Gateway** goes back. The key stays saved.
+* Refresh tokens are in VS Code's SecretStorage (`p2pAi.accountRefresh.<home id>`, the OS keychain where VS Code has
+  one); remembered homes (no secret) are in the extension's state file under `p2pAi.accounts`; access tokens only in
+  memory. The gateway client asks for the current token before every request (`renew`), so a long agent turn or the
+  Missions view's timer never sends an expired token.
+* Audit lines (fixed words) go to the **P2P-AI** output channel.
+
 ## 5. Dependencies
 
-No new crates or npm packages. The sign-in uses crates the core already had: ureq 3.5.2 (rustls), serde_json 1.0.154,
+No new crates or npm packages (the extension uses Node's built-in `http`, `https` and `crypto`). The sign-in uses crates the core already had: ureq 3.5.2 (rustls), serde_json 1.0.154,
 sha2 0.10.9, base64 0.22.1, getrandom 0.2.17; the shell uses keyring 4.2.0. `cargo audit` was run on 2026-11-23 (see
 the security-scan run in section 8).
 
@@ -104,7 +121,8 @@ the security-scan run in section 8).
 * Passkeys and two-step codes work because they happen on the home's own page; managing passkeys and sessions from the
   IDE is not built yet (use the home's API).
 * Ending one session at the home does not revoke access tokens already issued from it; they run out within 5 minutes.
-* The VS Code extension (side track X) still uses keys only.
+* The VS Code extension uses VS Code's SecretStorage; where VS Code has no OS keychain (some Linux desktops) it keeps
+  secrets in its own weaker store. It may also route requests through VS Code's configured proxy (TLS stays end to end).
 * On Linux the browser opens through `xdg-open`; without a desktop session the sign-in cannot start.
 
 ## 7. Troubleshooting
