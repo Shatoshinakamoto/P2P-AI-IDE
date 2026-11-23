@@ -10,6 +10,7 @@
 //! ([`tandemforge`]) and uses it as a model engine.
 //! Dependencies: serde, serde_json, sha2, ureq (see Cargo.toml).
 
+pub mod accounts;
 pub mod agent;
 pub mod chats;
 pub mod client;

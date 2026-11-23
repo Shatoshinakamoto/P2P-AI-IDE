@@ -1,0 +1,175 @@
+   Compiling p2p-ide-core v0.1.0 (/home/user/P2P-AI-IDE/core)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.19s
+     Running unittests src/lib.rs (target/debug/deps/p2p_ide_core-932e66418f30cb94)
+
+running 128 tests
+test accounts::tests::audiences_follow_the_go_rule ... ok
+test accounts::tests::callback_checks_path_state_iss_and_duplicates ... ok
+test accounts::tests::home_addresses_are_allow_listed ... ok
+test accounts::tests::an_edited_file_cannot_point_an_id_at_another_home ... ok
+test accounts::tests::pkce_is_s256_of_a_43_char_verifier_and_fresh_each_time ... ok
+test accounts::tests::query_codec_round_trips_and_refuses_bad_escapes ... ok
+test accounts::tests::token_errors_map_to_fixed_kinds ... ok
+test agent::tests::a_turn_runs_tools_and_ends_with_text ... ok
+test agent::tests::a_turn_stops_at_the_step_budget_and_on_stop ... ok
+test agent::tests::edits_stay_pending_until_accepted ... ok
+test agent::tests::multi_line_edits_match_windows_line_endings ... ok
+test accounts::tests::tokens_are_cached_rotation_is_stored_and_a_dead_session_signs_out ... ok
+test agent::tests::read_tools_work_and_hide_secrets ... ok
+test agent::tests::secrets_are_denied ... ok
+test agent::vectors::argument_cases ... ok
+test agent::tests::run_tools_go_through_the_runner_only ... ok
+test agent::vectors::deny_and_norm_cases ... ok
+test agent::vectors::rel_path_cases ... ok
+test agent::vectors::tool_defs_and_prompt_match ... ok
+test chats::tests::bad_chats_and_ids_are_refused ... ok
+test agent::vectors::edit_range_and_delta_cases ... ok
+test chats::tests::scopes_keep_workspaces_apart_and_hide_the_path ... ok
+test chats::tests::titles_and_previews_are_one_line_and_bounded ... ok
+test client::tests::a_pinned_ca_without_a_certificate_is_refused ... ok
+test client::tests::agent_step_sends_tools_and_returns_calls ... ok
+test client::tests::model_lists_are_cleaned ... ok
+test client::tests::no_key_and_unreachable_gateways_fail_cleanly ... ok
+test client::tests::requests_are_checked_before_sending ... ok
+test client::tests::sse_lines_parse_to_fixed_items ... ok
+test client::tests::status_codes_map_to_fixed_errors_and_redirects_are_not_followed ... ok
+test client::tests::stream_reader_collects_stops_and_caps ... ok
+test client::tests::streamed_tool_calls_are_assembled_by_index ... ok
+test client::tests::streams_a_chat_from_a_fake_gateway_with_the_key_in_the_header ... ok
+test container::tests::images_follow_the_framework_and_unknown_ones_are_refused ... ok
+test container::tests::run_arguments_are_locked_down ... ok
+test discovery::tests::api_origin_only_takes_an_origin ... ok
+test discovery::tests::directories_are_checked_and_saved ... ok
+test discovery::tests::public_only_never_connects_to_loopback ... ok
+test discovery::tests::strict_json_refuses_duplicates_and_floats ... ok
+test discovery::tests::urls_refuse_private_and_tricky_hosts ... ok
+test electron_host::tests::classify_and_scan_native_modules ... ok
+test electron_host::tests::download_checks_the_hash ... ok
+test electron_host::tests::ensure_installed_downloads_once_and_needs_the_program ... ok
+test electron_host::tests::launcher_adds_only_run_as_node ... ok
+test electron_host::tests::pins_are_well_formed_and_cover_the_server_platforms ... ok
+test electron_host::tests::switch_is_off_by_default_and_only_on_means_on ... ok
+test electron_host::tests::unpack_keeps_files_skips_the_setuid_helper_and_refuses_bad_entries ... ok
+test ext_net::tests::calls_carry_bodies_as_base64 ... ok
+test ext_net::tests::methods_and_headers_are_checked ... ok
+test ext_net::tests::only_public_https_hosts ... ok
+test ext_net::tests::redirects_are_checked_each_time ... ok
+test extensions::tests::input_allow_lists ... ok
+test extensions::tests::installs_a_signed_declarative_extension_and_reads_its_files ... ok
+test extensions::tests::live_open_vsx_install ... ignored
+test extensions::tests::read_file_cannot_leave_the_extension ... ok
+test extensions::tests::refuses_a_bad_or_missing_signature ... ok
+test extensions::tests::refuses_a_changed_file ... ok
+test extensions::tests::refuses_a_manifest_for_another_extension ... ok
+test extensions::tests::refuses_node_extensions_and_installs_web_ones ... ok
+test accounts::tests::loopback_wait_stops_on_cancel_and_deadline ... ok
+test extensions::tests::search_parses_and_drops_bad_rows ... ok
+test gateway_vectors::model_cases ... ok
+test gateway_vectors::sse_cases ... ok
+test gateway_vectors::status_cases ... ok
+test gateway_vectors::url_name_and_key_cases ... ok
+test gateways::account_link_tests::a_gateway_links_to_an_account_but_tandemforge_never_does ... ok
+test gateways::tandemforge_tests::one_tandemforge_entry_on_loopback_with_its_code_in_the_keychain ... ok
+test gateways::tests::add_list_activate_remove_keeps_keys_out_of_the_file ... ok
+test gateways::tests::an_edited_file_with_a_bad_url_is_refused ... ok
+test gateways::tests::error_messages_carry_no_input ... ok
+test gateways::tests::names_keys_and_cas_are_checked ... ok
+test gateways::tests::setup_folder_gives_port_and_ca_but_never_secrets ... ok
+test gateways::tests::urls_are_allow_listed ... ok
+test gwapi::tests::errors_use_fixed_messages_only ... ok
+test gwapi::tests::paths_are_encoded_and_names_checked ... ok
+test extensions::tests::refuses_zip_slip_and_leaves_nothing ... ok
+test localbox::tests::the_seccomp_program_is_well_formed ... ok
+test node_host::tests::download_needs_the_pinned_hash ... ok
+test node_host::tests::editor_folder_drops_the_verbatim_prefix_and_refuses_shares ... ok
+test node_host::tests::env_and_port_parsing ... ok
+test node_host::tests::pins_fail_closed_and_check_shape ... ok
+test node_host::tests::stage_copies_only_enabled_node_extensions ... ok
+test node_host::tests::start_needs_trust_and_passes_no_secrets ... ok
+test node_host::tests::trust_is_per_canonical_folder ... ok
+test node_host::tests::unpack_refuses_unsafe_entries ... ok
+test projects::tests::acceptance_checks_are_strict ... ok
+test projects::tests::downloads_must_match_their_digest_and_be_text ... ok
+test projects::tests::gateway_paths_follow_the_grammar ... ok
+test projects::tests::gateway_views_are_cleaned_and_capped ... ok
+test projects::tests::links_are_saved_per_folder_and_gateway ... ok
+test projects::tests::push_and_pull_plans_compare_digests ... ok
+test projects::tests::push_keeps_secrets_and_odd_names_home ... ok
+test projects::vectors::acceptance_checks ... ok
+test projects::vectors::error_codes ... ok
+test projects::vectors::grammar_ids_encoding_and_names ... ok
+test projects::vectors::push_and_pull_plans ... ok
+test projects::vectors::view_shapes ... ok
+test runner::tests::gateway_answers_are_cleaned_and_capped ... ok
+test runner::tests::requests_are_checked ... ok
+test runner::tests::words_split_like_the_missions_view ... ok
+test scm::tests::log_is_parsed_and_cleaned ... ok
+test accounts::tests::loopback_ignores_strangers_then_takes_the_code ... ok
+test scm::tests::repository_settings_that_run_programs_are_refused ... ok
+test scm::tests::status_is_parsed_and_odd_paths_get_no_actions ... ok
+test store::tests::files_are_owner_only_and_links_refused ... ok
+test store::tests::ids_are_unique_and_checked ... ok
+test store::tests::write_read_replace_and_caps ... ok
+test tandemforge::tests::codes_and_urls ... ok
+test tandemforge::tests::data_dirs_per_os ... ok
+test tandemforge::tests::reads_the_port_strictly ... ok
+test testparse::tests::frameworks_match_the_gateway ... ok
+test testparse::tests::hostile_output_is_bounded ... ok
+test testparse::tests::summaries_are_read ... ok
+test workspace::tests::create_new_file_only_in_existing_folder ... ok
+test workspace::tests::error_messages_never_contain_paths ... ok
+test workspace::tests::folder_swapped_for_a_link_after_open_is_still_refused ... ok
+test workspace::tests::listing_is_sorted_folders_first ... ok
+test workspace::tests::name_is_folder_name_only ... ok
+test workspace::tests::open_refuses_relative_missing_file_and_root ... ok
+test workspace::tests::read_and_save_with_version_check ... ok
+test workspace::tests::search_finds_plain_text_and_skips_build_folders ... ok
+test workspace::tests::size_and_text_limits ... ok
+test workspace::tests::symlink_out_of_workspace_is_refused ... ok
+test workspace::tests::traversal_and_odd_paths_are_refused ... ok
+test workspace::tests::workspace_follows_its_folder_when_it_is_renamed ... ok
+test scm::tests::real_git_round_trip_without_hooks ... ok
+test chats::tests::save_list_load_search_delete ... ok
+test localbox::tests::local_runs_are_confined ... ok
+
+test result: ok. 127 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 10.83s
+
+     Running tests/discovery.rs (target/debug/deps/discovery-ce00ef23a422b97b)
+
+running 5 tests
+test bad_directories_are_skipped_without_fetching ... ok
+test forged_probe_gives_no_latency ... ok
+test tampering_and_bad_fields_are_refused ... ok
+test shared_vectors_verify_like_the_node ... ok
+test listing_verifies_dedupes_probes_and_counts_rejections ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running tests/node_host_real.rs (target/debug/deps/node_host_real-06c3cd4ef7e30c20)
+
+running 1 test
+test the_pinned_server_downloads_starts_and_needs_its_token ... ignored, downloads the real pinned server (about 90 MB); run on the PC
+
+test result: ok. 0 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/projects.rs (target/debug/deps/projects-6f7160b8db1c0510)
+
+running 2 tests
+test a_commit_on_a_changed_project_is_refused_not_overwritten ... ok
+test push_sends_the_folder_without_secrets_and_pull_brings_changes_for_review ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/tandemforge_engine.rs (target/debug/deps/tandemforge_engine-f8402529482a734e)
+
+running 1 test
+test ide_core_uses_tandemforge_as_its_engine ... ignored, needs a running TandemForge backend; see the file header
+
+test result: ok. 0 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests p2p_ide_core
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

@@ -23,6 +23,7 @@
 
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod account;
 mod agent;
 mod agent_commits;
 mod ext;
@@ -67,6 +68,9 @@ struct AppState {
     run_decision: Arc<Mutex<Option<WaitingRun>>>,
     /// Phase I6a: one extension install at a time.
     ext_busy: AtomicBool,
+    /// Phase A3: one account sign-in waiting for the browser at a time, and its Cancel switch.
+    acct_busy: AtomicBool,
+    acct_cancel: Arc<AtomicBool>,
 }
 
 /// What the webview learns about the open workspace: its name only.
@@ -174,6 +178,8 @@ fn main() {
             run_decision: Arc::new(Mutex::new(None)),
             scm_busy: AtomicBool::new(false),
             ext_busy: AtomicBool::new(false),
+            acct_busy: AtomicBool::new(false),
+            acct_cancel: Arc::new(AtomicBool::new(false)),
         })
         .invoke_handler(tauri::generate_handler![
             pick_folder,
@@ -183,6 +189,12 @@ fn main() {
             write_file,
             search,
             net::gateways_list,
+            account::accounts_list,
+            account::account_sign_in,
+            account::account_sign_in_cancel,
+            account::account_sign_out,
+            account::account_change_password,
+            account::gateway_set_account,
             net::gateway_add,
             net::gateway_add_local,
             net::gateway_pick_ca,

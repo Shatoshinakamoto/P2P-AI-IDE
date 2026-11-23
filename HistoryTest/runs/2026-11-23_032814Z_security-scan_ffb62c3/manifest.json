@@ -1,0 +1,62 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "ed0a202782c95a1bb8b657e6761f398e411d1aac42c06e56af36c0f18f1ccd28",
+   "size": 1840
+  },
+  "artifacts/a3-scan.sh": {
+   "sha256": "07e2d9cf5c04fccb2226e781f0d9c3549cfeae7b1b3e5099f59bac4165098710",
+   "size": 860
+  },
+  "command.txt": {
+   "sha256": "a9eef29d34d5a57d8e03bf5242e07a645999645876481ceb9238b08ba7d76964",
+   "size": 91
+  },
+  "environment.md": {
+   "sha256": "f6380b9ec61e2e562b9cc23540a14415af4920c802259d43a61b6a9f624a3477",
+   "size": 202
+  },
+  "logs/output.log": {
+   "sha256": "2b21441383f52a0d9571af480853bf3129aac5cf96bef33f94a1aeeae8daf035",
+   "size": 2329
+  },
+  "results/summary.txt": {
+   "sha256": "23bd39a0819dfd08b8ab83a7063144950076cce3a8429766e9cdf698604da21a",
+   "size": 260
+  }
+ },
+ "previous": {
+  "manifest_sha256": "00a0445891d8bf987a571448b66a8705d7da167531c6a11b6b14115972faa7bf",
+  "run_id": "2026-11-23_031903Z_live-accounts_ffb62c3"
+ },
+ "run": {
+  "area": "security-scan",
+  "branch_or_pr": "claude/project-thread-w0i40c",
+  "collected_utc": "",
+  "commit": "ffb62c3d5247f9bff9f1f5e2c034912a9be10971",
+  "count_unit": "",
+  "date_utc": "2026-11-23T03:28:14Z",
+  "dirty": false,
+  "duration_s": 2.1,
+  "exit_code": 0,
+  "failed": 0,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-23_032814Z_security-scan_ffb62c3",
+  "kind": "scan",
+  "machine": "cloud",
+  "passed": 4,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "Finish TandemForge and IDE thread",
+  "shortened_logs": [],
+  "skipped": 1,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "Accounts (A3) security scan: RustSec, npm audit, token grep",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

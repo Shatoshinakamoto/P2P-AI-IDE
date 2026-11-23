@@ -1,0 +1,11 @@
+id: 2026-11-23_031839Z_ui_ffb62c3
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: not recorded
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: 0
+duration_s: 24.0
+commit: ffb62c3d5247f9bff9f1f5e2c034912a9be10971
+machine: cloud

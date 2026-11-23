@@ -42,32 +42,58 @@ use tauri_plugin_dialog::DialogExt;
 /// The OS keychain as a [`SecretStore`]. Account name = gateway id (16 hex), service = [`KEY_SERVICE`].
 pub struct Keychain;
 
-impl Keychain {
-    fn entry(id: &str) -> Result<keyring::Entry, GwError> {
-        // SECURITY: ids are allow-listed before they name a keychain entry (CWE-20).
-        if !store::id_ok(id) {
-            return Err(GwError::NotFound);
-        }
-        keyring::Entry::new(KEY_SERVICE, id).map_err(|_| GwError::Keychain)
+/// Phase A3: the OS keychain for P2P-AI account refresh tokens. Account name = home id (16 hex), service =
+/// [`p2p_ide_core::accounts::TOKEN_SERVICE`], so a gateway key and a sign-in can never overwrite each other.
+pub struct TokenKeychain;
+
+fn entry_in(service: &str, id: &str) -> Result<keyring::Entry, GwError> {
+    // SECURITY: ids are allow-listed before they name a keychain entry (CWE-20).
+    if !store::id_ok(id) {
+        return Err(GwError::NotFound);
+    }
+    keyring::Entry::new(service, id).map_err(|_| GwError::Keychain)
+}
+
+fn kc_get(service: &str, id: &str) -> Result<Option<String>, GwError> {
+    match entry_in(service, id)?.get_password() {
+        Ok(k) => Ok(Some(k)),
+        Err(keyring::Error::NoEntry) => Ok(None),
+        Err(_) => Err(GwError::Keychain),
+    }
+}
+
+fn kc_set(service: &str, id: &str, secret: &str) -> Result<(), GwError> {
+    entry_in(service, id)?.set_password(secret).map_err(|_| GwError::Keychain)
+}
+
+fn kc_delete(service: &str, id: &str) -> Result<(), GwError> {
+    match entry_in(service, id)?.delete_credential() {
+        Ok(()) | Err(keyring::Error::NoEntry) => Ok(()),
+        Err(_) => Err(GwError::Keychain),
     }
 }
 
 impl SecretStore for Keychain {
     fn get(&self, id: &str) -> Result<Option<String>, GwError> {
-        match Self::entry(id)?.get_password() {
-            Ok(k) => Ok(Some(k)),
-            Err(keyring::Error::NoEntry) => Ok(None),
-            Err(_) => Err(GwError::Keychain),
-        }
+        kc_get(KEY_SERVICE, id)
     }
     fn set(&self, id: &str, secret: &str) -> Result<(), GwError> {
-        Self::entry(id)?.set_password(secret).map_err(|_| GwError::Keychain)
+        kc_set(KEY_SERVICE, id, secret)
     }
     fn delete(&self, id: &str) -> Result<(), GwError> {
-        match Self::entry(id)?.delete_credential() {
-            Ok(()) | Err(keyring::Error::NoEntry) => Ok(()),
-            Err(_) => Err(GwError::Keychain),
-        }
+        kc_delete(KEY_SERVICE, id)
+    }
+}
+
+impl SecretStore for TokenKeychain {
+    fn get(&self, id: &str) -> Result<Option<String>, GwError> {
+        kc_get(p2p_ide_core::accounts::TOKEN_SERVICE, id)
+    }
+    fn set(&self, id: &str, secret: &str) -> Result<(), GwError> {
+        kc_set(p2p_ide_core::accounts::TOKEN_SERVICE, id, secret)
+    }
+    fn delete(&self, id: &str) -> Result<(), GwError> {
+        kc_delete(p2p_ide_core::accounts::TOKEN_SERVICE, id)
     }
 }
 
@@ -185,7 +211,12 @@ fn client_for(app: &AppHandle, id: &str) -> Result<(Client, String), String> {
         store.set_tandemforge_url(id, &url).map_err(gw_err)?;
         gw.url = url;
     }
-    let key = Keychain.get(id).map_err(gw_err)?;
+    // Phase A3: a gateway linked to a P2P-AI account uses a fresh 5-minute token from the account service in place
+    // of a stored key. SECURITY: the token stays in Rust memory and only goes to this gateway (CWE-522).
+    let key = match &gw.account {
+        Some(link) => Some(crate::account::token_for(app, link)?),
+        None => Keychain.get(id).map_err(gw_err)?,
+    };
     let name = gw.name.clone();
     Ok((Client::new(&gw, key).map_err(|e| e.message())?, name))
 }
@@ -240,6 +271,7 @@ pub async fn tandemforge_connect(app: AppHandle, code: String) -> Result<Gateway
         url: url.clone(),
         kind: Kind::TandemForge,
         ca_pem: None,
+        account: None,
     };
     let client = Client::new(&probe, Some(code.clone())).map_err(|e| e.message())?;
     let r = tauri::async_runtime::spawn_blocking(move || client.models())

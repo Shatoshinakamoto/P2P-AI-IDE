@@ -1,0 +1,4 @@
+
+> p2p-ai@0.4.0 check
+> tsc -p . --noEmit
+

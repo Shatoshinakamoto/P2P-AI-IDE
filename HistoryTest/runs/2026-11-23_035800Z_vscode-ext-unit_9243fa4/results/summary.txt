@@ -1,0 +1,11 @@
+id: 2026-11-23_035800Z_vscode-ext-unit_9243fa4
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: not recorded
+failed: not recorded
+skipped: not recorded
+count_unit: not recorded
+exit_code: 0
+duration_s: 1.0
+commit: 9243fa421c51189b37a5d7b9fafc6ff3f97736d5
+machine: pc

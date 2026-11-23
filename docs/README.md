@@ -34,6 +34,8 @@ The IDE's plan and its decisions (ADR-029) live in the P2P-AI repository: `docs/
 | [files/third-party-notices.md](files/third-party-notices.md) | `app/src-tauri/THIRD-PARTY-NOTICES.txt`: the licence texts shipped in the installers, how it is generated and checked |
 | [features/vscode-extension.md](features/vscode-extension.md) | Side track X: the P2P-AI extension for VS Code and VSCodium (X1 chat and gateway picker, X2 agent tools with diff review, X3 missions), shared client and agent test cases with the IDE; threat model and controls |
 | [commands/vscode-extension.md](commands/vscode-extension.md) | The extension's npm scripts: check, build, test, integration test in real VS Code, package; chat and Missions view smoke scripts |
+| [features/account-sign-in.md](features/account-sign-in.md) | Phase A3: sign in to gateways with a P2P-AI account (system browser, loopback PKCE, refresh token in the OS keychain, 5-minute gateway tokens); threat model and controls |
+| [commands/live-accounts-e2e.md](commands/live-accounts-e2e.md) | `scripts/live_accounts_e2e.mjs`: live check of account sign-in with the real account service, Go gateway and Chromium (development only) |
 | [features/tandemforge-engine.md](features/tandemforge-engine.md) | Phase I7: use TandemForge on this computer as a model engine (pairing code, loopback only); threat model and controls |
 | [features/installers.md](features/installers.md) | Windows and Linux installers and signed releases, built on the PC with the P2P-AI release script |
 | [files/app-icons.md](files/app-icons.md) | The app icons: P2P-AI logo with the IDE badge, how they are built |

@@ -91,6 +91,7 @@ fn main() {
         url: url.clone(),
         kind: Kind::Manual,
         ca_pem: None,
+        account: None,
     };
     let c = Client::new(&gw, Some(key)).expect("client");
     let mut k = Checks { passed: 0, failed: 0 };
