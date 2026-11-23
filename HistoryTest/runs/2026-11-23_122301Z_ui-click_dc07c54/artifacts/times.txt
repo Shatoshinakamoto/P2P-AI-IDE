@@ -1,0 +1,13 @@
+start 2026-11-23T12:17:43Z  no game running (steam client idle, no steamapps process)
+ide launch 2026-11-23T12:23:00Z
+ide closed 2026-11-23T12:30:42Z
+tf backend start 2026-11-23T12:31:08Z
+tf app launch 2026-11-23T12:31:31Z
+tf release app launch 2026-11-23T12:36:33Z
+ide run2 launch 2026-11-23T12:36:55Z
+ide run2 closed 2026-11-23T12:41:00Z
+tf check trial start 2026-11-23T12:48:20Z
+tf check trial end 2026-11-23T12:49:28Z
+tf check trial finished 2026-11-23T12:49:41Z
+tf closed 2026-11-23T12:50:08Z
+zip 2026-11-23T12:51:16Z

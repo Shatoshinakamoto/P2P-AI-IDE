@@ -1,0 +1,11 @@
+id: 2026-11-23_123656Z_ui-click_ec50694
+verdict: partial
+verdict_reason: not recorded
+passed: 12
+failed: 1
+skipped: 1
+count_unit: not recorded
+exit_code: not recorded
+duration_s: 245.0
+commit: ec50694
+machine: pc

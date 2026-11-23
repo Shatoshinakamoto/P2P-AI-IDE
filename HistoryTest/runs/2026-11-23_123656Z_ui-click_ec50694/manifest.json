@@ -1,0 +1,78 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "f854a93a03678b28b7feb71ce1bb6291f653066d01524dcc1f39f3cb299adbf1",
+   "size": 1942
+  },
+  "artifacts/click-out-binaries.txt": {
+   "sha256": "a9cb45a672f5632c3f14284fa400d85e07353296393b7f022cbef905b3c54aa2",
+   "size": 8131
+  },
+  "command.txt": {
+   "sha256": "1badc5085d381f421fa2d19e453fb89fac7909799bce8288e71a9607c3d3fa3b",
+   "size": 49
+  },
+  "environment.md": {
+   "sha256": "c62f5d8ac9749a37f81a3c5f8827139ceab7e059b012ec487ae023816e8c61cf",
+   "size": 129
+  },
+  "logs/ide2/app-stderr.log": {
+   "sha256": "59be03fcc1ec52a9cee53a6c081c85005a7bac725858d211834a57ee4e01cf70",
+   "size": 200
+  },
+  "logs/ide2/build.log": {
+   "sha256": "6f6efb4de249c87dab5a01b9907b67ddcc28c9148188c9d22e71aca1dad4c24b",
+   "size": 24086
+  },
+  "logs/ide2/console.log": {
+   "sha256": "3bf743a194c17662152f990e734531ab7f130e99e4ef0ca10e1b56f89b8f87e4",
+   "size": 43
+  },
+  "logs/ide2/npm-ci.log": {
+   "sha256": "819c4fba6f8a9d22e909776e57c4736c5d9d2b5653821fac9caeca8ad2f1d280",
+   "size": 144
+  },
+  "logs/ide2/steps.md": {
+   "sha256": "603ccbe052264a6b5494aa80497577b77b7a9cc0bfe646c640fd7abf32a141e1",
+   "size": 3495
+  },
+  "results/summary.txt": {
+   "sha256": "9c53a7f0f27450611ed264f1bf38a7303f177ba7b22d7f0998c78134f86544ce",
+   "size": 213
+  }
+ },
+ "previous": {
+  "manifest_sha256": "d1b5ba2a267067689b2812ee5efa2559417a5cee17c8be7e338e690cfad6653d",
+  "run_id": "2026-11-23_125400Z_ide-pr30_350aa68"
+ },
+ "run": {
+  "area": "ui-click",
+  "branch_or_pr": "main",
+  "collected_utc": "2026-11-23T13:22:52Z",
+  "commit": "ec50694",
+  "count_unit": "",
+  "date_utc": "2026-11-23T12:36:56Z",
+  "dirty": false,
+  "duration_s": 245.0,
+  "exit_code": null,
+  "failed": 1,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-23_123656Z_ui-click_ec50694",
+  "kind": "manual",
+  "machine": "pc",
+  "passed": 12,
+  "record": "imported",
+  "redactions": {},
+  "requested_by": "ide-tf-finish-thread",
+  "shortened_logs": [],
+  "skipped": 1,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "IDE desktop click-through on latest main (run 2, fresh clone)",
+  "verdict": "partial",
+  "verdict_reason": ""
+ },
+ "schema": 1
+}

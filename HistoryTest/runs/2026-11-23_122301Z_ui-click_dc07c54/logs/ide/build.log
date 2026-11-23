@@ -1,0 +1,481 @@
+        Info Looking up installed tauri packages to check mismatched versions...
+     Running beforeBuildCommand `npm run build`
+
+> p2p-ai-ide@0.1.0 build
+> tsc --noEmit && vite build
+
+vite v8.3.8 building client environment for production...
+transforming...
+[plugin rolldown:vite-resolve] Module "node:fs/promises" has been externalized for browser compatibility, imported by "D:/p2p-ai-ci/ide-click/app/node_modules/@vscode/diff/dist/wire.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[plugin rolldown:vite-resolve] Module "node:fs/promises" has been externalized for browser compatibility, imported by "D:/p2p-ai-ci/ide-click/app/node_modules/@vscode/diff/dist/wire.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[plugin rolldown:vite-resolve] Module "node:fs/promises" has been externalized for browser compatibility, imported by "D:/p2p-ai-ci/ide-click/app/node_modules/@vscode/diff/dist/wire.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[plugin rolldown:vite-resolve] Module "node:fs/promises" has been externalized for browser compatibility, imported by "D:/p2p-ai-ci/ide-click/app/node_modules/@vscode/diff/dist/wire.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+✓ 4503 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/assets/__vite-browser-external-BTL7rvht.js                           0.10 kB
+dist/assets/__vite-browser-external-UYcPPjIt.js                           0.10 kB
+dist/assets/jschardet-Cm2z8TWA.js                                         0.20 kB
+dist/index.html                                                           1.54 kB │ gzip:     0.72 kB
+dist/assets/webWorkerExtensionHostIframe-Cln55oZg.html                    3.77 kB │ gzip:     1.49 kB
+dist/assets/javascript-CQTOjwzq.code-snippets                             4.11 kB
+dist/assets/JSONC.tmLanguage-DGdrviQG.json                                4.19 kB │ gzip:     1.22 kB
+dist/assets/dark_modern-DjNuLzCv.json                                     4.90 kB │ gzip:     1.20 kB
+dist/assets/typescript-BgDXb0oW.code-snippets                             5.04 kB
+dist/assets/xml.tmLanguage-D5DjnjsA.json                                  5.61 kB │ gzip:     1.36 kB
+dist/assets/light_modern-C1KegOb-.json                                    5.86 kB │ gzip:     1.39 kB
+dist/assets/Regular_Expressions_(JavaScript)-CTzfUj5i.tmLanguage          5.86 kB
+dist/assets/sassdoc.tmLanguage-DP-P7vDa.json                              6.60 kB │ gzip:     1.75 kB
+dist/assets/php-Cx7DJLWi.code-snippets                                    6.69 kB
+dist/assets/dark_vs-HiVtBCT7.json                                         6.71 kB │ gzip:     1.74 kB
+dist/assets/hc_black-DVuf3XgW.json                                        7.19 kB │ gzip:     1.77 kB
+dist/assets/light_vs-CVY2fmuV.json                                        7.64 kB │ gzip:     1.96 kB
+dist/assets/MagicRegExp.tmLanguage-XKSD9R-M.json                          8.37 kB │ gzip:     1.64 kB
+dist/assets/hc_light-vGZ7P-MS.json                                        8.88 kB │ gzip:     1.82 kB
+dist/assets/yaml-embedded.tmLanguage-BH_-t3A6.json                        9.45 kB │ gzip:     2.32 kB
+dist/assets/batchfile.tmLanguage-Cr0jobHw.json                           13.08 kB │ gzip:     3.45 kB
+dist/assets/lua.tmLanguage-CiPPwmTA.json                                 15.46 kB │ gzip:     3.36 kB
+dist/assets/2026-light-BCxctWqn.json                                     16.44 kB │ gzip:     3.30 kB
+dist/assets/2026-dark-CPx3nGrS.json                                      16.52 kB │ gzip:     3.41 kB
+dist/assets/rust.tmLanguage-DTyCCW7C.json                                17.83 kB │ gzip:     3.59 kB
+dist/assets/yaml-1.0.tmLanguage-CD_pQ-0c.json                            21.00 kB │ gzip:     3.62 kB
+dist/assets/powershell.tmLanguage-CjsUwbrl.json                          22.02 kB │ gzip:     4.84 kB
+dist/assets/sql.tmLanguage-DfXeY0NU.json                                 24.51 kB │ gzip:     8.01 kB
+dist/assets/java.tmLanguage-C3lOwSRs.json                                27.44 kB │ gzip:     4.74 kB
+dist/assets/yaml-1.2.tmLanguage-wtZJkEWj.json                            30.02 kB │ gzip:     4.86 kB
+dist/assets/scss.tmLanguage-XDR0qDuI.json                                30.41 kB │ gzip:     4.71 kB
+dist/assets/yaml-1.1.tmLanguage-B4SOQ8XS.json                            31.62 kB │ gzip:     4.74 kB
+dist/assets/worker-BQocTGt8.js                                           34.54 kB
+dist/assets/shell-unix-bash.tmLanguage-DVSAOcrv.json                     41.43 kB │ gzip:     6.47 kB
+dist/assets/dist-CCcH9WeK.js                                             41.59 kB
+dist/assets/ruby.tmLanguage-BrD9Tc5B.json                                50.17 kB │ gzip:     7.25 kB
+dist/assets/go.tmLanguage-B4WmyOob.json                                  51.82 kB │ gzip:     6.55 kB
+dist/assets/html.tmLanguage-DqURBG9A.json                                60.40 kB │ gzip:    12.17 kB
+dist/assets/markdown.tmLanguage-Di6u7FjP.json                            60.46 kB │ gzip:     5.97 kB
+dist/assets/main-BFTn1-MB.js                                             60.85 kB
+dist/assets/css.tmLanguage-CTvkaWsh.json                                 65.56 kB │ gzip:    16.10 kB
+dist/assets/c.tmLanguage-BcaaOJ5Z.json                                   72.13 kB │ gzip:    11.15 kB
+dist/assets/MagicPython.tmLanguage-DSrfAYO2.json                         78.24 kB │ gzip:    11.27 kB
+dist/assets/less.tmLanguage-nKZ-UilS.json                               101.40 kB │ gzip:    15.67 kB
+dist/assets/csharp.tmLanguage-CUdO_Lb2.json                             101.76 kB │ gzip:    11.73 kB
+dist/assets/swift.tmLanguage-CayRaeEm.json                              103.68 kB │ gzip:    18.58 kB
+dist/assets/php.tmLanguage-k_C0Npjy.json                                115.28 kB │ gzip:    29.95 kB
+dist/assets/diff_wasm_bg-c6YkaZRL-c6YkaZRL.wasm                         118.88 kB │ gzip:    53.32 kB
+dist/assets/codicon-DsB5k-Si.ttf                                        154.32 kB
+dist/assets/JavaScript.tmLanguage-mfGXB9Lg.json                         188.34 kB │ gzip:    17.68 kB
+dist/assets/TypeScriptReact.tmLanguage-Ii5i6L-Z.json                    189.08 kB │ gzip:    17.67 kB
+dist/assets/JavaScriptReact.tmLanguage-yXjQJDfq.json                    191.35 kB │ gzip:    17.81 kB
+dist/assets/TypeScript.tmLanguage-B8aV4xMT.json                         193.97 kB │ gzip:    17.75 kB
+dist/assets/snippets.tmLanguage-Bt1Bw9n-.json                           252.44 kB │ gzip:    11.91 kB
+dist/assets/worker-CRcBW2e-.js                                          267.72 kB
+dist/assets/cpp.embedded.macro.tmLanguage-Xer0BwxK.json                 294.17 kB │ gzip:    23.69 kB
+dist/assets/iconv-lite-umd-DSFtfLsK.js                                  297.03 kB
+dist/assets/editor.worker-B4yTDktF.js                                   380.64 kB
+dist/assets/onig-Du5pRr7Y.wasm                                          466.61 kB │ gzip:   159.69 kB
+dist/assets/cuda-cpp.tmLanguage-CLki45UZ.json                           484.20 kB │ gzip:    37.78 kB
+dist/assets/cpp.tmLanguage-BVhtIoT9.json                                516.78 kB │ gzip:    38.47 kB
+dist/assets/platform.tmLanguage-BtxvkeXe.json                           561.56 kB │ gzip:   197.32 kB
+dist/assets/extHostWorker-SaJBdeds.js                                 2,033.22 kB
+dist/assets/monaco-vscode-remote-agent-service-override-izd5lpUj.css      3.36 kB │ gzip:     0.77 kB
+dist/assets/configuration-CIdG7wL6.css                                   58.55 kB │ gzip:     9.02 kB
+dist/assets/index-Bl38nfTt.css                                          213.33 kB │ gzip:    30.85 kB
+dist/assets/__vite-browser-external-BDfy7Drd.js                           0.10 kB │ gzip:     0.11 kB
+dist/assets/_commonjsHelpers-DMmVv2OA.js                                  0.11 kB │ gzip:     0.12 kB
+dist/assets/jschardet-BGQVn0dm.js                                         0.19 kB │ gzip:     0.16 kB
+dist/assets/rolldown-runtime-XKyaHtl9.js                                  0.72 kB │ gzip:     0.42 kB
+dist/assets/preload-helper-7y9sWmk5.js                                    1.61 kB │ gzip:     0.82 kB
+dist/assets/main2-CmH8rwDf.js                                            11.28 kB │ gzip:     4.23 kB
+dist/assets/dist-Cv5Gc7RY.js                                             41.14 kB │ gzip:    12.21 kB
+dist/assets/main-dz8xoVG6.js                                             60.69 kB │ gzip:    17.19 kB
+dist/assets/monaco-vscode-remote-agent-service-override-DEF609UQ.js     143.18 kB │ gzip:    39.47 kB
+dist/assets/iconv-lite-umd-O0nqJ1jJ.js                                  296.89 kB │ gzip:   179.84 kB
+dist/assets/configuration.service-DbKjdji1.js                         2,401.57 kB │ gzip:   633.70 kB
+dist/assets/index-Ch84105f.js                                         5,688.13 kB │ gzip: 1,455.76 kB
+
+[MODULE_LEVEL_DIRECTIVE] The semantics of the module level directive "use client" in "node_modules/@radix-ui/react-tooltip/dist/index.mjs" may not be preserved when bundling.
+   ╭─[ node_modules/@radix-ui/react-tooltip/dist/index.mjs:1:1 ]
+   │
+ 1 │ "use client";
+   │ ──────┬──────  
+   │       ╰──────── module level directive may not be preserved
+   │ 
+   │ Help: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+───╯
+
+[MODULE_LEVEL_DIRECTIVE] The semantics of the module level directive "use client" in "node_modules/@radix-ui/react-visually-hidden/dist/index.mjs" may not be preserved when bundling.
+   ╭─[ node_modules/@radix-ui/react-visually-hidden/dist/index.mjs:1:1 ]
+   │
+ 1 │ "use client";
+   │ ──────┬──────  
+   │       ╰──────── module level directive may not be preserved
+   │ 
+   │ Help: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+───╯
+
+[MODULE_LEVEL_DIRECTIVE] The semantics of the module level directive "use client" in "node_modules/@radix-ui/react-portal/dist/index.mjs" may not be preserved when bundling.
+   ╭─[ node_modules/@radix-ui/react-portal/dist/index.mjs:1:1 ]
+   │
+ 1 │ "use client";
+   │ ──────┬──────  
+   │       ╰──────── module level directive may not be preserved
+   │ 
+   │ Help: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+───╯
+
+[MODULE_LEVEL_DIRECTIVE] The semantics of the module level directive "use client" in "node_modules/@radix-ui/react-primitive/dist/index.mjs" may not be preserved when bundling.
+   ╭─[ node_modules/@radix-ui/react-primitive/dist/index.mjs:1:1 ]
+   │
+ 1 │ "use client";
+   │ ──────┬──────  
+   │       ╰──────── module level directive may not be preserved
+   │ 
+   │ Help: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+───╯
+
+[MODULE_LEVEL_DIRECTIVE] The semantics of the module level directive "use client" in "node_modules/@radix-ui/react-presence/dist/index.mjs" may not be preserved when bundling.
+   ╭─[ node_modules/@radix-ui/react-presence/dist/index.mjs:1:1 ]
+   │
+ 1 │ "use client";
+   │ ──────┬──────  
+   │       ╰──────── module level directive may not be preserved
+   │ 
+   │ Help: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+───╯
+
+[MODULE_LEVEL_DIRECTIVE] The semantics of the module level directive "use client" in "node_modules/@radix-ui/react-dismissable-layer/dist/index.mjs" may not be preserved when bundling.
+   ╭─[ node_modules/@radix-ui/react-dismissable-layer/dist/index.mjs:1:1 ]
+   │
+ 1 │ "use client";
+   │ ──────┬──────  
+   │       ╰──────── module level directive may not be preserved
+   │ 
+   │ Help: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+───╯
+
+[MODULE_LEVEL_DIRECTIVE] The semantics of the module level directive "use client" in "node_modules/@radix-ui/react-focus-scope/dist/index.mjs" may not be preserved when bundling.
+   ╭─[ node_modules/@radix-ui/react-focus-scope/dist/index.mjs:1:1 ]
+   │
+ 1 │ "use client";
+   │ ──────┬──────  
+   │       ╰──────── module level directive may not be preserved
+   │ 
+   │ Help: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+───╯
+
+[MODULE_LEVEL_DIRECTIVE] The semantics of the module level directive "use client" in "node_modules/@radix-ui/react-popper/dist/index.mjs" may not be preserved when bundling.
+   ╭─[ node_modules/@radix-ui/react-popper/dist/index.mjs:1:1 ]
+   │
+ 1 │ "use client";
+   │ ──────┬──────  
+   │       ╰──────── module level directive may not be preserved
+   │ 
+   │ Help: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+───╯
+
+[MODULE_LEVEL_DIRECTIVE] The semantics of the module level directive "use client" in "node_modules/@radix-ui/react-arrow/dist/index.mjs" may not be preserved when bundling.
+   ╭─[ node_modules/@radix-ui/react-arrow/dist/index.mjs:1:1 ]
+   │
+ 1 │ "use client";
+   │ ──────┬──────  
+   │       ╰──────── module level directive may not be preserved
+   │ 
+   │ Help: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+───╯
+
+[MODULE_LEVEL_DIRECTIVE] The semantics of the module level directive "use client" in "node_modules/lucide-react/dist/esm/context.mjs" may not be preserved when bundling.
+   ╭─[ node_modules/lucide-react/dist/esm/context.mjs:2:1 ]
+   │
+ 2 │ "use client";
+   │ ──────┬──────  
+   │       ╰──────── module level directive may not be preserved
+   │ 
+   │ Help: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+───╯
+
+[MODULE_LEVEL_DIRECTIVE] The semantics of the module level directive "use client" in "node_modules/lucide-react/dist/esm/Icon.mjs" may not be preserved when bundling.
+   ╭─[ node_modules/lucide-react/dist/esm/Icon.mjs:2:1 ]
+   │
+ 2 │ "use client";
+   │ ──────┬──────  
+   │       ╰──────── module level directive may not be preserved
+   │ 
+   │ Help: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+───╯
+
+✓ built in 2.41s
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.27
+   Compiling windows-link v0.2.1
+   Compiling cfg-if v1.0.5
+   Compiling serde_core v1.0.229
+   Compiling memchr v2.8.3
+   Compiling smallvec v1.16.5
+   Compiling siphasher v1.0.4
+   Compiling litemap v0.8.3
+   Compiling writeable v0.6.4
+   Compiling utf_types v1.0.0
+   Compiling itoa v1.0.19
+   Compiling fastrand v2.5.0
+   Compiling stable_deref_trait v1.2.1
+   Compiling icu_properties_data v2.4.0
+   Compiling icu_normalizer_data v2.4.0
+   Compiling log v0.4.35
+   Compiling zmij v1.0.23
+   Compiling thiserror v2.0.21
+   Compiling serde v1.0.229
+   Compiling num-conv v0.2.2
+   Compiling time-core v0.1.9
+   Compiling parking_lot_core v0.9.12
+   Compiling powerfmt v0.2.1
+   Compiling phf_shared v0.13.1
+   Compiling utf8_iter v1.1.0
+   Compiling ident_case v1.0.1
+   Compiling bytes v1.12.1
+   Compiling regex-syntax v0.8.11
+   Compiling typeid v1.0.3
+   Compiling strsim v0.11.1
+   Compiling winnow v1.0.5
+   Compiling deranged v0.5.9
+   Compiling scopeguard v1.2.0
+   Compiling base64 v0.23.1
+   Compiling getrandom v0.4.3
+   Compiling toml_writer v1.2.0+spec-1.1.0
+   Compiling equivalent v1.0.3
+   Compiling erased-serde v0.4.11
+   Compiling phf_generator v0.13.1
+   Compiling lock_api v0.4.14
+   Compiling hashbrown v0.17.1
+   Compiling phf_codegen v0.13.1
+   Compiling aho-corasick v1.1.5
+   Compiling toml_parser v1.1.5+spec-1.1.0
+   Compiling http v1.5.0
+   Compiling new_debug_unreachable v1.0.6
+   Compiling web-time v1.1.0
+   Compiling indexmap v2.14.2
+   Compiling fnv v1.0.7
+   Compiling serde_json v1.0.154
+   Compiling alloc-no-stdlib v3.0.0
+   Compiling precomputed-hash v0.1.1
+   Compiling quick-xml v0.42.0
+   Compiling windows-sys v0.61.2
+   Compiling dunce v1.0.5
+   Compiling anyhow v1.0.104
+   Compiling bitflags v2.13.2
+   Compiling percent-encoding v2.3.2
+   Compiling alloc-stdlib v0.3.0
+   Compiling dtoa v1.0.11
+   Compiling parking_lot v0.12.5
+   Compiling brotli-decompressor v6.3.2
+   Compiling autocfg v1.5.1
+   Compiling regex-automata v0.4.18
+   Compiling dtoa-short v0.3.5
+   Compiling form_urlencoded v1.2.3
+   Compiling tendril v0.5.1
+   Compiling selectors v0.38.0
+   Compiling ctor v1.0.14
+   Compiling string_cache v0.9.0
+   Compiling syn v3.0.10
+   Compiling syn v2.0.119
+   Compiling string_cache_codegen v0.6.1
+   Compiling brotli v9.1.3
+   Compiling version_check v0.9.5
+   Compiling camino v1.2.6
+   Compiling glob v0.3.4
+   Compiling indexmap v1.9.3
+   Compiling servo_arc v0.4.3
+   Compiling bit-vec v0.8.0
+   Compiling rustc-hash v2.1.3
+   Compiling semver v1.0.28
+   Compiling toml_datetime v1.1.3+spec-1.1.0
+   Compiling serde_spanned v1.1.3
+   Compiling uuid v1.29.3
+   Compiling hashbrown v0.12.3
+   Compiling toml v1.2.1+spec-1.1.0
+   Compiling schemars v0.8.22
+   Compiling bit-set v0.8.0
+   Compiling time v0.3.55
+   Compiling web_atoms v0.2.6
+   Compiling tauri-utils v2.10.3
+   Compiling winapi-util v0.1.11
+   Compiling cfb v0.14.0
+   Compiling foldhash v0.2.0
+   Compiling dyn-clone v1.0.20
+   Compiling windows-result v0.4.1
+   Compiling same-file v1.0.6
+   Compiling windows-strings v0.5.1
+   Compiling adler2 v2.0.1
+   Compiling find-msvc-tools v0.1.15
+   Compiling shlex v2.0.1
+   Compiling crc32fast v1.5.5
+   Compiling walkdir v2.5.0
+   Compiling serde-untagged v0.1.9
+   Compiling windows-threading v0.2.1
+   Compiling infer v0.22.0
+   Compiling heck v0.5.0
+   Compiling regex v1.13.1
+   Compiling simd-adler32 v0.3.10
+   Compiling cc v1.11.2
+   Compiling rustc_version v0.4.1
+   Compiling time-macros v0.2.32
+   Compiling windows_x86_64_gnu v0.52.6
+   Compiling option-ext v0.2.0
+   Compiling typenum v1.20.1
+   Compiling raw-window-handle v0.6.2
+   Compiling generic-array v0.14.7
+   Compiling crossbeam-utils v0.8.23
+   Compiling miniz_oxide v0.9.1
+   Compiling cookie v0.18.2
+   Compiling byteorder v1.5.0
+   Compiling fdeflate v0.3.7
+   Compiling miniz_oxide v0.8.9
+   Compiling windows-targets v0.52.6
+   Compiling flate2 v1.1.11
+   Compiling hybrid-array v0.4.15
+   Compiling windows-version v0.1.7
+   Compiling const-oid v0.10.3
+   Compiling pin-project-lite v0.2.17
+   Compiling rustversion v1.0.23
+   Compiling libc v0.2.191
+   Compiling serde_derive_internals v0.29.1
+   Compiling once_cell v1.21.4
+   Compiling synstructure v0.14.0
+   Compiling darling_core v0.24.1
+   Compiling png v0.18.1
+   Compiling windows-sys v0.52.0
+   Compiling crossbeam-channel v0.5.17
+   Compiling io-lifetimes v2.0.4
+   Compiling crypto-common v0.2.2
+   Compiling block-buffer v0.12.1
+   Compiling io-lifetimes v3.0.1
+   Compiling ring v0.17.14
+   Compiling tracing-core v0.1.36
+   Compiling wry v0.57.2
+   Compiling cpufeatures v0.3.1
+   Compiling tauri-runtime v2.12.3
+   Compiling ico v0.6.0
+   Compiling crypto-common v0.1.7
+   Compiling digest v0.11.3
+   Compiling block-buffer v0.10.4
+   Compiling getrandom v0.2.17
+   Compiling subtle v2.6.1
+   Compiling untrusted v0.9.0
+   Compiling unicode-segmentation v1.13.3
+   Compiling tracing v0.1.44
+   Compiling sha2 v0.11.1
+   Compiling io-extras v0.19.0
+   Compiling getrandom v0.3.4
+   Compiling tauri-runtime-wry v2.12.4
+   Compiling muda v0.20.0
+   Compiling httparse v1.10.1
+   Compiling softbuffer v0.4.8
+   Compiling digest v0.10.7
+   Compiling dirs-sys v0.5.0
+   Compiling embed-resource v3.0.12
+   Compiling curve25519-dalek v4.1.3
+   Compiling phf_macros v0.13.1
+   Compiling derive_more-impl v2.1.1
+   Compiling cssparser-macros v0.7.1
+   Compiling schemars_derive v0.8.22
+   Compiling windows-implement v0.60.2
+   Compiling windows-interface v0.59.3
+   Compiling zeroize_derive v1.5.0
+   Compiling webview2-com-macros v0.8.1
+   Compiling constant_time_eq v0.6.1
+   Compiling serialize-to-javascript-impl v0.1.2
+   Compiling cap-primitives v4.0.3
+   Compiling zerofrom-derive v0.1.8
+   Compiling yoke-derive v0.8.4
+   Compiling zerovec-derive v0.11.7
+   Compiling displaydoc v0.2.7
+   Compiling serde_derive v1.0.229
+   Compiling thiserror-impl v2.0.21
+   Compiling rustls v0.23.46
+   Compiling darling_macro v0.24.1
+   Compiling filetime v0.2.30
+   Compiling cpufeatures v0.2.17
+   Compiling serde_repr v0.1.21
+   Compiling zeroize v1.9.1
+   Compiling rustls-pki-types v1.16.0
+   Compiling dirs v7.0.0
+   Compiling tauri-winres v0.3.7
+   Compiling windows-core v0.62.2
+   Compiling fs-set-times v0.20.3
+   Compiling winx v0.36.4
+   Compiling curve25519-dalek-derive v0.1.1
+   Compiling phf v0.13.1
+   Compiling derive_more v2.1.1
+   Compiling darling v0.24.1
+   Compiling window-vibrancy v0.8.1
+   Compiling tokio v1.54.1
+   Compiling cssparser v0.37.0
+   Compiling windows-numerics v0.3.1
+   Compiling serde_with_macros v3.24.0
+   Compiling windows-collections v0.3.2
+   Compiling windows-future v0.3.2
+   Compiling signature v2.2.0
+   Compiling mime v0.3.18
+   Compiling rfd v0.17.2
+   Compiling ipnet v2.12.2
+   Compiling ambient-authority v0.0.2
+   Compiling cap-std v4.0.3
+   Compiling static_vcruntime v3.0.0
+   Compiling maybe-owned v0.3.4
+   Compiling ed25519 v2.2.3
+   Compiling webpki-roots v1.0.12
+   Compiling markup5ever v0.39.0
+   Compiling windows v0.62.2
+   Compiling ureq-proto v0.7.1
+   Compiling sha2 v0.10.9
+   Compiling keyring-core v1.0.1
+   Compiling zerofrom v0.1.8
+   Compiling utf8-zero v0.8.1
+   Compiling html5ever v0.39.0
+   Compiling yoke v0.8.4
+   Compiling webview2-com-sys v0.39.1
+   Compiling typed-path v0.13.0
+   Compiling tar v0.4.46
+   Compiling zerovec v0.11.9
+   Compiling zerotrie v0.2.5
+   Compiling windows-native-keyring-store v1.1.0
+   Compiling base64 v0.22.1
+   Compiling tinystr v0.8.5
+   Compiling potential_utf v0.1.6
+   Compiling dom_query v0.28.0
+   Compiling keyring v4.2.0
+   Compiling icu_collections v2.4.0
+   Compiling icu_locale_core v2.4.0
+   Compiling ed25519-dalek v2.2.0
+   Compiling serde_with v3.24.0
+   Compiling zip v9.8.1
+   Compiling jsonptr v0.7.1
+   Compiling cargo-platform v0.1.9
+   Compiling plist v1.10.4
+   Compiling cargo_toml v1.0.1
+   Compiling dpi v0.1.2
+   Compiling keyboard-types v0.8.3
+   Compiling serialize-to-javascript v0.1.2
+   Compiling cargo_metadata v0.19.2
+   Compiling icu_provider v2.4.0
+   Compiling json-patch v4.2.0
+   Compiling icu_normalizer v2.4.0
+   Compiling icu_properties v2.4.0
+   Compiling rustls-webpki v0.103.17
+   Compiling idna_adapter v1.2.2
+   Compiling idna v1.1.0
+   Compiling url v2.5.9
+   Compiling urlpattern v0.6.0
+   Compiling ureq v3.5.2
+   Compiling p2p-ide-core v0.1.0 (D:\p2p-ai-ci\ide-click\core)
+   Compiling tauri-plugin v2.7.3
+   Compiling tauri-codegen v2.7.5
+   Compiling tauri-build v2.7.5
+   Compiling tao v0.37.2
+   Compiling webview2-com v0.39.1
+   Compiling tauri v2.12.6
+   Compiling tauri-plugin-fs v2.7.1
+   Compiling tauri-macros v2.7.5
+   Compiling tauri-plugin-dialog v2.8.4
+   Compiling p2p-ide v0.1.0 (D:\p2p-ai-ci\ide-click\app\src-tauri)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2m 51s
+       Built application at: D:\p2p-ai-ci\ide-click\app\src-tauri\target\debug\p2p-ide.exe

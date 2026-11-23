@@ -1,0 +1,11 @@
+id: 2026-11-23_122301Z_ui-click_dc07c54
+verdict: partial
+verdict_reason: not recorded
+passed: 12
+failed: 1
+skipped: 1
+count_unit: not recorded
+exit_code: not recorded
+duration_s: 462.0
+commit: dc07c54
+machine: pc
