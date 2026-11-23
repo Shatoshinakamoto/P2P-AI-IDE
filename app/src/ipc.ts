@@ -312,6 +312,19 @@ export const scmUnstage = (rel: string | null) => call<void>("scm_unstage", { re
 export const scmCommit = (message: string) => call<string>("scm_commit", { message });
 export const scmLog = () => call<ScmCommit[]>("scm_log");
 
+// ---- Agent commits: git_commit mode "local" (src-tauri/src/agent_commits.rs, docs/features/agent-commits.md)
+
+/** An agent's checkpoint that waits for the person's commit in the open folder. */
+export interface AgentCheckpoint { id: string; version: number; subject: string; message: string; created_at: number; local: string }
+/** The checked diff (plain text, shown read-only) and the files it changes. */
+export interface AgentCommitDiff { diff: string; files: string[] }
+
+export const agentCommitsPending = () => call<AgentCheckpoint[]>("agent_commits_pending");
+export const agentCommitDiff = (cid: string) => call<AgentCommitDiff>("agent_commit_diff", { cid });
+/** Applies and commits it with the person's own git identity; resolves to the new commit id. Only from the Commit button. */
+export const agentCommitApply = (cid: string) => call<string>("agent_commit_apply", { cid });
+export const agentCommitReject = (cid: string) => call<void>("agent_commit_reject", { cid });
+
 // ---- Phase I6a: extensions from Open VSX (src-tauri/src/ext.rs, docs/features/extensions.md)
 
 /** One Open VSX search result. Plain text only: render as text, never HTML. */

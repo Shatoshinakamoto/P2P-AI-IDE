@@ -1,0 +1,11 @@
+id: 2026-11-23_042344Z_ide-core_5d10b7b
+verdict: fail
+verdict_reason: not recorded
+passed: 114
+failed: 1
+skipped: not recorded
+count_unit: not recorded
+exit_code: not recorded
+duration_s: not recorded
+commit: 5d10b7b
+machine: pc

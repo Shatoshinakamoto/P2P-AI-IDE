@@ -2,6 +2,17 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-23 - Agent commits in the Source Control view
+
+### Added
+- **From the agent** in the Source Control view ([features/agent-commits.md](features/agent-commits.md)): commits an agent asked for with the gateway's `git_commit` mode `local`. You see the message and the diff, then click Commit (applied and committed in the open folder with your own git identity) or Reject; the gateway is told the outcome once.
+- Core `scm::check_patch` and `Repo::apply_checkpoint`; `projects::checkpoint_view`; shell `agent_commits.rs` with four commands; view `AgentCommits.tsx`.
+
+### Security
+- See SECURITY-LOG 2026-11-23.
+
+### Tests
+- First cloud try of the core tests, 2 failures fixed: [2026-11-23_040711Z_ide-core_d834367](../HistoryTest/runs/2026-11-23_040711Z_ide-core_d834367/RUN.md). PC runs: see the feature page.
 ## 2026-11-23 - VS Code extension: sign in with a P2P-AI account (A3)
 
 ### Added

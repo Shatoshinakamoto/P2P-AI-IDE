@@ -25,6 +25,7 @@
 
 mod account;
 mod agent;
+mod agent_commits;
 mod ext;
 mod missions;
 mod net;
@@ -231,6 +232,10 @@ fn main() {
             scm::scm_unstage,
             scm::scm_commit,
             scm::scm_log,
+            agent_commits::agent_commits_pending,
+            agent_commits::agent_commit_diff,
+            agent_commits::agent_commit_apply,
+            agent_commits::agent_commit_reject,
             missions::mission_project,
             missions::projects_list,
             missions::project_create,

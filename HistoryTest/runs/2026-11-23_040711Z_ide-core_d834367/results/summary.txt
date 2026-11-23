@@ -1,0 +1,11 @@
+id: 2026-11-23_040711Z_ide-core_d834367
+verdict: fail
+verdict_reason: not recorded
+passed: 4
+failed: 2
+skipped: not recorded
+count_unit: not recorded
+exit_code: not recorded
+duration_s: not recorded
+commit: d83436778e23f9d41838af701742f07f78d404ac
+machine: cloud

@@ -724,6 +724,39 @@ pub fn approval_view(v: &Value) -> Option<ApprovalView> {
     })
 }
 
+/// An agent's checkpoint waiting for the person's commit (git_commit mode "local", docs/features/agent-commits.md).
+#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
+pub struct CheckpointView {
+    pub id: String,
+    pub version: i64,
+    /// The message's first line.
+    pub subject: String,
+    /// The whole commit message (at most 4,000 bytes at the gateway; cut to 5,000 characters here).
+    pub message: String,
+    pub created_at: i64,
+    /// pending, committed, rejected or failed.
+    pub local: String,
+}
+
+/// Reads one entry of `GET /v1/projects/{id}/checkpoints`; `None` for a malformed one.
+///
+/// Security: the id goes into URL paths later, so it must pass `id_ok` (CWE-74); texts are cleaned (CWE-150).
+pub fn checkpoint_view(v: &Value) -> Option<CheckpointView> {
+    let id = clean(v, "id", 64);
+    if !id_ok(&id) || v.get("kind").and_then(Value::as_str) != Some("checkpoint") {
+        return None;
+    }
+    let local = v.get("local").map(|l| clean(l, "state", 16)).unwrap_or_default();
+    Some(CheckpointView {
+        id,
+        version: num(v, "version"),
+        subject: clean(v, "label", 200).replace('\n', " "),
+        message: clean(v, "message", 5000),
+        created_at: num(v, "created_at"),
+        local,
+    })
+}
+
 /// An Auto Improve proposal.
 #[derive(Debug, Clone, Serialize)]
 pub struct ProposalView {
@@ -965,5 +998,19 @@ mod tests {
         assert!(link_for(&d, &f, "gw2").is_some());
         assert!(link_set(&d, &f, "gw1", Some(("../p", "x"))).is_err());
         let _ = std::fs::remove_dir_all(d);
+    }
+
+    #[test]
+    fn checkpoints_are_read_and_checked() {
+        let v = serde_json::json!({"id": "0123456789abcdef0123456789abcdef", "kind": "checkpoint", "version": 3,
+            "label": "Fix\u{1b}[2J it", "message": "Fix it\n\nwhy", "created_at": 5, "local": {"state": "pending"}});
+        let c = checkpoint_view(&v).unwrap();
+        assert_eq!(
+            (c.version, c.subject.as_str(), c.message.as_str(), c.local.as_str()),
+            (3, "Fix[2J it", "Fix it\n\nwhy", "pending")
+        );
+        // SECURITY: an id that could change the URL path, or a plain snapshot, is dropped (CWE-74).
+        assert!(checkpoint_view(&serde_json::json!({"id": "../x", "kind": "checkpoint"})).is_none());
+        assert!(checkpoint_view(&serde_json::json!({"id": "abc", "kind": "snapshot"})).is_none());
     }
 }

@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "dab9daaf3f931e52d0fdae22d7c5f7175dbb08bf3c0ca7aab0bd914a08abde6c",
+   "size": 1751
+  },
+  "command.txt": {
+   "sha256": "1badc5085d381f421fa2d19e453fb89fac7909799bce8288e71a9607c3d3fa3b",
+   "size": 49
+  },
+  "environment.md": {
+   "sha256": "3ff3f3e0daecd5522d4a6d04c2df046f39aac74360597b4afe39e58fa06679b0",
+   "size": 129
+  },
+  "logs/ideac1.log": {
+   "sha256": "a5e1f0988c97f9247878435e076c9458ff0aa7c3be99facc0401fcad14a1a6da",
+   "size": 566
+  },
+  "results/summary.txt": {
+   "sha256": "932a19eb8e45e76aa139322eb5d3aa232fd8ba1298cba0e8d10595c3fb789e9c",
+   "size": 229
+  }
+ },
+ "previous": {
+  "manifest_sha256": "ef8a2fa36a18f38e0ebe37146d78002c58c229e6b3935b85f374b9ff399f362e",
+  "run_id": "2026-11-23_040711Z_ide-core_d834367"
+ },
+ "run": {
+  "area": "ide-core",
+  "branch_or_pr": "claude/project-thread-2jylpu",
+  "collected_utc": "2026-11-23T04:23:44Z",
+  "commit": "4bc367d",
+  "count_unit": "",
+  "date_utc": "2026-11-23T04:23:44Z",
+  "dirty": false,
+  "duration_s": null,
+  "exit_code": null,
+  "failed": 1,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-23_042344Z_ide-core_4bc367d",
+  "kind": "unit",
+  "machine": "pc",
+  "passed": 114,
+  "record": "imported",
+  "redactions": {},
+  "requested_by": "git_commit local mode thread",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "PC IDE checks for agent commits, run 1: 1 core failure (Windows line endings in the test)",
+  "verdict": "fail",
+  "verdict_reason": ""
+ },
+ "schema": 1
+}

@@ -1,0 +1,17 @@
+# D:\p2p-ai-ci\logs\ideac1.txt (PC, Windows), result lines; head 4bc367d
+core-fmt-exit 0
+core-clippy-exit 0
+test scm::tests::real_git_applies_an_agent_checkpoint ... FAILED
+thread 'scm::tests::real_git_applies_an_agent_checkpoint' panicked at src\scm.rs:929:9:
+assertion `left == right` failed
+  left: "ALPHA\r\n"
+ right: "ALPHA\n"
+test result: FAILED. 114 passed; 1 failed; 1 ignored; 0 measured; 0 filtered out; finished in 10.92s
+core-test-exit 101
+npm-ci-exit 0
+tsc-exit 0
+app-test-exit 0
+vite-build-exit 0
+shell-fmt-exit 0
+shell-clippy-exit 0
+shell-test-exit 0

@@ -1,0 +1,54 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "9b84e0814884b1a1303740a80bd21253327fff2f82421fc9de15bd235047e90b",
+   "size": 2012
+  },
+  "command.txt": {
+   "sha256": "1badc5085d381f421fa2d19e453fb89fac7909799bce8288e71a9607c3d3fa3b",
+   "size": 49
+  },
+  "environment.md": {
+   "sha256": "b5b9d802a7b543a718a12ab087835358248a11de171f12d771cbafad080f122c",
+   "size": 127
+  },
+  "results/summary.txt": {
+   "sha256": "bcdfb073c66bae824393184bb61d469a20b11a4c4fbc7ab7f38fbd208f23601a",
+   "size": 263
+  }
+ },
+ "previous": {
+  "manifest_sha256": "6c449240b1fb9950030ed5300424e4719429fecad85065721cc7cec2fbe1e96e",
+  "run_id": "2026-11-22_200619Z_desktop-node-ext-electron_cc16e75"
+ },
+ "run": {
+  "area": "ide-core",
+  "branch_or_pr": "claude/project-thread-2jylpu",
+  "collected_utc": "2026-11-23T04:07:11Z",
+  "commit": "d83436778e23f9d41838af701742f07f78d404ac",
+  "count_unit": "",
+  "date_utc": "2026-11-23T04:07:11Z",
+  "dirty": true,
+  "duration_s": null,
+  "exit_code": null,
+  "failed": 2,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-23_040711Z_ide-core_d834367",
+  "kind": "unit",
+  "machine": "cloud",
+  "passed": 4,
+  "record": "reported",
+  "redactions": {},
+  "requested_by": "git_commit local mode thread",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "IDE core scm tests for agent checkpoints (cloud, first try: 2 failures)",
+  "verdict": "fail",
+  "verdict_reason": ""
+ },
+ "schema": 1
+}
