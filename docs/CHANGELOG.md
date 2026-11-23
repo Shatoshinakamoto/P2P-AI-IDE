@@ -4,6 +4,9 @@ All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepac
 
 ## 2026-11-23 - Click-through fixes: text tool calls, Run and test runners, Missions on plain endpoints
 
+### Security
+- `cookie` 0.18.2 → 0.18.3 in the desktop shell's lockfile (RUSTSEC-2026-0594, published today; caught by the local supply-chain check). See SECURITY-LOG.
+
 ### Fixed
 - **Tool calls written as text** ([features/agent-tools.md](features/agent-tools.md)): with Tools on, qwen2.5-coder through Ollama answers with the call as plain JSON text (`{"name": "read_file", "arguments": {...}}`). The agent turn (`core/src/agent.rs`, `text_tool_calls`) now reads such a reply as the call when the whole reply is the call and names an offered tool, so the turn goes on instead of showing JSON. A new `retract` agent event then takes the streamed JSON back off the screen, so only the tool line shows.
 - **Run and test runner list** ([features/run-and-test.md](features/run-and-test.md)): the view stays mounted when hidden and kept "add a gateway in the Gateways view first" after a gateway was saved. It now reads the runner list each time it is shown and when the active gateway changes.

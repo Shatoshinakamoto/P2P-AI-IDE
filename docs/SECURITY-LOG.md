@@ -2,6 +2,15 @@
 
 Every security patch, hardening change, CVE remediation and accepted risk, newest first.
 
+## 2026-11-23 — cookie 0.18.2 → 0.18.3 (RUSTSEC-2026-0594)
+- **Type:** CVE remediation (RustSec advisory)
+- **CVE / CWE / advisory:** RUSTSEC-2026-0594 ("Private cookie nonces can repeat in processes that fork"), published 2026-11-23; CWE-323 (nonce reuse). No CVE id was shown by `cargo audit`.
+- **Severity:** no CVSS score was shown by `cargo audit`; not checked against KEV (no CVE id).
+- **Affected:** `app/src-tauri/Cargo.lock` (cookie 0.18.2, a transitive dependency of tauri 2.12.6). The IDE does not fork and does not use private cookies, so exposure was low.
+- **What changed:** `cargo update -p cookie --precise 0.18.3`. Only the lockfile changes.
+- **Why it is secure now:** the patched version from the advisory's solution (`>=0.18.3`) is used (NIST SI-2, SSDF RV.2).
+- **Verification:** `cargo audit --file app/src-tauri/Cargo.lock` and `cargo audit --file core/Cargo.lock` report no vulnerabilities (unmaintained-crate warnings only, unchanged). `cargo check` of the shell passes. The run is recorded in HistoryTest (`supply-chain` area).
+
 ## 2026-11-23 — Tool calls written as reply text are read under the same checks
 - **Type:** hardening (behaviour change with its controls)
 - **CVE / CWE / advisory:** none; controls for CWE-20, CWE-77, CWE-400, OWASP LLM01
