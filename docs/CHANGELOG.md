@@ -2,11 +2,25 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-23 - Click-through fixes: text tool calls, Run and test runners, Missions on plain endpoints
+
+### Security
+- `cookie` 0.18.2 → 0.18.3 in the desktop shell's lockfile (RUSTSEC-2026-0594, published today; caught by the local supply-chain check). See SECURITY-LOG.
+
+### Fixed
+- **Tool calls written as text** ([features/agent-tools.md](features/agent-tools.md)): with Tools on, qwen2.5-coder through Ollama answers with the call as plain JSON text (`{"name": "read_file", "arguments": {...}}`). The agent turn (`core/src/agent.rs`, `text_tool_calls`) now reads such a reply as the call when the whole reply is the call and names an offered tool, so the turn goes on instead of showing JSON. A new `retract` agent event then takes the streamed JSON back off the screen, so only the tool line shows.
+- **Run and test runner list** ([features/run-and-test.md](features/run-and-test.md)): the view stays mounted when hidden and kept "add a gateway in the Gateways view first" after a gateway was saved. It now reads the runner list each time it is shown and when the active gateway changes.
+- **Missions on a plain model endpoint** ([features/missions.md](features/missions.md)): a hand-added Ollama (or other OpenAI-compatible) endpoint was offered "Link this folder to a project". `mission_project` now asks `GET /v1/experimental` once when the folder is not linked; a 404 sets `no_projects` and the view says the endpoint can only chat.
+
+### Security
+- See SECURITY-LOG 2026-11-23 (text tool calls).
+
 ## 2026-11-23 - HistoryTest images keep their bytes
 
 ### Fixed
 - `.gitattributes`: images, PDFs and archives under `HistoryTest/` are now `binary`. The `HistoryTest/** text eol=lf` rule had marked them as text, so git showed `runs/2026-11-23_031839Z_ui_ffb62c3/artifacts/ui-smoke-accounts.png` as changed in every clone, and committing it would have rewritten its CR LF bytes and broken the image and its manifest SHA-256.
 - `HistoryTest/INDEX.csv` regenerated with `history_test.py index`: an earlier merge of IDE #27 into #28 kept both sides by hand, and the rows were out of order.
+
 ## 2026-11-23 - NEXUS Engine support and account/gateway UX fixes
 
 ### Added

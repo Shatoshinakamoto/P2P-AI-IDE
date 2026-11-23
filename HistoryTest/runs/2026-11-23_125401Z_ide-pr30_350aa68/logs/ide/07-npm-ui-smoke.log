@@ -1,0 +1,31 @@
+# dir: D:\p2p-ai-ci\ide-click2\app
+# cmd: npm run ui-smoke
+# start: 2026-11-23T12:59:12Z
+
+> p2p-ai-ide@0.1.0 ui-smoke
+> node tests/ui-smoke.mjs
+
+node:internal/modules/cjs/loader:1564
+  const err = new Error(message);
+              ^
+
+Error: Cannot find module 'playwright'
+Require stack:
+- D:\p2p-ai-ci\ide-click2\app\tests\ui-smoke.mjs
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1564:15)
+    at wrapResolveFilename (node:internal/modules/cjs/loader:1118:27)
+    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1142:10)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1169:12)
+    at Module._load (node:internal/modules/cjs/loader:1341:5)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.require (node:internal/modules/cjs/loader:1674:12)
+    at require (node:internal/modules/helpers:157:16)
+    at file:///D:/p2p-ai-ci/ide-click2/app/tests/ui-smoke.mjs:22:52
+    at ModuleJob.run (node:internal/modules/esm/module_job:561:25) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [ 'D:\\p2p-ai-ci\\ide-click2\\app\\tests\\ui-smoke.mjs' ]
+}
+
+Node.js v24.21.0
+# end: 2026-11-23T12:59:12Z
+# exit: 1

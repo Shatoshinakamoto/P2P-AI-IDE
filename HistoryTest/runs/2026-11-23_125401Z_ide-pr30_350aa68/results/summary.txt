@@ -1,0 +1,11 @@
+id: 2026-11-23_125401Z_ide-pr30_350aa68
+verdict: pass
+verdict_reason: not recorded
+passed: 284
+failed: 0
+skipped: 4
+count_unit: not recorded
+exit_code: not recorded
+duration_s: 900.0
+commit: 350aa68
+machine: pc

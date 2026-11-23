@@ -1,0 +1,82 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "ae69d0fa68407ff28eea2f6e099336ddd14876803ddbeaccfe316de5223b3a99",
+   "size": 2367
+  },
+  "artifacts/click-out-binaries.txt": {
+   "sha256": "a9cb45a672f5632c3f14284fa400d85e07353296393b7f022cbef905b3c54aa2",
+   "size": 8131
+  },
+  "artifacts/commands.txt": {
+   "sha256": "6231d2ce3ffc17b2d411e996ea78bd5e0ae513e481a81bb53d9c88101c7546f4",
+   "size": 2964
+  },
+  "artifacts/times.txt": {
+   "sha256": "a135ad1e94e8e67e0e1be617683538c43688dc744cc67d942740356c450e9261",
+   "size": 523
+  },
+  "command.txt": {
+   "sha256": "1badc5085d381f421fa2d19e453fb89fac7909799bce8288e71a9607c3d3fa3b",
+   "size": 49
+  },
+  "environment.md": {
+   "sha256": "b9e70f462a5935ba5f4d7972ebfea9d946ab48c6d7b559b3099f50869a68715f",
+   "size": 129
+  },
+  "logs/ide/app-stderr.log": {
+   "sha256": "94b2635aaca032d62ab139fb232981cac96abbf55ff38dc2712b037bc4c81a32",
+   "size": 200
+  },
+  "logs/ide/build.log": {
+   "sha256": "adaab6b2bb393d034c697ba74faae79fea43156fdccc4e0900296fb9d93945e2",
+   "size": 24079
+  },
+  "logs/ide/console.log": {
+   "sha256": "ba9945a96bbe0b7feeac34adc25b77e98e14a96e4811cee35b2d028f362398af",
+   "size": 104
+  },
+  "logs/ide/steps.md": {
+   "sha256": "640432b186ee9391db8218114f34f1ffabc34e455f1439a2b465adbadba58217",
+   "size": 4884
+  },
+  "results/summary.txt": {
+   "sha256": "59b14c8a38c6f4a54871907cd46a3adbfac4f4abdcea5936df8d722d8b2b7eeb",
+   "size": 213
+  }
+ },
+ "previous": {
+  "manifest_sha256": "d1b5ba2a267067689b2812ee5efa2559417a5cee17c8be7e338e690cfad6653d",
+  "run_id": "2026-11-23_125400Z_ide-pr30_350aa68"
+ },
+ "run": {
+  "area": "ui-click",
+  "branch_or_pr": "main",
+  "collected_utc": "2026-11-23T13:22:52Z",
+  "commit": "dc07c54",
+  "count_unit": "",
+  "date_utc": "2026-11-23T12:23:01Z",
+  "dirty": false,
+  "duration_s": 462.0,
+  "exit_code": null,
+  "failed": 1,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-23_122301Z_ui-click_dc07c54",
+  "kind": "manual",
+  "machine": "pc",
+  "passed": 12,
+  "record": "imported",
+  "redactions": {},
+  "requested_by": "ide-tf-finish-thread",
+  "shortened_logs": [],
+  "skipped": 1,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "IDE desktop click-through on main (run 1)",
+  "verdict": "partial",
+  "verdict_reason": ""
+ },
+ "schema": 1
+}

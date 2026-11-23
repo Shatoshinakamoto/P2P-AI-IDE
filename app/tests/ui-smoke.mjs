@@ -294,8 +294,8 @@ exports.activate = async (ctx) => {
         case "change_reject": pending.delete(args.rel); return null;
         // ---- Phase I4: a gateway project with missions, held in memory like the Go gateway would.
         case "mission_project": return mp.linked
-          ? { gateway_name: "Home", project_id: "prj_1", project_name: mp.name, switches: mp.sw, sync: mp.sync, note: "" }
-          : { gateway_name: "Home", project_id: null, project_name: "", switches: null, sync: null, note: "" };
+          ? { gateway_name: "Home", project_id: "prj_1", project_name: mp.name, switches: mp.sw, sync: mp.sync, note: "", no_projects: false }
+          : { gateway_name: "Home", project_id: null, project_name: "", switches: null, sync: null, note: "", no_projects: !!window.__noProjects };
         case "projects_list": return [{ id: "prj_1", name: "shop-api", role: "owner", version: 0, file_count: 0 }];
         case "project_create": if (!args.name) throw "a project name is 1 to 128 characters"; mp.linked = true; mp.name = args.name; return { id: "prj_1", name: args.name, role: "owner", version: 0, file_count: 0 };
         case "project_link": mp.linked = args.projectId !== null; return null;
@@ -745,6 +745,14 @@ try {
   await page.getByText(/No chats match|No chats yet/).waitFor();
   check("deleting a chat takes two clicks", true);
 
+  // ---- A plain model endpoint (Ollama typed in by hand) answers 404 to the projects API: no link offer (2026-11-23).
+  await page.evaluate(() => { window.__noProjects = true; });
+  await page.getByRole("button", { name: "Missions: Autopilot and Auto Improve", exact: true }).click();
+  await page.getByText(/is a model endpoint without projects/).waitFor();
+  check("Missions on a plain model endpoint says it has no projects instead of offering a link", (await page.getByRole("button", { name: "Create project and link" }).count()) === 0);
+  await page.evaluate(() => { window.__noProjects = false; });
+  await page.getByRole("button", { name: "Agent chat", exact: true }).click();
+
   // ---- Phase I4: Missions on a gateway project.
   await page.getByRole("button", { name: "Missions: Autopilot and Auto Improve", exact: true }).click();
   await page.getByRole("button", { name: "Create project and link" }).click();
@@ -840,6 +848,13 @@ try {
   check("cargo tests need the Rust image, which is built here", /Building it downloads/.test(await page.getByText(/is not on this computer yet/).innerText()));
   await page.getByLabel("Test framework").selectOption("pytest");
   await runnerSel.selectOption("local-os");
+  // The view stays mounted when hidden; showing it again must read the runner list again (a stale gateway reason
+  // stayed on screen after a gateway was saved, click-through 2026-11-23).
+  const runnerReads = (await page.evaluate(() => window.__calls)).filter((c) => c.cmd === "runners_list").length;
+  await page.getByRole("button", { name: "Agent chat", exact: true }).click();
+  await page.getByRole("button", { name: "Run and test", exact: true }).click();
+  await page.waitForFunction((n) => window.__calls.filter((c) => c.cmd === "runners_list").length > n, runnerReads);
+  check("showing Run and test again reads the runner list again", true);
 
   await page.getByRole("button", { name: "Agent chat", exact: true }).click();
   await page.getByRole("button", { name: "New chat" }).click();

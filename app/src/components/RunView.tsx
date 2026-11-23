@@ -27,6 +27,11 @@ interface Props {
   onNotice: (m: string) => void;
   /** Opens the Missions view, where the folder is linked to a gateway project. */
   onOpenMissions: () => void;
+  /** True while the view is on screen. The view stays mounted when hidden, so the runner list is read again
+   *  each time it is shown (a gateway added or a folder linked meanwhile must not leave a stale reason). */
+  visible: boolean;
+  /** The active gateway's id (or null): a change re-reads the runner list. */
+  gatewayId: string | null;
 }
 
 /** Words for the stages a gateway run goes through. */
@@ -46,11 +51,13 @@ const LABELS: Record<string, string> = {
   container: "Local container, Docker or Podman",
 };
 
-export function RunView({ runner, onRunner: setRunner, image, onImage: setImage, onNotice, onOpenMissions }: Props) {
+export function RunView({ runner, onRunner: setRunner, image, onImage: setImage, onNotice, onOpenMissions, visible, gatewayId }: Props) {
   const [runners, setRunners] = useState<RunnerView[]>([]);
   // Which runners work now (the gateway needs a linked folder; the local sandbox needs Landlock and namespaces).
   const refresh = () => { runnersList().then(setRunners).catch((e) => onNotice((e as Error).message)); };
-  useEffect(refresh, [onNotice]);
+  // Read again when the view is shown or the active gateway changes, not only at mount (click-through 2026-11-23:
+  // the gateway option kept "add a gateway in the Gateways view first" after a gateway was saved).
+  useEffect(() => { if (visible) refresh(); }, [onNotice, visible, gatewayId]);
   const [kind, setKind] = useState<"tests" | "command">("tests");
   const [framework, setFramework] = useState<string>("pytest");
   const [line, setLine] = useState("");

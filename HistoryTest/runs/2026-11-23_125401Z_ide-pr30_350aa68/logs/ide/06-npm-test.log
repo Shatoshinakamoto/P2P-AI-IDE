@@ -1,0 +1,25 @@
+# dir: D:\p2p-ai-ci\ide-click2\app
+# cmd: npm test
+# start: 2026-11-23T12:59:11Z
+
+> p2p-ai-ide@0.1.0 test
+> node --test tests/*.test.ts
+
+✔ baseName and dirName split on / (0.7382ms)
+✔ crumbs (0.6561ms)
+✔ languageFor maps extensions and names (0.1718ms)
+✔ sizeLabel (0.1379ms)
+✔ minorOf keeps major.minor (0.8844ms)
+✔ minorOf refuses what isn't a version (0.1511ms)
+✔ sameMinor matches only the same minor version (0.1839ms)
+✔ sameMinor fails closed on bad input (0.1191ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 107.9428
+# end: 2026-11-23T12:59:12Z
+# exit: 0

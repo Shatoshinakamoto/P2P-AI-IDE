@@ -1,0 +1,12 @@
+# dir: D:\p2p-ai-ci\ide-click2\app
+# cmd: npm ci
+# start: 2026-11-23T12:58:30Z
+
+added 117 packages, and audited 125 packages in 39s
+
+12 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+# end: 2026-11-23T12:59:10Z
+# exit: 0

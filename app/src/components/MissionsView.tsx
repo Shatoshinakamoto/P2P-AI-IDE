@@ -129,6 +129,16 @@ export function MissionsView({ gateway, folderName, onNotice, onOpenGateways, on
   }
   if (!hasCreds) return <p className="px-3 text-ide-dim">Add a key (or link an account) for {gateway.name} in the Gateways view first.</p>;
   if (!st) return <p className="px-3 text-ide-dim">Loading…</p>;
+  // A plain model endpoint (Ollama, LM Studio and the like) answers 404 to the projects API: say so instead of
+  // offering a link that would only fail when the folder is sent.
+  if (st.no_projects) {
+    return (
+      <div className="flex flex-col gap-3 px-3">
+        <p className="text-ide-dim">Missions run on a P2P-AI gateway project. {st.gateway_name} is a model endpoint without projects (for example Ollama): use Agent chat with it, or switch to a P2P-AI gateway.</p>
+        <button type="button" onClick={onOpenGateways} className={primary}>Open Gateways</button>
+      </div>
+    );
+  }
 
   // ---- not linked yet: pick or create a project
   if (!st.project_id) {

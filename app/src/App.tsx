@@ -163,7 +163,7 @@ export function App() {
             ) : null}
             {ws ? (
               <div key={`run-${wsGen}`} className={view === "run" ? "flex min-h-0 flex-1 flex-col" : "hidden"}>
-                <RunView runner={runner} onRunner={setRunner} image={runImage} onImage={setRunImage} onNotice={onNotice} onOpenMissions={() => setView("missions")} />
+                <RunView runner={runner} onRunner={setRunner} image={runImage} onImage={setRunImage} onNotice={onNotice} onOpenMissions={() => setView("missions")} visible={view === "run"} gatewayId={activeGateway?.id ?? null} />
               </div>
             ) : null}
             <div className={view === "chat" ? "flex min-h-0 flex-1 flex-col" : "hidden"}>

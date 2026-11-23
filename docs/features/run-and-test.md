@@ -136,6 +136,7 @@ React and lucide-react (already pinned). cargo audit and npm audit on 2026-11-17
 | "a send, pull or run is still going on" | wait for the other step to end |
 | "pick a test framework: ..." / "a command is a program and its arguments ..." | the request did not pass the checks |
 | "this runner is not available yet" | an unknown runner name reached the shell; pick one from the list |
+| The gateway option still shows an old reason after you added a gateway or linked the folder | fixed 2026-11-23: the list is read again each time the view is shown and when the active gateway changes; switch views once if it ever looks stale |
 | Local sandbox messages | see [local-sandbox.md](local-sandbox.md) section 7 |
 | A forbidden or not-found answer from the gateway | the key needs the editor role on the project, and the gateway `GATEWAY_EXEC` |
 

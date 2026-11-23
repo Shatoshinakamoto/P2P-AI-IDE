@@ -1,0 +1,122 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "574dd90ee4692c1020178c4b06340171007de3962cbac28b3984ea6ed427765b",
+   "size": 2822
+  },
+  "artifacts/README.md": {
+   "sha256": "656728c8f68f020c0febacf127a9badb5facc275b9f0e48af578d8bf7c4d8210",
+   "size": 966
+  },
+  "artifacts/round3-binaries.txt": {
+   "sha256": "b8ba539617e0da24c779e0f708032bb507c690d7e0cbe1307658d8b169958d0a",
+   "size": 1771
+  },
+  "command.txt": {
+   "sha256": "1badc5085d381f421fa2d19e453fb89fac7909799bce8288e71a9607c3d3fa3b",
+   "size": 49
+  },
+  "environment.md": {
+   "sha256": "7af89a3c4a0f311e84e3c09f48c7f287e3d1e9720e8cdcfd3323c2037a90a30d",
+   "size": 129
+  },
+  "logs/ide/01-checkout.log": {
+   "sha256": "4bdbf8c62d31299a3be03a05829f5e3804d2fb1ffc0d7aa031242fe9759d29e9",
+   "size": 571
+  },
+  "logs/ide/02-cargo-test-core.log": {
+   "sha256": "aa68d76d4da24611707d27a3adf6456c67f6e6f6ac4a585d949473afb01e275f",
+   "size": 14057
+  },
+  "logs/ide/03-cargo-check-src-tauri.log": {
+   "sha256": "f9a53254fb4b8ce89b005bb02289d656b6861fbff9919f9b833386c791f82dbf",
+   "size": 7190
+  },
+  "logs/ide/04-npm-ci.log": {
+   "sha256": "717283336ff6f8c485f11abe0b7962aac2a282d784f6364884df899e2bef36a4",
+   "size": 273
+  },
+  "logs/ide/05-npm-run-check.log": {
+   "sha256": "68b7694f3e158066bbc0d4b2f6a0f24a8c34ccce3f7ff7aa5b7290b9bb043c12",
+   "size": 175
+  },
+  "logs/ide/06-npm-test.log": {
+   "sha256": "fe3d207ae63fe0332b0006221a68baf45f102ab73f52ace09120068ab297d0c0",
+   "size": 665
+  },
+  "logs/ide/07-npm-ui-smoke.log": {
+   "sha256": "e777f15ced08cc54878c92bfe5bb11330d4138b76d5bfbc54be4e58f56002c12",
+   "size": 1209
+  },
+  "logs/ide/07b-npm-ui-smoke-nodepath.log": {
+   "sha256": "d23d0757ef9c1afddb9242f89f193fa8c49f1de478be2599adf3fe109bed21ba",
+   "size": 1344
+  },
+  "logs/ide/07c-npm-ui-smoke-shim.log": {
+   "sha256": "5fa1882551bf4398e7cb341cfae46102423378593134afc644a5632dbd9e16db",
+   "size": 13411
+  },
+  "logs/ide/08-build-release.log": {
+   "sha256": "6db803cbb1384b296788d43601cef35d0582255256386236977d4297936eb3a1",
+   "size": 26781
+  },
+  "logs/ide/app-stderr.log": {
+   "sha256": "94008ae62b1cd7e61b10b18916de51df8ed533bca29067a7564133a3dd2c5d78",
+   "size": 141
+  },
+  "logs/ide/console.log": {
+   "sha256": "f0c13b073526855e9883d45976e231c0b038a007d9a3a4d3d0a006475fb1f52e",
+   "size": 43
+  },
+  "logs/ide/steps.md": {
+   "sha256": "4c3bd09ae6ce57b89c64b50645ca10ed819ab82b43a3cb9bc66b580bcb6a415a",
+   "size": 4380
+  },
+  "logs/ide/times.txt": {
+   "sha256": "df7bcecbbd23c897554e683e2395044731828c9600c55ad851ad9f8a083a62d4",
+   "size": 66
+  },
+  "results/summary.txt": {
+   "sha256": "d0a008948680fa9eafe20c82b56c390b30ce4f36fa593b1f700e61c41bdd6df7",
+   "size": 211
+  }
+ },
+ "previous": {
+  "manifest_sha256": "3a0313809bbd5956d7e4bee59a84769a498e864cbe3aec2b529ee08d6f359eb3",
+  "run_id": "2026-11-23_123655Z_ui-click_ec50694"
+ },
+ "run": {
+  "area": "ide-pr30",
+  "branch_or_pr": "30",
+  "collected_utc": "2026-11-23T13:21:26Z",
+  "commit": "350aa68",
+  "count_unit": "",
+  "date_utc": "2026-11-23T12:54:00Z",
+  "dirty": false,
+  "duration_s": 900.0,
+  "exit_code": null,
+  "failed": 0,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-23_125400Z_ide-pr30_350aa68",
+  "kind": "integration",
+  "machine": "pc",
+  "passed": 284,
+  "record": "imported",
+  "redactions": {
+   "logs/ide/07c-npm-ui-smoke-shim.log": {
+    "secret": 3
+   }
+  },
+  "requested_by": "ide-tf-finish-thread",
+  "shortened_logs": [],
+  "skipped": 4,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "IDE PR #30 on the PC: core tests, shell check, app tests, UI smoke, release recheck",
+  "verdict": "pass",
+  "verdict_reason": ""
+ },
+ "schema": 1
+}

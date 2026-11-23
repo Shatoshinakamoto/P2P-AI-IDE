@@ -1,0 +1,5 @@
+2026-11-23T13:52:12.151Z [logger] attached
+2026-11-23T13:52:12.465Z [warning] Unrecognized feature: 'local-network-access'.
+2026-11-23T13:52:12.469Z [log] %c INFO color: #33f Ignoring fetching additional builtin extensions from gallery as it is disabled.
+2026-11-23T13:52:12.530Z [warning] An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing.
+2026-11-23T13:52:14.977Z [log] %c INFO color: #33f Updating additional builtin extensions cache

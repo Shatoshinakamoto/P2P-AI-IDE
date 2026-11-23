@@ -1,0 +1,42 @@
+# Commands used for the desktop click-through (Windows PC, PowerShell 7, non-admin). Paths under D:\p2p-ai-ci.
+
+## Pre-check
+Get-Process | ? MainWindowTitle            # windowed apps: no game; Steam client idle, no steamapps process
+Get-CimInstance Win32_Process | ? ExecutablePath -match 'steamapps'   # none
+
+## P2P-AI IDE, run 1 (main dc07c54) and run 2 (main ec50694, fresh clone)
+git -c core.autocrlf=false clone -c core.autocrlf=false https://github.com/Shatoshinakamoto/P2P-AI-IDE ide-click    # run 1
+git -c core.autocrlf=false clone -c core.autocrlf=false https://github.com/Shatoshinakamoto/P2P-AI-IDE ide-click2   # run 2
+cd <clone>\app; npm ci --ignore-scripts; npx tauri build --debug --no-bundle
+# launch (env set for the app process only):
+#   WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS=--remote-debugging-port=9301 (run 1) / 9303 (run 2)
+#   app\src-tauri\target\debug\p2p-ide.exe  (stdout/stderr -> ide*\app-stderr.log)
+
+## TandemForge (main e4b85f6, includes PR 172)
+cd tf-ws; git fetch origin main; git checkout --detach origin/main
+cd apps\desktop; npm ci; npx tauri build --debug --no-bundle          # FAILS: tsc, see tf\build.log
+# local, unpushed fix of api.ts (tf\local-fix-api-ts.diff), then:
+npx tauri build --debug --no-bundle                                    # OK, but debug exe needs the Vite dev server
+npx tauri build --no-bundle                                            # release exe, OK
+git checkout -- apps/desktop/src/api.ts                                # local fix reverted afterwards
+# backend with a scratch DB (env for that process only):
+#   TANDEMFORGE_HOST=127.0.0.1 TANDEMFORGE_PORT=8766 TANDEMFORGE_DB=click-data\tf\orchestrator.db
+#   TANDEMFORGE_LOG_DIR=click-data\tf\logs TANDEMFORGE_SEED_DEMO=0 TANDEMFORGE_FRONTEND_DIST=tf-ws\apps\desktop\dist
+#   TANDEMFORGE_API_TOKEN=<random per run, not saved>
+tf-ws-venv\Scripts\python.exe tf-ws\packages\python\server.py
+# app: TANDEMFORGE_BACKEND_URL=http://127.0.0.1:8766 TANDEMFORGE_API_TOKEN=<same>
+#      WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS=--remote-debugging-port=9302
+tf-ws\target\release\tandemforge-desktop.exe
+
+## Driver (scratch folder D:\p2p-ai-ci\click-drv, outside the repos)
+npm install --save-exact playwright-core@1.65.1                        # npm audit: 0 vulnerabilities
+node log.mjs <port> <console.log>                                       # connectOverCDP; console, pageerror, requestfailed
+node step.mjs <port> <png> <actions.mjs>                                # one step: actions, screenshot, page text
+pickfolder.ps1 -OwnerPid <pid> -Folder <path>                           # native folder picker via WM_SETTEXT + BM_CLICK
+
+## Cleanup
+CloseMainWindow on each app; Stop-Process the loggers and the backend (cmd + python); gateway "Ollama dev"
+removed in both IDE runs (gateways.json empty, no org.p2p-ai.ide keychain entry left).
+
+## Package
+Compress-Archive D:\p2p-ai-ci\click-out\* D:\p2p-ai-ci\click-out.zip; Get-FileHash -Algorithm SHA256

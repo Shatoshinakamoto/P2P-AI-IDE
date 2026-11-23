@@ -2,6 +2,24 @@
 
 Every security patch, hardening change, CVE remediation and accepted risk, newest first.
 
+## 2026-11-23 — cookie 0.18.2 → 0.18.3 (RUSTSEC-2026-0594)
+- **Type:** CVE remediation (RustSec advisory)
+- **CVE / CWE / advisory:** RUSTSEC-2026-0594 ("Private cookie nonces can repeat in processes that fork"), published 2026-11-23; CWE-323 (nonce reuse). No CVE id was shown by `cargo audit`.
+- **Severity:** no CVSS score was shown by `cargo audit`; not checked against KEV (no CVE id).
+- **Affected:** `app/src-tauri/Cargo.lock` (cookie 0.18.2, a transitive dependency of tauri 2.12.6). The IDE does not fork and does not use private cookies, so exposure was low.
+- **What changed:** `cargo update -p cookie --precise 0.18.3`. Only the lockfile changes.
+- **Why it is secure now:** the patched version from the advisory's solution (`>=0.18.3`) is used (NIST SI-2, SSDF RV.2).
+- **Verification:** `cargo audit --file app/src-tauri/Cargo.lock` and `cargo audit --file core/Cargo.lock` report no vulnerabilities (unmaintained-crate warnings only, unchanged). `cargo check` of the shell passes. HistoryTest run `2026-11-23_150116Z_supply-chain_f6a0000` (exit 0).
+
+## 2026-11-23 — Tool calls written as reply text are read under the same checks
+- **Type:** hardening (behaviour change with its controls)
+- **CVE / CWE / advisory:** none; controls for CWE-20, CWE-77, CWE-400, OWASP LLM01
+- **Severity:** n/a (no vulnerability; a model's text could already only become a pending proposal)
+- **Affected:** `core/src/agent.rs` (`text_tool_calls`, `run_turn`); also `app/src-tauri/src/missions.rs` (`no_projects` probe, fixed path, error kind only, CWE-209)
+- **What changed:** when a step has no real tool calls, a reply that is entirely a JSON tool call (optionally in `<tool_call>` tags or one code fence) is treated as the call.
+- **Why it is secure now:** the reply must be nothing but the call (no prose around it), at most 64 KiB and 8 calls, and each name must be a tool offered this turn (run tools only when Runs is on); arguments must be an object. The call then takes the normal path: strict argument checks, read tools on the folder allow-list, edits as pending changes the person accepts, runs only after per-run approval. So a file that makes the model echo JSON gains nothing it could not already get with a real tool call (OWASP LLM01, NIST AC-6).
+- **Verification:** core unit tests `calls_written_as_text_are_read_only_when_they_are_the_whole_reply` and `a_turn_takes_a_call_written_as_text`; PC run to be archived in HistoryTest.
+
 ## 2026-11-23 — HistoryTest binary artifacts excluded from line-ending conversion
 - **Type:** hardening
 - **CVE / CWE / advisory:** none; CWE-354 (improper validation of integrity check value) as the failure mode prevented
@@ -10,6 +28,7 @@ Every security patch, hardening change, CVE remediation and accepted risk, newes
 - **What changed:** `HistoryTest/**/*.{png,jpg,jpeg,gif,webp,pdf,zip,gz}` are `binary`, so git never converts line endings inside them. The index was regenerated from the run folders.
 - **Why it is secure now:** archived evidence keeps the exact bytes its manifest hashes, so the SHA-256 chain stays verifiable (NIST AU-9, AU-10).
 - **Verification:** `git ls-files --eol HistoryTest`: all 34 images `-text`; the PNG's SHA-256 matches its manifest; `history_test.py verify`: 171 runs, the only problem is the chain note on `2026-11-23_035621Z`, which was already marked invalid.
+
 ## 2026-11-23 — NEXUS Engine support: keyless loopback boundary and studio settings discovery
 - **Type:** hardening (new local engine integration)
 - **CVE / CWE / advisory:** none; controls for CWE-20, CWE-59, CWE-79, CWE-209, CWE-287, CWE-400, CWE-522, CWE-601, CWE-918, NIST SP 800-53 SC-7 / IA-5

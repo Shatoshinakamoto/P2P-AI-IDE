@@ -74,6 +74,7 @@ a hostile gateway answer.
 | Path tricks | every path goes through the workspace's allow-list and canonical confinement, as for the person | CWE-22, CWE-59, CWE-73 |
 | Lost update | accept carries the version the proposal was based on; a changed file is refused | CWE-367 |
 | Malformed or hostile tool calls | strict argument objects (only the tool's keys, right types); unknown tools answered with an error, never run; ids and names capped | CWE-20 |
+| A call written as reply text (some local models, e.g. qwen2.5-coder through Ollama) | read as a call only when the **whole** reply (after `<tool_call>` tags or one code fence are taken off) is one JSON object or an array of at most 8, at most 64 KiB, each naming a tool offered this turn with an object of arguments; any prose around it, or an unknown name, and the text stays a plain answer that is never run. Such a call then goes through the same argument checks and pending-change review as a real one | CWE-20, CWE-77, OWASP LLM01 |
 | Resource exhaustion | 12 steps per turn, 8 calls per step, 1 MiB arguments per call, 64 KiB per tool result, 1 MiB of results per turn, 2 MiB request, 50 pending files, 5 MiB per proposed file, one turn at a time, Stop | CWE-400, CWE-770 |
 | Hostile text in the UI | answers, tool targets and diff texts are React text or read-only Monaco models; links off | CWE-79 |
 | Logs | fixed audit words only: agent turn, change accepted, change rejected; no paths, tool names or text | NIST AU-3, CWE-117, CWE-532 |
@@ -113,6 +114,7 @@ cargo audit and npm audit 2026-11-17: 0 vulnerabilities (run linked below).
 |---|---|
 | "open a folder first; the assistant works on the open folder" | open a folder, or turn Tools off |
 | "this gateway or model does not offer tools; turn Tools off to chat without them" | the gateway answered 404 for a tools request; pick another model or turn Tools off |
+| The answer is a line of JSON such as `{"name": "read_file", ...}` with text around it | the model wrote a tool call as text and added words; only a reply that is nothing but the call is run. Ask again, or use a model with real tool calls (e.g. qwen2.5:14b) |
 | tool line `failed: read_file` with no file name, after asking about `.env` | that file is hidden from the assistant on purpose; its name is not shown |
 | "the file changed on disk after the assistant read it; reject this change and ask again" | the file was edited after the proposal; reject it and ask again |
 | "the chat and the files read are larger than 2 MiB; start a new chat" | the turn read too much; start a new chat or ask about fewer files |

@@ -172,6 +172,8 @@ export const gatewayAddPublic = (gatewayId: string, key: string | null) => call<
  */
 export type AgentEvent =
   | { kind: "delta"; text: string }
+  /** The step's text so far was a tool call written as text: drop its last `chars` characters. */
+  | { kind: "retract"; chars: number }
   | { kind: "tool"; name: string; target: string; ok: boolean }
   | { kind: "approval"; id: string; summary: string; runner: string }
   | { kind: "run"; id: string; result: RunResult };
@@ -276,6 +278,8 @@ export interface SyncView {
 export interface ProjectState {
   gateway_name: string; project_id: string | null; project_name: string;
   switches: Switches | null; sync: SyncView | null; note: string;
+  /** The gateway has no P2P-AI projects API (a plain model endpoint such as Ollama): it can chat but not host missions. */
+  no_projects: boolean;
 }
 export interface ProjectView { id: string; name: string; role: string; version: number; file_count: number }
 export interface Skipped { rel: string; reason: string }

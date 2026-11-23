@@ -153,6 +153,7 @@ cargo audit (core 71 crates, shell 529 crates) and npm audit on 2026-11-17: 0 vu
 | Message | Cause and fix |
 |---|---|
 | "link this folder to a gateway project first" | pick or create a project in the Missions view |
+| "... is a model endpoint without projects (for example Ollama)" | the gateway answered 404 to `GET /v1/experimental`: it only chats. Use Agent chat with it, or add a P2P-AI gateway for missions |
 | "the gateway project changed meanwhile; try again" | someone else (or a mission) committed; send again |
 | "a file is still being scanned on the gateway; try again shortly" | the malware scan took over 60 s; send again |
 | "the gateway does not accept this file type" | the gateway's upload allow-list; the file stays local |

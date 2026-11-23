@@ -1,0 +1,11 @@
+# PNG screenshots kept out of round4.zip (SHA-256, path, size). Generated 2026-11-23T13:54:23Z.
+fc704d491e445a7c3e7c260c2990451caa292227068992d9fc982fad2001f256  ide-main/01-launch.png  18972 bytes
+ad6e83b17c03df155826e72c83087d5da5c88ce1e425afeea54c788a61eb044b  ide-main/02-folder-open.png  26987 bytes
+f48f0dbf1ef1205f6941cda09986492aa2e53819fd4a9c693b99c171087e7ffb  ide-main/03-gateway-added.png  65334 bytes
+d94e5fff33e1d2e3716d3087fccefa5202899073efa550151fa668c6cb621cb9  ide-main/04-chat-coder7b-tools-on.png  13946 bytes
+8c811c26e1c5fe85211a6cd073e7e93509e3e445ad41e33c47872390be493a6a  ide-main/05-chat-retry-new-chat.png  14094 bytes
+fc704d491e445a7c3e7c260c2990451caa292227068992d9fc982fad2001f256  ide/01-launch.png  18972 bytes
+ad6e83b17c03df155826e72c83087d5da5c88ce1e425afeea54c788a61eb044b  ide/02-folder-open.png  26987 bytes
+f48f0dbf1ef1205f6941cda09986492aa2e53819fd4a9c693b99c171087e7ffb  ide/03-gateway-added.png  65334 bytes
+0f53eb65fed0fdb2260c4006760bb433b1a82f253b169a77818e5224f0aae287  ide/04-chat-coder7b-tools-on.png  21452 bytes
+a33f17decc9cac4c153624ad50c8702fae4859dc79973d8a217d07e1bb708551  ide/05-chat-retry-new-chat.png  28102 bytes

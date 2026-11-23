@@ -257,6 +257,10 @@ class Packer:
             text, counts = redact(text, self.extra)
             if counts:
                 self.redactions[rel] = counts
+            # SECURITY: store text with LF line endings. .gitattributes keeps HistoryTest/** at eol=lf, so a CRLF
+            # file copied from Windows would be rewritten on commit and its SHA-256 in manifest.json would no
+            # longer match (NIST AU-10; runs 2026-11-23_122300Z/_123655Z/_125400Z in the IDE repo, marked invalid).
+            text = text.replace("\r\n", "\n")
             data = text.encode("utf-8")
         elif size > self.max_file:
             return self._skip(rel, "binary file larger than the per-file limit", src)

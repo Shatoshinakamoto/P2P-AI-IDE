@@ -1,0 +1,10 @@
+From https://github.com/Shatoshinakamoto/P2P-AI-IDE
+ * branch            claude/project-thread-w0i40c -> FETCH_HEAD
+   f0c99d9..350aa68  claude/project-thread-w0i40c -> origin/claude/project-thread-w0i40c
+fetch exit 0
+Switched to a new branch 'pr30'
+checkout exit 0
+350aa68004e6e66fa06b250c3f89cece2e26f02f
+350aa68 Fix three click-through bugs: text tool calls, stale runner list, Missions on plain endpoints
+ec50694 Add NEXUS Engine support and finish account/gateway IDE fixes
+dc07c54 Merge pull request #28 from Shatoshinakamoto/claude/project-thread-2jylpu

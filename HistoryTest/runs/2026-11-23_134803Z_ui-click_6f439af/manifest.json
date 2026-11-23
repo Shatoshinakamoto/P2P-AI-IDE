@@ -1,0 +1,86 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "a9bc596fc2a777ff4a1eb213f220e89c750a8278597c36010e620876fcb2a093",
+   "size": 1933
+  },
+  "artifacts/binaries.txt": {
+   "sha256": "747b035521a36e6a63e641df7a954bf0f4ca0eb4dd8f2154f6d02e695b8a6598",
+   "size": 1171
+  },
+  "command.txt": {
+   "sha256": "1badc5085d381f421fa2d19e453fb89fac7909799bce8288e71a9607c3d3fa3b",
+   "size": 49
+  },
+  "environment.md": {
+   "sha256": "6ba9fe0e84ac23e15e84c5863da67a6a09aa41883dbaae3e04afbfd10b5c094d",
+   "size": 129
+  },
+  "logs/ide-main/01-clone.log": {
+   "sha256": "21409dbbbc329df8579c6cf8f178bdc617c84cf5e17db32ee35bddf5248e9df3",
+   "size": 417
+  },
+  "logs/ide-main/02-npm-ci.log": {
+   "sha256": "28ce9fc88ceeb683237c1f9be9e7cdff38080cdc4b73417b1ed94bae81389e07",
+   "size": 262
+  },
+  "logs/ide-main/03-build-release.log": {
+   "sha256": "1ed0d1473c2051f9b2318739fe38ff1defc612c96b6a3462027b82c0886e2ea6",
+   "size": 26303
+  },
+  "logs/ide-main/app-stderr.log": {
+   "sha256": "61cf02652bc50e4ab669c51b914b78cc3f08d64b8266fd6da91060328c4b9d75",
+   "size": 171
+  },
+  "logs/ide-main/console.log": {
+   "sha256": "fa71975ad6d55ee435c8b9ba686acf1d6e92c2aec79c2cfc3478af5610e4508d",
+   "size": 500
+  },
+  "logs/ide-main/steps.md": {
+   "sha256": "ca1d314820031c770d69b91e0ba2f82744b71b160db0678b8e3a5e429d8c5f85",
+   "size": 1374
+  },
+  "logs/ide-main/times.txt": {
+   "sha256": "38657de42e024538f0edb2077077385454f33a8eeeaa4f91af3a1c17d214776e",
+   "size": 160
+  },
+  "results/summary.txt": {
+   "sha256": "093bc758873bf957204d5d4a50862728218b970462ed548e4264c3b6f581778f",
+   "size": 220
+  }
+ },
+ "previous": {
+  "manifest_sha256": "0770e8c419d7b3c3f78158f16e4782b1e6703cdee6c6c3ce81132bfe4c8d08dd",
+  "run_id": "2026-11-23_134100Z_ide-pr30_f4bfbc6"
+ },
+ "run": {
+  "area": "ui-click",
+  "branch_or_pr": "main",
+  "collected_utc": "2026-11-23T13:56:14Z",
+  "commit": "6f439af",
+  "count_unit": "",
+  "date_utc": "2026-11-23T13:48:03Z",
+  "dirty": false,
+  "duration_s": 334.0,
+  "exit_code": null,
+  "failed": 1,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-23_134803Z_ui-click_6f439af",
+  "kind": "manual",
+  "machine": "pc",
+  "passed": 2,
+  "record": "imported",
+  "redactions": {},
+  "requested_by": "ide-tf-finish-thread",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "IDE main (6f439af) fresh clone: chat with a text-written tool call",
+  "verdict": "fail",
+  "verdict_reason": ""
+ },
+ "schema": 1
+}
