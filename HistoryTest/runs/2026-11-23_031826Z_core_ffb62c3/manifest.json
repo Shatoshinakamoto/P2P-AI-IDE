@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "4263c7f742e7d528c847b4c6f12b739dd612711948d7589c9c36010ff11bdb34",
+   "size": 1466
+  },
+  "command.txt": {
+   "sha256": "3e081600b6528f9477013af52a9a2969b3c417e7d65f163a758d688f8a4e8e07",
+   "size": 77
+  },
+  "environment.md": {
+   "sha256": "a6cef7c1260a0af4bd43deef83c7b8bbe97594b829d2bd268a86b096f24ef02a",
+   "size": 193
+  },
+  "logs/output.log": {
+   "sha256": "1c293f76fa5a50ea4aee7679e0465927dbf84509446cbcbfdeaf9ca585ecd61c",
+   "size": 10198
+  },
+  "results/summary.txt": {
+   "sha256": "5feb335673ffd137613da316ddfc42a39e32a6db482aeb38b6442716b16c437c",
+   "size": 285
+  }
+ },
+ "previous": {
+  "manifest_sha256": "6c449240b1fb9950030ed5300424e4719429fecad85065721cc7cec2fbe1e96e",
+  "run_id": "2026-11-22_200619Z_desktop-node-ext-electron_cc16e75"
+ },
+ "run": {
+  "area": "core",
+  "branch_or_pr": "",
+  "collected_utc": "",
+  "commit": "ffb62c3d5247f9bff9f1f5e2c034912a9be10971",
+  "count_unit": "",
+  "date_utc": "2026-11-23T03:18:26Z",
+  "dirty": false,
+  "duration_s": 13.4,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-23_031826Z_core_ffb62c3",
+  "kind": "unit",
+  "machine": "cloud",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "thread: Finish TandemForge and IDE roadmaps (A3 accounts)",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "IDE core tests with the accounts module",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}

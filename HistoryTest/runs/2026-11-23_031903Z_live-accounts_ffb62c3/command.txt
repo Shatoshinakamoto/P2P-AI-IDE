@@ -1,0 +1,2 @@
+# run in repository folder `.`, as an argument list (no shell)
+env NODE_PATH=/opt/node22/lib/node_modules node scripts/live_accounts_e2e.mjs --bin-dir /tmp/claude-0/a3bin --chromium /opt/pw-browsers/chromium

@@ -1,0 +1,2 @@
+# run in repository folder `app`, as an argument list (no shell)
+env NODE_PATH=/opt/node22/lib/node_modules node tests/ui-smoke.mjs

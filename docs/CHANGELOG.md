@@ -2,6 +2,19 @@
 
 All notable changes to the P2P-AI IDE. Format: [Keep a Changelog](https://keepachangelog.com), newest first.
 
+## 2026-11-23 - Accounts: sign in to gateways with a P2P-AI account (ADR-030 phase A3)
+
+### Added
+- **P2P-AI accounts** panel in the Gateways side bar: sign in at an account service in the system browser (OAuth for native apps with PKCE S256 and a one-time loopback address, RFC 8252 and RFC 7636), see who is signed in, replace an operator-made one-time password, and sign out (the session at the account service ends too). Page: [features/account-sign-in.md](features/account-sign-in.md).
+- Each gateway card can **Use account** (account service plus the gateway's account id) instead of a pasted key, and **Use key instead** to go back. Gateway tokens are fetched, cached in memory and renewed by the app; nothing changes for chat, runs or missions.
+- New core module `core/src/accounts.rs`; shell commands `accounts_list`, `account_sign_in`, `account_sign_in_cancel`, `account_sign_out`, `account_change_password` and `gateway_set_account` (`app/src-tauri/src/account.rs`).
+- `core/examples/live_accounts.rs` and `scripts/live_accounts_e2e.mjs`: the sign-in checked against a real account service and a real Go gateway in Chromium ([commands/live-accounts-e2e.md](commands/live-accounts-e2e.md)).
+
+### Changed
+- `gateways.json` entries can carry an `account` link; `accounts.json` lists remembered account services ([files/app-data.md](files/app-data.md)). The OS keychain has a second service, `org.p2p-ai.ide.account`, for refresh tokens.
+
+Test evidence: HistoryTest `2026-11-23_031826Z_core_ffb62c3` (core 134 passed), `2026-11-23_031839Z_ui_ffb62c3` (UI smoke 126 of 126), `2026-11-23_031903Z_live-accounts_ffb62c3` (real account service and gateway: 19 of 19), `2026-11-23_032814Z_security-scan_ffb62c3` (cargo audit, npm audit, token search: pass).
+
 ## 2026-11-22 - I6d checked in the Windows desktop app
 
 ### Changed

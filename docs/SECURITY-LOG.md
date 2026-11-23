@@ -2,6 +2,16 @@
 
 Every security patch, hardening change, CVE remediation and accepted risk, newest first.
 
+## 2026-11-23 — Accounts (ADR-030 A3): native sign-in and account tokens for gateways
+- **Type:** hardening (new component, authentication); accepted risk
+- **CVE / CWE / advisory:** none. CWE-20, CWE-78, CWE-79, CWE-200, CWE-208, CWE-294, CWE-346, CWE-352, CWE-400, CWE-522, CWE-532, CWE-601, CWE-613, CWE-918
+- **Severity:** none (new feature, used only when a gateway is linked to an account). KEV: no.
+- **Affected:** `core/src/accounts.rs` (new), `core/src/gateways.rs` (`account` link), `app/src-tauri/src/{account,net,main}.rs`, `app/src/components/{AccountsPanel,NetworkView}.tsx`, `app/src/ipc.ts`
+- **What changed:** sign-in runs in the system browser, never an embedded view, so the app never sees the password (RFC 8252 8.12). PKCE S256 with a 32-byte CSPRNG verifier; a 32-byte `state` compared in constant time; the `iss` answer checked against the home (RFC 9207 mix-up defence); repeated or missing parameters refused; the loopback listener is bound to 127.0.0.1 on a random port, takes one callback, caps connections and gives up after 5 minutes or on Cancel. Account service addresses must be https (plain http only for 127.0.0.1, shown as INSECURE — DEV ONLY), have no user, query or fragment, and only allow-listed path characters. Refresh tokens are kept only in the OS keychain under their own service and are stored again before use after each rotation; a reused or revoked token clears the session. Access tokens stay in memory, are scoped to one gateway id (`resource`), and are never sent to the webview, the Node extension host, logs or errors. Sign-out revokes at the home. An operator-made one-time password must be replaced before any gateway token. The browser is started without a shell, and only for the checked home's `/authorize?` link. Audit lines use fixed words only.
+- **Why it is secure now:** OAuth for native apps per RFC 8252 and RFC 7636 (OWASP ASVS V51), protected authenticators (NIST IA-5, CWE-522), short-lived scoped tokens (NIST IA-2, AC-6), session ending on revocation (CWE-613), injection-free browser launch (CWE-78), audit of authentication events (NIST AU-2, AU-3).
+- **Accepted risk:** a gateway does not yet publish which account service it trusts or its account id, so the person types both; a wrong id only gets "not accepted" from the gateway. Refresh tokens live as long as the account service's session policy allows.
+- **Verification:** HistoryTest `2026-11-23_031826Z_core_ffb62c3` (134 passed), `2026-11-23_031839Z_ui_ffb62c3` (126 of 126), `2026-11-23_031903Z_live-accounts_ffb62c3` (19 of 19, including a token for another gateway id refused), `2026-11-23_032814Z_security-scan_ffb62c3` (cargo audit: 0 vulnerabilities, 6 pre-existing allowed warnings in the Tauri Linux stack; npm audit: 0).
+
 ## 2026-11-22 — Phase I6d: Electron compatibility host
 - **Type:** hardening (new component, supply chain); accepted risk
 - **CVE / CWE / advisory:** none. CWE-22, CWE-59, CWE-79, CWE-94, CWE-250, CWE-276, CWE-362, CWE-409, CWE-494, CWE-522, CWE-601, CWE-732, CWE-918

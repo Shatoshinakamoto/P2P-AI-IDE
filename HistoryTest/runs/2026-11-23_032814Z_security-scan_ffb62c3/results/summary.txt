@@ -1,0 +1,11 @@
+id: 2026-11-23_032814Z_security-scan_ffb62c3
+verdict: pass
+verdict_reason: The command ended with exit code 0.
+passed: 4
+failed: 0
+skipped: 1
+count_unit: not recorded
+exit_code: 0
+duration_s: 2.1
+commit: ffb62c3d5247f9bff9f1f5e2c034912a9be10971
+machine: cloud
