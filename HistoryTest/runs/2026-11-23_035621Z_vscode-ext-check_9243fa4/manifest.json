@@ -1,0 +1,58 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "d28da7a2cc4b376d7ed5d82e8b1464027b4f152263642c4c305ccc948e8d0f7f",
+   "size": 1556
+  },
+  "command.txt": {
+   "sha256": "31702b099e13b2b8040794291a9afec43b206103761a4c0a8b114d3884d0c1f7",
+   "size": 96
+  },
+  "environment.md": {
+   "sha256": "377fc5dcb2ea0c28f2f6ee3ccd134bdf25b3d2eb239d3f09bf180067bf68746b",
+   "size": 177
+  },
+  "logs/output.log": {
+   "sha256": "3340fd0eb6bef6c3d281ff3878ada1bd55e11f2c07690c1c2fd38dd4c7564dba",
+   "size": 43
+  },
+  "results/summary.txt": {
+   "sha256": "0cefaaec041ed024bc236ef2c3545d588ec3f6b8bf131d1b3f8648d72caa7c2a",
+   "size": 293
+  }
+ },
+ "previous": {
+  "manifest_sha256": "c91e8cdca0dd2c700683a486ebbda39b09ca15c15187106c9f94a573ea922f89",
+  "run_id": "2026-11-23_032814Z_security-scan_ffb62c3"
+ },
+ "run": {
+  "area": "vscode-ext-check",
+  "branch_or_pr": "IDE PR 27",
+  "collected_utc": "",
+  "commit": "9243fa421c51189b37a5d7b9fafc6ff3f97736d5",
+  "count_unit": "",
+  "date_utc": "2026-11-23T03:56:21Z",
+  "dirty": false,
+  "duration_s": 0.9,
+  "exit_code": 0,
+  "failed": null,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-23_035621Z_vscode-ext-check_9243fa4",
+  "kind": "build",
+  "machine": "pc",
+  "passed": null,
+  "record": "captured",
+  "redactions": {},
+  "requested_by": "Finish TandemForge and IDE thread",
+  "shortened_logs": [],
+  "skipped": null,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "VS Code extension type check with P2P-AI account sign-in (A3)",
+  "verdict": "pass",
+  "verdict_reason": "The command ended with exit code 0."
+ },
+ "schema": 1
+}
