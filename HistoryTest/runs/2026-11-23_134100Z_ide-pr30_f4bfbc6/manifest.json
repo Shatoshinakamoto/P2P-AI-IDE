@@ -1,0 +1,162 @@
+{
+ "algorithm": "sha256",
+ "files": {
+  "RUN.md": {
+   "sha256": "656058bd8d25299c0bda29371037766ec1f812c0b254553a7d557a338d5639e1",
+   "size": 3190
+  },
+  "artifacts/README.md": {
+   "sha256": "4f542e5612a6bd48863c19e5d3d2d0146cb74cb62a828f2be56e19b6d73bd143",
+   "size": 1007
+  },
+  "artifacts/binaries.txt": {
+   "sha256": "747b035521a36e6a63e641df7a954bf0f4ca0eb4dd8f2154f6d02e695b8a6598",
+   "size": 1171
+  },
+  "artifacts/drivers/a/click.mjs": {
+   "sha256": "dbdb0ee085437c97b8d1f01d75b886a1d5d0f03c4243d489d12cda67e8924522",
+   "size": 641
+  },
+  "artifacts/drivers/a/ide-addgw.mjs": {
+   "sha256": "3701064984388e0a9f99fa41bf85c1f56255e5923172d77f2901c6a8c1580058",
+   "size": 506
+  },
+  "artifacts/drivers/a/ide-chat.mjs": {
+   "sha256": "358d574a15cd544db4ab018f6bc31f4e820abe4d28f12f39d612eaa04261af83",
+   "size": 768
+  },
+  "artifacts/drivers/a/ide-chatread.mjs": {
+   "sha256": "e5aef85059888baf7be290a6cff27ebb8faaeb4e965bceea8885e1636db570a0",
+   "size": 548
+  },
+  "artifacts/drivers/a/ide-difftext.mjs": {
+   "sha256": "485147e3bb14d17df3672bdcdf75dec18053b869e31cd198b7d843206cbbaf3d",
+   "size": 230
+  },
+  "artifacts/drivers/a/ide-openfile.mjs": {
+   "sha256": "83b0f19dec4618056d620e5ab8f2a5641adbaf8955ac8d70b5030425441643f8",
+   "size": 316
+  },
+  "artifacts/drivers/a/ide-openfolder.mjs": {
+   "sha256": "40cf4a2180ba58cc155b8aa7eb5d46cc9568a8a31aa08ca05c00b92e46db4e47",
+   "size": 233
+  },
+  "artifacts/drivers/a/ide-removegw.mjs": {
+   "sha256": "13466762b7054349d6905ac2ea1e1a46d78269a8ae499fd62e9ca2db2759d78b",
+   "size": 725
+  },
+  "artifacts/drivers/a/ide-reviewbtns.mjs": {
+   "sha256": "b917d1141eccf74719f6a30d1ad2b9f195422f14c25791f5a9b1b2d8eef832b4",
+   "size": 362
+  },
+  "artifacts/drivers/a/list-buttons.mjs": {
+   "sha256": "49bf6b7c1abbe4320a60c0af670b93c68e269e50cdc5ad3cacd8efac32197bd0",
+   "size": 461
+  },
+  "artifacts/drivers/launch.ps1": {
+   "sha256": "338e27b1eca46efb212210240c3d49e17de9db99b0e408ea2e65ad7520c29bbb",
+   "size": 994
+  },
+  "artifacts/drivers/log.mjs": {
+   "sha256": "b1e966cf96282afed9bf774034fd92e881334347c77c508804e7459807da42d9",
+   "size": 878
+  },
+  "artifacts/drivers/offscreen.ps1": {
+   "sha256": "59977d6925c127ac64986023481fa06b95a29577b9299a7f91eafdd697591f56",
+   "size": 909
+  },
+  "artifacts/drivers/pickfolder.ps1": {
+   "sha256": "700abf273a580a436228f4c96f2b631fd6a960e627dfec227b1a328132149f94",
+   "size": 2180
+  },
+  "artifacts/drivers/step.mjs": {
+   "sha256": "cdea92ca1d4d07fce0acb878b6c1a2e0166ceb55b839ebecd793a9a0dd4e0501",
+   "size": 1141
+  },
+  "command.txt": {
+   "sha256": "1badc5085d381f421fa2d19e453fb89fac7909799bce8288e71a9607c3d3fa3b",
+   "size": 49
+  },
+  "environment.md": {
+   "sha256": "77689e5444559d96c5a384a28b72b41874ab4f8c5a1960a1634abeb54c3c0c0e",
+   "size": 129
+  },
+  "logs/ide/01-checkout.log": {
+   "sha256": "7d1502a1d6e3d28ecfb0c778250c2bd9fdf8f535d84ef6fadbfa547546e7a2aa",
+   "size": 678
+  },
+  "logs/ide/02-cargo-test-core.log": {
+   "sha256": "4e6ff8ab6eda62a295d1992d09a90a47de8096563c514b88fbd7e9b4c6ae7c96",
+   "size": 11214
+  },
+  "logs/ide/03-npm-run-check.log": {
+   "sha256": "1a4919207e76ebc496a8dea4305149d2c27350f921fda321a5d90bbf61b732ab",
+   "size": 166
+  },
+  "logs/ide/04-npm-ui-smoke-shim.log": {
+   "sha256": "aad23a9651747f35406274792f06219d0a90bc29d2dba12979899b995a1e074b",
+   "size": 13263
+  },
+  "logs/ide/05-build-release.log": {
+   "sha256": "1e01d03b42cb1fa5cc47079c1922b67ff5010880a023a19206910379b108dca2",
+   "size": 17620
+  },
+  "logs/ide/app-stderr.log": {
+   "sha256": "0ec392342e09ac305a94f9321d0ec0d97c72287beae939f47f0d6b127dea2e52",
+   "size": 206
+  },
+  "logs/ide/console.log": {
+   "sha256": "ac15d3fdcdb47331ae40718619dfd257e1e4fb558a06150d399c32e8d786e6e7",
+   "size": 500
+  },
+  "logs/ide/steps.md": {
+   "sha256": "ba89b0b983e862dd5df01c0a638d9409046a4b8a0ce5fc70c9899dcd5a9243db",
+   "size": 3335
+  },
+  "logs/ide/times.txt": {
+   "sha256": "15bd8283070ce06641c895255250b38ae0405d400ad769978a801eb554ceabbd",
+   "size": 160
+  },
+  "results/summary.txt": {
+   "sha256": "2acb480af530e1589e6e5b3207cdc4dae9c4b8a230ff069d5a03561780d5cb22",
+   "size": 211
+  }
+ },
+ "previous": {
+  "manifest_sha256": "03d2496649df15e06f758265d8d2662cdd8d1ae66ba01c9f1dbce7c984931ccc",
+  "run_id": "2026-11-23_125401Z_ide-pr30_350aa68"
+ },
+ "run": {
+  "area": "ide-pr30",
+  "branch_or_pr": "30",
+  "collected_utc": "2026-11-23T13:56:14Z",
+  "commit": "f4bfbc6",
+  "count_unit": "",
+  "date_utc": "2026-11-23T13:41:00Z",
+  "dirty": false,
+  "duration_s": 420.0,
+  "exit_code": null,
+  "failed": 0,
+  "files_changed_in_project": null,
+  "harness_commit": "",
+  "id": "2026-11-23_134100Z_ide-pr30_f4bfbc6",
+  "kind": "integration",
+  "machine": "pc",
+  "passed": 276,
+  "record": "imported",
+  "redactions": {
+   "logs/ide/04-npm-ui-smoke-shim.log": {
+    "secret": 3
+   }
+  },
+  "requested_by": "ide-tf-finish-thread",
+  "shortened_logs": [],
+  "skipped": 4,
+  "skipped_files": [],
+  "source_path": "",
+  "title": "IDE PR #30 at f4bfbc6 on the PC: core, check, UI smoke, chat recheck of the JSON retract",
+  "verdict": "pass",
+  "verdict_reason": ""
+ },
+ "schema": 1
+}

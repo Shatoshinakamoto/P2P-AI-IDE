@@ -1,0 +1,9 @@
+# dir: D:\p2p-ai-ci\ide-click2\app
+# cmd: npm run check
+# start: 2026-11-23T13:33:13Z
+
+> p2p-ai-ide@0.1.0 check
+> tsc --noEmit
+
+# end: 2026-11-23T13:33:14Z
+# exit: 0

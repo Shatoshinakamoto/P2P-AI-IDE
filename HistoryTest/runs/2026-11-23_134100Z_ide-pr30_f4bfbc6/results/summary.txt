@@ -1,0 +1,11 @@
+id: 2026-11-23_134100Z_ide-pr30_f4bfbc6
+verdict: pass
+verdict_reason: not recorded
+passed: 276
+failed: 0
+skipped: 4
+count_unit: not recorded
+exit_code: not recorded
+duration_s: 420.0
+commit: f4bfbc6
+machine: pc

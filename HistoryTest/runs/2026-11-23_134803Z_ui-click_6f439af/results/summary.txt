@@ -1,0 +1,11 @@
+id: 2026-11-23_134803Z_ui-click_6f439af
+verdict: fail
+verdict_reason: not recorded
+passed: 2
+failed: 1
+skipped: not recorded
+count_unit: not recorded
+exit_code: not recorded
+duration_s: 334.0
+commit: 6f439af
+machine: pc
