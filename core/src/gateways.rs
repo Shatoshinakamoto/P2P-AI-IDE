@@ -63,6 +63,9 @@ pub struct Gateway {
     pub kind: Kind,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ca_pem: Option<String>,
+    /// Phase A3: sign in to this gateway with a P2P-AI account instead of a key (no secret in it).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub account: Option<crate::accounts::AccountLink>,
 }
 
 impl Gateway {
@@ -86,6 +89,8 @@ pub struct GatewayView {
     pub pinned: bool,
     /// A key is stored in the OS keychain.
     pub has_key: bool,
+    /// Phase A3: the account this gateway signs in with, when set (takes the place of the key).
+    pub account: Option<crate::accounts::AccountLink>,
 }
 
 /// The saved list plus which one is active.
@@ -315,7 +320,9 @@ impl GatewayStore {
                 && check_url(&g.url).as_deref() == Ok(g.url.as_str())
                 // SECURITY: a TandemForge entry may only ever point at 127.0.0.1 (NIST SC-7).
                 && (g.kind != Kind::TandemForge || crate::tandemforge::is_engine_url(&g.url))
-                && g.ca_pem.as_deref().map(|c| check_ca(c).is_ok()).unwrap_or(true);
+                && g.ca_pem.as_deref().map(|c| check_ca(c).is_ok()).unwrap_or(true)
+                // SECURITY: an account link is re-checked too; TandemForge on this computer never takes one (A3).
+                && g.account.as_ref().map(|a| a.valid() && g.kind != Kind::TandemForge).unwrap_or(true);
             if !ok {
                 return Err(GwError::Store(StoreError::Bad));
             }
@@ -358,7 +365,7 @@ impl GatewayStore {
         if let Some(k) = key {
             secrets.set(&id, &k)?;
         }
-        list.gateways.push(Gateway { id: id.clone(), name, url, kind, ca_pem });
+        list.gateways.push(Gateway { id: id.clone(), name, url, kind, ca_pem, account: None });
         if list.active.is_none() {
             list.active = Some(id.clone());
         }
@@ -425,6 +432,7 @@ impl GatewayStore {
                     url: url.to_string(),
                     kind: Kind::TandemForge,
                     ca_pem: None,
+                    account: None,
                 });
                 id
             }
@@ -459,6 +467,21 @@ impl GatewayStore {
         self.save(&list)
     }
 
+    /// Phase A3: makes a gateway sign in with a P2P-AI account (`Some`) or with its key again (`None`).
+    /// The link holds no secret; the sign-in itself lives in [`crate::accounts`].
+    pub fn set_account(&self, id: &str, link: Option<crate::accounts::AccountLink>) -> Result<(), GwError> {
+        if link.as_ref().is_some_and(|l| !l.valid()) {
+            return Err(GwError::BadUrl);
+        }
+        let mut list = self.load()?;
+        let g = list.gateways.iter_mut().find(|g| g.id == id).ok_or(GwError::NotFound)?;
+        if g.kind == Kind::TandemForge && link.is_some() {
+            return Err(GwError::BadUrl);
+        }
+        g.account = link;
+        self.save(&list)
+    }
+
     /// Stores a new key for a gateway in the keychain (the list file does not change).
     pub fn set_key(&self, secrets: &dyn SecretStore, id: &str, key: &str) -> Result<(), GwError> {
         let key = check_key(key)?;
@@ -486,6 +509,7 @@ impl GatewayStore {
                 pinned: g.ca_pem.is_some(),
                 // A keychain read failure shows as "no key" rather than failing the whole list.
                 has_key: secrets.get(&g.id).ok().flatten().is_some(),
+                account: g.account.clone(),
             })
             .collect();
         Ok((views, list.active))
@@ -655,5 +679,42 @@ mod tests {
         for e in [GwError::BadUrl, GwError::BadKey, GwError::BadCa, GwError::Keychain, GwError::BadSetup] {
             assert!(!e.message().contains("p2p_"));
         }
+    }
+}
+
+#[cfg(test)]
+mod account_link_tests {
+    use super::*;
+    use crate::accounts::AccountLink;
+
+    #[test]
+    fn a_gateway_links_to_an_account_but_tandemforge_never_does() {
+        let dir = std::env::temp_dir().join(format!("gw-acct-{}", store::new_id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let s = GatewayStore::new(&dir);
+        let sec = MemSecrets::default();
+        let id = s.add(&sec, "gw", "https://gw.example.org", Kind::Manual, None, None).unwrap();
+        let link = AccountLink::new("https://accounts.example.org", "gw-example-01").unwrap();
+        s.set_account(&id, Some(link.clone())).unwrap();
+        let (views, _) = s.views(&sec).unwrap();
+        assert_eq!(views[0].account.as_ref(), Some(&link));
+        assert_eq!(s.get(&id).unwrap().account, Some(link));
+        s.set_account(&id, None).unwrap();
+        assert_eq!(s.get(&id).unwrap().account, None);
+        // A hand-edited file with a bad link is refused on load (CWE-20).
+        let bad = std::fs::read_to_string(dir.join(FILE)).unwrap().replace(
+            "\"kind\": \"manual\"",
+            "\"kind\": \"manual\", \"account\": {\"home\": \"http://evil.example\", \"audience\": \"gw-x\"}",
+        );
+        std::fs::write(dir.join(FILE), bad).unwrap();
+        assert_eq!(s.load(), Err(GwError::Store(StoreError::Bad)));
+        let _ = std::fs::remove_dir_all(&dir);
+        let dir2 = std::env::temp_dir().join(format!("gw-acct2-{}", store::new_id()));
+        std::fs::create_dir_all(&dir2).unwrap();
+        let s2 = GatewayStore::new(&dir2);
+        let tf = s2.save_tandemforge(&sec, "http://127.0.0.1:41234", &format!("tfa_{}", "b".repeat(43))).unwrap();
+        let l2 = AccountLink::new("https://accounts.example.org", "gw-example-01").unwrap();
+        assert_eq!(s2.set_account(&tf, Some(l2)), Err(GwError::BadUrl));
+        let _ = std::fs::remove_dir_all(&dir2);
     }
 }

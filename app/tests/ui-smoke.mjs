@@ -160,7 +160,9 @@ const fake = () => {
   // Gateways and chats of the fake core. Keys are kept apart, as the OS keychain would, and never returned.
   const gws = []; let active = null; let dirs = []; const pending = new Map(); const keys = new Map(); const chats = new Map(); let nextId = 1;
   const hex = () => (nextId++).toString(16).padStart(16, "0");
-  const view = (g) => ({ id: g.id, name: g.name, url: g.url, kind: g.kind, dev: g.kind !== "tandemforge" && g.url.startsWith("http://"), pinned: false, has_key: keys.has(g.id) });
+  const view = (g) => ({ id: g.id, name: g.name, url: g.url, kind: g.kind, dev: g.kind !== "tandemforge" && g.url.startsWith("http://"), pinned: false, has_key: keys.has(g.id), account: g.account ?? null });
+  // Phase A3: account services the fake core remembers. The fake "browser" signs in at once.
+  let homes = [];
   const callbacks = new Map(); let cbId = 1;
   const mp = { linked: false, name: "", missions: [],
     sw: { autopilot_available: true, improve_available: true, disabled: false, autopilot: false, auto_improve: false, resource_scope: "own" },
@@ -429,6 +431,26 @@ exports.activate = async (ctx) => {
           if (args.id === "smoke.hover-web") { if (args.path !== "dist/web.js") throw "file not found"; return new TextEncoder().encode(extWebCode).buffer; }
           if (args.path !== "themes/night.json") throw "file not found";
           return new TextEncoder().encode(extThemeFile).buffer;
+        }
+        // Phase A3: P2P-AI accounts. The fake core checks the address like the real one and never returns tokens.
+        case "accounts_list": return homes;
+        case "account_sign_in": {
+          if (!/^https:\/\/[a-z0-9.-]+(:\d+)?(\/[A-Za-z0-9._~-]+)*$/.test(args.home.trim().replace(/\/$/, ""))) throw "the account service address must be https://host[:port][/path] (or http://127.0.0.1:port for a dev service)";
+          const issuer = args.home.trim().replace(/\/$/, "");
+          const h = { id: hex(), issuer, email: "dana@example.org", dev: false, signed_in: true, password_change_required: true };
+          homes = [...homes.filter((x) => x.issuer !== issuer), h]; return h;
+        }
+        case "account_sign_in_cancel": return null;
+        case "account_sign_out": homes = homes.filter((h) => h.id !== args.id); return null;
+        case "account_change_password": {
+          if (args.new.length < 15) throw "the password was not accepted (check the current one; the new one needs 15+ characters and must not be a common password)";
+          homes = homes.map((h) => h.id === args.id ? { ...h, password_change_required: false } : h); return null;
+        }
+        case "gateway_set_account": {
+          const g = gws.find((x) => x.id === args.id); if (!g) throw "that gateway is not in the list";
+          if (args.home === "") { delete g.account; return null; }
+          if (!/^[a-z0-9][a-z0-9._:-]{2,127}$/.test(args.audience.trim())) throw "the gateway's account id must be 3 to 128 characters: a-z, 0-9, '.', '_', ':' or '-'";
+          g.account = { home: args.home.trim(), audience: args.audience.trim() }; return null;
         }
         // Phase I7: TandemForge on this computer. The fake engine accepts one pairing code; the core keeps it.
         case "tandemforge_status": return { running: true, reason: null, id: gws.find((g) => g.kind === "tandemforge")?.id ?? null };
@@ -958,6 +980,46 @@ try {
   check("paired TandemForge is listed and active, code in the keychain, never shown", /paired \(code in keychain\)/.test(tfText) && (await tfRow.getByRole("radio").isChecked()) && !(await page.content()).includes("Q".repeat(43)), tfText.replace(/\s+/g, " "));
   check("the loopback TandemForge entry is not marked INSECURE and has no key or CA buttons", !/INSECURE/.test(tfText) && (await tfRow.getByRole("button", { name: /key|CA/i }).count()) === 0, tfText.replace(/\s+/g, " "));
   await page.screenshot({ path: process.env.SHOT_TF ?? join(here, "..", "ui-smoke-tf.png") });
+
+  // Phase A3: sign in with a P2P-AI account, replace the one-time password, link a gateway, sign out.
+  const ap = page.getByRole("region", { name: "P2P-AI accounts" });
+  await ap.getByLabel("Account service address").fill("accounts.example.org");
+  await ap.getByRole("button", { name: "Sign in" }).click();
+  await page.getByText(/the account service address must be https/).first().waitFor();
+  check("an account service address without https is refused", (await ap.getByRole("list", { name: "Account services" }).locator("li").count()) === 0);
+  await ap.getByLabel("Account service address").fill("https://accounts.example.org/");
+  await ap.getByRole("button", { name: "Sign in" }).click();
+  await ap.getByText("dana@example.org").waitFor();
+  check("signed in: the account and 'choose your own password' are shown", /choose your own password/.test(await ap.innerText()));
+  await ap.getByLabel("Current password").fill("one-time-pass");
+  await ap.getByLabel("New password").fill("short");
+  await ap.getByRole("button", { name: "Change", exact: true }).click();
+  await page.getByText(/the password was not accepted/).first().waitFor();
+  check("a short new password is refused and both fields are cleared", (await ap.getByLabel("New password").inputValue()) === "" && (await ap.getByLabel("Current password").inputValue()) === "");
+  await ap.getByLabel("Current password").fill("one-time-pass");
+  await ap.getByLabel("New password").fill("a much longer passphrase");
+  await ap.getByRole("button", { name: "Change", exact: true }).click();
+  await page.getByText(/Password changed/).first().waitFor();
+  check("password changed; the warning is gone", !/choose your own password/.test(await ap.innerText()));
+  const firstRow = page.getByRole("list", { name: "Saved gateways" }).locator("li").first();
+  await firstRow.getByRole("button", { name: "Use account" }).click();
+  const gName = (await firstRow.locator("span.font-semibold").innerText()).trim();
+  check("the link form offers the signed-in account service", (await firstRow.getByLabel(`Account service for ${gName}`).inputValue()) === "https://accounts.example.org");
+  await firstRow.getByLabel(`Account id of ${gName}`).fill("Not Valid");
+  await firstRow.getByRole("button", { name: "Link" }).click();
+  await page.getByText(/account id must be 3 to 128/).first().waitFor();
+  await firstRow.getByRole("button", { name: "Use account" }).click();
+  await firstRow.getByLabel(`Account id of ${gName}`).fill("gw-example-01");
+  await firstRow.getByRole("button", { name: "Link" }).click();
+  await firstRow.getByText(/account dana@example.org/).waitFor();
+  check("the gateway card shows it signs in with the account", (await firstRow.getByRole("button", { name: "Use key instead" }).count()) === 1);
+  await page.screenshot({ path: process.env.SHOT_ACCT ?? join(here, "..", "ui-smoke-accounts.png") });
+  await ap.getByRole("button", { name: "Sign out" }).click();
+  await ap.getByLabel("Account service address").waitFor();
+  check("signed out: the account is gone and the gateway card asks to sign in", (await ap.getByText("dana@example.org").count()) === 0 && /\(sign in\)/.test(await firstRow.innerText()));
+  await firstRow.getByRole("button", { name: "Use key instead" }).click();
+  await firstRow.getByRole("button", { name: "Use account" }).waitFor();
+  check("'Use key instead' unlinks the account", true);
 
   await page.screenshot({ path: process.env.SHOT ?? join(here, "..", "ui-smoke.png") });
 

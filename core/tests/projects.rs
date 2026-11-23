@@ -138,6 +138,7 @@ fn client(url: &str) -> Client {
         url: url.into(),
         kind: Kind::Manual,
         ca_pem: None,
+        account: None,
     };
     Client::new(&gw, Some("p2p_test_key".into())).unwrap()
 }
