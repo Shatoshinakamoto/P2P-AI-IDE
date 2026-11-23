@@ -43,6 +43,9 @@ pub struct ProjectState {
     pub sync: Option<SyncView>,
     /// A short note when part of the state could not be read (the rest still shows).
     pub note: String,
+    /// True when the active gateway answered 404 to the P2P-AI projects API: it is a plain model endpoint (such as
+    /// Ollama typed in by hand) that can only chat, so the view does not offer to link the folder there.
+    pub no_projects: bool,
 }
 
 fn workspace(state: &State<AppState>) -> Result<Workspace, String> {
@@ -95,7 +98,22 @@ pub async fn mission_project(app: AppHandle, state: State<'_, AppState>) -> Resu
     let (client, gid, gname) = active_gateway(&app)?;
     let link = projects::link_for(&data_dir(&app)?, &folder_key(ws.root()), &gid);
     let mut out = ProjectState { gateway_name: gname, ..Default::default() };
-    let Some(link) = link else { return Ok(out) };
+    let Some(link) = link else {
+        // Not linked yet: ask once whether this gateway has the P2P-AI projects API at all. A plain model endpoint
+        // (Ollama, LM Studio, any OpenAI-compatible server added by hand) answers 404 here, and offering to send the
+        // folder to it would only fail later. Other errors (offline, refused key) keep the link offer and show a note.
+        // SECURITY: only a fixed path is requested and only the error kind is kept; nothing from the answer body is
+        // shown (CWE-209), and no folder content is sent by this check.
+        return blocking(move || {
+            match client.api("GET", "/v1/experimental", None) {
+                Ok(_) => {}
+                Err(NetError::NotOffered) => out.no_projects = true,
+                Err(e) => out.note = format!("missions: {}", e.message()),
+            }
+            Ok(out)
+        })
+        .await;
+    };
     out.project_id = Some(link.project_id.clone());
     out.project_name = link.project_name.clone();
     blocking(move || {

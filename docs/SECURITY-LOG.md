@@ -2,6 +2,15 @@
 
 Every security patch, hardening change, CVE remediation and accepted risk, newest first.
 
+## 2026-11-23 — Tool calls written as reply text are read under the same checks
+- **Type:** hardening (behaviour change with its controls)
+- **CVE / CWE / advisory:** none; controls for CWE-20, CWE-77, CWE-400, OWASP LLM01
+- **Severity:** n/a (no vulnerability; a model's text could already only become a pending proposal)
+- **Affected:** `core/src/agent.rs` (`text_tool_calls`, `run_turn`); also `app/src-tauri/src/missions.rs` (`no_projects` probe, fixed path, error kind only, CWE-209)
+- **What changed:** when a step has no real tool calls, a reply that is entirely a JSON tool call (optionally in `<tool_call>` tags or one code fence) is treated as the call.
+- **Why it is secure now:** the reply must be nothing but the call (no prose around it), at most 64 KiB and 8 calls, and each name must be a tool offered this turn (run tools only when Runs is on); arguments must be an object. The call then takes the normal path: strict argument checks, read tools on the folder allow-list, edits as pending changes the person accepts, runs only after per-run approval. So a file that makes the model echo JSON gains nothing it could not already get with a real tool call (OWASP LLM01, NIST AC-6).
+- **Verification:** core unit tests `calls_written_as_text_are_read_only_when_they_are_the_whole_reply` and `a_turn_takes_a_call_written_as_text`; PC run to be archived in HistoryTest.
+
 ## 2026-11-23 — NEXUS Engine support: keyless loopback boundary and studio settings discovery
 - **Type:** hardening (new local engine integration)
 - **CVE / CWE / advisory:** none; controls for CWE-20, CWE-59, CWE-79, CWE-209, CWE-287, CWE-400, CWE-522, CWE-601, CWE-918, NIST SP 800-53 SC-7 / IA-5

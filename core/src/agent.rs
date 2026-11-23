@@ -528,6 +528,73 @@ fn propose(
     Ok(())
 }
 
+/// Longest reply text read as a written tool call (anything longer is an answer, not a call).
+const MAX_TEXT_CALL_BYTES: usize = 64 * 1024;
+/// Most calls taken from one written reply.
+const MAX_TEXT_CALLS: usize = 8;
+
+/// Tool calls a model wrote as its whole reply text, e.g. `{"name": "read_file", "arguments": {"path": "a.py"}}`.
+///
+/// Accepts one object or an array of them, optionally in a single ``` fence or `<tool_call>` tags (Qwen's format),
+/// with `arguments` (or `parameters`) as an object or a JSON string. Returns no calls when anything else is in the
+/// reply, so prose that quotes an example is never run.
+///
+/// Security: only names of tools offered in this turn are accepted (`runs` adds the run tools only when the shell's
+/// runner, which asks the person first, is present); the calls then go through exactly the same argument checks,
+/// path rules, secret deny-list and approvals as native tool calls (OWASP LLM06, CWE-20). Size and count are capped
+/// (CWE-400).
+fn text_tool_calls(text: &str, runs: bool) -> Vec<ToolCall> {
+    let mut t = text.trim();
+    if t.is_empty() || t.len() > MAX_TEXT_CALL_BYTES {
+        return vec![];
+    }
+    if let Some(rest) = t.strip_prefix("<tool_call>") {
+        t = rest.strip_suffix("</tool_call>").unwrap_or(rest).trim();
+    } else if let Some(rest) = t.strip_prefix("```") {
+        let Some(body) = rest.strip_suffix("```") else { return vec![] };
+        // Drop a language tag such as ```json on the fence's first line.
+        t = body
+            .split_once('\n')
+            .map(|(first, b)| if first.trim().chars().all(|c| c.is_ascii_alphanumeric()) { b } else { body })
+            .unwrap_or(body)
+            .trim();
+    }
+    if !(t.starts_with('{') || t.starts_with('[')) {
+        return vec![];
+    }
+    let Ok(v) = serde_json::from_str::<Value>(t) else { return vec![] };
+    let items: Vec<Value> = match v {
+        Value::Array(a) => a,
+        o @ Value::Object(_) => vec![o],
+        _ => return vec![],
+    };
+    if items.is_empty() || items.len() > MAX_TEXT_CALLS {
+        return vec![];
+    }
+    let defs = tool_defs_for(runs);
+    let offered: Vec<&str> =
+        defs.as_array().map(|a| a.iter().filter_map(|d| d["function"]["name"].as_str()).collect()).unwrap_or_default();
+    let mut out = Vec::with_capacity(items.len());
+    for it in &items {
+        let Some(name) = it.get("name").and_then(Value::as_str) else { return vec![] };
+        // SECURITY: a name that was not offered makes the whole reply an answer, not a call (OWASP LLM06).
+        if !offered.contains(&name) {
+            return vec![];
+        }
+        let args = match it.get("arguments").or_else(|| it.get("parameters")) {
+            Some(Value::Object(_)) => it.get("arguments").or_else(|| it.get("parameters")).map(|a| a.to_string()),
+            Some(Value::String(s)) if serde_json::from_str::<Value>(s).map(|a| a.is_object()).unwrap_or(false) => {
+                Some(s.clone())
+            }
+            None => Some("{}".to_string()),
+            _ => None,
+        };
+        let Some(arguments) = args else { return vec![] };
+        out.push(ToolCall { id: String::new(), name: name.to_string(), arguments });
+    }
+    out
+}
+
 /// Runs one agent turn: the conversation (user and assistant messages, oldest first) plus tools, until the model
 /// answers without a tool call, the step budget ends, or `on_event` returns false (Stop).
 pub fn run_turn(
@@ -557,7 +624,12 @@ pub fn run_turn(
             }
         })?;
         end.finish_reason = se.finish_reason;
-        let calls: Vec<ToolCall> = calls.into_iter().filter(|c| !c.name.is_empty()).collect();
+        let mut calls: Vec<ToolCall> = calls.into_iter().filter(|c| !c.name.is_empty()).collect();
+        if calls.is_empty() {
+            // Some local models (qwen2.5-coder through Ollama, seen on the PC 2026-11-23) write the call as the whole
+            // reply text instead of a tool call. Treat that as the call, so the turn goes on instead of showing JSON.
+            calls = text_tool_calls(&text, runner.is_some());
+        }
         if calls.is_empty() {
             break;
         }
@@ -753,6 +825,66 @@ mod tests {
         assert_eq!(after, "def add(a, b):\r\n    return a + b\r\n", "keeps the file's CRLF endings");
         // An LF file is matched as is.
         assert_eq!(match_line_endings("a\nb", "a\nb".into(), "c".into()), ("a\nb".into(), "c".into()));
+        let _ = fs::remove_dir_all(d);
+    }
+
+    #[test]
+    fn calls_written_as_text_are_read_only_when_they_are_the_whole_reply() {
+        let one = text_tool_calls(r#"{"name": "read_file", "arguments": {"path": "hello.py"}}"#, false);
+        assert_eq!(one.len(), 1);
+        assert_eq!((one[0].name.as_str(), one[0].arguments.as_str()), ("read_file", r#"{"path":"hello.py"}"#));
+        let fenced = text_tool_calls("```json\n{\"name\": \"list_dir\", \"arguments\": {\"path\": \"\"}}\n```", false);
+        assert_eq!(fenced.len(), 1);
+        let tagged = text_tool_calls(
+            "<tool_call>\n{\"name\": \"search\", \"arguments\": \"{\\\"query\\\": \\\"x\\\"}\"}\n</tool_call>",
+            false,
+        );
+        assert_eq!(tagged.len(), 1, "string arguments are accepted");
+        let two = text_tool_calls(
+            r#"[{"name":"list_dir","arguments":{"path":""}},{"name":"search","parameters":{"query":"a"}}]"#,
+            false,
+        );
+        assert_eq!(two.len(), 2);
+        // Prose around it, an unknown or not-offered tool, bad arguments: an answer, not a call.
+        for t in [
+            r#"Call it like {"name": "read_file", "arguments": {"path": "a"}}"#,
+            r#"{"name": "delete_everything", "arguments": {}}"#,
+            r#"{"name": "run_command", "arguments": {"command": "x"}}"#,
+            r#"{"name": "read_file", "arguments": 5}"#,
+            r#"{"answer": 5}"#,
+            "2 + 3 is 5.",
+            "[]",
+        ] {
+            assert!(text_tool_calls(t, false).is_empty(), "{t}");
+        }
+        // The run tools count only when the runner (which asks first) is there.
+        assert_eq!(text_tool_calls(r#"{"name": "run_tests", "arguments": {}}"#, true).len(), 1);
+    }
+
+    #[test]
+    fn a_turn_takes_a_call_written_as_text() {
+        let (w, d) = ws();
+        let mut p = Pending::default();
+        let mut n = 0;
+        let mut step =
+            |_m: &[Value], on: &mut dyn FnMut(&str) -> bool| -> Result<(StreamEnd, Vec<ToolCall>), NetError> {
+                n += 1;
+                if n == 1 {
+                    on(r#"{"name": "read_file", "arguments": {"path": "src/app.py"}}"#);
+                } else {
+                    on("It subtracts.");
+                }
+                Ok((StreamEnd { finish_reason: Some("stop".into()), chars: 0 }, vec![]))
+            };
+        let mut events = vec![];
+        let hist = vec![Msg { role: "user".into(), content: "what does add do".into() }];
+        let end = run_turn(&w, &mut p, &hist, &mut step, None, &mut |e| {
+            events.push(e);
+            true
+        })
+        .unwrap();
+        assert_eq!((end.steps, end.tool_calls), (2, 1));
+        assert!(events.iter().any(|e| matches!(e, AgentEvent::Tool { name, ok: true, .. } if name == "read_file")));
         let _ = fs::remove_dir_all(d);
     }
 

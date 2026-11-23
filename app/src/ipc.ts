@@ -276,6 +276,8 @@ export interface SyncView {
 export interface ProjectState {
   gateway_name: string; project_id: string | null; project_name: string;
   switches: Switches | null; sync: SyncView | null; note: string;
+  /** The gateway has no P2P-AI projects API (a plain model endpoint such as Ollama): it can chat but not host missions. */
+  no_projects: boolean;
 }
 export interface ProjectView { id: string; name: string; role: string; version: number; file_count: number }
 export interface Skipped { rel: string; reason: string }
